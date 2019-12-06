@@ -1,17 +1,7 @@
 FROM ubuntu:xenial
-MAINTAINER Jeffrey Szymanski <jeszyman@gmail.com>
-LABEL \
-description="none"
-################################################################################
-# BUILD STATUS
-################################################################################
-# External Dependencies:
-none
-################################################################################
-# Internal Dependencies:
 RUN apt-get update -y && apt-get install -y \
 build-essential \
-none
+emacs
 ################################################################################
 # Input Data:
 
