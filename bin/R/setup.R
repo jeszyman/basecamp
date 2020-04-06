@@ -1,3 +1,4 @@
+#TODO check R version and split
 #https://stackoverflow.com/questions/9397664/force-r-not-to-use-exponential-notation-e-g-e10
 # R setup
 #  Load packages:
@@ -14,22 +15,22 @@ list.of.packages=c(
     "plyr",
     "dplyr",
     "tidyr",
+    "tidyverse",
+    "pzfx",
     # Data formatting:
     "lubridate",    
     "stringr",
+    "zoo", # for month-year dates
     # Graphics:
     "ggplot2",
     "cowplot",
     "scales",
     "gridExtra",
     "RColorBrewer",
-    # Regression:
-    "glmnet",
-    # Trees and random forest:
-    "rpart",
-    "rpart.plot",
-    "randomForest",
-    "zoo" # for month-year dates
+    # Statistics
+    "plotROC",
+    "survival",
+    "survminer"
     )
 new.packages=list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
