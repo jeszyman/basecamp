@@ -1,0 +1,1 @@
+- note essh mode works when interacting with sh code blocks
