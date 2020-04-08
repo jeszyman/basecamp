@@ -1,0 +1,608 @@
+* Setup
+#+name: local-setup
+#+begin_src sh :tangle ./bin/local-setup.sh
+dependencies=("docker" "wget" "bash")
+for i in ${dependencies[@]}; do
+    if [ "$(which $i)" = "" ] ; then
+        echo "EARLY EXIT- $i needs to be installed and on PATH"
+        exit 0
+    else
+        echo "$i installed"
+    fi;
+done
+#
+source ~/repos/mpnst/bin/global-setup.sh
+#
+if [ $HOSTNAME == "aclm350" ]; then
+    basedir=/mnt/xt3/mpnst
+else
+    echo "No on Chaudhuri-roche server, exiting"
+    exit 1
+fi
+echo "Local setup complete for Chaudhuri-Roche server"
+#+end_src
+
+#+name: global-setup
+#+begin_src sh :tangle ./bin/global-setup.sh
+# Source submodule functions
+source ./basecamp/bin/shell/functions.sh
+#!/bin/bash
+#
+######################################
+### SETUP SCRIPT FOR MPNST PROJECT ###
+######################################
+#
+# variables
+project="mpnst"
+#
+#
+####################
+### SCRIPT SETUP ###
+####################
+# called scripts
+## identifies server in docker containers
+server_ask() {
+    echo -n "Choose your server: "
+    read SERVER
+    SERVER="${SERVER:=chaudhuri-roche}"
+}
+## interactive docker initialization
+docker_interactive() {
+    repo="USER INPUT"
+    read -p "repo name: " repo
+    case $HOSTNAME in
+        (radonc-cancerbio) docker run -it \
+                                  -v /media/:/media/ \
+                                  -v /home/:/home/ \
+                            -u $(id -u ${USER}) \
+                            jeszyman/$repo \
+                            /bin/bash;;
+        (jeszyman-*) docker run -it \
+                            -v /home/:/home/ \
+                            -u $(id -u ${USER}) \
+                            jeszyman/$repo \
+                            /bin/bash;;
+        (acl*) docker run -it \
+                      -v /drive3/:/drive3/ \
+                      -v /duo4/:/duo4/ \
+                      -v /mnt/:/mnt/ \
+                      -v /home/:/home/ \
+                      -u $(id -u ${USER}) \
+                      jeszyman/$repo \
+                      /bin/bash;;
+        (ACL*) docker run -it \
+                      -v /home/:/home/ \
+                      -v /duo4/:/duo4/ \
+                      -u $(id -u ${USER}):$(id -g ${USER}) \
+                      -h=${HOSTNAME} \
+                      jeszyman/$repo \
+                      /bin/bash;;
+        (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$repo"')' /bin/bash;;
+    esac
+}
+#
+# check if inside docker
+if [ -f /.dockerenv ];then 
+    dockercontainer=yes
+    echo "Your are in a docker container"    
+else 
+    dockercontainer=no
+    echo "Not in docker"
+    # setup NON-docker variables 
+    shopt -s nocasematch
+    case $HOSTNAME in
+        (radonc-cancerbio) server_home="/home/jeszyman" ;;
+        (jeszyman-*) server_home="/home/jeszyman" ;;
+        (acl*) server_home="/home/jszymanski" ;; 
+        (virtual-workstation*.gsc.wustl.edu) server_home="/gscuser/szymanski" ;;
+        (blade*.gsc.wustl.edu) server_home="/gscuser/szymanski" ;;
+    esac
+    projectdir=$server_home"/repos/$project"
+    localdata="$server_home/data/$project/"
+    unset $SERVER
+fi
+#
+case $dockercontainer in
+    (yes) server_ask ;;
+    (no) ;;
+esac
+#
+case $SERVER in
+    (chaudhuri-roche) projectdir=/drive3/users/jszymanski/repos/$project
+                      localdata=/drive3/users/jszymanski/data/$project;;
+    (NA) ;;
+esac
+#
+# test data on cancerbio
+#NOT GENERAL
+#basedir=/media/jeszyman/4edbbc27-7e29-4667-9b24-f5a56d49d94e/users/jeszyman/data/mpnst
+#rm -rf $basedir/fastq-test
+#mkdir -p $basedir/fastq-test
+#zcat $basedir/fastq-nci/MPNST/14_JS0108CD040119_R1.fastq.gz | head -n 8000 > $basedir/fastq-test/short_14_JS0108CD040119_R1.fastq
+#zcat $basedir/fastq-nci/MPNST/14_JS0108CD040119_R2.fastq.gz | head -n 8000 > $basedir/fastq-test/short_14_JS0108CD040119_R2.fastq        
+#zcat $basedir/fastq-washu/new_HiSeq-20_L007001_CTTC_R1.fastq.gz | head -n 8000 > $basedir/fastq-test/short_new_HiSeq-20_L007001_CTTC_R1.fastq.gz
+#gzip $basedir/fastq-test/*.fastq
+mkdir -p $projectdir/imgs
+# setup project repo
+#
+if [ "$?" != "0" ]; then
+    echo "setup error" 1>&2
+    exit 1
+else
+    echo "Setup completed successfully"
+fi
+
+
+
+#IDEAS
+### DEPENDENCIES ### 
+declare -a software=(
+#"rclone"
+#DOES NOT RETURN ON MGI                     "docker"
+#"git"
+"bash"
+)
+for i in "${software[@]}"; do
+if command -v $i >/dev/null 2>&1 ; then
+    echo "$i installed"
+else
+    echo "$i not found, exiting"
+    exit 1
+fi
+done
+
+#+end_src
+* Data
+#+name: get-data
+#+begin_src sh :tangle ./bin/get-data.sh
+#!/bin/bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+#
+#################################
+### MPNST PROJECT DATA SCRIPT ###
+#################################
+#
+# Dependencies
+source ~/repos/mpnst/bin/local-setup.sh
+echo "localdata at $localdata"
+#
+# Directory Structures
+# |-- /mnt/xt3/mpnst ($localdata)
+#     |-- /box             all data off box folder, including nci fastqs
+#     |-- /.washu-fastqs   washu demultiplex fastqs, write and chattri protected
+#     |-- /fastqs          symlinked fastqs
+#
+#########1#########2#########3#########4#########5#########6#########7#########8
+# Get box data using rclone
+#
+mkdir -p $localdata/box
+rclone copy -vu \
+       remote:"MPNST Early Cancer Detection" \
+       $localdata/box
+chmod -R 444 $localdata/box/
+#
+#########1#########2#########3#########4#########5#########6#########7######
+#
+# OLD CODE
+#
+# cat $projectdir/data/sequencing-lanes.csv | tail -n +2 | awk -F'[,]' '{print $1}'| sed 's/_R._.*$//g' > $localdata/fastqs_multiplexed/prefixes 
+# mapfile -t prefix < $localdata/fastqs_multiplexed/prefixes
+# touch $localdata/fastqs_multiplexed/PRE_file_list
+# for prefix in "${prefix[@]}"
+# do
+#     find /duo4/capp-fastqs/ -name $prefix* >> $localdata/fastqs_multiplexed/PRE_file_list
+# done
+# cat $localdata/fastqs_multiplexed/PRE_file_list | sort | uniq | awk -F'[/]' '{print $NF}' > $localdata/fastqs_multiplexed/file_list
+# rm $localdata/fastqs_multiplexed/PRE_file_list
+
+# mapfile -t file_list < $localdata/fastqs_multiplexed/file_list
+# for file in "${file_list[@]}"
+# do
+#     if [ -f $localdata/fastqs_multiplexed/$file ]; then
+#         echo "$file present"
+#     else
+#         find /duo4/capp-fastqs/ -name $file -exec cp {} $localdata/fastqs_multiplexed/ ';' 
+#     fi
+#          done
+# #
+# #########################
+# ### GET DATA FOR REPO ###
+# #########################
+# #
+# # sequencing data
+# mkdir -p $projectdir/data/sequencing
+# mapfile -t capp_sample_prep < $projectdir/data/capp_sample_prep
+# for dir in "${capp_sample_prep[@]}"
+# do
+#     rclone copy -vu \
+#            remote:"WashU CAPP-Seq/CAPP-seq Libraries/$dir" \
+#            $projectdir/data/sequencing/"$dir"
+# done
+
+# ### MAP LOCAL DATA PER SERVER 
+# rm -rf $projectdir/data/cfDNA-WGS 
+# mkdir -p $projectdir/data/cfDNA-WGS/bam
+# mkdir -p $projectdir/data/cfDNA-WGS/frag
+# shopt -s nocasematch
+# case $HOSTNAME in
+#     (jeszyman-*) echo "A" ;;
+#     (acl*) echo "B"                      
+#            find /duo4/capp-runs/HiSeqW28/demultiplexed/Sample_*/*.bam* -type f -exec ln -s {} $projectdir/data/cfDNA-WGS/bam/ ';'
+#            find /duo4/capp-runs/HiSeqW28/analysis/*/*.frag.tmp.txt -type f -exec ln -s {} $projectdir/data/cfDNA-WGS/frag/ ';'
+#            ;;
+# esac
+#     (virtual-workstation*.gsc.wustl.edu) \
+#         echo "C" \
+#              ln -s /gscmnt/gx2586/hirbe/tli $projectdir/analysis/hirbe-analysis \
+# #   bam/bai symlinks (list from email Chang (James) Moon 6/19/19 
+#              rm -rf $projectdir/data/mgi_bams \
+#              mkdir -p $projectdir/data/mgi_bams \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-14.gsc.wustl.edu-prod-builder-1-36957f8bb5e24e3e99e102678613abf3/36957f8bb5e24e3e99e102678613abf3.bam $projectdir/data/mgi_bams/BI386_normal.bam \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-14.gsc.wustl.edu-prod-builder-1-36957f8bb5e24e3e99e102678613abf3/36957f8bb5e24e3e99e102678613abf3.bam.bai $projectdir/data/mgi_bams/BI386_normal.bam.bai \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-11.gsc.wustl.edu-prod-builder-1-213efccf31964daf81bab8c7e7b11c2a/213efccf31964daf81bab8c7e7b11c2a.bam $projectdir/data/mgi_bams/BI386_tumor.bam \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-2-6.gsc.wustl.edu-prod-builder-1-aa6cbd67a1da48c3b51feb3d3f1b6505/aa6cbd67a1da48c3b51feb3d3f1b6505.bam $projectdir/data/mgi_bams/BI386_xeno.bam \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-9.gsc.wustl.edu-prod-builder-1-24128bdbe6074ad9aada227f425869d1/24128bdbe6074ad9aada227f425869d1.bam $projectdir/data/mgi_bams/CW225_normal.bam \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-2-11.gsc.wustl.edu-prod-builder-1-3f697f6852904384a7cd02c908e0d579/3f697f6852904384a7cd02c908e0d579.bam $projectdir/data/mgi_bams/CW225_tumor.bam \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-2-6.gsc.wustl.edu-prod-builder-1-7d65f716e10e425c8fca3ce422605b8b/7d65f716e10e425c8fca3ce422605b8b.bam $projectdir/data/mgi_bams/CW225_xeno.bam \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-1.gsc.wustl.edu-prod-builder-1-9c0fcb87a4ba4ea194031065ccb6052f/9c0fcb87a4ba4ea194031065ccb6052f.bam $projectdir/data/mgi_bams/DW356_normal.bam \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-2-6.gsc.wustl.edu-prod-builder-1-0db2e8821ae046bb823b8825e3161c99/0db2e8821ae046bb823b8825e3161c99.bam $projectdir/data/mgi_bams/DW356_tumor.bam \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade17-3-7.gsc.wustl.edu-prod-builder-1-113145491f2d407b863908d25b32c0f2/113145491f2d407b863908d25b32c0f2.bam $projectdir/data/mgi_bams/DW356_xeno.bam \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-4.gsc.wustl.edu-prod-builder-1-1d90f4fbed6b472f88f9c830e109c1f0/1d90f4fbed6b472f88f9c830e109c1f0.bam $projectdir/data/mgi_bams/JK368_normal.bam \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-5.gsc.wustl.edu-prod-builder-1-540334b83eea409e85d7ee32a7b06cd9/540334b83eea409e85d7ee32a7b06cd9.bam $projectdir/data/mgi_bams/JK368_tumor.bam \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-2-7.gsc.wustl.edu-prod-builder-1-99854e8313b94361b386145617325b05/99854e8313b94361b386145617325b05.bam $projectdir/data/mgi_bams/JK368_xeno.bam \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-2-4.gsc.wustl.edu-prod-builder-1-57e0a5e6909c42c0a140b6010d5ee92c/57e0a5e6909c42c0a140b6010d5ee92c.bam $projectdir/data/mgi_bams/SK436_normal.bam \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-11.gsc.wustl.edu-prod-builder-1-6040c3cbd4ea46699400263335732f09/6040c3cbd4ea46699400263335732f09.bam $projectdir/data/mgi_bams/SK436_tumor.bam \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-8.gsc.wustl.edu-prod-builder-1-c588738dc28a4a7faffb776d8ba3ce76/c588738dc28a4a7faffb776d8ba3ce76.bam $projectdir/data/mgi_bams/SK436_xeno.bam \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-11.gsc.wustl.edu-prod-builder-1-213efccf31964daf81bab8c7e7b11c2a/213efccf31964daf81bab8c7e7b11c2a.bam.bai $projectdir/data/mgi_bams/BI386_tumor.bam.bai \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-2-6.gsc.wustl.edu-prod-builder-1-aa6cbd67a1da48c3b51feb3d3f1b6505/aa6cbd67a1da48c3b51feb3d3f1b6505.bam.bai $projectdir/data/mgi_bams/BI386_xeno.bam.bai \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-9.gsc.wustl.edu-prod-builder-1-24128bdbe6074ad9aada227f425869d1/24128bdbe6074ad9aada227f425869d1.bam.bai $projectdir/data/mgi_bams/CW225_normal.bam.bai \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-2-11.gsc.wustl.edu-prod-builder-1-3f697f6852904384a7cd02c908e0d579/3f697f6852904384a7cd02c908e0d579.bam.bai $projectdir/data/mgi_bams/CW225_tumor.bam.bai \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-2-6.gsc.wustl.edu-prod-builder-1-7d65f716e10e425c8fca3ce422605b8b/7d65f716e10e425c8fca3ce422605b8b.bam.bai $projectdir/data/mgi_bams/CW225_xeno.bam.bai \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-1.gsc.wustl.edu-prod-builder-1-9c0fcb87a4ba4ea194031065ccb6052f/9c0fcb87a4ba4ea194031065ccb6052f.bam.bai $projectdir/data/mgi_bams/DW356_normal.bam.bai \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-2-6.gsc.wustl.edu-prod-builder-1-0db2e8821ae046bb823b8825e3161c99/0db2e8821ae046bb823b8825e3161c99.bam.bai $projectdir/data/mgi_bams/DW356_tumor.bam.bai \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade17-3-7.gsc.wustl.edu-prod-builder-1-113145491f2d407b863908d25b32c0f2/113145491f2d407b863908d25b32c0f2.bam.bai $projectdir/data/mgi_bams/DW356_xeno.bam.bai \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-4.gsc.wustl.edu-prod-builder-1-1d90f4fbed6b472f88f9c830e109c1f0/1d90f4fbed6b472f88f9c830e109c1f0.bam.bai $projectdir/data/mgi_bams/JK368_normal.bam.bai \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-5.gsc.wustl.edu-prod-builder-1-540334b83eea409e85d7ee32a7b06cd9/540334b83eea409e85d7ee32a7b06cd9.bam.bai $projectdir/data/mgi_bams/JK368_tumor.bam.bai \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-2-7.gsc.wustl.edu-prod-builder-1-99854e8313b94361b386145617325b05/99854e8313b94361b386145617325b05.bam.bai $projectdir/data/mgi_bams/JK368_xeno.bam.bai \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-2-4.gsc.wustl.edu-prod-builder-1-57e0a5e6909c42c0a140b6010d5ee92c/57e0a5e6909c42c0a140b6010d5ee92c.bam.bai $projectdir/data/mgi_bams/SK436_normal.bam.bai \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-11.gsc.wustl.edu-prod-builder-1-6040c3cbd4ea46699400263335732f09/6040c3cbd4ea46699400263335732f09.bam.bai $projectdir/data/mgi_bams/SK436_tumor.bam.bai \
+#              ln -s /gscmnt/gc2586/hirbe/build_merged_alignments/merged-alignment-blade18-1-8.gsc.wustl.edu-prod-builder-1-c588738dc28a4a7faffb776d8ba3ce76/c588738dc28a4a7faffb776d8ba3ce76.bam.bai $projectdir/data/mgi_bams/SK436_xeno.bam.bai
+#         ;;
+# esac
+
+
+
+##################################
+#### GET MEDGENOME FASTQ FILES ###                  
+##################################
+#
+#############
+### SETUP ###
+#############
+#
+# # dependencies
+# dependencies=("wget" "bash")
+# for i in ${dependencies[@]}; do
+#     if [ "$(which $i)" = "" ] ; then
+#         echo "EARLY EXIT- $i needs to be installed and on PATH"
+#         exit 0
+#     else
+#         echo "$i installed"
+#     fi;
+# done 
+# #
+# #########1#########2#########3#########4#########5#########6#########7#########8
+
+# ### WASHU BAM RENAMING
+# workdir=~/data/mpnst/wash_bam/
+# cd $workdir
+# for file in ./*W31*ATCG*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/nm_$base
+# done
+# for file in *q11*CGAT*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/nm_$base
+# done    
+# for file in *q11*GTGT*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/nm_$base
+# done    
+# for file in *W31*TAGC*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/nm_$base
+# done    
+# for file in *q-19*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/nm_$base
+# done    
+# for file in *q-20*ATCG*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/MPNST_$base
+# done    
+# for file in *q-20*CTTC*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/PN_$base
+# done    
+# for file in *q-20*GTGT*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/MPNST_$base
+# done    
+# for file in *q-20*TAGC*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/MPNST_$base
+# done    
+# for file in *q-20*TCCT*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/MPNST_$base
+# done    
+# for file in *q-20*AGGT*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/PN_$base
+# done    
+# for file in *q38*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/MPNST_$base
+# done    
+# for file in *q39*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/MPNST_$base
+# done    
+# for file in *q40*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/MPNST_$base
+# done    
+# for file in *q41*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/MPNST_$base
+# done    
+# for file in *q28*ATCG*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/MPNST_$base
+# done    
+# for file in *q28*CTTC*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/PN_$base
+# done    
+# for file in *q28*GAAG*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/PN_$base
+# done    
+# for file in *q28*ACAC*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/PN_$base
+# done    
+# for file in *q28*GTGT*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/MPNST_$base
+# done    
+# for file in *q28*TAGC*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/MPNST_$base
+# done    
+# for file in *q28*TCCT*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/MPNST_$base
+# done    
+# for file in *q28*AGGT*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/PN_$base
+# done    
+# for file in *q28*TGTG*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/PN_$base
+# done    
+# for file in *q28*GCTA*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/PN_$base
+# done    
+# for file in *q28*CACA*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/PN_$base
+# done    
+# for file in *W30*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/MPNST_$base
+# done    
+# for file in *W31*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/nm_$base
+# done    
+# for file in *q28*ACAC*; do
+#     base=`basename $file`
+#     echo $base
+#     mv $workdir/$base $workdir/PN_$base
+# done    
+
+
+# #########1#########2#########3#########4#########5#########6#########7#########8
+
+# #
+# # generate toy data for testing
+# mkdir $projectdir/data/toy
+# zcat /duo4/capp-fastqs/HiSeqW43/HiSeqW43_Undetermined_R6000292_L004_R1_001.fastq.gz | head -n 20000 > $projectdir/data/toy/toy-5k-HiSeqW43_Undetermined_R6000292_L004_R1_001.fastq
+
+
+
+
+
+
+
+#
+#box_base="WashU CAPP-Seq/CAPP-seq Libraries/"
+# declare -a capplib=("HiSeqW19, HiSeqW20 - Healthy and NF1 cfDNA WES\HiSeqW19_Health Patient Plasma_WES")
+# for file in "capplib[@]"
+# do
+#     rclone copy -vu \
+#            remote:"$boxbase/$file" \
+#            $projectdir/data/capp_lib/
+# done
+# rclone copy -vu remote:"WashU CAPP-Seq/CAPP-seq Libraries/HiSeqW19, HiSeqW20 - Healthy and NF1 cfDNA WES/HISeqW19_Healthy Patient Plasma_WES.xlsx" $projectdir/data/capp_libs/
+# ### Chaudhuri server- samtools deduped bams
+# cd $projectdir/data/seqcap-bams
+# declare -a arr=("HiSeqW11_rerun" "HiSeqW15" "HiSeqW16" "HiSeqW17" "HiSeqW19")
+# for i in "${arr[@]}"
+# do
+#    find /duo4/capp-runs/${i}/demultiplexed/ -name "*samtools-deduped.sorted.bam*" -exec ln -s {} . ';' 
+# done
+
+
+
+
+#  chaudhuri 
+# Permissions
+#? chown 777 $HOME/repos/mpnst/bin/setup.sh 
+# IDEA- INCLUDE memory check
+
+
+#+end_src
+
+* Bioinformatics methods
+- [[file:~/repos/mpnst/imgs/pipeline.pdf][pipeline graphic]]
+  #+BEGIN_SRC dot :file ./imgs/pipeline.pdf :cmdline -Tpdf
+digraph {
+// syntax notes
+//  no . or - allowed, instead use CamelCase
+//
+////////////////////////////////////////////////////////////////////
+// parameters
+ rankdir=LR;   
+ graph [fontsize=14, fontname="Verdana", compound=true, overlap=false];
+ node [
+ fontsize=12
+ shape=box
+ fontname=Helvetica];
+////////////////////////////////////////////////////////////////////
+// nodes
+/// inputs and outputs
+multiplexFastq [fillcolor="green",style="filled",label="Multiplexed \n Fastqs"]
+nciFastq [fillcolor="green",style="filled",label="NCI Fastqs"]
+extractedFastq [fillcolor="green",style="filled",label="De-multiplexed \n Barcode-extracted \n Fastqs"]
+cfdnaWESBam [label="cfDNA WES Alignments"]
+cfdnaWGSBam 
+tumorWGSBam 
+leukocyteWGSBam 
+tumorWESBam 
+fragFilterBam 
+downsampledBam 
+wig 
+tumorFraction 
+cfDNADummy [shap=point style=invis]
+///
+/// processes
+demultiplexRenameExtract [fillcolor="green",style="filled",label="Demultiplex, \n Rename \n and Extract \n demultiplex.sh"]
+bamQc [fillcolor="yellow",style="filled",label="Bam File QC \n bam-qc.sh"]
+fragFilter [fillcolor="yellow",style="filled"]
+readCounting [label="Read Counting \n bam-to-wig.sh"]
+alignment [fillcolor="yellow",style="filled"]
+fastqQc [fillcolor="green",style="filled"]
+//
+////////////////////////////////////////////////////////////////////
+// clusters
+subgraph cluster_washu {
+       label = "WashU CAPP-seq Processing"
+       multiplexFastq
+       demultiplexRenameExtract
+}
+subgraph cluster_cfDNA {
+       label = "cfDNA for Fragment Filtering"
+       cfdnaWGSBam
+       cfDNADummy 
+       cfdnaWESBam
+}
+subgraph cluster_genomicDNA {
+       label = "Genomic DNA"
+       genomicDNADummy [shap=point style=invis]
+       tumorWGSBam
+       leukocyteWGSBam
+       tumorWESBam
+}
+//
+////////////////////////////////////////////////////////////////////
+// node format
+multiplexFastq,extractedFastq,nciFastq,cfdnaWESBam,cfdnaWGSBam,tumorWGSBam,leukocyteWGSBam,tumorWESBam,fragFilterBam,downsampledBam,wig,tumorFraction [shape=circle]
+//
+////////////////////////////////////////////////////////////////////
+// edges
+ multiplexFastq -> demultiplexRenameExtract -> extractedFastq -> alignment
+ multiplexFastq -> fastqQc
+ extractedFastq -> fastqQc   
+ nciFastq -> alignment
+ nciFastq -> fastqQc
+ alignment -> cfDNADummy [lhead=cluster_cfDNA]         
+ alignment -> genomicDNADummy [lhead=cluster_genomicDNA]
+ cfDNADummy -> fragFilter [ltail=cluster_cfDNA]
+ cfDNADummy -> bamQc [ltail=cluster_cfDNA]
+ genomicDNADummy -> downsample [ltail=cluster_genomicDNA] 
+ genomicDNADummy -> bamQc [ltail=cluster_genomicDNA] 
+ fragFilter -> fragFilterBam
+ fragFilterBam -> fragmentAnalysis
+ cfDNADummy -> fragmentAnalysis [ltail=cluster_cfDNA]
+ fragFilterBam -> downsample -> downsampledBam -> readCounting -> wig -> ichor -> tumorFraction 
+}
+#+END_SRC
+* Analysis
+- Summary stats AS TB IKN R
+    #+BEGIN_SRC R :results replace 
+subjects %>% filter(institution == "washu" & current_dx == "healthy") %>% tally()
+specimens_expanded=merge(specimens,subjects,by="subject_id",all.x=T,all.y=F)
+specimens_expanded %>% filter(institution == "washu" & current_dx == "healthy")
+specimens_expanded %>% filter(institution == "washu" & current_dx == "mpnst") %>% group_by(subject_id) %>% tally()
+specimens_expanded %>% filter(institution == "washu" & current_dx == "plexiform") %>% group_by(subject_id) %>% tally()
+libraries_expanded=merge(libraries,specimens,by="specimen_id",all.x=T,all.y=F)
+libraries_expanded=merge(libraries_expanded,subjects,by="subject_id",all.x = T,all.y = F)
+names(libraries_expanded)
+library(stringr)
+libraries_expanded=filter(libraries_expanded, str_detect(library_id,"test",negate=T))
+libraries_expanded %>% filter(institution == "washu") %>% group_by(current_dx,subject_id) %>% count(current_dx) %>% print(n=30)
+#
+# earliest date w/ tf
+libraries_expanded %>% filter(ichor_tf != "GET" & institution == "washu" & isolation_type == "cfdna" & library_type == "wgs"o)
+
+%>% group_by(specimen_id) %>% filter(collect_date == min(collect_date))
+head(tmp)
+    #+END_SRC
+
+    #+RESULTS[01d510c526d1e21d72a850e4215e5f24f78ef4be]:
+* Reference
+* Ideas
+* Local Variables :noexport:
+#+property: header-args: results silent
+#+property: header-args: cache yes
+#+property: header-args: eval never-export
+#+property: header-args: exports code
+#+property: header-args: session *mpnst*
+#+property: header-args: tangle no
+#+property: header-args: var: project="mpnst" 
+#+startup: overview
+# Local Variables:
+# truncate-lines: nil
+# End:
