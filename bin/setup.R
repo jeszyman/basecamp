@@ -39,3 +39,4 @@ lapply(list.of.packages, require, character.only=T)
 options(scipen=999) # Disables scientific notation
 options(asciiType='org')
 #https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them
+#########1#########2#########3#########4#########5#########6#########7#########8
