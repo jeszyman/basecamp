@@ -1,1 +1,12 @@
 - note essh mode works when interacting with sh code blocks
+#+name: build-dockerfile
+#+begin_src bash 
+#NOTE: Cannot build for local machine while connected to VPN- apt can't install software
+cd ~/repos/basecamp
+docker build . --file Dockerfile --tag jeszyman/test
+#+end_src
+
+#+name: mount-ris-storage
+#+begin_src bash 
+
+#+end_src
