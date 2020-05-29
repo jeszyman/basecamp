@@ -3,6 +3,8 @@
 #+begin_src bash 
 #NOTE: Cannot build for local machine while connected to VPN- apt can't install software
 cd ~/repos/basecamp
+test=~/repos/basecamp
+
 docker build . --file Dockerfile --tag jeszyman/test
 #+end_src
 
