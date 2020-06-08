@@ -1,4 +1,5 @@
 - note essh mode works when interacting with sh code blocks
+
 * Common Functions 
 :PROPERTIES:
 :CREATED:  [2020-04-14 Tue 09:05]
@@ -110,3 +111,18 @@ pandoc -S $test | xclip -selection clipboard
 # Local Variables:
 # truncate-lines: nil
 # End:
+=======
+#+name: build-dockerfile
+#+begin_src bash 
+#NOTE: Cannot build for local machine while connected to VPN- apt can't install software
+cd ~/repos/basecamp
+test=~/repos/basecamp
+
+docker build . --file Dockerfile --tag jeszyman/test
+#+end_src
+
+#+name: mount-ris-storage
+#+begin_src bash 
+
+#+end_src
+>>>>>>> fd87b984ab919f4230a3d873ef65c2a1241faaa0
