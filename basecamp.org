@@ -1,4 +1,117 @@
 - note essh mode works when interacting with sh code blocks
+
+* Common Functions 
+:PROPERTIES:
+:CREATED:  [2020-04-14 Tue 09:05]
+:END:
+ #+BEGIN_SRC sh :results output :exports both :eval yes
+  bash --version
+check_dependencies(){}
+  #+END_SRC
+
+#+name: dependency-checker
+#+begin_src sh :tangle ./bin/shell/functions.sh
+#!/bin/bash
+check_dependencies(){
+    declare -a dependencies_to_check=("${!1}")
+    for i in ${dependencies_to_check[@]}; do
+        if [ "$(which $i)" = "" ] ; then
+            echo "EARLY EXIT- $i needs to be installed and on PATH"
+            exit 0
+        else
+            echo "$i installed"
+        fi;
+    done
+}
+#
+# Example: 
+# dependencies=("bash")
+# check_dependencies dependencies[@]
+#+end_src
+
+#+name:symlink-by-csv-script 
+#+begin_src sh :tangle ./bin/shell/functions.sh
+#
+######################
+### symlink-by-csv ###
+######################
+#
+# Purpose: generates symbolic links in bulk from a csv file 
+#
+# Input:
+# A .csv file of two columns, 
+#  Column 1 with source file paths
+#  Column 2 with destination symbolic link paths 
+#
+# Function:
+symlink_by_csv(){
+    # Set internal field separator
+    export IFS=","
+    # Take csv and pass to while/read
+    cat $1 | while read a b; do
+        ln -s $a $b; done
+}
+#
+# Example:
+# cd /tmp
+# mkdir -p csv-symlink-test
+# cd csv-symlink-test
+# touch csv-for-links.csv
+# touch file-to-link-from.txt
+# echo "file-to-link-from.txt,path-to-link-to.txt" >> csv-for-links.csv
+# echo "test link" > file-to-link-from.txt
+# export IFS=","
+# cat csv-for-links.csv | while read a b; do
+#     ln -s $a $b ; done
+# cat path-to-link-to.txt
+# cd ../
+# rm -rf csv-symlink-test
+#+end_src
+
+#+name:copy-file-text-to-clipboard 
+#+begin_src sh 
+#
+###################################
+### copy-file-text-to-clipboard ###
+###################################
+#
+# Purpose: for pandoc supported file, copies file text to system clipboard
+#
+# Dependencies:
+dependencies=("pandoc" "xclip")
+check_dependencies dependencies[@]
+#
+# Input: 
+# Any pandoc supported file 
+#
+# Function:
+text_to_clip() { pandoc -S $1 | xclip -selection clipboard}
+#
+# Example
+cd /tmp/ && rm -rf ./example && mkdir -p ./example && cd ./example 
+echo "Hello" | pandoc -o out.docx
+chmod 777 ./out.docx
+text_to_clip()
+./out.docx
+test=out.docx
+pandoc -S $test | xclip -selection clipboard
+
+#+end_src
+
+
+* Local Variables :noexport:
+#+property: header-args: results silent
+#+property: header-args: cache yes
+#+property: header-args: eval never-export
+#+property: header-args: exports code
+#+property: header-args: session *mpnst*
+#+property: header-args: tangle no
+#+property: header-args: var: project="mpnst" 
+#+startup: overview
+# Local Variables:
+# truncate-lines: nil
+# End:
+=======
 #+name: build-dockerfile
 #+begin_src bash 
 #NOTE: Cannot build for local machine while connected to VPN- apt can't install software
@@ -12,3 +125,4 @@ docker build . --file Dockerfile --tag jeszyman/test
 #+begin_src bash 
 
 #+end_src
+>>>>>>> fd87b984ab919f4230a3d873ef65c2a1241faaa0
