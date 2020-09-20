@@ -1,3 +1,10 @@
+## identifies server in docker containers
+server_ask() {
+    echo -n "Choose your server: "
+    read SERVER
+    SERVER="${SERVER:=chaudhuri-roche}"
+}
+
 * Common Process Functions 
 :PROPERTIES:
 :CREATED:  [2020-04-14 Tue 09:05]
