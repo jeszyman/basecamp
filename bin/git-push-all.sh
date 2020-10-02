@@ -5,5 +5,5 @@ do
 	[[ ! -d "$d" ]] && continue
 	echo "$d"
 	cd "$d"
-	git add -A && git commit -a -m "$d" && git push
+	git add -A && git commit -a -m "$d" && git push --recurse-submodules=on-demand
 done
