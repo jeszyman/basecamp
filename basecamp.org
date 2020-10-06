@@ -5,12 +5,48 @@ server_ask() {
     SERVER="${SERVER:=chaudhuri-roche}"
 }
 
+
+* Setup
+#+name: setup
+#+begin_src bash :tangle no
+project=basecamp
+repo=~/repos/"${project}"
+mkdir -p "${repo}"/src/shell
+#+end_src
 * Common Process Functions 
 :PROPERTIES:
 :CREATED:  [2020-04-14 Tue 09:05]
 :END:
+#+name: check_local_software
+#+begin_src bash :tangle ./src/shell/functions.sh
+check_local_software(){
+    # Check for parameters, return usage 
+    if [[ $# -eq 0 ]] ; then
+        printf "\n check_local_software 
+              \n Checks list of software in array, exits with error message if not found
+              \n \$1 = Bash array of software, e.g. software=(bash, git)
+              \n "
+    else
+        software_to_test=$1
+        for i in "${software_to_test[@]}"; do
+            if command -v $i >/dev/null 2>&1 ; then
+                echo "$i installed"
+            else
+                echo "$i not found, exiting"
+                exit 1
+            fi
+        done        
+    fi
+}
+#
+# check_local_software
+# unit test
+#software=(bash)
+#check_local_software $software
+#+end_src
+
 #+name: git_pull_all
-#+begin_src bash :tangle ./bin/git_pull_all.sh :dir ~/repos/basecamp
+#+begin_src bash :tangle ./src/git_pull_all.sh :dir ~/repos/basecamp
 #!/bin/bash
 #########1#########2#########3#########4#########5#########6#########7#########8
 #                                                                              #
@@ -59,33 +95,8 @@ jpg_to_pdf() {
 }
 #+end_src
 
- #+BEGIN_SRC sh :results output :exports both :eval yes
-  bash --version
-check_dependencies(){}
-  #+END_SRC
-
-#+name: dependency-checker
-#+begin_src sh :tangle ./bin/shell/functions.sh
-#!/bin/bash
-check_dependencies(){
-    declare -a dependencies_to_check=("${!1}")
-    for i in ${dependencies_to_check[@]}; do
-        if [ "$(which $i)" = "" ] ; then
-            echo "EARLY EXIT- $i needs to be installed and on PATH"
-            exit 0
-        else
-            echo "$i installed"
-        fi;
-    done
-}
-#
-# Example: 
-# dependencies=("bash")
-# check_dependencies dependencies[@]
-#+end_src
-
 #+name:symlink-by-csv-script 
-#+begin_src sh :tangle ./bin/shell/functions.sh
+#+begin_src sh :tangle ./src/shell/functions.sh
 #
 ######################
 ### symlink-by-csv ###
