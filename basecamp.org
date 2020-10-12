@@ -89,6 +89,12 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
+<<<<<<< HEAD
+=======
+- emacs ess docker ssh
+  - https://github.com/emacs-ess/ESS/issues/928
+  - https://gtown-ds.netlify.app/2017/08/16/docker-emacs/
+>>>>>>> 74f1148405f389f6b90cddcab795a0179a2c7a7f
 - [ ] setup chown https://stackoverflow.com/questions/26500270/understanding-user-file-ownership-in-docker-how-to-avoid-changing-permissions-o
 - https://www.google.com/search?q=docker+cleanup
 - documentation examples - https://docs.docker.com/engine/reference/run/#env-environment-variables
@@ -230,7 +236,11 @@ CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
       - https://stackoverflow.com/questions/27679740/how-to-add-dockerfile-to-a-docker-registry-page
     - https://www.google.com/search?q=docker+container+retain+command+history
   - consider docker add to add scripts
+<<<<<<< HEAD
 *** docker containers
+=======
+
+>>>>>>> 74f1148405f389f6b90cddcab795a0179a2c7a7f
 #+name: docker_build
 #+begin_src bash :tangle no
 cd ~/repos/biotools
