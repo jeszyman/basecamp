@@ -1,8 +1,3 @@
-  - principles and philosophy
-    - [[https://en.wikipedia.org/wiki/Robustness_(computer_science)][robustness]]
-    - transparency
-    - reproducibility
-
 http://ess.r-project.org/Manual/ess.html#Activating-and-Loading-ESS
 and get docker ip
 and provision container for ssh 
@@ -50,124 +45,9 @@ docker container ls
 docker container inspect --format '{{ .NetworkSettings.IPAddress }}' test2
 curl 172.17.0.5 -p 180
 #+end_src
-- bash functions
-  - docker interactive
-  #+name: 
-  #+begin_src bash :tangle no
 
-docker_interactive() {
-    if [ -f /.dockerenv ]; then
-        echo "shell already in docker, exiting"
-        exit 1
-    else
-        repo="USER INPUT"
-        read -p "image name: " image
-        case $HOSTNAME in
-            (radonc-cancerbio) docker run -it \
-                                      -v /media/:/media/ \
-                                      -v /home/:/home/ \
-                                      -u $(id -u ${USER}) \
-                                      jeszyman/$image \
-                                      /bin/bash;;
-            (jeff-*) docker run -it \
-                            -v /home/:/home/ \
-                            -u $(id -u ${USER}) \
-                            -e "USER=jeszyman" \
-                            -e "HOME=/home/jeszyman" \
-                            jeszyman/$image \
-                            /bin/bash;;
-            (jeszyman-*) docker run -it \
-                                -v /home/:/home/ \
-                                -u $(id -u ${USER}) \
-                                -e "USER=jeszyman" \
-                                -e "repo=/home/jeszyman/repos/mpnst" \
-                                -e "localdata=/home/jeszyman/data/career/washu/radonc/chaudhuri/mpnst" \
-                                jeszyman/$image \
-                                /bin/bash;;
-            (acl*) docker run -it \
-                          -v /drive3/:/drive3/ \
-                          -v /duo4/:/duo4/ \
-                          -v /mnt/:/mnt/ \
-                          -v /home/:/home/ \
-                          -u $(id -u ${USER}) \
-                          -e "USER=jszymanski" \
-                          -e "repo=/drive3/users/jszymanski/repos/mpnst" \
-                          -e "localdata=/mnt/xt3/mpnst" \
-                          jeszyman/$image \
-                          /bin/bash;;
-            (ACL*) docker run -it \
-                          -v /home/:/home/ \
-                          -v /duo4/:/duo4/ \
-                          -u $(id -u ${USER}):$(id -g ${USER}) \
-                          -e "USER=jszymanski" \
-                          -e "repo=/drive3/users/jszymanski/repos/mpnst" \
-                          -e "localdata=/mnt/xt3/mpnst" \
-                          jeszyman/$image \
-                          /bin/bash;;
-            (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$image"')' /bin/bash;;
-        esac
-    fi    
-}
-#
-docker_interactive
-basecamp
-##
-## Interactive docker initialization
-docker_interactive() {
-    image="USER INPUT"
-    read -p "image name: " image
-    case $HOSTNAME in
-        (radonc-cancerbio) docker run -it \
-                                  -v /media/:/media/ \
-                                  -v /home/:/home/ \
-                                  -u $(id -u ${USER}) \
-                                  jeszyman/$image \
-                                  /bin/bash;;
-        (jeff-*) docker run -it \
-                        -v /home/:/home/ \
-                        -u $(id -u ${USER}) \
-                        -e "USER=jeszyman" \
-                        -e "repo=/home/jeszyman/repos/mpnst" \
-                        -e "localdata=/home/jeszyman/data/career/washu/radonc/chaudhuri/mpnst" \
-                        jeszyman/$image \
-                        /bin/bash;;
-        (jeszyman-*) docker run -it \
-                            -v /home/:/home/ \
-                            -u $(id -u ${USER}) \
-                            -e "USER=jeszyman" \
-                            -e "repo=/home/jeszyman/repos/mpnst" \
-                            -e "localdata=/home/jeszyman/data/career/washu/radonc/chaudhuri/mpnst" \
-                            jeszyman/$image \
-                            /bin/bash;;
-        (acl*) docker run -it \
-                      -v /drive3/:/drive3/ \
-                      -v /duo4/:/duo4/ \
-                      -v /mnt/:/mnt/ \
-                      -v /home/:/home/ \
-                      -u $(id -u ${USER}) \
-                      -e "USER=jszymanski" \
-                      -e "repo=/drive3/users/jszymanski/repos/mpnst" \
-                      -e "localdata=/mnt/xt3/mpnst" \
-                      jeszyman/$image \
-                      /bin/bash;;
-        (ACL*) docker run -it \
-                      -v /home/:/home/ \
-                      -v /duo4/:/duo4/ \
-                      -u $(id -u ${USER}):$(id -g ${USER}) \
-                      -e "USER=jszymanski" \
-                      -e "repo=/drive3/users/jszymanski/repos/mpnst" \
-                      -e "localdata=/mnt/xt3/mpnst" \
-                      jeszyman/$image \
-                      /bin/bash;;
-        (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$image"')' /bin/bash;;
-    esac
-}
-#
-
-#+end_src
 
 * Basecamp
-- 
 - platforms
   - languages
     - C++
@@ -179,6 +59,7 @@ docker_interactive() {
       - [[https://docs.globus.org/cli/][cli]]
         - [[https://docs.globus.org/cli/reference/][documentation]]
           - https://docs.globus.org/how-to/globus-connect-personal-linux/#globus-connect-personal-cli
+
 - run dockers w/ uname https://github.com/JAremko/docker-emacs
 - repo setup
   - bin
@@ -208,9 +89,12 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
+<<<<<<< HEAD
+=======
 - emacs ess docker ssh
   - https://github.com/emacs-ess/ESS/issues/928
   - https://gtown-ds.netlify.app/2017/08/16/docker-emacs/
+>>>>>>> 74f1148405f389f6b90cddcab795a0179a2c7a7f
 - [ ] setup chown https://stackoverflow.com/questions/26500270/understanding-user-file-ownership-in-docker-how-to-avoid-changing-permissions-o
 - https://www.google.com/search?q=docker+cleanup
 - documentation examples - https://docs.docker.com/engine/reference/run/#env-environment-variables
@@ -352,7 +236,11 @@ CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
       - https://stackoverflow.com/questions/27679740/how-to-add-dockerfile-to-a-docker-registry-page
     - https://www.google.com/search?q=docker+container+retain+command+history
   - consider docker add to add scripts
+<<<<<<< HEAD
+*** docker containers
+=======
 
+>>>>>>> 74f1148405f389f6b90cddcab795a0179a2c7a7f
 #+name: docker_build
 #+begin_src bash :tangle no
 cd ~/repos/biotools
