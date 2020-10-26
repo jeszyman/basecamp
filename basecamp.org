@@ -166,7 +166,19 @@ docker_interactive() {
 
 #+end_src
 
+size filter
+#find $localdata/frag-filt-bams -name "*.bam" -type 'f' -size -4M -delete
+# small bam check
+##
+#if [ -f /drive3/users/jszymanski/repos/mpnst/data/small_bams ]; then rm /drive3/users/jszymanski/repos/mpnst/data/small_bams; fi
+##
+#minimum_bam_size=200000000
+
+
 * Basecamp
+:PROPERTIES:
+:ID:       943a0e83-cb72-482c-b4eb-dc7e5303f2ce
+:END:
 - 
 - platforms
   - languages
@@ -369,6 +381,9 @@ server_ask() {
 
 
 ** Ideas
+:PROPERTIES:
+:ID:       58cecae5-0126-4608-b079-c0cb5c1835c8
+:END:
 - dev
   - workflow
     - docker tool build
@@ -390,6 +405,9 @@ server_ask() {
         - nextflow config
       - tmp- testing output files
 ** Setup
+:PROPERTIES:
+:ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
+:END:
 #+name: setup
 #+begin_src bash :tangle no
 project=basecamp
@@ -399,6 +417,7 @@ mkdir -p "${repo}"/src/shell
 ** [[file:~/repos/basecamp/src/shell/functions.sh][Common Process Functions]]
 :PROPERTIES:
 :CREATED:  [2020-04-14 Tue 09:05]
+:ID:       15071151-f519-4c7f-b21f-997d6d7b6bc5
 :END:
 #+name: check_local_software
 #+begin_src bash :tangle ./src/bash/functions.sh
@@ -549,6 +568,9 @@ pandoc -S $test | xclip -selection clipboard
 
 
 ** Local Variables                                                 :noexport:
+:PROPERTIES:
+:ID:       f20f9ff3-de38-4cf6-ae3a-b6abd131b450
+:END:
 #+property: header-args: results silent
 #+property: header-args: cache yes
 #+property: header-args: eval never-export
