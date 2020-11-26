@@ -5,25 +5,6 @@
 :LOGBOOK:
 CLOCK: [2020-10-29 Thu 11:50]--[2020-10-29 Thu 12:01] =>  0:11
 :END:
-
-#+name: block-1
-#+BEGIN_SRC emacs-lisp :results replace
-(list "cons" "newelt" "balsh")
-#+END_SRC
-
-#+RESULTS[bbf62e487081f8e947ef5d004eb0bf97f38c1537]: block-1
-| cons | newelt | balsh |
-
-#+name:
-#+begin_src R :tangle no :var input=block-1
-input
-test=as.vector(input)
-test
-class(input)
-test=as.character(input[1,])
-test
-#+end_src
-
 ** ESS with R running through docker
 - http://ess.r-project.org/Manual/ess.html#Activating-and-Loading-ESS
   - and get docker ip
@@ -36,7 +17,6 @@ test
 :LOGBOOK:
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
-https://youtube-dl.org/
 - https://github.com/eudaldgr/youtube-dl
 - data storage and transfer
   - - globus
@@ -124,12 +104,6 @@ https://youtube-dl.org/
 - [[http://stackoverflow.com/questions/6250447/trigger-right-click][trigger right click chrome w/ java?]]
 - https://www.amazon.com/Hackers-Painters-Big-Ideas-Computer/dp/1449389554
 - [[https://ianskerrett.wordpress.com/2017/04/19/iot-developer-trends-2017-edition/][Who uses what- Eclipse survey]]
-*** virtualbox
-- [[https://www.virtualbox.org/manual/][documentation]]
-- processes
-  - install
-    - post-install guest additions CD
-- https://www.google.com/search?q=virtualbox+linux+guest+additions 
 *** by operating system
 - linux
   - https://github.com/libfuse/sshfs
@@ -164,12 +138,6 @@ https://youtube-dl.org/
 - https://docs.kde.org/trunk5/en/kdegraphics/okular/okular.pdf 
 - https://www.google.com/search?q=okular+remap+keyboard+shortcuts
 *** libreoffice 
-- https://ask.libreoffice.org/en/question/157807/set-memory-settings-in-version-6042/
-- https://superuser.com/questions/345365/exporting-vector-graphics-from-inkscape-into-libreoffice
-- https://askubuntu.com/questions/599915/what-is-the-closest-font-to-helvetica-available-on-ubuntu
-- https://tex.stackexchange.com/questions/106024/libreoffice-inkscape-eps-latex
-- https://ask.libreoffice.org/en/question/157807/set-memory-settings-in-version-6042/
-- https://www.reddit.com/r/libreoffice/comments/7umifb/has_libreoffice_6_just_killed_the_indispensable/
 - https://www.google.com/search?q=libreoffice+escape+comment
 **** libreoffice impress
 
@@ -249,7 +217,6 @@ CLOCK: [2017-10-25 Wed 09:48]--[2017-10-25 Wed 10:23] =>  0:35
 CLOCK: [2017-10-12 Thu 13:37]--[2017-10-12 Thu 13:40] =>  0:03
 CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 :END:
-https://docs.monadical.com/s/system-monitoring-tools
 ***** processes
 - account management
   - https://www.google.com/search?q=unix+create+user 
@@ -432,7 +399,6 @@ https://unix.stackexchange.com/questions/18925/how-to-mount-a-device-in-linux
 - https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
 - for dir sizes, use ncdu
 https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
-- https://github.com/Fmstrat/winapps
 ****** documentation and general education
   - https://www.kernel.org/doc/html/latest/admin-guide/index.html
   - general education- https://www.reddit.com/r/linux4noobs/comments/fntvl7/between_linux_essentials_linux_and_lpic1_which/
@@ -548,7 +514,8 @@ CLOCK: [2019-06-04 Tue 17:34]--[2019-06-04 Tue 17:38] =>  0:04
 CLOCK: [2019-06-02 Sun 08:37]--[2019-06-02 Sun 08:49] =>  0:12
 CLOCK: [2019-06-01 Sat 09:36]--[2019-06-01 Sat 09:40] =>  0:04
 :END:
-https://www.tecmint.com/set-display-screen-resolution-in-ubuntu/
+- 
+- https://www.tecmint.com/set-display-screen-resolution-in-ubuntu/
 https://askubuntu.com/questions/283559/how-can-i-run-disk-utility-in-terminal-via-a-comand-line
 - processes
   - power management - https://askubuntu.com/questions/1078939/ubuntu-18-04-battery-life
@@ -614,6 +581,7 @@ https://askubuntu.com/questions/283559/how-can-i-run-disk-utility-in-terminal-vi
 - documentation
 - software
   - i3
+    - https://www.reddit.com/r/i3wm/comments/9b2jla/ubuntu_1804_settings_gnomecontrolcenter/
     - https://i3wm.org/docs/userguide.html#_scratchpad
     - https://www.reddit.com/r/i3wm/comments/95z285/opening_all_terminal_applications_directly_from/
     - https://www.reddit.com/r/i3wm/comments/8hpjb6/i3_lock_screen/
