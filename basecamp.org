@@ -1,5 +1,13 @@
 * Basecamp
 
+#+begin_src emacs-lisp
+
+;;https://stackoverflow.com/questions/12224909/is-there-a-way-to-get-my-emacs-to-recognize-my-bash-aliases-and-custom-functions
+(setq shell-file-name "bash")
+(setq shell-command-switch "-ic")
+#+end_src
+
+
 #+name: check_local_software
 #+begin_src bash :tangle ./src/bash/functions.sh
 check_local_software(){
