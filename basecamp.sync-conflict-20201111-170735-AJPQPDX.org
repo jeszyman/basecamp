@@ -1,1103 +1,10 @@
 * Basecamp
-
-#+name: check_local_software
-#+begin_src bash :tangle ./src/bash/functions.sh
-check_local_software(){
-    if [[ $# -eq 0 ]] ; then
-        printf "\n check_local_software 
-              \n Checks list of software in array, exits with error message if not found
-              \n \$1 = Bash array of software, e.g. software=(bash, git)
-              \n "
-    else    
-        software=$1
-        for i in "${software[@]}"; do
-            if command -v $i >/dev/null 2>&1 ; then
-                echo "$i installed"
-            else
-                echo "$i not found, exiting"
-                exit 1
-            fi
-        done
-    fi
-}
-#
-# check_local_software
-# unit test
-#softwarecheck=(bash git)
-#check_local_software $softwarecheck
-#+end_src
-
-#+name: git_pull_all
-#+begin_src bash :tangle ./src/git_pull_all.sh :dir ~/repos/basecamp
-#!/bin/bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-#                                                                              #
-#                       Script to automate git pulls                           #
-#             from a set of repositories within the same root dir              #
-#                                                                              #
-#########1#########2#########3#########4#########5#########6#########7#########8
-# 
-# 1. Script Checks
-#
-## Check if git exist
-command -v git >/dev/null 2>&1 # stop if git not found
-if [ $? -eq 1 ]; then
-    echo "Git not found"
-    exit 1; fi
-##
-## Check if any repos exist
-shopt -s nullglob
-repo_dirs=(~/repos/*)
-if [ ${#repo_dirs[@]} -eq 0 ]; then
-    echo "No repos at ~/repos/"
-    exit 1; fi
-shopt -u nullglob
-##
-# 2. Pull Function 
-#                      
-for d in $HOME/repos/*
-do 
-    [[ ! -d "$d" ]] && continue
-    echo "$d" &&
-    cd "$d" &&
-    git pull &&
-    git submodule update --recursive &&
-    git submodule update --remote && 
-    cd "$OLDPWD"
-done
-#
-#+end_src
-
-#+name: jpg_to_pdf
-#+begin_src bash 
-#########1#########2#########3#########4#########5#########6#########7#########8#########9#########0#########1
-jpg_to_pdf() {
-    printf "Function to convert jpeg images to pdf
-    Accepts:
-    Returns: "
-}
-#+end_src
-
-#+name:symlink-by-csv-script 
-#+begin_src sh :tangle ./src/bash/bash_functions.sh
-#
-######################
-### symlink-by-csv ###
-######################
-#
-# Purpose: generates symbolic links in bulk from a csv file 
-#
-# Input:
-# A .csv file of two columns, 
-#  Column 1 with source file paths
-#  Column 2 with destination symbolic link paths 
-#
-# Function:
-symlink_by_csv(){
-    # Set internal field separator
-    export IFS=","
-    # Take csv and pass to while/read
-    cat $1 | while read a b; do
-        ln -s $a $b; done
-}
-#
-# Example:
-# cd /tmp
-# mkdir -p csv-symlink-test
-# cd csv-symlink-test
-# touch csv-for-links.csv
-# touch file-to-link-from.txt
-# echo "file-to-link-from.txt,path-to-link-to.txt" >> csv-for-links.csv
-# echo "test link" > file-to-link-from.txt
-# export IFS=","
-# cat csv-for-links.csv | while read a b; do
-#     ln -s $a $b ; done
-# cat path-to-link-to.txt
-# cd ../
-# rm -rf csv-symlink-test
-#+end_src
-
-#+name:copy-file-text-to-clipboard 
-#+begin_src sh 
-#
-###################################
-### copy-file-text-to-clipboard ###
-###################################
-#
-# Purpose: for pandoc supported file, copies file text to system clipboard
-#
-# Dependencies:
-dependencies=("pandoc" "xclip")
-check_dependencies dependencies[@]
-#
-# Input: 
-# Any pandoc supported file 
-#
-# Function:
-text_to_clip() { pandoc -S $1 | xclip -selection clipboard}
-#
-# Example
-cd /tmp/ && rm -rf ./example && mkdir -p ./example && cd ./example 
-echo "Hello" | pandoc -o out.docx
-chmod 777 ./out.docx
-text_to_clip()
-./out.docx
-test=out.docx
-pandoc -S $test | xclip -selection clipboard
-
-#+end_src
-
-
-- ess on docker
-  - http://ess.r-project.org/Manual/ess.html#Activating-and-Loading-ESS
-  - and get docker ip
-  - and provision container for ssh 
-- principles and philosophy
-    - [[https://en.wikipedia.org/wiki/Robustness_(computer_science)][robustness]]
-    - transparency
-    - reproducibility 
-- platforms
-  - languages
-    - C++
-      - http://www.seqan.de/
-      - https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/
-    - [[id:F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD][R]]
-  - data storage and transfer
-    - - globus
-      - [[https://docs.globus.org/cli/][cli]]
-        - [[https://docs.globus.org/cli/reference/][documentation]]
-          - https://docs.globus.org/how-to/globus-connect-personal-linux/#globus-connect-personal-cli
-- run dockers w/ uname https://github.com/JAremko/docker-emacs
-- repo setup
-  - bin
-    - working scripts
-      - check for existing work and bypass 
-      - get write protection
-    - global-setup.sh
-    - local-setup.sh
-    - within bin scripts, call local setup paths if they exist
-- /$projectdir/
-  - /data/
-    - /tables/
-    - database.csv
-    - dictionary.csv
-  - $project.org
-  - $project.nf
-** bash
-*** bash functions
-
-#+name: check_local_software
-#+begin_src bash :tangle ./src/bash/bash_functions.sh
-check_local_software(){
-    # Usage
-    ##
-    ## Message
-    usage(){
-                #########1#########2#########3#########4#########5#########6#########7#########8
-        printf "\n check_local_software 
-                \n Checks list of software in bash array and exits with error message if any
- software in the array is not found
-                \n \$1 = Bash array of software, e.g. try software=(bash, git)
-                \n "       
-    }
-    ##
-    ## Check
-    [[ $# -eq 0 ]] && usage
-    #
-    # Variables
-    software=$1
-    #
-    # Run
-    for i in "${software[@]}"; do
-    if command -v $i >/dev/null 2>&1 ; then
-        echo "$i installed"
-    else
-        echo "$i not found, exiting"
-        exit 1
-    fi
-done
-}
-#+end_src
-
-
-- bash functions
-  - docker interactive
-  #+name: 
-  #+begin_src bash :tangle ./src/bash/bash_functions.sh
-
-docker_interactive() {
-    if [ -f /.dockerenv ]; then
-        echo "shell already in docker, exiting"
-        exit 1
-    else
-        repo="USER INPUT"
-        read -p "image name: " image
-        case $HOSTNAME in
-            (radonc-cancerbio) docker run -it \
-                                      -v /mnt/:/mnt/ \
-                                      -v /home/:/home/ \
-                                      -u $(id -u ${USER}) \
-                                      -e "USER=jeszyman" \
-                                      -e "HOME=/home/jeszyman" \
-                                      jeszyman/$image \
-                                      /bin/bash;;
-            (jeff-*) docker run -it \
-=======
 :PROPERTIES:
 :ID:       943a0e83-cb72-482c-b4eb-dc7e5303f2ce
 :END:
 :LOGBOOK:
 CLOCK: [2020-10-29 Thu 11:50]--[2020-10-29 Thu 12:01] =>  0:11
 :END:
-
-#+begin_src emacs-lisp
-(setq comint-scroll-to-bottom-on-output t)
-#+end_src
-
-#+name: 
-#+begin_src bash :tangle no
-sudo npm i -g bash-language-server
-cd /home
-#+end_src
-
-#+begin_src emacs-lisp
-(use-package lsp-mode
-  :commands lsp
-  :hook
-  (sh-mode . lsp))
-
-(setq lsp-bash-highlight-parsing-errors 1)
-(setq lsp-bash-explanshell-endpoint 1)
-(setq lsp-bash-glob-pattern 1)
-#+end_src
-
-** [[id:cd560390-aa1e-4c9e-8317-08610e5de42a][LINK TO linux]]
-** Common build 
-** programming languages                                             :career:
-:PROPERTIES:
-:ID:       CBD1C9BA-44CB-4510-8ACD-F12CEF7E3402
-:END:
-:LOGBOOK:
-CLOCK: [2019-02-06 Wed 16:12]--[2019-02-06 Wed 17:05] =>  0:53
-:END:
-- principles and philosophy
-  - [[https://en.wikipedia.org/wiki/Robustness_(computer_science)][robustness]]
-  - transparency
-  - reproducibility
-- [[https://www.mathworks.com/mwaccount/?status=success][matlab washu license]]
-- https://www.reddit.com/r/linux4noobs/comments/iy3mcc/vim_cheatsheet_for_noobs_with_corrections/
-- https://altbulletin.com/how-to-code-like-the-top-programmers-at-nasa-10-critical-rules/
-- https://www.reddit.com/r/programming/comments/f9ut5f/the_most_recommended_programming_books_of_alltime/
-- https://stackoverflow.com/questions/1711/what-is-the-single-most-influential-book-every-programmer-should-read
-- languages
-  - C++
-    - http://www.seqan.de/
-    - https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/
-  - [[id:F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD][R]]
-- paradigms
-  - object-oriented programming
-    - inheritance
-    - 
-    - objects relate to real-world entities
-    - 'bottom-up'
-    - class: logical grouping specifying components of specific objects
-      - class variable: shared by all instances
-      - instance variable: unique to each instance=object in class
-      - data member: holds data associated with class and its objects
-    - 
-  - procedure-oriented- sequence of actions is more important to data
-    - 'top down'
-- programming
-  - Scripting languages
-    - AutoHotKey
-      - [[https://autohotkey.com/docs/AutoHotkey.htm][Documentation]]
-      - [[https://autohotkey.com/boards/viewtopic.php?t=9806][AutoHotKey-like resources on UNIX-based]]
-  - [[https://github.com/mohd-akram/languages][Language graph using cytoscape]]
-  - Other languages
-    - [[http://proquest.safaribooksonline.com/9780124052123][Matlab by example]]
-    - [[https://en.wikipedia.org/wiki/MUMPS][MUMPS]]
-      - https://en.wikipedia.org/wiki/GT.M
-    - AppScript
-      - https://developers.google.com/apps-script/articles/helpdesk_tutorial
-
-*** [[R]]
-:PROPERTIES:
-:ID:       1672D6B1-BCB8-428C-8AF1-013BC82A91AC
-:END:
-
-*** Python                                                           :career:
-:PROPERTIES:
-:ID:       CA21AAC9-F147-4086-A24C-64451EE349F3
-:END:
-:LOGBOOK:
-CLOCK: [2020-06-14 Sun 17:38]--[2020-06-14 Sun 17:48] =>  0:10
-CLOCK: [2019-02-19 Tue 10:54]--[2019-02-19 Tue 11:04] =>  0:10
-CLOCK: [2017-07-19 Wed 09:54]--[2017-07-19 Wed 10:58] =>  1:04
-CLOCK: [2019-02-12 Tue 10:54]--[2019-02-12 Tue 11:01] =>  0:07
-CLOCK: [2019-01-06 Sun 19:28]--[2019-01-06 Sun 19:57] =>  0:29
-CLOCK: [2018-06-20 Wed 16:52]--[2018-06-20 Wed 18:03] =>  1:11
-CLOCK: [2018-06-20 Wed 14:44]--[2018-06-20 Wed 15:50] =>  1:06
-CLOCK: [2017-11-15 Wed 13:45]--[2017-11-15 Wed 13:57] =>  0:12
-CLOCK: [2017-11-15 Wed 13:22]--[2017-11-15 Wed 13:35] =>  0:13
-CLOCK: [2017-08-09 Wed 09:05]--[2017-08-09 Wed 09:27] =>  0:22
-CLOCK: [2017-08-09 Wed 08:55]--[2017-08-09 Wed 08:58] =>  0:03
-CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
-CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
-CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
-:END:
-**** interfaces, platforms, and IDEs
-- emacs
-  - https://www.reddit.com/r/orgmode/comments/johcin/org_mode_org_roam_poetry_for_python_literate/
-  - elpy
-    - https://elpy.readthedocs.io/en/latest/ide.html#interactive-python
-  - [[https://kozikow.com/2016/05/21/very-powerful-data-analysis-environment-org-mode-with-ob-ipython/][Very powerful data analysis environment – org mode with ob-ipython]]
-  - python-emacs-orgmode ide
-    - https://jonathanabennett.github.io/blog/2019/06/20/python-and-emacs-pt.-1/
-    - https://github.com/gregsexton/ob-ipython
-  - python/emacs/org-mode integration
-    - elpy
-      - https://elpy.readthedocs.io/en/latest/concepts.html
-      - https://github.com/jorgenschaefer/elpy
-    - kitchin
-      - [[http://kitchingroup.cheme.cmu.edu/blog/2016/05/29/Expanding-orgmode-py-to-get-better-org-python-integration/][kitchin: Expanding orgmode.py to get better org-python integration]]
-      - [[https://raw.githubusercontent.com/jkitchin/dft-book/master/dft.org][kitchin full org example]]
-- jupyter
-  - https://www.reddit.com/r/datascience/comments/b2gzo2/productivity_tips_for_jupyter_when_working_in/
-  - jupyter lab 
-    - http://jupyterlab.readthedocs.io/en/stable/getting_started/starting.html
-  - Jupyter
-    - - http://beakernotebook.com/features
-    - [[http://nbviewer.jupyter.org/github/JosPolfliet/pandas-profiling/blob/master/examples/meteorites.ipynb][jupyter pandas example]]
-    - Command index
-      | Function                    | Command         |
-      |-----------------------------+-----------------|
-      | Show function documentation | <SHIFT> + <TAB> |
-      | Delete cell                 | dd              |
-      | New cell below current      | b               |
-      |                             |                 |
-      - commands
-        - run is <SHIFT> <ENTER>
-        - run and inset new <ALT> <ENTER>
-        - for stalls / while loops, do kernel -> interrupt/restart
-        - move to previous arrow up
-    - [[https://precision.heart.org/about_jupyter_notebooks][AHA Precision Jupyter notebooks]]
-    - [[http://bobbywlindsey.com/dev/2017/08/10/remote-computing-with-jupyter-notebooks.html][Remote Computing with Jupyter Notebooks]]
-    - [[https://jakevdp.github.io/blog/2017/03/03/reproducible-data-analysis-in-jupyter/][reproducible data analysis in jupyter]]
-    - [[https://www.youtube.com/watch?v=T385txAYSt8][youtube: Jupyter: Notebooks in Multiple Languages for Data Science]]
-    - https://www.dataquest.io/blog/jupyter-notebook-tips-tricks-shortcuts/
-    - show function documentation with <SHIFT> + <TAB>
-    - [ ] keyboard shortcut to show function documentation? 
-    - launch at terminal w/ jupyter notebook and paste URL, will launch into the directory terminal was in 
-    - http://jupyter.org/
-    - https://datascientistworkbench.com/
-    - https://medium.com/@kacawi/jupyter-notebook-tutorial-the-definitive-guide-660c7e651ecd#.igwzel9ai
-    - [[https://github.com/jupyter/jupyter/wiki/A-gallery-of-interesting-Jupyter-Notebooks][A gallery of interesting Jupyter Notebooks]]
-  - https://github.com/lambdalisue/jupyter-vim-binding
-- visual studio- https://code.visualstudio.com/docs/python/python-tutorial
-**** tutorials, courses, learning resources, best practices
-- [[https://www.edx.org/course/statistics-and-probability-in-data-science-using-python][edX stats with python]]
-- Learning resources
-  - [[https://www.reddit.com/r/datascience/comments/7u4c05/python_tools_that_everyone_should_know_about/][reddit: data science python tools that everyone should know about]]
-  - Python books
-    - cite:urban2016murachs
-    - [[http://openbookproject.net/thinkcs/python/english3e/][How to think like a computer scientist]]
-  - courses
-    - [[http://bafflednerd.com/category/learn-analytics/][Baffled Nerd: Online python courses]]
-    - [[https://www.udemy.com/the-python-mega-course/learn/v4/overview][Udemy python megacourse]]
-  - [[https://www.datacamp.com/courses/network-analysis-in-python-part-1?utm_source=adwords_ppc&utm_campaignid=898687156&utm_adgroupid=48303643819&utm_device=c&utm_keyword=&utm_matchtype=b&utm_network=g&utm_adpostion=1t1&utm_creative=229335520231&utm_targetid=dsa-377762271983&utm_loc_interest_ms=&utm_loc_physical_ms=9060420&gclid=Cj0KCQiAl8rQBRDrARIsAEW_To9A6evIhhajnoTZrssSRA70JFF7i5pPvlMXV-ixMnrpXZQgRSuKAX0aAvp9EALw_wcB][DataCamp Network Analysis in Python (Part 1)]]
-  - https://www.coursera.org/learn/python
-  - http://www.pythonlearn.com/
-- Rougier 
-  - [[https://www.labri.fr/perso/nrougier/from-python-to-numpy/][book- from python to numpy]] and associated [[https://github.com/rougier/from-python-to-numpy][github]]
-  - [[http://www.labri.fr/perso/nrougier/teaching/matplotlib/matplotlib.html][matplotlib tutorial]]
-- cite:sweigart2015
-- [[https://www.python.org/dev/peps/pep-0008/][PEP 8 -- Style Guide for Python Code]]
-- https://wiki.python.org/moin/BeginnersGuide/Programmers
-- [[https://github.com/JulianGaal/python-cheat-sheet][github: python cheatsheet]]
-- https://google.github.io/styleguide/pyguide.html
-- https://realpython.com/podcasts/rpp/8/
-- https://www.tutorialspoint.com/python/python_command_line_arguments.htm
-- https://www.simple-is-better.org/template/pyratemp.html
-- https://drive.google.com/drive/folders/0ByIrJAE4KMTtaGhRcXkxNHhmY2M
-- https://www.simple-is-better.org/template/pyratemp.html
-- https://en.m.wikipedia.org/wiki/Zen_of_Python
-**** applications
-:LOGBOOK:
-CLOCK: [2020-12-10 Thu 20:06]--[2020-12-11 Fri 07:51] => 11:45
-:END:
-- text parsing
-  #+name:
-  #+begin_src python :tangle no
-import re
-import pandas as pd
-myfile = open("/home/jeszyman/repos/basecamp/Dockerfile")
-contents = myfile.read()
-print(contents)
-rx_dict = {
-	'school' : re.compile(r'School =  (.*)\n
-#+end_src
-  - http://biopython.org/DIST/docs/tutorial/Tutorial.pdf
-- data visualization
-  - 
-  - https://github.com/paulvangentcom/python_corona_simulation?files=1
-  - https://towardsdatascience.com/how-to-use-ggplot2-in-python-74ab8adec129
-  - https://www.reddit.com/r/dataisbeautiful/comments/js9gsu/oc_illustration_of_different_path_finding/
-- data science 
-  - https://jakevdp.github.io/PythonDataScienceHandbook/
-  - https://www.reddit.com/r/datascience/comments/i94fu6/r_for_data_science_python_equivalent/
-  - https://jakevdp.github.io/PythonDataScienceHandbook/
-- computational biology
-  - https://pythonforbiologists.com/printing-and-manipulating-text/
-  - http://biopython.org/DIST/docs/tutorial/Tutorial.html
-- web tools
-  - [[http://stackoverflow.com/questions/8335630/how-to-crawl-a-website-extract-data-into-database-with-python][stack: crawl a website with python]]
-- science 
-  - [[https://www.youtube.com/watch?v=mLuIB8aW2KA][youtube: Python as Super Glue for the Modern Scientific Workflow]]
-- miscellaneous
-  - [[https://soundcloud.com/talkpython/104-game-theory-in-python][soundcloud: python for game theory]]
-  - https://www.freecodecamp.org/news/python-for-system-administration-tutorial/
-  - https://automatetheboringstuff.com/
-- graph theory and trees
-  - [[https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/#one][A Complete Tutorial on Tree Based Modeling from Scratch (in R & Python)]]
-- machine learning
-  - - https://www.reddit.com/r/statistics/comments/bzrco1/introduction_to_statistical_learning_anything/
-  - machine learning
-    - [[https://iamtrask.github.io//2015/11/15/anyone-can-code-lstm/][github neural network]]
-    - [[http://radimrehurek.com/data_science_python/][practical data science with python]]
-    - [[http://www.dataschool.io/about/][Wash U- affiliated machine learning guy]]
-    - [[https://github.com/Aelvangunduz/PyDataAnkara/blob/master/Intro%20to%20DS%20-%20R.ipynb][Data Science in Python]]
-    - [[http://www.nltk.org][nltk]]
-  - [[file:~/Box%20Sync/statistical_computing/Scanbot%20Sep%2024,%202016%2015.35.pdf][scikit-learn algorithm]]
-    - http://swcarpentry.github.io/python-novice-inflammation/ -https://www.codecademy.com/learn/python/?utm_source=customerio&utm_campaign=back_to_school&utm_medium=email_newsletter&utm_content=button_python
-  - https://www.analyticsvidhya.com/blog/2017/06/architecture-of-convolutional-neural-networks-simplified-demystified/
-  - [[https://www.opendatascience.com/blog/2-supervised-learning-predicting-an-output-variable-from-high-dimensional-observations/][supervised learning with sciki-learn]]
-- imaging
-  - pathology- [[https://pypi.python.org/pypi/openslide-python][python interface with OpenSlide C library for whole slide imaging]]
-- full use case examples
-  - [[https://www.reddit.com/r/programming/comments/651fzh/wedding_at_scale_how_i_used_twilio_python_and/][reddit: Wedding at Scale: How I Used Twilio, Python and Google to Automate My Wedding]]
-**** [[https://docs.python.org/3/][documentation]]
-  - functions
-    - https://www.datacamp.com/community/tutorials/functions-python-tutorial
-**** packages
-- https://seaborn.pydata.org/generated/seaborn.barplot.html#seaborn.barplot
-- https://www.reddit.com/r/datascience/comments/itzylb/the_numpy_paper_is_out_nature_open_access_paper/
-- https://www.selenium.dev/
-- pandas
-  - 
-- https://www.reddit.com/r/datascience/comments/f6xk72/for_any_python_pandas_users_out_there_heres_a/
-- packages
-  - package management
-    - pip
-    - conda
-      - - https://stackoverflow.com/questions/51526503/why-does-base-appear-in-my-anaconda-command-prompt
-      - "Conda is a packaging tool and installer that aims to do more than what pip does; handle library dependencies outside of the Python packages as well as the Python packages themselves. Conda also creates a virtual environment, like virtualenv does" https://stackoverflow.com/questions/20994716/what-is-the-difference-between-pip-and-conda
-      - https://www.google.com/search?q=python+conda
-  - [[id:BFB941F1-990D-4328-9609-CF480DCF945B][NLTK]]
-  - matplotlib
-    - https://github.com/io99/Resources
-  - Package installation and management
-    - pip
-      - [[https://pip.pypa.io/en/stable/][Documentation]]
-      - pip freeze to see installed packages
-  - scikit for machine learning
-    - http://scikit-learn.org/stable/index.html
-    - https://www.kdnuggets.com/2019/02/introduction-scikit-learn-gold-standard-python-machine-learning.html
-  - sciPy
-    - numPy
-      - [[https://docs.scipy.org/doc/numpy-1.12.0/index.html][Manual]]
-    - pandas
-      - for dashborads https://github.com/JosPolfliet/pandas-profiling
-  - BioPython
-    - https://github.com/peterjc/biopython_workshop
-    - http://pythonforbiologists.com/index.php/introduction-to-python-for-biologists/
-    - http://biopython.org/wiki/Main_Page
-    - http://biopython.org/wiki/SeqIO 
-  - [[https://github.com/pandas-dev/pandas/blob/master/doc/cheatsheet/Pandas_Cheat_Sheet.pdf][github: pandas cheatsheet]]
-  - installing packages/modules
-    - pip install is preferred
-  - [[http://biopython.org/DIST/docs/tutorial/Tutorial.html][Biopython Tutorial]]
-  - [[http://www.androidxu.com/2017/04/python-pandas-tutorial-with-example.html][Beginners Pandas Getting Started]]
-  - https://github.com/JosPolfliet/pandas-profiling
-  - [[http://conference.scipy.org/proceedings/scipy2015/allen_downey.html][scipy2015 conference]]
-  - [[file:~/Box%20Sync/comp_bio/Huber,14%20Orchestrating%20high%20throughput%20genomic%20analysis%20with%20bioconductor.pdf][Huber,14 Orchestrating high throughput genomic analysis with bioconductor]]
-  - Get list of installed packages with pip freeze
-  - pandas
-    - https://towardsdatascience.com/how-to-learn-pandas-108905ab4955
-    - [[https://github.com/pandas-profiling/pandas-profiling][pandas-profiling]]
-  - [[https://pypi.org/][Python Package Index]]
-  - https://github.com/mstamy2/PyPDF2
-***** [[http://www.nltk.org][NLTK]]
-:PROPERTIES:
-:CREATED:  [2019-02-19 Tue 11:02]
-:ID:       BFB941F1-990D-4328-9609-CF480DCF945B
-:END:
-
-****** [[http://www.nltk.org/book/][NLTK Book]]
-:PROPERTIES:
-:CREATED:  [2019-02-19 Tue 11:03]
-:ID:       CCF2B40B-47EE-4D26-9FC3-E1A0EC6F1974
-:END:
-:LOGBOOK:
-CLOCK: [2019-02-19 Tue 11:31]--[2019-02-19 Tue 12:00] =>  1:33
-CLOCK: [2019-02-19 Tue 11:04]--[2019-02-19 Tue 11:25] =>  0:21
-:END:
-1. Preface
-  - 
-3. Language Processing and Python
-4. Accessing Text Corpora and Lexical Resources
-5. Processing Raw Text
-6. Writing Structured Programs
-7. Categorizing and Tagging Words (minor fixes still required)
-8. Learning to Classify Text
-9. Extracting Information from Text
-10. Analyzing Sentence Structure
-11. Building Feature Based Grammars
-12. Analyzing the Meaning of Sentences (minor fixes still required)
-13. Managing Linguistic Data (minor fixes still required)
-14. Afterword: Facing the Language Challenge
-
-*** Lisp
-:PROPERTIES:
-:ID:       BF9D824A-02EF-4580-97A1-B887299AD461
-:END:
-#+name: block-1
-#+BEGIN_SRC emacs-lisp :results replace
-(list "cons" "newelt" "balsh")
-#+END_SRC
-
-#+RESULTS[bbf62e487081f8e947ef5d004eb0bf97f38c1537]: block-1
-| cons | newelt | balsh |
-
-- functions
-  - functions ending in -p are predicate, meaning they are a yes/no checker
-- http://landoflisp.com/
-- [[https://www.gnu.org/software/emacs/manual/eintr.html][An Introduction to Programming in Emacs Lisp]]
-  1. List Processing
-     1. Lisp Lists 
-        #+BEGIN_SRC emacs-lisp
-        '(this is a list(with a list inside of it "and another by quotes"))
-        #+END_SRC
-
-        #+RESULTS:
-        | this | is | a | list | (with a list inside of it and another by quotes) |
-
-        - Words = atoms (indivisible)
-        - All amounts of whitespace are equivalent
-     2. Run a Program
-        - List are programs that do 1 of 3 things:
-          1. Do nothing except return to you the list itself
-          2. Send you an error message
-          3. Treat the first symbol in the list as a command to do something
-     3. Debugger!
-     4. 
-     5. Byte-complied code can be created and is stored as .elc instead of .el
-     6. 
-     7. Variables
-        - Note, something like fill-column is NOT a function, it's a variable
-        - Arguments can be variables such as fill column
-     8. 
-        - The message function and message variables
-           #+BEGIN_SRC emacs-lisp
-  (message "The name of this buffer is: %s." (buffer-name))
- #+END_SRC
-     9. Setting the value of a variable with set/setq/let
-        - setq is just set<PLUS>a single quote to set value of var
-  2. Practicing Evaluation 
-- [[http://www.gnu.org/software/emacs/manual/html_mono/elisp.html#Simple-Macro][Emacs Lisp Manual]]
-  - Introduction
-- [[https://github.com/hypernumbers/learn_elisp_the_hard_way/tree/master/contents][Learn e-lisp the hard way]]
-- http://sarabander.github.io/sicp/html/Chapter-1.xhtml#Chapter-1
-- [[https://www.youtube.com/watch?v=XYKRVNQ_MqE&app=desktop][Lisp course]]
-- https://www.reddit.com/r/emacs/comments/60tl6o/tips_on_reading_dense_emacs_lisp_code/
-- https://www.reddit.com/r/emacs/comments/62ykc9/i_guess_i_need_to_learn_elisp/
-- http://stackoverflow.com/questions/1614724/is-learning-lisp-useful-at-all-these-days
-- [[http://www.fincher.org/tips/Languages/Emacs.shtml][lisp guide]]
-- http://emacslife.com/how-to-read-emacs-lisp.html
-- https://www.gnu.org/software/emacs/manual/html_node/eintr/
-- https://www.youtube.com/watch?v=XYKRVNQ_MqE&app=desktop
-- https://www.google.com/search?q=youtube+introduction+to+lisp&rlz=1C9BKJA_enUS678US679&oq=youtube+introduction+to+lisp&aqs=chrome..69i57.9485j0j7&hl=en-US&sourceid=chrome-mobile&ie=UTF-8
-- https://www.gnu.org/software/emacs/manual/html_node/elisp/index.html#SEC_Contents
-- http://cl-cookbook.sourceforge.net/files.html
-
-**** MIT Structure and Interpretation of Computer Programs
-:PROPERTIES:
-:ID:       22A808FB-8D3E-4E04-B0FA-FE0AB698F4A2
-:END:
-
-- [[https://mitpress.mit.edu/sicp/][Course Website]]
-- [[https://mitpress.mit.edu/sicp/full-text/book/book-Z-H-4.html#%_toc_start][Course Textbook]]
-
-***** 1A: Overview: Introduction to Lisp
-:PROPERTIES:
-:ID:       CEFCF31D-513F-44BD-A4FB-29B1B8A7A17F
-:END:
-
-- [ ] add video
-- Declarative vs. imperative (how to do)  knowledge
-- Techniques for controlling complexity
-  - Black box abstraction
-    - suppress detail into a module
-    - generalize to a function
-- interfaces to plug modules together
-- language components
-  - primitive elements
-  - methods of combination
-  - methods of abstraction
-
-- Lisp primitive elements are algebric operators and numbers 
-
-- Methods of combination: 
-#+BEGIN_SRC emacs-lisp
-(+ 3 4 5)
-#+END_SRC
-
-#+RESULTS:
-: 12
-
-- with vertical operands: 
-
-#+BEGIN_SRC emacs-lisp
-(+ (* 3 5)
-   (* 47
-      (- 20 6.8)) 12 )
-#+END_SRC
-
-#+RESULTS:
-: 647.4
-
-- Means of abstraction
-  - Define A to be the product of 5 + 5 and ask A+A
-
-#+BEGIN_SRC emacs-lisp
-(defvar A (* 5 5))
-(+ A A)
-
-(defvar B (+ A (* 5 A)))
-B
-#+END_SRC
-
-#+RESULTS:
-: 150
-
-- What about the general idea of squaring?
-  - Lambda: make a procedure
-
-#+BEGIN_SRC emacs-lisp
-(defvar (square2 (lambda (x) (* x x ))))
-(square2 10)
-#+END_SRC
-
-*** Bash Scripting
-:PROPERTIES:
-:ID:       89576FD2-F863-4220-BAD7-D4E179AEA644
-:END:
-:LOGBOOK:
-CLOCK: [2020-08-19 Wed 07:43]--[2020-08-19 Wed 07:54] =>  0:11
-CLOCK: [2020-06-25 Thu 08:13]--[2020-06-25 Thu 08:25] =>  0:12
-CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
-CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
-CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
-:END:
-size filter
-#find $localdata/frag-filt-bams -name "*.bam" -type 'f' -size -4M -delete
-# small bam check
-##
-#if [ -f /drive3/users/jszymanski/repos/mpnst/data/small_bams ]; then rm /drive3/users/jszymanski/repos/mpnst/data/small_bams; fi
-##
-#minimum_bam_size=200000000
-
-- https://github.com/ohmybash/oh-my-bash
-- variables
-  #+name: 
-  #+begin_src bash :tangle no
-# Check if variable is set
-if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; fi
-#+end_src
-- https://github.com/shellspec/shellspec
-- commands
-  |---------------------------------------+-------------------------------------------------|
-  | function                              | command                                         |
-  |---------------------------------------+-------------------------------------------------|
-  | <35>                                  | <35>                                            |
-  | [[https://www.gnu.org/software/bash/manual/bash.html#Bash-Conditional-Expressions][newer/older by mod date]]               | -nt -ot                                         |
-  | du -shc .                             | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]]                       |
-  | remove alias                          | unalias <ALIAS_NAME>                            |
-  | add alias                             | alias <ALIAS>="<COMMAND>"                       |
-  | l                                     | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\(' |
-  | change password                       | passwd                                          |
-  | search manual pages                   | /                                               |
-  | disk usage, top level                 | du -h --summarize                               |
-  | see total disk usage                  | df -h                                           |
-  | see files location on physical disk   | df <PATH>                                       |
-  | download in background & resume broke | wget -bqc <PATH>                                |
-  | see distro                            | lsb_release -a                                  |
-  | see system disks                      | lsblk                                           |
-  | add to path (temporary?)              | export PATH=$PATH:/new/path                     |
-  | show full path                        | readlink -f                                     |
-  | for loop on array                     | for i in "${arr[@]}""                           |
-  |                                       |                                                 |
-  - find disk usage https://unix.stackexchange.com/questions/67806/how-to-recursively-find-the-amount-stored-in-directory
-    - https://unix.stackexchange.com/questions/314394/my-hard-disk-is-full-how-can-i-determine-whats-taking-up-space
-  - [[https://stackoverflow.com/questions/6509650/extract-directory-from-path][directory of file as variable]]
-  - show running processes with top
-  - Common UNIX command line operations table
-    | Get lines in file | wc -l <FILE> |
-    |                   |              |
-    - [[http://www.cyberciti.biz/faq/tar-extract-linux/][Tarball extraction]]
-    - [[https://www.howtogeek.com/howto/ubuntu/split-a-text-file-in-half-or-any-percentage-on-ubuntu-linux/][Split a text file in half (or any percentage) on Ubuntu Linux]]
-  - Search
-    - Recursively search subdirectories
-      - [[https://askubuntu.com/questions/307876/how-to-search-for-files-recursively-into-subdirectories][How to Search for Files Recursively into Subdirectories]]
-      - [[https://stackoverflow.com/questions/1987926/how-do-i-grep-recursively][Recursively search subdirectories with grep -r "<SEARCH>" .]]
-    - Search for file: find . -name <pattern> -print
-      - https://kb.iu.edu/d/admm
-  - grep -r --unclude \*.R "as.Date" ~/
-  - functions
-    - https://ubuntuforums.org/showthread.php?t=1166951
-    - https://www.biostars.org/p/271330/
-  - mkdir -p will ignore if dir exists 
-  - printing across terminal width
-    - https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
-  - [[https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo][printf vs echo]]
-  - https://stackoverflow.com/questions/34567826/what-is-usage-in-shell-scripting/34567852#:~:text=It's%20a%20just%20a%20convention,filename%3D%241%20fi%20...
-  - https://stackoverflow.com/questions/687780/documenting-shell-scripts-parameters
-  - https://stackoverflow.com/questions/2953081/how-can-i-write-a-heredoc-to-a-file-in-bash-script
-  - https://www.google.com/search?q=bash+echo+tab 
-- [[https://www.gnu.org/software/bash/manual/bash.html][documentation]] and general reference
-  - https://www.gnu.org/software/bash/manual/html_node/index.html#SEC_Contents
-  - [[https://www.gnu.org/software/bash/manual/html_node/index.html#SEC_Contents][gnu bash reference manual]]
-  - guides, tutorials, cheatsheets, books
-    - http://mywiki.wooledge.org/BashGuide
-    - General guides and tutorials
-      - [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Linux documentation project: Advanced Bash-Scripting Guide]]
-      - http://bash3boilerplate.sh/
-      - [[https://bash.cyberciti.biz/guide/Main_Page][Linux Shell Scripting Tutorial]]
-      - http://ryanstutorials.net/bash-scripting-tutorial/
-      - http://linuxcommand.org/lc3_writing_shell_scripts.php
-      - https://www.youtube.com/watch?v=3ME7gayYeUQ
-      - https://www.youtube.com/results?search_query=shell+scripts+bioinformatics&page=&utm_source=opensearch
-      - https://google.github.io/styleguide/shell.xml
-      - http://mywiki.wooledge.org/BashGuide
-    - http://www.davidpashley.com/articles/writing-robust-shell-scripts/
-    - https://emb.carnegiescience.edu/sites/default/files/140602-sedawkbash.key_.pdf
-    - https://github.com/dylanaraps/pure-bash-bible
-    - https://devhints.io/bash
-    - https://www.ibm.com/developerworks/aix/library/au-satbash.html
-    - [[http://tldp.org/LDP/LG/issue18/bash.html][string manipulations]]
-    - cite:veeraraghavan2002 
-    - http://tldp.org/LDP/abs/html/
-    - https://github.com/onceupon/Bash-Oneliner
-    - https://devhints.io/bash?source=post_page---------------------------
-    - [[https://www.ostechnix.com/test-your-bash-skills-by-playing-command-line-games/][bash games]]
-    - [[https://www.reddit.com/r/commandline/comments/kbeoe/you_can_make_readline_and_bash_much_more_user/?st=j6k0lbfa&sh=6d214d1f][reddit: You can make readline (and bash) much more user friendly by adding a few options to ~/.inputrc]]
-    - best practices
-      - include error calling, but avoid -e http://mywiki.wooledge.org/BashFAQ/105
-      - https://www.google.com/search?q=shell+script+formatting+best+practices
-      - include usage example
-      - a -c flag essentially adds an extra shell around multi-part command, see https://superuser.com/questions/1214597/calling-a-script-with-bash-c-option
-      - ideas
-      - [[file:~/.emacs.d/snippets/sh-mode/write.bash]]
-      - https://stackoverflow.com/questions/33297857/how-to-check-dependency-in-bash-script
-    - https://unix.stackexchange.com/questions/42728/what-does-31-12-23-do-in-a-script
-    - http://tldp.org/LDP/abs/html/index.html
-    - https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
-    - https://github.com/dylanaraps/pure-bash-bible
-    - https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md
-  - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
-  - https://github.com/hopeseekr/BashScripts
-  - https://www.reddit.com/r/programming/comments/aw0zko/bash_creating_tabcompletion_for_your_programs/
-- ideas
-  - check and set file permissions as best practice
-  - ideas for function development protocol-
-    - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
-- interfaces
-  - emacs
-    - https://stackoverflow.com/questions/1008750/ide-emacs-mode-for-shell-scripting-in-bash-sh-etc
-    - http://www.skybert.net/emacs/bash-linting-in-emacs/
-- processes 
-  - comments https://www.google.com/search?q=bash+comment+in+pipe
-  - exits
-    - https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script#:~:text=All%20by%20itself%2C%20exit%20implies,successful%20completion%20of%20your%20script.&text=However%20by%20specifying%20the%201,exited%20with%20an%20error%20condition.
-  - arrays
-    - [[https://stackoverflow.com/questions/18921350/shell-script-correct-way-to-declare-an-empty-array][declare array]]
-    - [[https://unix.stackexchange.com/questions/125632/printing-an-array-to-a-file-with-each-element-of-the-array-in-a-new-line-in-bash][print array with line breaks]]
-    - https://www.google.com/search?q=bash+create+array 
-    - https://www.google.com/search?q=bash+pass+array+to+for+loop 
-    - pass to array 
-      - pass each line of file
-        - https://riptutorial.com/bash/example/19457/read-lines-of-a-file-into-an-array
-      - pass cat output
-        - https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
-      - https://www.google.com/search?q=pass+cat+output+to+array+variable
-      - command output https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
-  - for loops
-    - examples
-      - Recursively git commit with date tag
-        #+BEGIN_SRC sh
-
-     d=$(date +%Y-%m-%d)
-     echo "$d"
-     cd ~/Box\ Sync/
-     for i in ./*/ ; do (cd "$i" && git commit -a -m "$d"); done
-     end
-
-     #+END_SRC
-  - checkers
-    - [[https://unix.stackexchange.com/questions/322817/how-to-find-the-file-where-a-bash-function-is-defined][check were function is called from]]
-    - [[https://askubuntu.com/questions/102093/how-to-see-the-command-attached-to-a-bash-alias][check where alias goes w/ type]]
-    - [[https://stackoverflow.com/questions/592620/how-can-i-check-if-a-program-exists-from-a-bash-script][check if program exists]]
-    - [[https://stackoverflow.com/questions/59838/how-can-i-check-if-a-directory-exists-in-a-bash-shell-script][check if dir exists]]
-    - https://theterminallife.com/check-if-file-exists-and-is-not-empty/
-  - clipboard
-    - https://askubuntu.com/questions/382767/how-to-pipe-dump-clipboard-contents-to-a-file  
-  - configuration management
-    - https://en.wikipedia.org/wiki/Ansible_(software)
-  - debug
-    - https://zwischenzugs.com/2018/10/09/learn-bash-debugging-techniques-the-hard-way/
-  - feedback, traps, eof, etc
-    - traps
-      - https://opensource.com/article/20/6/bash-trap
-    - error reporting
-      - interupt with && https://serverfault.com/questions/252448/bash-script-alert-on-error
-      - [[https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script][Meaning of exit 0, exit 1 and exit 2 in a bash script]]
-  - pipe
-    - https://www.google.com/search?q=pipe+store+output+as+variable 
-  - file and directory metadata
-    - https://superuser.com/questions/120078/unix-files-starting-with-a-dash
-    - https://www.google.com/search?q=bash+compare+files+by+date
-      - https://unix.stackexchange.com/questions/372857/compare-two-file-modification-dates
-          #+begin_src bash 
-      cd /tmp/
-      rm file1
-      rm file2
-      touch file2; sleep 2; touch file1
-      if [ file1 -nt file2 ]; then
-          echo "yes"
-      fi
-          #+end_src
-      - https://unix.stackexchange.com/questions/88525/need-to-move-files-to-different-folder-based-on-the-creation-date
-    - https://www.google.com/search?q=bash+check+file+size
-    - https://www.google.com/search?q=bash+list+directory+sizes
-    - https://www.google.com/search?q=bash+add+date+to+file+name
-    - https://www.google.com/search?q=bash+bulk+rename+files 
-  - functions  
-    #+name: 
-    #+begin_src bash :tangle no
-# Assign variable which holds array to another name
-a=('a' 'b' 'c')
-b=( "${a[@]}" )
-#+end_src
-    - use type to see function definition
-    - https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
-    - https://www.shellhacks.com/print-usage-exit-if-arguments-not-provided/
-  - globbing
-    - https://stackoverflow.com/questions/2937407/test-whether-a-glob-has-any-matches-in-bash?noredirect=1&lq=1
-  - resource use control
-    - https://linuxhint.com/limit_cpu_usage_process_linux/
-    - https://stackoverflow.com/questions/4651234/how-to-determine-the-process-memory-limit-in-linux
-    - https://unix.stackexchange.com/questions/52313/how-to-get-execution-time-of-a-script-effectively
-    - setting local resource limits
-      - http://coldattic.info/post/40/
-  - install
-    - configure, make, install
-      - https://www.tldp.org/HOWTO/Software-Building-HOWTO-3.html
-      - https://superuser.com/questions/360178/what-does-make-install-do
-      - often Makefile will install to created ./bin/ sub-directory 
-    - https://stackoverflow.com/questions/10961439/why-always-configure-make-make-install-as-3-separate-steps
-  - links
-    - https://stackoverflow.com/questions/5767062/how-to-check-if-a-symlink-exists
-  - linting
-    - http://www.skybert.net/emacs/bash-linting-in-emacs/
-    - https://github.com/koalaman/shellcheck#in-your-editor
-    - https://stackoverflow.com/questions/171924/how-do-i-syntax-check-a-bash-script-without-running-it#171932
-    - http://www.skybert.net/emacs/bash-linting-in-emacs/
-    - http://www.skybert.net/emacs/bash-linting-in-emacs/
-  - logging
-    - https://stackoverflow.com/questions/18278223/method-to-write-in-log-files-in-a-shell-script
-  - multithreading
-    - https://duckduckgo.com/?q=multithread+grep&ia=qa
-    - https://stackoverflow.com/questions/1455695/forking-multi-threaded-processes-bash
-  - prompt for user input
-    - https://www.google.com/search?q=bash+prompt+user+input
-    - [[https://stackoverflow.com/questions/226703/how-do-i-prompt-for-yes-no-cancel-input-in-a-linux-shell-script][stack: How do I prompt for Yes/No/Cancel input in a Linux shell script?]]
-  - variables
-    - 1 & 2 https://stackoverflow.com/questions/10508843/what-is-dev-null-21
-    - [[https://stackoverflow.com/questions/91368/checking-from-shell-script-if-a-directory-contains-files][use globbing in variables with shopt]]
-    - [[https://www.cyberciti.biz/faq/linux-unix-formatting-dates-for-display/][formatting dates for display]]
-    - [[https://data36.com/variables-if-statements-while-loops-bash-data-science/][variables for if statements and while loops]].
-    - To make executable: chmod +x /path/to/yourscript.sh
-    - https://stackoverflow.com/questions/19512550/what-does-mean-in-a-shell-if-statement
-    - [[https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script][Meaning of exit 0, exit 1 and exit 2 in a bash script]]
-    - https://stackoverflow.com/questions/2642585/read-a-variable-in-bash-with-a-default-value
-  - function template- add run type
-    - updating
-    - overwrite
-- users and groups
-  | function                  | command                   |
-  |---------------------------+---------------------------|
-  | list users                |                           |
-  | list groups               |                           |
-  | list group members        | getent group <GROUPNAME>  |
-  | add user                  | useradd <USERNAME>        |
-  | set password              | passwd <USERNAME>         |
-  | add group                 | groupadd <GROUPNAME>      |
-  | add user to group         | usermod -g <GROUP> <USER> |
-  | change user primary group |                           |
-- https://unix.stackexchange.com/questions/359832/converting-csv-to-tsv
-- https://stackoverflow.com/questions/12522269/how-to-find-the-largest-file-in-a-directory-and-its-subdirectories
-**** [[file:~/repos/basecamp/src/shell/functions.sh][Common Process Functions]]
-:PROPERTIES:
-:CREATED:  [2020-04-14 Tue 09:05]
-:ID:       15071151-f519-4c7f-b21f-997d6d7b6bc5
-:END:
-#+name: check_local_software
-#+begin_src bash :tangle ./src/bash/functions.sh
-check_local_software(){
-    if [[ $# -eq 0 ]] ; then
-        printf "\n check_local_software 
-              \n Checks list of software in array, exits with error message if not found
-              \n \$1 = Bash array of software, e.g. software=(bash, git)
-              \n "
-    else    
-        software=$1
-        for i in "${software[@]}"; do
-            if command -v $i >/dev/null 2>&1 ; then
-                echo "$i installed"
-            else
-                echo "$i not found, exiting"
-                exit 1
-            fi
-        done
-    fi
-}
-#
-# check_local_software
-# unit test
-#softwarecheck=(bash git)
-#check_local_software $softwarecheck
-#+end_src
-
-#+name: git_pull_all
-#+begin_src bash :tangle ./src/git_pull_all.sh :dir ~/repos/basecamp
-#!/bin/bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-#                                                                              #
-#                       Script to automate git pulls                           #
-#             from a set of repositories within the same root dir              #
-#                                                                              #
-#########1#########2#########3#########4#########5#########6#########7#########8
-# 
-# 1. Script Checks
-#
-## Check if git exist
-command -v git >/dev/null 2>&1 # stop if git not found
-if [ $? -eq 1 ]; then
-    echo "Git not found"
-    exit 1; fi
-##
-## Check if any repos exist
-shopt -s nullglob
-repo_dirs=(~/repos/*)
-if [ ${#repo_dirs[@]} -eq 0 ]; then
-    echo "No repos at ~/repos/"
-    exit 1; fi
-shopt -u nullglob
-##
-# 2. Pull Function 
-#                      
-for d in $HOME/repos/*
-do 
-    [[ ! -d "$d" ]] && continue
-    echo "$d" &&
-    cd "$d" &&
-    git pull &&
-    git submodule update --recursive &&
-    git submodule update --remote && 
-    cd "$OLDPWD"
-done
-#
-#+end_src
-
-#+name: jpg_to_pdf
-#+begin_src bash 
-#########1#########2#########3#########4#########5#########6#########7#########8#########9#########0#########1
-jpg_to_pdf() {
-    printf "Function to convert jpeg images to pdf
-    Accepts:
-    Returns: "
-}
-#+end_src
-
-#+name:symlink-by-csv-script 
-#+begin_src sh :tangle ./src/shell/functions.sh
-#
-######################
-### symlink-by-csv ###
-######################
-#
-# Purpose: generates symbolic links in bulk from a csv file 
-#
-# Input:
-# A .csv file of two columns, 
-#  Column 1 with source file paths
-#  Column 2 with destination symbolic link paths 
-#
-# Function:
-symlink_by_csv(){
-    # Set internal field separator
-    export IFS=","
-    # Take csv and pass to while/read
-    cat $1 | while read a b; do
-        ln -s $a $b; done
-}
-#
-# Example:
-# cd /tmp
-# mkdir -p csv-symlink-test
-# cd csv-symlink-test
-# touch csv-for-links.csv
-# touch file-to-link-from.txt
-# echo "file-to-link-from.txt,path-to-link-to.txt" >> csv-for-links.csv
-# echo "test link" > file-to-link-from.txt
-# export IFS=","
-# cat csv-for-links.csv | while read a b; do
-#     ln -s $a $b ; done
-# cat path-to-link-to.txt
-# cd ../
-# rm -rf csv-symlink-test
-#+end_src
-
-#+name:copy-file-text-to-clipboard 
-#+begin_src sh 
-#
-###################################
-### copy-file-text-to-clipboard ###
-###################################
-#
-# Purpose: for pandoc supported file, copies file text to system clipboard
-#
-# Dependencies:
-dependencies=("pandoc" "xclip")
-check_dependencies dependencies[@]
-#
-# Input: 
-# Any pandoc supported file 
-#
-# Function:
-text_to_clip() { pandoc -S $1 | xclip -selection clipboard}
-#
-# Example
-cd /tmp/ && rm -rf ./example && mkdir -p ./example && cd ./example 
-echo "Hello" | pandoc -o out.docx
-chmod 777 ./out.docx
-text_to_clip()
-./out.docx
-test=out.docx
-pandoc -S $test | xclip -selection clipboard
-
-#+end_src
-
-
 ** ESS with R running through docker
 - http://ess.r-project.org/Manual/ess.html#Activating-and-Loading-ESS
   - and get docker ip
@@ -1110,6 +17,7 @@ pandoc -S $test | xclip -selection clipboard
 :LOGBOOK:
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
+- https://github.com/eudaldgr/youtube-dl
 - data storage and transfer
   - - globus
     - [[https://docs.globus.org/cli/][cli]]
@@ -1117,27 +25,6 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
         - https://docs.globus.org/how-to/globus-connect-personal-linux/#globus-connect-personal-cli
 - capture screen to gif
   - https://www.cockos.com/licecap/
-- https://wwjw.reddit.com/r/assholedesign/comments/bosgf4/comment/enk8k25/
-- [[id:FB8FF6B1-C6BD-4272-AC15-05BB15DF609B][Emacs]]
-- https://www.reddit.com/r/programming/comments/ag7vh4/detecting_agile_bullshit_from_the_us_department/
-- top-down planning, bottom-up delivery
-
-*** Specific software 
-- by application
-  - pdf ocr
-    - https://softwarerecs.stackexchange.com/questions/3412/free-ocr-software-that-makes-a-pdf-searchable-with-searchable-text-at-the-right
-- google sheets
-  - https://www.benlcollins.com/spreadsheets/google-sheets-query-sql/
-  - https://webapps.stackexchange.com/questions/31894/google-spreadsheet-timestamp/31942#31942
-- chromium 
-  - [[http://stackoverflow.com/questions/6250447/trigger-right-click][trigger right click chrome w/ java?]]
-- Cisco AnyConect
-  - [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
-  - my profile at /opt/cisco/anyconnect/profile/test.xml
-- https://extensions.libreoffice.org/extensions
-- trash http://hasseg.org/trash/
-- [[https://rclone.org/][rclone]]
-
 - VLC
   - https://webapps.stackexchange.com/questions/tagged/google-contacts?sort=votes&pageSize=15
   - [[https://apple.stackexchange.com/questions/127386/how-do-i-vary-the-playback-speed-in-vlc-using-keyboard-shortcuts][VLC playback]]
@@ -1155,22 +42,89 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
     | Slower       | CMD -         |
     | Jump back    | CMD ALT LEFT  |
     | Jump forward | CMD ALT RIGHT |
-
-- https://youtube-dl.org/
-- https://github.com/eudaldgr/youtube-dl
-
-**** virtualbox
-- [[https://www.virtualbox.org/manual/][documentation]]
-- processes
-  - install
-    - post-install guest additions CD
-- https://www.google.com/search?q=virtualbox+linux+guest+additions 
-**** by operating system
+- [[https://github.com/tekezo/Karabiner/issues/354][karabiner system prompts]]
+- iTerm
+- https://superuser.com/questions/399594/color-scheme-not-applied-in-iterm2/1216638
+- [[https://stackoverflow.com/questions/196357/making-iterm-to-translate-meta-key-in-the-same-way-as-in-other-oses][remapping option as meta for terminal emacs]] - see answer 2  
+- Cisco AnyConect
+- [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
+- my profile at /opt/cisco/anyconnect/profile/test.xml
+- https://extensions.libreoffice.org/extensions
+- https://wwjw.reddit.com/r/assholedesign/comments/bosgf4/comment/enk8k25/
+- macos
+- trash http://hasseg.org/trash/
+- [[https://rclone.org/][rclone]]
+- 
+- GNU software
+- [[id:FB8FF6B1-C6BD-4272-AC15-05BB15DF609B][Emacs]]
+- tramp
+- [currently not working] to goodle drive- https://www.gnu.org/software/tramp/#Using-Google-Drive
+- iterm2
+- https://kevinjalbert.com/iterm2-mouseless-copy/
+- https://stackoverflow.com/questions/30055402/how-to-select-text-in-iterm-with-shiftarrow
+- offlineimap
+- https://medium.com/@kirang89/emacs-as-email-client-with-offlineimap-and-mu4e-on-os-x-3ba55adc78b6
+- https://github.com/sup-heliotrope/sup/wiki/Complete-gmail-configuration
+- http://www.offlineimap.org/doc/conf_examples.html
+- http://www.offlineimap.org/doc/FAQ.html#configuration-questions
+- https://gist.github.com/dabrahams/3030332
+- http://www.mdlerch.com/offlineimap-gmail-and-mutt-tutorial.html
+- http://jgoerzen.github.io/offlineimap/manual.html
+- https://github.com/mailpile/Mailpile/wiki/Configuring-Linux-to-download-your-email
+- http://blog.wrouesnel.com/articles/Migrating%20to%20Gmail/
+- [[http://rudolfochrist.github.io/blog/2015/03/21/offlineimap-with-ssl-files-on-osx/][Offlineimap with SSL files on OSX]] shows where cert is
+- mobile applications
+- [[https://www.reddit.com/r/IWantToLearn/comments/8o7uli/iwtl_how_to_design_and_create_mobile_apps_and/][Reddit: IWTL how to design and create mobile apps and games from scratch]]
+- software development
+- agile
+- https://www.reddit.com/r/programming/comments/ag7vh4/detecting_agile_bullshit_from_the_us_department/
+- Software development / deployment
+- top-down planning, bottom-up delivery
+- 
+- [[http://powazek.com/posts/1655][Programmers are Tiny Gods]]
+- applications
+- examples
+- https://krisbogdanov.com/personal-projects-before-first-internship/?fbclid=IwAR1hna-buWCrhA7pd2qRp-NkNXGEN0pUrUNoll8peSpOK6F3H-ceeevkcNE
+- google sheets
+- https://webapps.stackexchange.com/questions/31894/google-spreadsheet-timestamp/31942#31942
+- https://www.benlcollins.com/spreadsheets/google-sheets-query-sql/
+- https://softwarerecs.stackexchange.com/questions/3412/free-ocr-software-that-makes-a-pdf-searchable-with-searchable-text-at-the-right
+- https://softwarerecs.stackexchange.com/questions?sort=votes
+- https://www.benlcollins.com/spreadsheets/google-sheets-query-sql/
+- https://softwarerecs.stackexchange.com/questions?sort=votes
+- [[https://brew.sh/][Homebrew]]
+- [[https://docs.brew.sh/][documentation]]
+- commands
+ | search for packages | brew search <TERM>  |
+ | see active services | brew services list  |
+ | install from cask   | brew cask <PACKAGE> |
+ |                     |                     |
+- GPL-3 licensing 
+- Chrome
+- [[http://stackoverflow.com/questions/6250447/trigger-right-click][trigger right click chrome w/ java?]]
+- https://www.amazon.com/Hackers-Painters-Big-Ideas-Computer/dp/1449389554
+- [[https://ianskerrett.wordpress.com/2017/04/19/iot-developer-trends-2017-edition/][Who uses what- Eclipse survey]]
+*** by operating system
 - linux
   - https://github.com/libfuse/sshfs
-**** orgzly
+*** orgzly
 - orgzly event reminders occur at time of event https://github.com/orgzly/orgzly-android/issues/664
-**** inkscape
+*** software mod                                                   :software:
+:PROPERTIES:
+:CREATED:  [2019-04-10 Wed 10:13]
+:ID:       F89E691E-9FD7-40F6-927A-A0DD72C275C5
+:END:
+
+- if software, then stack and linkout to stack elements best resource reference structure? 
+- commands
+  |----------+---------|
+  | function | command |
+  |----------+---------|
+  | <35>     | <35>    |
+  |          |         |
+- documentation
+- applications
+*** inkscape
 :PROPERTIES:
 :CREATED:  [2020-10-04 Sun 10:05]
 :ID:       e68592b2-5e86-48c9-a2c2-5983e53d34f8
@@ -1178,26 +132,20 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 - inkscape
   - https://stackoverflow.com/questions/15710673/inkscape-too-slow-when-importing-r-plots
   - https://inkscape.org/forums/questions/line-spacing/
-**** okular
+*** okular
 - https://www.google.com/search?q=okular+open+in+new+windows
 - [[https://docs.kde.org/stable5/en/kdegraphics/okular//][documentation]]
 - https://docs.kde.org/trunk5/en/kdegraphics/okular/okular.pdf 
 - https://www.google.com/search?q=okular+remap+keyboard+shortcuts
-**** libreoffice 
-- https://ask.libreoffice.org/en/question/157807/set-memory-settings-in-version-6042/
-- https://superuser.com/questions/345365/exporting-vector-graphics-from-inkscape-into-libreoffice
-- https://askubuntu.com/questions/599915/what-is-the-closest-font-to-helvetica-available-on-ubuntu
-- https://tex.stackexchange.com/questions/106024/libreoffice-inkscape-eps-latex
-- https://ask.libreoffice.org/en/question/157807/set-memory-settings-in-version-6042/
-- https://www.reddit.com/r/libreoffice/comments/7umifb/has_libreoffice_6_just_killed_the_indispensable/
+*** libreoffice 
 - https://www.google.com/search?q=libreoffice+escape+comment
-***** libreoffice impress
+**** libreoffice impress
 
 - https://www.google.com/search?q=libreoffice+snap+line
 - https://ask.libreoffice.org/en/question/10973/permanently-set-default-page-style/
 
 
-**** gimp
+*** gimp
 - commands
   |----------+---------|
   | function | command |
@@ -1212,196 +160,6 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 - applications
 - reference
   - [[file:~/.emacs.d/snippets/org-mode/software]]
-**** MediaWiki
-:PROPERTIES:
-:ID:       4F02B352-1A93-4CF4-A386-2788387A18C0
-:END:
-
-**** Zotero
-:PROPERTIES:
-:ID:       25D1FA26-1865-4BFC-845C-8D1B1830EE13
-:END:
-:LOGBOOK:
-CLOCK: [2020-01-16 Thu 08:16]--[2020-01-16 Thu 08:45] =>  0:29
-CLOCK: [2019-03-04 Mon 14:59]--[2019-03-04 Mon 15:17] =>  0:18
-:END:
-https://github.com/willsALMANJ/Zutilo
-- zotfile
-- better biblatex 
-- [[https://www.zotero.org/support/][documentation]]
-- https://www.google.com/search?q=zotfile+sync+files&oq=zotfile+sync+files&aqs=chrome..69i57.4295j0j4&client=ubuntu&sourceid=chrome&ie=UTF-8
-- Add-ons
-  - Better BibTex
-    - auto-exports to [[file:~/data/library/bib.bib]]
-    - [[https://retorque.re/zotero-better-bibtex/][documentation]]
-    - [[https://github.com/retorquere/zotero-better-bibtex][repo]]
-  - [[http://zotfile.com/][ZotFile]]
-    - Renames files 
-    - Allows custom file location at [[file:~/data/library/]]
-- Performance- manual entry lag
-  - [[https://forums.zotero.org/discussion/16733/manual-citation-entry-clunky][No answers, but question asked]]
-
-*** Software development
-- unit testing
-  - https://docs.python.org/3/library/unittest.html
-- [[https://www.reddit.com/r/IWantToLearn/comments/8o7uli/iwtl_how_to_design_and_create_mobile_apps_and/][Reddit: IWTL how to design and create mobile apps and games from scratch]]
-- agile
-- [[http://powazek.com/posts/1655][Programmers are Tiny Gods]]
-- test-driven development :: requirements converted to test cases
-*** Graphviz                                                       :software:
-:PROPERTIES:
-:ID:       4BFFFC0C-CBFA-4E97-BB52-88A95D4A361B
-:CREATED:  [2019-08-23 Fri 07:56]
-:END:
-:LOGBOOK:
-CLOCK: [2018-12-08 Sat 16:05]--[2018-12-08 Sat 16:44] =>  0:39
-CLOCK: [2018-12-08 Sat 15:16]--[2018-12-08 Sat 15:25] =>  0:09
-CLOCK: [2017-11-10 Fri 11:40]--[2017-11-10 Fri 11:57] =>  0:17
-CLOCK: [2017-11-10 Fri 10:45]--[2017-11-10 Fri 11:31] =>  0:46
-:END:
-- commands
-  |----------+---------|
-  | function | command |
-  |----------+---------|
-  | <35>     | <35>    |
-  |          |         |
-- [[http://www.graphviz.org/documentation/][documentation]] and guides
-  - [[http://www.graphviz.org/doc/info/lang.html][The DOT Language]]
-  - [[http://www.tonyballantyne.com/graphs.html][Drawing Graphs using Dot and Graphviz]]
-  - attributes
-    - [[http://www.graphviz.org/doc/info/attrs.html#a:rankdir][Node, Edge and Graph Attributes]]
-    - [[https://hackage.haskell.org/package/graphviz-2999.19.0.0/docs/Data-GraphViz-Attributes.html][attributes and values from the haskell graphviz package]]
-- applications
-  [[file:/tmp/entity-relationship-diagram.pdf]]
-  #+BEGIN_SRC dot :dir ~/data/imgs/graphviz-examples :file /tmp/entity-relationship-diagram.pdf :cmdline -Tpdf
-// https://mamchenkov.net/wordpress/2015/08/20/graphviz-dot-erds-network-diagrams/
-digraph entityRelationshipDiagram { 
-    label = "MPNST Project Data Model"
-    labelloc = top;
-    rankdir=LR;
- //
-    node [shape=plaintext];
-    edge [dir=both];
-//
-    subjects [label=<
-            <table border="0" cellborder="1" cellspacing="0">
-                <tr><td bgcolor="lightblue">subjects</td></tr>
-                <tr><td PORT="a" align="left"><b>subject_id</b></td></tr>
-                <tr><td align="left">dob</td></tr>
-                <tr><td align="left">sex</td></tr>
-                <tr><td align="left">institution</td></tr>                
-                <tr><td align="left">current_dx</td></tr>                
-                <tr><td align="left">plexiform_dx_date</td></tr>                
-                <tr><td align="left">plexiform_dx_date_specificity</td></tr>                
-                <tr><td align="left">anf_dx_date</td></tr>                
-                <tr><td align="left">anf_dx_date_specificity</td></tr>                
-                <tr><td align="left">mpnst_dx_date</td></tr>                
-                <tr><td align="left">mpnst_dx_date_specificity</td></tr>                
-                <tr><td align="left">mpnst_grade</td></tr>                
-                <tr><td align="left">mpnst_stage</td></tr>                
-            </table>
-        >];
-//
-    specimens [label=<
-            <table border="0" cellborder="1" cellspacing="0" cellpadding="1">
-                <tr><td bgcolor="lightblue">specimens</td></tr>
-                <tr><td PORT="a" align="left"><b>specimen_id</b></td></tr>
-                <tr><td PORT="b" align="left">subject_id</td></tr>
-                <tr><td align="left">collection_date</td></tr>
-                <tr><td align="left">specimen_type</td></tr>
-            </table>
-        >];
-//
-//
-        libraries [label=<
-            <table border="0" cellborder="1" cellspacing="0">
-                <tr><td bgcolor="lightblue">libraries</td></tr>
-                <tr><td align="left"><b>library_id</b></td></tr>
-                <tr><td PORT="b" align="left">specimen_id</td></tr>
-                <tr><td align="left">library_type</td></tr>
-            </table>
-        >];
-//
-        treatments [label=<
-            <table border="0" cellborder="1" cellspacing="0">
-                <tr><td bgcolor="lightblue">treatments</td></tr>
-                <tr><td align="left"><b>treatment_id</b></td></tr>
-                <tr><td PORT="b" align="left">subject_id</td></tr>
-                <tr><td align="left"> treatment_class </td></tr>
-                <tr><td align="left"> treatment_subclass </td></tr>
-                <tr><td align="left"> treatment_date </td></tr>                
-                <tr><td align="left"> treatment_date_specificity </td></tr>                
-            </table>
-        >];
-//
-        diagnostics [label=<
-            <table border="0" cellborder="1" cellspacing="0">
-                <tr><td bgcolor="lightblue">diagnostics</td></tr>
-                <tr><td align="left"><b>dx_id</b></td></tr>
-                <tr><td PORT="b" align="left">subject_id</td></tr>
-                <tr><td align="left">dx_finding</td></tr>
-                <tr><td align="left">dx_class</td></tr>
-                <tr><td align="left">dx_subclass</td></tr>
-                <tr><td align="left">dx_date</td></tr>
-                <tr><td align="left">dx_date_specificity</td></tr>
-            </table>
-        >];
-//
-//
-subjects:a -> specimens:b [arrowhead=crow, arrowtail=none, dir=both]  
-subjects:a -> treatments:b [arrowhead=crow, arrowtail=none, dir=both]  
-subjects:a -> diagnostics:b [arrowhead=crow, arrowtail=none, dir=both]  
-specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]  
-}
-#+END_SRC
-  [[file:/tmp/dot-example.png]]
-  #+BEGIN_SRC dot :results replace :file /tmp/dot-example.png :cmdline -Tpng
-  digraph graphName{
-  // syntax
-  //  no . or - allowed, instead use CamelCase
-
-  // graph params
-  size ="6/6";
-  node [color=grey fontsize=12, shape=box, fontname=Helvetica];
-
-  // nodes
-  node1 [label="Node label"]
-  node2 [label="Second Node"]
-
-  // edges
-  node1 -> unlabeled_node
-  node1 -> node2 [label="Edge label"]
-  // wavy
-  node1 -> node3:w
-  } 
-  #+END_SRC
-- interfaces
-  - w/ other platforms
-    - org
-      - [[http://correl.phoenixinquis.net/2015/07/12/git-graphs.html][Drawing git graphs with graphviz and org mode]]
-      - Advanced- [[http://orgmode.org/worg/org-tutorials/org-dot-diagrams.html][Worg for dot]]
-      - graphviz in Org-mode
-        - [[file:~/.emacs.d/snippets/org-mode/code.dot][yas template]]
-        - dot header is #+BEGIN_SRC dot :file ./<FILE_NAME>.png :cmdline -Tpng
-        - Simple- [[http://tonyballantyne.com/graphs.html][Drawing Graphs using Dot and Graphviz]]
-    - Run through python
-      - e.g. http://scikit-learn.org/stable/modules/generated/sklearn.tree.export_graphviz.html
-  - http://viz-js.com/
-- output
-  - [[https://stackoverflow.com/questions/14784405/how-to-set-the-output-size-in-graphviz-for-the-dot-format][How to set the output size in GraphViz for the dot format?]]
-- processes
-  - assign attributes to group
-    - https://stackoverflow.com/questions/28853898/groups-of-nodes-with-the-same-attributes-in-graphviz-file
-  - make a legend
-- reference
-  - [[http://graphviz.it/#/gallery/states.gv][live editor]]
-  - [[https://stackoverflow.com/questions/14662092/does-the-dot-language-support-variables-aliases][stack: dot does not directly support aliases]]
-  - https://www.google.com/search?q=graphviz+database
-  - [[file:~/.emacs.d/snippets/org-mode/software]]
-- standards and best practice
-- Cisco AnyConect
-  - [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
-  - my profile at /opt/cisco/anyconnect/profile/test.xml
 *** Operating Systems
 :PROPERTIES:
 :ID:       16DB2FD8-1988-48E4-8D8D-E69398823A70
@@ -1459,8 +217,6 @@ CLOCK: [2017-10-25 Wed 09:48]--[2017-10-25 Wed 10:23] =>  0:35
 CLOCK: [2017-10-12 Thu 13:37]--[2017-10-12 Thu 13:40] =>  0:03
 CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 :END:
-https://www.reddit.com/r/commandline/comments/ka6izh/open_book_study_group_for_the_linux_command_line/
-https://docs.monadical.com/s/system-monitoring-tools
 ***** processes
 - account management
   - https://www.google.com/search?q=unix+create+user 
@@ -1623,37 +379,26 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - ideas- check disk space https://www.cyberciti.biz/tips/shell-script-to-watch-the-disk-space.html
 - GNU - [[https://www.gnu.org/help/help.html][Helping GNU]]
 - [[https://www.reddit.com/r/commandline/comments/7d5fwa/jobson_automatically_turn_commandline/][reddit: automatically turn command-line applications into webapps]]
-***** linux :software:career:
+***** linux :software:
 :PROPERTIES:
 :CREATED:  [2020-01-09 Thu 15:46]
 :ID:       cd560390-aa1e-4c9e-8317-08610e5de42a
 :END:
 :LOGBOOK:
-CLOCK: [2020-12-15 Tue 06:51]--[2020-12-15 Tue 07:08] =>  0:17
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
-- linux software by application
-  - system restore
-    - https://github.com/teejee2008/timeshift
-  - i3
-    - https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
-  - for dir sizes, use ncdu
-- linux it certification
-  - https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
-- applications
-  - sysadmin
-    - https://unix.stackexchange.com/questions/53542/how-to-determine-the-filesystem-of-an-unmounted-device
-    - https://unix.stackexchange.com/questions/18925/how-to-mount-a-device-in-linux
-  - tui
-    - https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
-  - ocr
-    - https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
-- GNU
-  - gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
-- reference
-  - [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
-  - https://linustechtips.com/main/
-
+https://github.com/teejee2008/timeshift
+https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
+https://unix.stackexchange.com/questions/53542/how-to-determine-the-filesystem-of-an-unmounted-device
+https://unix.stackexchange.com/questions/18925/how-to-mount-a-device-in-linux
+- gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
+- https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
+- [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
+- find large files sudo du -a /home | sort -n -r | head -n 10
+- https://linustechtips.com/main/
+- https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
+- for dir sizes, use ncdu
+https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
 ****** documentation and general education
   - https://www.kernel.org/doc/html/latest/admin-guide/index.html
   - general education- https://www.reddit.com/r/linux4noobs/comments/fntvl7/between_linux_essentials_linux_and_lpic1_which/
@@ -1713,7 +458,6 @@ sudo python setup.py install
   | see systemd services | systemctl list-units --type=service |
   | see ubuntu version   | lsb_release -a                      |
 - https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
-- find large files sudo du -a /home | sort -n -r | head -n 10
 ****** processes
 https://superuser.com/questions/185880/how-to-convert-a-pdf-document-to-png
 - https://www.google.com/search?q=linux+command+line+convert+jpg+to+pdf
@@ -1770,8 +514,7 @@ CLOCK: [2019-06-04 Tue 17:34]--[2019-06-04 Tue 17:38] =>  0:04
 CLOCK: [2019-06-02 Sun 08:37]--[2019-06-02 Sun 08:49] =>  0:12
 CLOCK: [2019-06-01 Sat 09:36]--[2019-06-01 Sat 09:40] =>  0:04
 :END:
-- apt package management
-  - ppa lists at 
+- 
 - https://www.tecmint.com/set-display-screen-resolution-in-ubuntu/
 https://askubuntu.com/questions/283559/how-can-i-run-disk-utility-in-terminal-via-a-comand-line
 - processes
@@ -1838,6 +581,7 @@ https://askubuntu.com/questions/283559/how-can-i-run-disk-utility-in-terminal-vi
 - documentation
 - software
   - i3
+    - https://www.reddit.com/r/i3wm/comments/9b2jla/ubuntu_1804_settings_gnomecontrolcenter/
     - https://i3wm.org/docs/userguide.html#_scratchpad
     - https://www.reddit.com/r/i3wm/comments/95z285/opening_all_terminal_applications_directly_from/
     - https://www.reddit.com/r/i3wm/comments/8hpjb6/i3_lock_screen/
@@ -2187,8 +931,6 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
   - show battery life
 
 
-****** ideas
-- https://github.com/Fmstrat/winapps
 ***** MacOS
 :PROPERTIES:
 :ID:       80A0FABE-EB39-4BFC-8478-8044E6D84761
@@ -2222,6 +964,22 @@ http://www.mitchchn.me/2014/os-x-terminal/
     - [[http://zmjones.com/mac-setup/][setting up osx for data analysis]]
     - [[http://osxdaily.com/2009/02/25/show-hidden-files-in-os-x/][hidden files]]
 
+
+*** MediaWiki
+:PROPERTIES:
+:ID:       4F02B352-1A93-4CF4-A386-2788387A18C0
+:END:
+
+*** JSON JavaScript Object Notation
+:PROPERTIES:
+:ID:       9E10CCC0-BC92-4C96-BBF2-99B54E88143D
+:END:
+https://github.com/antonmedv/fx/blob/master/DOCS.md
+  - JSON
+    - https://www.w3schools.com/js/js_json_syntax.asp
+- When exchanging data between a browser and a server, the data can only be text.
+- JSON is text, and we can convert any JavaScript object into JSON, and send JSON to the server.
+- 
 
 *** Version Control
 :PROPERTIES:
@@ -2386,17 +1144,184 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
     - https://github.com/features/actions
     - https://lab.github.com/courses?utm_source=newsletter&utm_medium=email&utm_campaign=student-newsletter-120818
 - GUIs- https://www.sourcetreeapp.com/
-*** JSON JavaScript Object Notation
+*** Zotero
 :PROPERTIES:
-:ID:       9E10CCC0-BC92-4C96-BBF2-99B54E88143D
+:ID:       25D1FA26-1865-4BFC-845C-8D1B1830EE13
 :END:
-https://github.com/antonmedv/fx/blob/master/DOCS.md
-  - JSON
-    - https://www.w3schools.com/js/js_json_syntax.asp
-- When exchanging data between a browser and a server, the data can only be text.
-- JSON is text, and we can convert any JavaScript object into JSON, and send JSON to the server.
-- 
+:LOGBOOK:
+CLOCK: [2020-01-16 Thu 08:16]--[2020-01-16 Thu 08:45] =>  0:29
+CLOCK: [2019-03-04 Mon 14:59]--[2019-03-04 Mon 15:17] =>  0:18
+:END:
+https://github.com/willsALMANJ/Zutilo
+- zotfile
+- better biblatex 
+- [[https://www.zotero.org/support/][documentation]]
+- https://www.google.com/search?q=zotfile+sync+files&oq=zotfile+sync+files&aqs=chrome..69i57.4295j0j4&client=ubuntu&sourceid=chrome&ie=UTF-8
+- Add-ons
+  - Better BibTex
+    - auto-exports to [[file:~/data/library/bib.bib]]
+    - [[https://retorque.re/zotero-better-bibtex/][documentation]]
+    - [[https://github.com/retorquere/zotero-better-bibtex][repo]]
+  - [[http://zotfile.com/][ZotFile]]
+    - Renames files 
+    - Allows custom file location at [[file:~/data/library/]]
+- Performance- manual entry lag
+  - [[https://forums.zotero.org/discussion/16733/manual-citation-entry-clunky][No answers, but question asked]]
 
+*** Graphviz                                                       :software:
+:PROPERTIES:
+:ID:       4BFFFC0C-CBFA-4E97-BB52-88A95D4A361B
+:CREATED:  [2019-08-23 Fri 07:56]
+:END:
+:LOGBOOK:
+CLOCK: [2018-12-08 Sat 16:05]--[2018-12-08 Sat 16:44] =>  0:39
+CLOCK: [2018-12-08 Sat 15:16]--[2018-12-08 Sat 15:25] =>  0:09
+CLOCK: [2017-11-10 Fri 11:40]--[2017-11-10 Fri 11:57] =>  0:17
+CLOCK: [2017-11-10 Fri 10:45]--[2017-11-10 Fri 11:31] =>  0:46
+:END:
+- commands
+  |----------+---------|
+  | function | command |
+  |----------+---------|
+  | <35>     | <35>    |
+  |          |         |
+- [[http://www.graphviz.org/documentation/][documentation]] and guides
+  - [[http://www.graphviz.org/doc/info/lang.html][The DOT Language]]
+  - [[http://www.tonyballantyne.com/graphs.html][Drawing Graphs using Dot and Graphviz]]
+  - attributes
+    - [[http://www.graphviz.org/doc/info/attrs.html#a:rankdir][Node, Edge and Graph Attributes]]
+    - [[https://hackage.haskell.org/package/graphviz-2999.19.0.0/docs/Data-GraphViz-Attributes.html][attributes and values from the haskell graphviz package]]
+- applications
+  [[file:/tmp/entity-relationship-diagram.pdf]]
+  #+BEGIN_SRC dot :dir ~/data/imgs/graphviz-examples :file /tmp/entity-relationship-diagram.pdf :cmdline -Tpdf
+// https://mamchenkov.net/wordpress/2015/08/20/graphviz-dot-erds-network-diagrams/
+digraph entityRelationshipDiagram { 
+    label = "MPNST Project Data Model"
+    labelloc = top;
+    rankdir=LR;
+ //
+    node [shape=plaintext];
+    edge [dir=both];
+//
+    subjects [label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightblue">subjects</td></tr>
+                <tr><td PORT="a" align="left"><b>subject_id</b></td></tr>
+                <tr><td align="left">dob</td></tr>
+                <tr><td align="left">sex</td></tr>
+                <tr><td align="left">institution</td></tr>                
+                <tr><td align="left">current_dx</td></tr>                
+                <tr><td align="left">plexiform_dx_date</td></tr>                
+                <tr><td align="left">plexiform_dx_date_specificity</td></tr>                
+                <tr><td align="left">anf_dx_date</td></tr>                
+                <tr><td align="left">anf_dx_date_specificity</td></tr>                
+                <tr><td align="left">mpnst_dx_date</td></tr>                
+                <tr><td align="left">mpnst_dx_date_specificity</td></tr>                
+                <tr><td align="left">mpnst_grade</td></tr>                
+                <tr><td align="left">mpnst_stage</td></tr>                
+            </table>
+        >];
+//
+    specimens [label=<
+            <table border="0" cellborder="1" cellspacing="0" cellpadding="1">
+                <tr><td bgcolor="lightblue">specimens</td></tr>
+                <tr><td PORT="a" align="left"><b>specimen_id</b></td></tr>
+                <tr><td PORT="b" align="left">subject_id</td></tr>
+                <tr><td align="left">collection_date</td></tr>
+                <tr><td align="left">specimen_type</td></tr>
+            </table>
+        >];
+//
+//
+        libraries [label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightblue">libraries</td></tr>
+                <tr><td align="left"><b>library_id</b></td></tr>
+                <tr><td PORT="b" align="left">specimen_id</td></tr>
+                <tr><td align="left">library_type</td></tr>
+            </table>
+        >];
+//
+        treatments [label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightblue">treatments</td></tr>
+                <tr><td align="left"><b>treatment_id</b></td></tr>
+                <tr><td PORT="b" align="left">subject_id</td></tr>
+                <tr><td align="left"> treatment_class </td></tr>
+                <tr><td align="left"> treatment_subclass </td></tr>
+                <tr><td align="left"> treatment_date </td></tr>                
+                <tr><td align="left"> treatment_date_specificity </td></tr>                
+            </table>
+        >];
+//
+        diagnostics [label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightblue">diagnostics</td></tr>
+                <tr><td align="left"><b>dx_id</b></td></tr>
+                <tr><td PORT="b" align="left">subject_id</td></tr>
+                <tr><td align="left">dx_finding</td></tr>
+                <tr><td align="left">dx_class</td></tr>
+                <tr><td align="left">dx_subclass</td></tr>
+                <tr><td align="left">dx_date</td></tr>
+                <tr><td align="left">dx_date_specificity</td></tr>
+            </table>
+        >];
+//
+//
+subjects:a -> specimens:b [arrowhead=crow, arrowtail=none, dir=both]  
+subjects:a -> treatments:b [arrowhead=crow, arrowtail=none, dir=both]  
+subjects:a -> diagnostics:b [arrowhead=crow, arrowtail=none, dir=both]  
+specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]  
+}
+#+END_SRC
+  [[file:/tmp/dot-example.png]]
+  #+BEGIN_SRC dot :results replace :file /tmp/dot-example.png :cmdline -Tpng
+  digraph graphName{
+  // syntax
+  //  no . or - allowed, instead use CamelCase
+
+  // graph params
+  size ="6/6";
+  node [color=grey fontsize=12, shape=box, fontname=Helvetica];
+
+  // nodes
+  node1 [label="Node label"]
+  node2 [label="Second Node"]
+
+  // edges
+  node1 -> unlabeled_node
+  node1 -> node2 [label="Edge label"]
+  // wavy
+  node1 -> node3:w
+  } 
+  #+END_SRC
+- interfaces
+  - w/ other platforms
+    - org
+      - [[http://correl.phoenixinquis.net/2015/07/12/git-graphs.html][Drawing git graphs with graphviz and org mode]]
+      - Advanced- [[http://orgmode.org/worg/org-tutorials/org-dot-diagrams.html][Worg for dot]]
+      - graphviz in Org-mode
+        - [[file:~/.emacs.d/snippets/org-mode/code.dot][yas template]]
+        - dot header is #+BEGIN_SRC dot :file ./<FILE_NAME>.png :cmdline -Tpng
+        - Simple- [[http://tonyballantyne.com/graphs.html][Drawing Graphs using Dot and Graphviz]]
+    - Run through python
+      - e.g. http://scikit-learn.org/stable/modules/generated/sklearn.tree.export_graphviz.html
+  - http://viz-js.com/
+- output
+  - [[https://stackoverflow.com/questions/14784405/how-to-set-the-output-size-in-graphviz-for-the-dot-format][How to set the output size in GraphViz for the dot format?]]
+- processes
+  - assign attributes to group
+    - https://stackoverflow.com/questions/28853898/groups-of-nodes-with-the-same-attributes-in-graphviz-file
+  - make a legend
+- reference
+  - [[http://graphviz.it/#/gallery/states.gv][live editor]]
+  - [[https://stackoverflow.com/questions/14662092/does-the-dot-language-support-variables-aliases][stack: dot does not directly support aliases]]
+  - https://www.google.com/search?q=graphviz+database
+  - [[file:~/.emacs.d/snippets/org-mode/software]]
+- standards and best practice
+- Cisco AnyConect
+  - [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
+  - my profile at /opt/cisco/anyconnect/profile/test.xml
 *** Software                                                   :mod:software:
 :PROPERTIES:
 :ID:       D0927D88-0FA4-4D49-8486-721FC264DE50
@@ -2423,6 +1348,264 @@ https://help.github.com/en/articles/about-project-boards
 - software development
   - cite:nowogrodzki2019
 - vimtutor
+** Bash Scripting
+:PROPERTIES:
+:ID:       89576FD2-F863-4220-BAD7-D4E179AEA644
+:END:
+:LOGBOOK:
+CLOCK: [2020-08-19 Wed 07:43]--[2020-08-19 Wed 07:54] =>  0:11
+CLOCK: [2020-06-25 Thu 08:13]--[2020-06-25 Thu 08:25] =>  0:12
+CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
+CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
+CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
+:END:
+size filter
+#find $localdata/frag-filt-bams -name "*.bam" -type 'f' -size -4M -delete
+# small bam check
+##
+#if [ -f /drive3/users/jszymanski/repos/mpnst/data/small_bams ]; then rm /drive3/users/jszymanski/repos/mpnst/data/small_bams; fi
+##
+#minimum_bam_size=200000000
+
+- https://github.com/ohmybash/oh-my-bash
+- variables
+  #+name: 
+  #+begin_src bash :tangle no
+# Check if variable is set
+if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; fi
+#+end_src
+- https://github.com/shellspec/shellspec
+- commands
+  |---------------------------------------+-------------------------------------------------|
+  | function                              | command                                         |
+  |---------------------------------------+-------------------------------------------------|
+  | <35>                                  | <35>                                            |
+  | [[https://www.gnu.org/software/bash/manual/bash.html#Bash-Conditional-Expressions][newer/older by mod date]]               | -nt -ot                                         |
+  | du -shc .                             | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]]                       |
+  | remove alias                          | unalias <ALIAS_NAME>                            |
+  | add alias                             | alias <ALIAS>="<COMMAND>"                       |
+  | l                                     | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\(' |
+  | change password                       | passwd                                          |
+  | search manual pages                   | /                                               |
+  | disk usage, top level                 | du -h --summarize                               |
+  | see total disk usage                  | df -h                                           |
+  | see files location on physical disk   | df <PATH>                                       |
+  | download in background & resume broke | wget -bqc <PATH>                                |
+  | see distro                            | lsb_release -a                                  |
+  | see system disks                      | lsblk                                           |
+  | add to path (temporary?)              | export PATH=$PATH:/new/path                     |
+  | show full path                        | readlink -f                                     |
+  | for loop on array                     | for i in "${arr[@]}""                           |
+  |                                       |                                                 |
+  - find disk usage https://unix.stackexchange.com/questions/67806/how-to-recursively-find-the-amount-stored-in-directory
+    - https://unix.stackexchange.com/questions/314394/my-hard-disk-is-full-how-can-i-determine-whats-taking-up-space
+  - [[https://stackoverflow.com/questions/6509650/extract-directory-from-path][directory of file as variable]]
+  - show running processes with top
+  - Common UNIX command line operations table
+    | Get lines in file | wc -l <FILE> |
+    |                   |              |
+    - [[http://www.cyberciti.biz/faq/tar-extract-linux/][Tarball extraction]]
+    - [[https://www.howtogeek.com/howto/ubuntu/split-a-text-file-in-half-or-any-percentage-on-ubuntu-linux/][Split a text file in half (or any percentage) on Ubuntu Linux]]
+  - Search
+    - Recursively search subdirectories
+      - [[https://askubuntu.com/questions/307876/how-to-search-for-files-recursively-into-subdirectories][How to Search for Files Recursively into Subdirectories]]
+      - [[https://stackoverflow.com/questions/1987926/how-do-i-grep-recursively][Recursively search subdirectories with grep -r "<SEARCH>" .]]
+    - Search for file: find . -name <pattern> -print
+      - https://kb.iu.edu/d/admm
+  - grep -r --unclude \*.R "as.Date" ~/
+  - functions
+    - https://ubuntuforums.org/showthread.php?t=1166951
+    - https://www.biostars.org/p/271330/
+  - mkdir -p will ignore if dir exists 
+  - printing across terminal width
+    - https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
+  - [[https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo][printf vs echo]]
+  - https://stackoverflow.com/questions/34567826/what-is-usage-in-shell-scripting/34567852#:~:text=It's%20a%20just%20a%20convention,filename%3D%241%20fi%20...
+  - https://stackoverflow.com/questions/687780/documenting-shell-scripts-parameters
+  - https://stackoverflow.com/questions/2953081/how-can-i-write-a-heredoc-to-a-file-in-bash-script
+  - https://www.google.com/search?q=bash+echo+tab 
+- [[https://www.gnu.org/software/bash/manual/bash.html][documentation]] and general reference
+  - https://www.gnu.org/software/bash/manual/html_node/index.html#SEC_Contents
+  - [[https://www.gnu.org/software/bash/manual/html_node/index.html#SEC_Contents][gnu bash reference manual]]
+  - guides, tutorials, cheatsheets, books
+    - http://mywiki.wooledge.org/BashGuide
+    - General guides and tutorials
+      - [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Linux documentation project: Advanced Bash-Scripting Guide]]
+      - http://bash3boilerplate.sh/
+      - [[https://bash.cyberciti.biz/guide/Main_Page][Linux Shell Scripting Tutorial]]
+      - http://ryanstutorials.net/bash-scripting-tutorial/
+      - http://linuxcommand.org/lc3_writing_shell_scripts.php
+      - https://www.youtube.com/watch?v=3ME7gayYeUQ
+      - https://www.youtube.com/results?search_query=shell+scripts+bioinformatics&page=&utm_source=opensearch
+      - https://google.github.io/styleguide/shell.xml
+      - http://mywiki.wooledge.org/BashGuide
+    - http://www.davidpashley.com/articles/writing-robust-shell-scripts/
+    - https://emb.carnegiescience.edu/sites/default/files/140602-sedawkbash.key_.pdf
+    - https://github.com/dylanaraps/pure-bash-bible
+    - https://devhints.io/bash
+    - https://www.ibm.com/developerworks/aix/library/au-satbash.html
+    - [[http://tldp.org/LDP/LG/issue18/bash.html][string manipulations]]
+    - cite:veeraraghavan2002 
+    - http://tldp.org/LDP/abs/html/
+    - https://github.com/onceupon/Bash-Oneliner
+    - https://devhints.io/bash?source=post_page---------------------------
+    - [[https://www.ostechnix.com/test-your-bash-skills-by-playing-command-line-games/][bash games]]
+    - [[https://www.reddit.com/r/commandline/comments/kbeoe/you_can_make_readline_and_bash_much_more_user/?st=j6k0lbfa&sh=6d214d1f][reddit: You can make readline (and bash) much more user friendly by adding a few options to ~/.inputrc]]
+    - best practices
+      - include error calling, but avoid -e http://mywiki.wooledge.org/BashFAQ/105
+      - https://www.google.com/search?q=shell+script+formatting+best+practices
+      - include usage example
+      - a -c flag essentially adds an extra shell around multi-part command, see https://superuser.com/questions/1214597/calling-a-script-with-bash-c-option
+      - ideas
+      - [[file:~/.emacs.d/snippets/sh-mode/write.bash]]
+      - https://stackoverflow.com/questions/33297857/how-to-check-dependency-in-bash-script
+    - https://unix.stackexchange.com/questions/42728/what-does-31-12-23-do-in-a-script
+    - http://tldp.org/LDP/abs/html/index.html
+    - https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
+    - https://github.com/dylanaraps/pure-bash-bible
+    - https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md
+  - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
+  - https://github.com/hopeseekr/BashScripts
+  - https://www.reddit.com/r/programming/comments/aw0zko/bash_creating_tabcompletion_for_your_programs/
+- ideas
+  - check and set file permissions as best practice
+  - ideas for function development protocol-
+    - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
+- interfaces
+  - emacs
+    - https://stackoverflow.com/questions/1008750/ide-emacs-mode-for-shell-scripting-in-bash-sh-etc
+    - http://www.skybert.net/emacs/bash-linting-in-emacs/
+- processes 
+  - comments https://www.google.com/search?q=bash+comment+in+pipe
+  - exits
+    - https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script#:~:text=All%20by%20itself%2C%20exit%20implies,successful%20completion%20of%20your%20script.&text=However%20by%20specifying%20the%201,exited%20with%20an%20error%20condition.
+  - arrays
+    - [[https://stackoverflow.com/questions/18921350/shell-script-correct-way-to-declare-an-empty-array][declare array]]
+    - [[https://unix.stackexchange.com/questions/125632/printing-an-array-to-a-file-with-each-element-of-the-array-in-a-new-line-in-bash][print array with line breaks]]
+    - https://www.google.com/search?q=bash+create+array 
+    - https://www.google.com/search?q=bash+pass+array+to+for+loop 
+    - pass to array 
+      - pass each line of file
+        - https://riptutorial.com/bash/example/19457/read-lines-of-a-file-into-an-array
+      - pass cat output
+        - https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
+      - https://www.google.com/search?q=pass+cat+output+to+array+variable
+      - command output https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
+  - for loops
+    - examples
+      - Recursively git commit with date tag
+        #+BEGIN_SRC sh
+
+     d=$(date +%Y-%m-%d)
+     echo "$d"
+     cd ~/Box\ Sync/
+     for i in ./*/ ; do (cd "$i" && git commit -a -m "$d"); done
+     end
+
+     #+END_SRC
+  - checkers
+    - [[https://unix.stackexchange.com/questions/322817/how-to-find-the-file-where-a-bash-function-is-defined][check were function is called from]]
+    - [[https://askubuntu.com/questions/102093/how-to-see-the-command-attached-to-a-bash-alias][check where alias goes w/ type]]
+    - [[https://stackoverflow.com/questions/592620/how-can-i-check-if-a-program-exists-from-a-bash-script][check if program exists]]
+    - [[https://stackoverflow.com/questions/59838/how-can-i-check-if-a-directory-exists-in-a-bash-shell-script][check if dir exists]]
+    - https://theterminallife.com/check-if-file-exists-and-is-not-empty/
+  - clipboard
+    - https://askubuntu.com/questions/382767/how-to-pipe-dump-clipboard-contents-to-a-file  
+  - configuration management
+    - https://en.wikipedia.org/wiki/Ansible_(software)
+  - debug
+    - https://zwischenzugs.com/2018/10/09/learn-bash-debugging-techniques-the-hard-way/
+  - feedback, traps, eof, etc
+    - traps
+      - https://opensource.com/article/20/6/bash-trap
+    - error reporting
+      - interupt with && https://serverfault.com/questions/252448/bash-script-alert-on-error
+      - [[https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script][Meaning of exit 0, exit 1 and exit 2 in a bash script]]
+  - pipe
+    - https://www.google.com/search?q=pipe+store+output+as+variable 
+  - file and directory metadata
+    - https://superuser.com/questions/120078/unix-files-starting-with-a-dash
+    - https://www.google.com/search?q=bash+compare+files+by+date
+      - https://unix.stackexchange.com/questions/372857/compare-two-file-modification-dates
+          #+begin_src bash 
+      cd /tmp/
+      rm file1
+      rm file2
+      touch file2; sleep 2; touch file1
+      if [ file1 -nt file2 ]; then
+          echo "yes"
+      fi
+          #+end_src
+      - https://unix.stackexchange.com/questions/88525/need-to-move-files-to-different-folder-based-on-the-creation-date
+    - https://www.google.com/search?q=bash+check+file+size
+    - https://www.google.com/search?q=bash+list+directory+sizes
+    - https://www.google.com/search?q=bash+add+date+to+file+name
+    - https://www.google.com/search?q=bash+bulk+rename+files 
+  - functions  
+    #+name: 
+    #+begin_src bash :tangle no
+# Assign variable which holds array to another name
+a=('a' 'b' 'c')
+b=( "${a[@]}" )
+#+end_src
+    - use type to see function definition
+    - https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
+    - https://www.shellhacks.com/print-usage-exit-if-arguments-not-provided/
+  - globbing
+    - https://stackoverflow.com/questions/2937407/test-whether-a-glob-has-any-matches-in-bash?noredirect=1&lq=1
+  - resource use control
+    - https://linuxhint.com/limit_cpu_usage_process_linux/
+    - https://stackoverflow.com/questions/4651234/how-to-determine-the-process-memory-limit-in-linux
+    - https://unix.stackexchange.com/questions/52313/how-to-get-execution-time-of-a-script-effectively
+    - setting local resource limits
+      - http://coldattic.info/post/40/
+  - install
+    - configure, make, install
+      - https://www.tldp.org/HOWTO/Software-Building-HOWTO-3.html
+      - https://superuser.com/questions/360178/what-does-make-install-do
+      - often Makefile will install to created ./bin/ sub-directory 
+    - https://stackoverflow.com/questions/10961439/why-always-configure-make-make-install-as-3-separate-steps
+  - links
+    - https://stackoverflow.com/questions/5767062/how-to-check-if-a-symlink-exists
+  - linting
+    - http://www.skybert.net/emacs/bash-linting-in-emacs/
+    - https://github.com/koalaman/shellcheck#in-your-editor
+    - https://stackoverflow.com/questions/171924/how-do-i-syntax-check-a-bash-script-without-running-it#171932
+    - http://www.skybert.net/emacs/bash-linting-in-emacs/
+    - http://www.skybert.net/emacs/bash-linting-in-emacs/
+  - logging
+    - https://stackoverflow.com/questions/18278223/method-to-write-in-log-files-in-a-shell-script
+  - multithreading
+    - https://duckduckgo.com/?q=multithread+grep&ia=qa
+    - https://stackoverflow.com/questions/1455695/forking-multi-threaded-processes-bash
+  - prompt for user input
+    - https://www.google.com/search?q=bash+prompt+user+input
+    - [[https://stackoverflow.com/questions/226703/how-do-i-prompt-for-yes-no-cancel-input-in-a-linux-shell-script][stack: How do I prompt for Yes/No/Cancel input in a Linux shell script?]]
+  - variables
+    - 1 & 2 https://stackoverflow.com/questions/10508843/what-is-dev-null-21
+    - [[https://stackoverflow.com/questions/91368/checking-from-shell-script-if-a-directory-contains-files][use globbing in variables with shopt]]
+    - [[https://www.cyberciti.biz/faq/linux-unix-formatting-dates-for-display/][formatting dates for display]]
+    - [[https://data36.com/variables-if-statements-while-loops-bash-data-science/][variables for if statements and while loops]].
+    - To make executable: chmod +x /path/to/yourscript.sh
+    - https://stackoverflow.com/questions/19512550/what-does-mean-in-a-shell-if-statement
+    - [[https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script][Meaning of exit 0, exit 1 and exit 2 in a bash script]]
+    - https://stackoverflow.com/questions/2642585/read-a-variable-in-bash-with-a-default-value
+  - function template- add run type
+    - updating
+    - overwrite
+- users and groups
+  | function                  | command                   |
+  |---------------------------+---------------------------|
+  | list users                |                           |
+  | list groups               |                           |
+  | list group members        | getent group <GROUPNAME>  |
+  | add user                  | useradd <USERNAME>        |
+  | set password              | passwd <USERNAME>         |
+  | add group                 | groupadd <GROUPNAME>      |
+  | add user to group         | usermod -g <GROUP> <USER> |
+  | change user primary group |                           |
+- https://unix.stackexchange.com/questions/359832/converting-csv-to-tsv
+- https://stackoverflow.com/questions/12522269/how-to-find-the-largest-file-in-a-directory-and-its-subdirectories
 ** Docker                                                          :software:
 :PROPERTIES:
 :ID:       D2FAA88D-70CC-4450-BBB3-8A446CB43AF3
@@ -2437,16 +1620,6 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
-#+name: 
-#+begin_src bash :tangle no
-cd ~/repos/basecamp
-docker build . --file Dockerfile --tag jeszyman/basecamp
-docker push jeszyman/basecamp
-cd 
-docker run jeszyman/test
-#+end_src
-
-- user repos (like mine are / not : for FROM build command!!!
 - docker-related bash functions
   - build command examples
     #+name: docker_build
@@ -2515,93 +1688,6 @@ docker build . --file Dockerfile --tag jeszyman/test
                             -e "localdata=/mnt/xt3/mpnst" \
                             jeszyman/$image \
                             /bin/bash;;
-<<<<<<< HEAD
-            (jeszyman-*) docker run -it \
-                                -v /home/:/home/ \
-                                -u $(id -u ${USER}) \
-                                -e "USER=jeszyman" \
-                                -e "repo=$repo" \
-                                -e "data=$data" \
-                                jeszyman/$image \
-                                /bin/bash;;
-            (acl*) docker run -it \
-                          -v /drive3/:/drive3/ \
-                          -v /duo4/:/duo4/ \
-                          -v /mnt/:/mnt/ \
-                          -v /home/:/home/ \
-                          -u $(id -u ${USER}) \
-                          -e "USER=jszymanski" \
-                          jeszyman/$image \
-                          /bin/bash;;
-            (ACL*) docker run -it \
-                          -v /home/:/home/ \
-                          -v /duo4/:/duo4/ \
-                          -u $(id -u ${USER}):$(id -g ${USER}) \
-                          -e "USER=jszymanski" \
-                          jeszyman/$image \
-                          /bin/bash;;
-            (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$image"')' /bin/bash;;
-        esac
-    fi    
-}
-
-##
-
-#+end_src
-## identifies server in docker containers
-server_ask() {
-    echo -n "Choose your server: "
-    read SERVER
-    SERVER="${SERVER:=chaudhuri-roche}"
-}
-#+name: global_setup
-#+begin_src bash :tangle no
-repo=~/repos/basecamp
-
-#+end_src
-
-** Docker                                                          :software:
-:PROPERTIES:
-:ID:       D2FAA88D-70CC-4450-BBB3-8A446CB43AF3
-:CREATED:  [2019-07-07 Sun 09:05]
-:END:
-:LOGBOOK:
-CLOCK: [2019-11-30 Sat 18:42]--[2019-11-30 Sat 18:49] =>  0:07
-CLOCK: [2019-06-27 Thu 08:31]--[2019-06-27 Thu 08:45] =>  0:14
-CLOCK: [2019-05-29 Wed 15:34]--[2019-05-29 Wed 15:44] =>  0:10
-CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
-CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
-CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
-:END:
-
-
-#+name: docker_build
-#+begin_src bash :tangle no
-cd $repo
-docker build . --file Dockerfile --tag jeszyman/test
-
-docker ps
-docker exec -it b95de4b12b87 bash
-
-docker inspect -f \
-       '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' \
-       b95de4b12b87
-
-docker run -p 127.0.0.5:80:8080 jeszyman/test
-
-docker run -it --expose 8080 -p 127.0.0.1:8080:8080 jeszyman/test
-
-docker run --rm --name some-nginx jeszyman/test
-docker run -it -d -p 180:180 --name test2 jeszyman/test
-
-docker container ls
-docker container inspect --format '{{ .NetworkSettings.IPAddress }}' test2
-curl 172.17.0.5 -p 180
-#+end_src
-
-
-
-=======
               (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$image"')' /bin/bash;;
           esac
       fi    
@@ -2849,6 +1935,159 @@ project=basecamp
 repo=~/repos/"${project}"
 mkdir -p "${repo}"/src/shell
 #+end_src
+** [[file:~/repos/basecamp/src/shell/functions.sh][Common Process Functions]]
+:PROPERTIES:
+:CREATED:  [2020-04-14 Tue 09:05]
+:ID:       15071151-f519-4c7f-b21f-997d6d7b6bc5
+:END:
+#+name: check_local_software
+#+begin_src bash :tangle ./src/bash/functions.sh
+check_local_software(){
+    if [[ $# -eq 0 ]] ; then
+        printf "\n check_local_software 
+              \n Checks list of software in array, exits with error message if not found
+              \n \$1 = Bash array of software, e.g. software=(bash, git)
+              \n "
+    else    
+        software=$1
+        for i in "${software[@]}"; do
+            if command -v $i >/dev/null 2>&1 ; then
+                echo "$i installed"
+            else
+                echo "$i not found, exiting"
+                exit 1
+            fi
+        done
+    fi
+}
+#
+# check_local_software
+# unit test
+#softwarecheck=(bash git)
+#check_local_software $softwarecheck
+#+end_src
+
+#+name: git_pull_all
+#+begin_src bash :tangle ./src/git_pull_all.sh :dir ~/repos/basecamp
+#!/bin/bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+#                                                                              #
+#                       Script to automate git pulls                           #
+#             from a set of repositories within the same root dir              #
+#                                                                              #
+#########1#########2#########3#########4#########5#########6#########7#########8
+# 
+# 1. Script Checks
+#
+## Check if git exist
+command -v git >/dev/null 2>&1 # stop if git not found
+if [ $? -eq 1 ]; then
+    echo "Git not found"
+    exit 1; fi
+##
+## Check if any repos exist
+shopt -s nullglob
+repo_dirs=(~/repos/*)
+if [ ${#repo_dirs[@]} -eq 0 ]; then
+    echo "No repos at ~/repos/"
+    exit 1; fi
+shopt -u nullglob
+##
+# 2. Pull Function 
+#                      
+for d in $HOME/repos/*
+do 
+    [[ ! -d "$d" ]] && continue
+    echo "$d" &&
+    cd "$d" &&
+    git pull &&
+    git submodule update --recursive &&
+    git submodule update --remote && 
+    cd "$OLDPWD"
+done
+#
+#+end_src
+
+#+name: jpg_to_pdf
+#+begin_src bash 
+#########1#########2#########3#########4#########5#########6#########7#########8#########9#########0#########1
+jpg_to_pdf() {
+    printf "Function to convert jpeg images to pdf
+    Accepts:
+    Returns: "
+}
+#+end_src
+
+#+name:symlink-by-csv-script 
+#+begin_src sh :tangle ./src/shell/functions.sh
+#
+######################
+### symlink-by-csv ###
+######################
+#
+# Purpose: generates symbolic links in bulk from a csv file 
+#
+# Input:
+# A .csv file of two columns, 
+#  Column 1 with source file paths
+#  Column 2 with destination symbolic link paths 
+#
+# Function:
+symlink_by_csv(){
+    # Set internal field separator
+    export IFS=","
+    # Take csv and pass to while/read
+    cat $1 | while read a b; do
+        ln -s $a $b; done
+}
+#
+# Example:
+# cd /tmp
+# mkdir -p csv-symlink-test
+# cd csv-symlink-test
+# touch csv-for-links.csv
+# touch file-to-link-from.txt
+# echo "file-to-link-from.txt,path-to-link-to.txt" >> csv-for-links.csv
+# echo "test link" > file-to-link-from.txt
+# export IFS=","
+# cat csv-for-links.csv | while read a b; do
+#     ln -s $a $b ; done
+# cat path-to-link-to.txt
+# cd ../
+# rm -rf csv-symlink-test
+#+end_src
+
+#+name:copy-file-text-to-clipboard 
+#+begin_src sh 
+#
+###################################
+### copy-file-text-to-clipboard ###
+###################################
+#
+# Purpose: for pandoc supported file, copies file text to system clipboard
+#
+# Dependencies:
+dependencies=("pandoc" "xclip")
+check_dependencies dependencies[@]
+#
+# Input: 
+# Any pandoc supported file 
+#
+# Function:
+text_to_clip() { pandoc -S $1 | xclip -selection clipboard}
+#
+# Example
+cd /tmp/ && rm -rf ./example && mkdir -p ./example && cd ./example 
+echo "Hello" | pandoc -o out.docx
+chmod 777 ./out.docx
+text_to_clip()
+./out.docx
+test=out.docx
+pandoc -S $test | xclip -selection clipboard
+
+#+end_src
+
+
 ** Local Variables                                                 :noexport:
 :PROPERTIES:
 :ID:       f20f9ff3-de38-4cf6-ae3a-b6abd131b450

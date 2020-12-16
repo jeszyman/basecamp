@@ -1,20 +1,19 @@
 FROM ubuntu:xenial
 #
-RUN apt-get update -yq
+RUN apt-get update --fix-missing -yq
 #
 RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
     build-essential \
     bzip2 \
     cifs.utils \
     cmake \   
-    emacs \
     gcc \
     git \
     libfftw3-dev \
     locales \
     nano \
     parallel \
-    wget 
+    wget
 #
 RUN apt-get autoremove -y && \
     apt-get autoclean -y && \
@@ -41,5 +40,16 @@ ENV PATH="/usr/bin:${PATH}"
 RUN echo 'local({r <- getOption("repos"); r["CRAN"] <- "http://cran.r-project.org"; options(repos=r)})' > ~/.Rprofile
 RUN R -e "install.packages('devtools')"
 RUN Rscript -e 'install.packages(c("tidyverse", "git2r", "stringr", "devtools", "optparse", "plyr"), repos = c(CRAN="http://cran.rstudio.com"))'
-# ideas
+#
+#
+## Emacs Snapshot
+RUN apt-get install -qq --no-install-recommends software-properties-common
+RUN add-apt-repository ppa:ubuntu-elisp/ppa
+RUN apt-get update
+RUN apt-get install -qq --no-install-recommends emacs-snapshot
+#
+# Above built 2020-12-10
+# Dev 
+# Ideas
 #    texlive-full
+#
