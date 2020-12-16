@@ -6,6 +6,27 @@
 CLOCK: [2020-10-29 Thu 11:50]--[2020-10-29 Thu 12:01] =>  0:11
 :END:
 
+#+begin_src emacs-lisp
+(setq comint-scroll-to-bottom-on-output t)
+#+end_src
+
+#+name: 
+#+begin_src bash :tangle no
+sudo npm i -g bash-language-server
+cd /home
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package lsp-mode
+  :commands lsp
+  :hook
+  (sh-mode . lsp))
+
+(setq lsp-bash-highlight-parsing-errors 1)
+(setq lsp-bash-explanshell-endpoint 1)
+(setq lsp-bash-glob-pattern 1)
+#+end_src
+
 ** [[id:cd560390-aa1e-4c9e-8317-08610e5de42a][LINK TO linux]]
 ** Common build 
 ** programming languages                                             :career:
@@ -2175,11 +2196,13 @@ CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 #+name: 
 #+begin_src bash :tangle no
 cd ~/repos/basecamp
-docker build . --file Dockerfile --tag jeszyman/test
+docker build . --file Dockerfile --tag jeszyman/basecamp
+docker push jeszyman/basecamp
 cd 
 docker run jeszyman/test
 #+end_src
 
+- user repos (like mine are / not : for FROM build command!!!
 - docker-related bash functions
   - build command examples
     #+name: docker_build
