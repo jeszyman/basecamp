@@ -1,173 +1,12 @@
-  - principles and philosophy
+* Basecamp
+- ess on docker
+  - http://ess.r-project.org/Manual/ess.html#Activating-and-Loading-ESS
+  - and get docker ip
+  - and provision container for ssh 
+- principles and philosophy
     - [[https://en.wikipedia.org/wiki/Robustness_(computer_science)][robustness]]
     - transparency
-    - reproducibility
-
-http://ess.r-project.org/Manual/ess.html#Activating-and-Loading-ESS
-and get docker ip
-and provision container for ssh 
-
-https://www.bioconductor.org/packages/release/bioc/vignettes/polyester/inst/doc/polyester.html
-## identifies server in docker containers
-server_ask() {
-    echo -n "Choose your server: "
-    read SERVER
-    SERVER="${SERVER:=chaudhuri-roche}"
-}
-
-#+name: global_setup
-#+begin_src bash :tangle no
-repo=~/repos/basecamp
-
-#+end_src
-
-#+name: local_setup
-#+begin_src bash :tangle no
-
-
-#+end_src
-
-#+name: docker_build
-#+begin_src bash :tangle no
-cd $repo
-docker build . --file Dockerfile --tag jeszyman/test
-
-docker ps
-docker exec -it b95de4b12b87 bash
-
-docker inspect -f \
-       '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' \
-       b95de4b12b87
-
-docker run -p 127.0.0.5:80:8080 jeszyman/test
-
-docker run -it --expose 8080 -p 127.0.0.1:8080:8080 jeszyman/test
-
-docker run --rm --name some-nginx jeszyman/test
-docker run -it -d -p 180:180 --name test2 jeszyman/test
-
-docker container ls
-docker container inspect --format '{{ .NetworkSettings.IPAddress }}' test2
-curl 172.17.0.5 -p 180
-#+end_src
-- bash functions
-  - docker interactive
-  #+name: 
-  #+begin_src bash :tangle no
-
-docker_interactive() {
-    if [ -f /.dockerenv ]; then
-        echo "shell already in docker, exiting"
-        exit 1
-    else
-        repo="USER INPUT"
-        read -p "image name: " image
-        case $HOSTNAME in
-            (radonc-cancerbio) docker run -it \
-                                      -v /media/:/media/ \
-                                      -v /home/:/home/ \
-                                      -u $(id -u ${USER}) \
-                                      jeszyman/$image \
-                                      /bin/bash;;
-            (jeff-*) docker run -it \
-                            -v /home/:/home/ \
-                            -u $(id -u ${USER}) \
-                            -e "USER=jeszyman" \
-                            -e "HOME=/home/jeszyman" \
-                            jeszyman/$image \
-                            /bin/bash;;
-            (jeszyman-*) docker run -it \
-                                -v /home/:/home/ \
-                                -u $(id -u ${USER}) \
-                                -e "USER=jeszyman" \
-                                -e "repo=/home/jeszyman/repos/mpnst" \
-                                -e "localdata=/home/jeszyman/data/career/washu/radonc/chaudhuri/mpnst" \
-                                jeszyman/$image \
-                                /bin/bash;;
-            (acl*) docker run -it \
-                          -v /drive3/:/drive3/ \
-                          -v /duo4/:/duo4/ \
-                          -v /mnt/:/mnt/ \
-                          -v /home/:/home/ \
-                          -u $(id -u ${USER}) \
-                          -e "USER=jszymanski" \
-                          -e "repo=/drive3/users/jszymanski/repos/mpnst" \
-                          -e "localdata=/mnt/xt3/mpnst" \
-                          jeszyman/$image \
-                          /bin/bash;;
-            (ACL*) docker run -it \
-                          -v /home/:/home/ \
-                          -v /duo4/:/duo4/ \
-                          -u $(id -u ${USER}):$(id -g ${USER}) \
-                          -e "USER=jszymanski" \
-                          -e "repo=/drive3/users/jszymanski/repos/mpnst" \
-                          -e "localdata=/mnt/xt3/mpnst" \
-                          jeszyman/$image \
-                          /bin/bash;;
-            (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$image"')' /bin/bash;;
-        esac
-    fi    
-}
-#
-docker_interactive
-basecamp
-##
-## Interactive docker initialization
-docker_interactive() {
-    image="USER INPUT"
-    read -p "image name: " image
-    case $HOSTNAME in
-        (radonc-cancerbio) docker run -it \
-                                  -v /media/:/media/ \
-                                  -v /home/:/home/ \
-                                  -u $(id -u ${USER}) \
-                                  jeszyman/$image \
-                                  /bin/bash;;
-        (jeff-*) docker run -it \
-                        -v /home/:/home/ \
-                        -u $(id -u ${USER}) \
-                        -e "USER=jeszyman" \
-                        -e "repo=/home/jeszyman/repos/mpnst" \
-                        -e "localdata=/home/jeszyman/data/career/washu/radonc/chaudhuri/mpnst" \
-                        jeszyman/$image \
-                        /bin/bash;;
-        (jeszyman-*) docker run -it \
-                            -v /home/:/home/ \
-                            -u $(id -u ${USER}) \
-                            -e "USER=jeszyman" \
-                            -e "repo=/home/jeszyman/repos/mpnst" \
-                            -e "localdata=/home/jeszyman/data/career/washu/radonc/chaudhuri/mpnst" \
-                            jeszyman/$image \
-                            /bin/bash;;
-        (acl*) docker run -it \
-                      -v /drive3/:/drive3/ \
-                      -v /duo4/:/duo4/ \
-                      -v /mnt/:/mnt/ \
-                      -v /home/:/home/ \
-                      -u $(id -u ${USER}) \
-                      -e "USER=jszymanski" \
-                      -e "repo=/drive3/users/jszymanski/repos/mpnst" \
-                      -e "localdata=/mnt/xt3/mpnst" \
-                      jeszyman/$image \
-                      /bin/bash;;
-        (ACL*) docker run -it \
-                      -v /home/:/home/ \
-                      -v /duo4/:/duo4/ \
-                      -u $(id -u ${USER}):$(id -g ${USER}) \
-                      -e "USER=jszymanski" \
-                      -e "repo=/drive3/users/jszymanski/repos/mpnst" \
-                      -e "localdata=/mnt/xt3/mpnst" \
-                      jeszyman/$image \
-                      /bin/bash;;
-        (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$image"')' /bin/bash;;
-    esac
-}
-#
-
-#+end_src
-
-* Basecamp
-- 
+    - reproducibility 
 - platforms
   - languages
     - C++
@@ -195,6 +34,115 @@ docker_interactive() {
     - dictionary.csv
   - $project.org
   - $project.nf
+** bash
+*** bash functions
+
+#+name: check_local_software
+#+begin_src bash :tangle ./src/bash/bash_functions.sh
+check_local_software(){
+    # Usage
+    ##
+    ## Message
+    usage(){
+                #########1#########2#########3#########4#########5#########6#########7#########8
+        printf "\n check_local_software 
+                \n Checks list of software in bash array and exits with error message if any
+ software in the array is not found
+                \n \$1 = Bash array of software, e.g. try software=(bash, git)
+                \n "       
+    }
+    ##
+    ## Check
+    [[ $# -eq 0 ]] && usage
+    #
+    # Variables
+    software=$1
+    #
+    # Run
+    for i in "${software[@]}"; do
+    if command -v $i >/dev/null 2>&1 ; then
+        echo "$i installed"
+    else
+        echo "$i not found, exiting"
+        exit 1
+    fi
+done
+}
+#+end_src
+
+
+- bash functions
+  - docker interactive
+  #+name: 
+  #+begin_src bash :tangle ./src/bash/bash_functions.sh
+
+docker_interactive() {
+    if [ -f /.dockerenv ]; then
+        echo "shell already in docker, exiting"
+        exit 1
+    else
+        repo="USER INPUT"
+        read -p "image name: " image
+        case $HOSTNAME in
+            (radonc-cancerbio) docker run -it \
+                                      -v /mnt/:/mnt/ \
+                                      -v /home/:/home/ \
+                                      -u $(id -u ${USER}) \
+                                      -e "USER=jeszyman" \
+                                      -e "HOME=/home/jeszyman" \
+                                      jeszyman/$image \
+                                      /bin/bash;;
+            (jeff-*) docker run -it \
+                            -v /home/:/home/ \
+                            -u $(id -u ${USER}) \
+                            -e "USER=jeszyman" \
+                            -e "HOME=/home/jeszyman" \
+                            jeszyman/$image \
+                            /bin/bash;;
+            (jeszyman-*) docker run -it \
+                                -v /home/:/home/ \
+                                -u $(id -u ${USER}) \
+                                -e "USER=jeszyman" \
+                                -e "repo=$repo" \
+                                -e "data=$data" \
+                                jeszyman/$image \
+                                /bin/bash;;
+            (acl*) docker run -it \
+                          -v /drive3/:/drive3/ \
+                          -v /duo4/:/duo4/ \
+                          -v /mnt/:/mnt/ \
+                          -v /home/:/home/ \
+                          -u $(id -u ${USER}) \
+                          -e "USER=jszymanski" \
+                          jeszyman/$image \
+                          /bin/bash;;
+            (ACL*) docker run -it \
+                          -v /home/:/home/ \
+                          -v /duo4/:/duo4/ \
+                          -u $(id -u ${USER}):$(id -g ${USER}) \
+                          -e "USER=jszymanski" \
+                          jeszyman/$image \
+                          /bin/bash;;
+            (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$image"')' /bin/bash;;
+        esac
+    fi    
+}
+
+##
+
+#+end_src
+## identifies server in docker containers
+server_ask() {
+    echo -n "Choose your server: "
+    read SERVER
+    SERVER="${SERVER:=chaudhuri-roche}"
+}
+#+name: global_setup
+#+begin_src bash :tangle no
+repo=~/repos/basecamp
+
+#+end_src
+
 ** Docker                                                          :software:
 :PROPERTIES:
 :ID:       D2FAA88D-70CC-4450-BBB3-8A446CB43AF3
@@ -208,6 +156,34 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
+
+
+#+name: docker_build
+#+begin_src bash :tangle no
+cd $repo
+docker build . --file Dockerfile --tag jeszyman/test
+
+docker ps
+docker exec -it b95de4b12b87 bash
+
+docker inspect -f \
+       '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' \
+       b95de4b12b87
+
+docker run -p 127.0.0.5:80:8080 jeszyman/test
+
+docker run -it --expose 8080 -p 127.0.0.1:8080:8080 jeszyman/test
+
+docker run --rm --name some-nginx jeszyman/test
+docker run -it -d -p 180:180 --name test2 jeszyman/test
+
+docker container ls
+docker container inspect --format '{{ .NetworkSettings.IPAddress }}' test2
+curl 172.17.0.5 -p 180
+#+end_src
+
+
+
 - emacs ess docker ssh
   - https://github.com/emacs-ess/ESS/issues/928
   - https://gtown-ds.netlify.app/2017/08/16/docker-emacs/
@@ -479,7 +455,7 @@ jpg_to_pdf() {
 #+end_src
 
 #+name:symlink-by-csv-script 
-#+begin_src sh :tangle ./src/shell/functions.sh
+#+begin_src sh :tangle ./src/bash/bash_functions.sh
 #
 ######################
 ### symlink-by-csv ###
