@@ -1217,6 +1217,25 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
     - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
     - https://labs.consol.de/development/git/2017/02/22/gitignore.html
   - submodules
+    - sync
+    #+name: 
+    #+begin_src bash :tangle no
+
+cd ~/repos/bergom_rna
+
+date_today=$(date +%F)
+
+git commit -am $date_today
+git pull
+git push
+
+git submodule foreach --recursive git checkout master
+git submodule foreach --recursive git commit -am "2020-12-16"
+git submodule foreach --recursive git pull
+git submodule foreach --recursive git push
+
+
+#+end_src      
     - https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
     - add git submodule add <SUBMODULE>
     - initialize git submodule update --recursive --init
@@ -2036,6 +2055,239 @@ b=( "${a[@]}" )
        #minimum_bam_size=200000000
 - reference
   - https://github.com/shellspec/shellspec
+***** Bash Scripting
+:PROPERTIES:
+:ID:       89576FD2-F863-4220-BAD7-D4E179AEA644
+:END:
+:LOGBOOK:
+CLOCK: [2020-08-19 Wed 07:43]--[2020-08-19 Wed 07:54] =>  0:11
+CLOCK: [2020-06-25 Thu 08:13]--[2020-06-25 Thu 08:25] =>  0:12
+CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
+CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
+CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
+:END:
+- commands
+  |---------------------------------------+-------------------------------------------------|
+  | function                              | command                                         |
+  |---------------------------------------+-------------------------------------------------|
+  | <35>                                  | <35>                                            |
+  | [[https://www.gnu.org/software/bash/manual/bash.html#Bash-Conditional-Expressions][newer/older by mod date]]               | -nt -ot                                         |
+  | du -shc .                             | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]]                       |
+  | remove alias                          | unalias <ALIAS_NAME>                            |
+  | add alias                             | alias <ALIAS>="<COMMAND>"                       |
+  | l                                     | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\(' |
+  | change password                       | passwd                                          |
+  | search manual pages                   | /                                               |
+  | disk usage, top level                 | du -h --summarize                               |
+  | see total disk usage                  | df -h                                           |
+  | see files location on physical disk   | df <PATH>                                       |
+  | download in background & resume broke | wget -bqc <PATH>                                |
+  | see distro                            | lsb_release -a                                  |
+  | see system disks                      | lsblk                                           |
+  | add to path (temporary?)              | export PATH=$PATH:/new/path                     |
+  | show full path                        | readlink -f                                     |
+  | for loop on array                     | for i in "${arr[@]}""                           |
+  |                                       |                                                 |
+  - find disk usage https://unix.stackexchange.com/questions/67806/how-to-recursively-find-the-amount-stored-in-directory
+    - https://unix.stackexchange.com/questions/314394/my-hard-disk-is-full-how-can-i-determine-whats-taking-up-space
+  - [[https://stackoverflow.com/questions/6509650/extract-directory-from-path][directory of file as variable]]
+  - show running processes with top
+  - Common UNIX command line operations table
+    | Get lines in file | wc -l <FILE> |
+    |                   |              |
+    - [[http://www.cyberciti.biz/faq/tar-extract-linux/][Tarball extraction]]
+    - [[https://www.howtogeek.com/howto/ubuntu/split-a-text-file-in-half-or-any-percentage-on-ubuntu-linux/][Split a text file in half (or any percentage) on Ubuntu Linux]]
+  - Search
+    - Recursively search subdirectories
+      - [[https://askubuntu.com/questions/307876/how-to-search-for-files-recursively-into-subdirectories][How to Search for Files Recursively into Subdirectories]]
+      - [[https://stackoverflow.com/questions/1987926/how-do-i-grep-recursively][Recursively search subdirectories with grep -r "<SEARCH>" .]]
+    - Search for file: find . -name <pattern> -print
+      - https://kb.iu.edu/d/admm
+  - grep -r --unclude \*.R "as.Date" ~/
+  - functions
+    - https://ubuntuforums.org/showthread.php?t=1166951
+    - https://www.biostars.org/p/271330/
+  - mkdir -p will ignore if dir exists 
+  - printing across terminal width
+    - https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
+  - [[https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo][printf vs echo]]
+  - https://stackoverflow.com/questions/34567826/what-is-usage-in-shell-scripting/34567852#:~:text=It's%20a%20just%20a%20convention,filename%3D%241%20fi%20...
+  - https://stackoverflow.com/questions/687780/documenting-shell-scripts-parameters
+  - https://stackoverflow.com/questions/2953081/how-can-i-write-a-heredoc-to-a-file-in-bash-script
+  - https://www.google.com/search?q=bash+echo+tab 
+- [[https://www.gnu.org/software/bash/manual/bash.html][documentation]] and general reference
+  - https://www.gnu.org/software/bash/manual/html_node/index.html#SEC_Contents
+  - [[https://www.gnu.org/software/bash/manual/html_node/index.html#SEC_Contents][gnu bash reference manual]]
+  - guides, tutorials, cheatsheets, books
+    - http://mywiki.wooledge.org/BashGuide
+    - General guides and tutorials
+      - [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Linux documentation project: Advanced Bash-Scripting Guide]]
+      - http://bash3boilerplate.sh/
+      - [[https://bash.cyberciti.biz/guide/Main_Page][Linux Shell Scripting Tutorial]]
+      - http://ryanstutorials.net/bash-scripting-tutorial/
+      - http://linuxcommand.org/lc3_writing_shell_scripts.php
+      - https://www.youtube.com/watch?v=3ME7gayYeUQ
+      - https://www.youtube.com/results?search_query=shell+scripts+bioinformatics&page=&utm_source=opensearch
+      - https://google.github.io/styleguide/shell.xml
+      - http://mywiki.wooledge.org/BashGuide
+    - http://www.davidpashley.com/articles/writing-robust-shell-scripts/
+    - https://emb.carnegiescience.edu/sites/default/files/140602-sedawkbash.key_.pdf
+    - https://github.com/dylanaraps/pure-bash-bible
+    - https://devhints.io/bash
+    - https://www.ibm.com/developerworks/aix/library/au-satbash.html
+    - [[http://tldp.org/LDP/LG/issue18/bash.html][string manipulations]]
+    - cite:veeraraghavan2002 
+    - http://tldp.org/LDP/abs/html/
+    - https://github.com/onceupon/Bash-Oneliner
+    - https://devhints.io/bash?source=post_page---------------------------
+    - [[https://www.ostechnix.com/test-your-bash-skills-by-playing-command-line-games/][bash games]]
+    - [[https://www.reddit.com/r/commandline/comments/kbeoe/you_can_make_readline_and_bash_much_more_user/?st=j6k0lbfa&sh=6d214d1f][reddit: You can make readline (and bash) much more user friendly by adding a few options to ~/.inputrc]]
+    - best practices
+      - include error calling, but avoid -e http://mywiki.wooledge.org/BashFAQ/105
+      - https://www.google.com/search?q=shell+script+formatting+best+practices
+      - include usage example
+      - a -c flag essentially adds an extra shell around multi-part command, see https://superuser.com/questions/1214597/calling-a-script-with-bash-c-option
+      - ideas
+      - [[file:~/.emacs.d/snippets/sh-mode/write.bash]]
+      - https://stackoverflow.com/questions/33297857/how-to-check-dependency-in-bash-script
+    - https://unix.stackexchange.com/questions/42728/what-does-31-12-23-do-in-a-script
+    - http://tldp.org/LDP/abs/html/index.html
+    - https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
+    - https://github.com/dylanaraps/pure-bash-bible
+    - https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md
+  - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
+  - https://github.com/hopeseekr/BashScripts
+  - https://www.reddit.com/r/programming/comments/aw0zko/bash_creating_tabcompletion_for_your_programs/
+- ideas
+  - check and set file permissions as best practice
+  - ideas for function development protocol-
+    - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
+- interfaces
+  - emacs
+    - https://stackoverflow.com/questions/1008750/ide-emacs-mode-for-shell-scripting-in-bash-sh-etc
+    - http://www.skybert.net/emacs/bash-linting-in-emacs/
+- processes 
+  - comments https://www.google.com/search?q=bash+comment+in+pipe
+  - exits
+    - https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script#:~:text=All%20by%20itself%2C%20exit%20implies,successful%20completion%20of%20your%20script.&text=However%20by%20specifying%20the%201,exited%20with%20an%20error%20condition.
+  - arrays
+    - [[https://stackoverflow.com/questions/18921350/shell-script-correct-way-to-declare-an-empty-array][declare array]]
+    - [[https://unix.stackexchange.com/questions/125632/printing-an-array-to-a-file-with-each-element-of-the-array-in-a-new-line-in-bash][print array with line breaks]]
+    - https://www.google.com/search?q=bash+create+array 
+    - https://www.google.com/search?q=bash+pass+array+to+for+loop 
+    - pass to array 
+      - pass each line of file
+        - https://riptutorial.com/bash/example/19457/read-lines-of-a-file-into-an-array
+      - pass cat output
+        - https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
+      - https://www.google.com/search?q=pass+cat+output+to+array+variable
+      - command output https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
+  - for loops
+    - examples
+      - Recursively git commit with date tag
+        #+BEGIN_SRC sh
+
+     d=$(date +%Y-%m-%d)
+     echo "$d"
+     cd ~/Box\ Sync/
+     for i in ./*/ ; do (cd "$i" && git commit -a -m "$d"); done
+     end
+
+     #+END_SRC
+  - checkers
+    - [[https://unix.stackexchange.com/questions/322817/how-to-find-the-file-where-a-bash-function-is-defined][check were function is called from]]
+    - [[https://askubuntu.com/questions/102093/how-to-see-the-command-attached-to-a-bash-alias][check where alias goes w/ type]]
+    - [[https://stackoverflow.com/questions/592620/how-can-i-check-if-a-program-exists-from-a-bash-script][check if program exists]]
+    - [[https://stackoverflow.com/questions/59838/how-can-i-check-if-a-directory-exists-in-a-bash-shell-script][check if dir exists]]
+    - https://theterminallife.com/check-if-file-exists-and-is-not-empty/
+  - clipboard
+    - https://askubuntu.com/questions/382767/how-to-pipe-dump-clipboard-contents-to-a-file  
+  - configuration management
+    - https://en.wikipedia.org/wiki/Ansible_(software)
+  - debug
+    - https://zwischenzugs.com/2018/10/09/learn-bash-debugging-techniques-the-hard-way/
+  - feedback, traps, eof, etc
+    - traps
+      - https://opensource.com/article/20/6/bash-trap
+    - error reporting
+      - interupt with && https://serverfault.com/questions/252448/bash-script-alert-on-error
+      - [[https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script][Meaning of exit 0, exit 1 and exit 2 in a bash script]]
+  - pipe
+    - https://www.google.com/search?q=pipe+store+output+as+variable 
+  - file and directory metadata
+    - https://www.google.com/search?q=bash+compare+files+by+date
+      - https://unix.stackexchange.com/questions/372857/compare-two-file-modification-dates
+          #+begin_src bash 
+      cd /tmp/
+      rm file1
+      rm file2
+      touch file2; sleep 2; touch file1
+      if [ file1 -nt file2 ]; then
+          echo "yes"
+      fi
+          #+end_src
+      - https://unix.stackexchange.com/questions/88525/need-to-move-files-to-different-folder-based-on-the-creation-date
+    - https://www.google.com/search?q=bash+check+file+size
+    - https://www.google.com/search?q=bash+list+directory+sizes
+    - https://www.google.com/search?q=bash+add+date+to+file+name
+  - functions  
+    - https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
+    - https://www.shellhacks.com/print-usage-exit-if-arguments-not-provided/
+  - globbing
+    - https://stackoverflow.com/questions/2937407/test-whether-a-glob-has-any-matches-in-bash?noredirect=1&lq=1
+  - resource use control
+    - https://linuxhint.com/limit_cpu_usage_process_linux/
+    - https://stackoverflow.com/questions/4651234/how-to-determine-the-process-memory-limit-in-linux
+    - https://unix.stackexchange.com/questions/52313/how-to-get-execution-time-of-a-script-effectively
+    - setting local resource limits
+      - http://coldattic.info/post/40/
+  - install
+    - configure, make, install
+      - https://www.tldp.org/HOWTO/Software-Building-HOWTO-3.html
+      - https://superuser.com/questions/360178/what-does-make-install-do
+      - often Makefile will install to created ./bin/ sub-directory 
+    - https://stackoverflow.com/questions/10961439/why-always-configure-make-make-install-as-3-separate-steps
+  - links
+    - https://stackoverflow.com/questions/5767062/how-to-check-if-a-symlink-exists
+  - linting
+    - http://www.skybert.net/emacs/bash-linting-in-emacs/
+    - https://github.com/koalaman/shellcheck#in-your-editor
+    - https://stackoverflow.com/questions/171924/how-do-i-syntax-check-a-bash-script-without-running-it#171932
+    - http://www.skybert.net/emacs/bash-linting-in-emacs/
+    - http://www.skybert.net/emacs/bash-linting-in-emacs/
+  - logging
+    - https://stackoverflow.com/questions/18278223/method-to-write-in-log-files-in-a-shell-script
+  - multithreading
+    - https://duckduckgo.com/?q=multithread+grep&ia=qa
+    - https://stackoverflow.com/questions/1455695/forking-multi-threaded-processes-bash
+  - prompt for user input
+    - https://www.google.com/search?q=bash+prompt+user+input
+    - [[https://stackoverflow.com/questions/226703/how-do-i-prompt-for-yes-no-cancel-input-in-a-linux-shell-script][stack: How do I prompt for Yes/No/Cancel input in a Linux shell script?]]
+  - variables
+    - 1 & 2 https://stackoverflow.com/questions/10508843/what-is-dev-null-21
+    - [[https://stackoverflow.com/questions/91368/checking-from-shell-script-if-a-directory-contains-files][use globbing in variables with shopt]]
+    - [[https://www.cyberciti.biz/faq/linux-unix-formatting-dates-for-display/][formatting dates for display]]
+    - [[https://data36.com/variables-if-statements-while-loops-bash-data-science/][variables for if statements and while loops]].
+    - To make executable: chmod +x /path/to/yourscript.sh
+    - https://stackoverflow.com/questions/19512550/what-does-mean-in-a-shell-if-statement
+    - [[https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script][Meaning of exit 0, exit 1 and exit 2 in a bash script]]
+    - https://stackoverflow.com/questions/2642585/read-a-variable-in-bash-with-a-default-value
+  - function template- add run type
+    - updating
+    - overwrite
+- users and groups
+  | function                  | command                   |
+  |---------------------------+---------------------------|
+  | list users                |                           |
+  | list groups               |                           |
+  | list group members        | getent group <GROUPNAME>  |
+  | add user                  | useradd <USERNAME>        |
+  | set password              | passwd <USERNAME>         |
+  | add group                 | groupadd <GROUPNAME>      |
+  | add user to group         | usermod -g <GROUP> <USER> |
+  | change user primary group |                           |
+- https://unix.stackexchange.com/questions/359832/converting-csv-to-tsv
+- https://stackoverflow.com/questions/12522269/how-to-find-the-largest-file-in-a-directory-and-its-subdirectories
 ***** my bash functions -> [[file:~/repos/basecamp/src/bash/]]
 :PROPERTIES:
 :ID:       569d1afa-e991-47b7-be15-3dd6364f5258
