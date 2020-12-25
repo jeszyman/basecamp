@@ -1219,23 +1219,34 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
   - submodules
     - sync
     #+name: 
-    #+begin_src bash :tangle no
-
-cd ~/repos/bergom_rna
-
-date_today=$(date +%F)
-
-git commit -am $date_today
-git pull
-git push
-
-git submodule foreach --recursive git checkout master
-git submodule foreach --recursive git commit -am "2020-12-16"
-git submodule foreach --recursive git pull
-git submodule foreach --recursive git push
-
-
+    #+begin_src bash :tangle ~/repos/basecamp/src/bash/daily_git_commit.sh
+date_today=$(date +%F)#+end_src      
+#
+for repo in ~/repos/*; do
+    echo Running $repo
+    git commit -am $date_today
+    git pull
+    git push
+done
 #+end_src      
+    
+
+
+
+#    git submodule foreach --recursive git checkout master
+#    git submodule foreach --recursive git commit -am "2020-12-16"
+#    git submodule foreach --recursive git pull
+#    git submodule foreach --recursive git push
+
+# Sync from git submodule
+# cd $repo
+# git submodule foreach --recursive git checkout master
+# git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
+# git submodule foreach --recursive git pull
+# git submodule foreach --recursive git push
+
+
+
     - https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
     - add git submodule add <SUBMODULE>
     - initialize git submodule update --recursive --init
@@ -2066,6 +2077,10 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+# Declare variable if currently empty
+if [ -z ${repo+x} ]; then repo=~/repos/bergom_rna; fi
+
+
 - commands
   |---------------------------------------+-------------------------------------------------|
   | function                              | command                                         |
