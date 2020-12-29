@@ -2340,7 +2340,7 @@ if [ -z ${repo+x} ]; then repo=~/repos/bergom_rna; fi
 :PROPERTIES:
 :ID:       569d1afa-e991-47b7-be15-3dd6364f5258
 :END:
-
+http://mywiki.wooledge.org/BashGuide
 #+name: git_pull_all
 #+begin_src bash :tangle ./src/git_pull_all.sh :dir ~/repos/basecamp
 #!/bin/bash
