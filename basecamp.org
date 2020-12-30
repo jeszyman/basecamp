@@ -1,4 +1,7 @@
 * Basecamp
+:PROPERTIES:
+:ID:       d28e2349-4e1e-4b50-a30f-d3dfc592fed4
+:END:
 https://www.google.com/search?client=ubuntu&hs=w80&sxsrf=ALeKk02nCefgbT-UzhMVn2emvtD5Hw-xbA%3A1608387013058&ei=xQneX7P-AtOD9PwPgImv6AY&q=chrome+view+excel+file+in+browser&oq=chrome+view+excel+file+in+browser&gs_lcp=CgZwc3ktYWIQAzIFCAAQzQIyBQgAEM0CMgUIABDNAjIFCAAQzQI6BAgAEEc6AggAOgYIABAHEB46BggAEAUQHjoGCAAQCBAeOggIABAIEAcQHjoECCEQClCS5g5Y75MPYKKWD2gBcAJ4AIABzgGIAZ8MkgEGMTUuMC4xmAEAoAEBqgEHZ3dzLXdpesgBCMABAQ&sclient=psy-ab&ved=0ahUKEwjz9MvEnNrtAhXTAZ0JHYDEC20Q4dUDCA0&uact=5
 ** Setup
 :PROPERTIES:
@@ -19,7 +22,13 @@ repo=~/repos/"${project}"
 mkdir -p "${repo}"/src/shell
 #+end_src
 ** [[id:569d1afa-e991-47b7-be15-3dd6364f5258][LINK TO my bash functions]]
+:PROPERTIES:
+:ID:       408903f5-eacd-453e-86f6-75b3bbcb54e4
+:END:
 ** [[id:cd560390-aa1e-4c9e-8317-08610e5de42a][LINK TO linux]] 
+:PROPERTIES:
+:ID:       691fe673-ca62-4737-ab8c-055b3a098edf
+:END:
 ** Software
 :PROPERTIES:
 :ID:       9E19E626-9D6C-4296-BEDB-80033A846CF4
@@ -42,6 +51,9 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 - top-down planning, bottom-up delivery
 
 *** Specific software 
+:PROPERTIES:
+:ID:       6dbf1097-a795-4397-bfee-97e4dc79bd07
+:END:
 - by application
   - pdf ocr
     - https://softwarerecs.stackexchange.com/questions/3412/free-ocr-software-that-makes-a-pdf-searchable-with-searchable-text-at-the-right
@@ -79,15 +91,24 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 - https://github.com/eudaldgr/youtube-dl
 
 **** virtualbox
+:PROPERTIES:
+:ID:       147fb935-7526-497f-ab84-2b7903ea996e
+:END:
 - [[https://www.virtualbox.org/manual/][documentation]]
 - processes
   - install
     - post-install guest additions CD
 - https://www.google.com/search?q=virtualbox+linux+guest+additions 
 **** by operating system
+:PROPERTIES:
+:ID:       d524bbb8-0934-4e9f-bd8b-fece2fff4916
+:END:
 - linux
   - https://github.com/libfuse/sshfs
 **** orgzly
+:PROPERTIES:
+:ID:       a5717be7-afe9-4db2-8b4d-b797c7631466
+:END:
 - orgzly event reminders occur at time of event https://github.com/orgzly/orgzly-android/issues/664
 **** inkscape
 :PROPERTIES:
@@ -98,11 +119,17 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
   - https://stackoverflow.com/questions/15710673/inkscape-too-slow-when-importing-r-plots
   - https://inkscape.org/forums/questions/line-spacing/
 **** okular
+:PROPERTIES:
+:ID:       569921c4-c8fe-4037-a2be-3c3f7844cd86
+:END:
 - https://www.google.com/search?q=okular+open+in+new+windows
 - [[https://docs.kde.org/stable5/en/kdegraphics/okular//][documentation]]
 - https://docs.kde.org/trunk5/en/kdegraphics/okular/okular.pdf 
 - https://www.google.com/search?q=okular+remap+keyboard+shortcuts
 **** libreoffice 
+:PROPERTIES:
+:ID:       dc8d8b6a-8518-471c-8fec-c3515a4bc6d9
+:END:
 - https://ask.libreoffice.org/en/question/157807/set-memory-settings-in-version-6042/
 - https://superuser.com/questions/345365/exporting-vector-graphics-from-inkscape-into-libreoffice
 - https://askubuntu.com/questions/599915/what-is-the-closest-font-to-helvetica-available-on-ubuntu
@@ -111,12 +138,18 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 - https://www.reddit.com/r/libreoffice/comments/7umifb/has_libreoffice_6_just_killed_the_indispensable/
 - https://www.google.com/search?q=libreoffice+escape+comment
 ***** libreoffice impress
+:PROPERTIES:
+:ID:       bc100c54-05f8-4e8c-9790-b0df3ef518db
+:END:
 
 - https://www.google.com/search?q=libreoffice+snap+line
 - https://ask.libreoffice.org/en/question/10973/permanently-set-default-page-style/
 
 
 **** gimp
+:PROPERTIES:
+:ID:       9ecdf234-2e25-486f-926d-ee71a7179a96
+:END:
 - commands
   |----------+---------|
   | function | command |
@@ -161,6 +194,9 @@ https://github.com/willsALMANJ/Zutilo
   - [[https://forums.zotero.org/discussion/16733/manual-citation-entry-clunky][No answers, but question asked]]
 
 *** Software development
+:PROPERTIES:
+:ID:       6a06bb32-1d72-4244-8b66-d888af715bea
+:END:
 - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
 - unit testing
   - https://docs.python.org/3/library/unittest.html
@@ -382,9 +418,15 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 https://www.reddit.com/r/commandline/comments/ka6izh/open_book_study_group_for_the_linux_command_line/
 https://docs.monadical.com/s/system-monitoring-tools
 ***** processes
+:PROPERTIES:
+:ID:       3973f50f-db8f-4a82-8a8e-212d3e0b03af
+:END:
 - account management
   - https://www.google.com/search?q=unix+create+user 
 ***** general
+:PROPERTIES:
+:ID:       234aa816-28c7-4a09-bdc0-0116322d0b9c
+:END:
 - guides, tutorials, cheatsheets 
   - http://www.ee.surrey.ac.uk/Teaching/Unix/
   - [[http://linuxcommand.org/][LinuxCommand.org]]
@@ -408,6 +450,9 @@ https://docs.monadical.com/s/system-monitoring-tools
 - POSIX
   - [[https://github.com/dylanaraps/pure-sh-bible][pure sh bible]]
 ***** UNIX tools
+:PROPERTIES:
+:ID:       ca6d1cc3-2489-4616-8125-3ed27a3c3740
+:END:
 :LOGBOOK:
 CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :END:
@@ -559,6 +604,9 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - X11
   - https://www.windowmaker.org/
 ***** ideas
+:PROPERTIES:
+:ID:       1ddc60ab-106c-4c31-835e-c36e54427b13
+:END:
 - idea for citrix script- - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
 - ideas- check disk space https://www.cyberciti.biz/tips/shell-script-to-watch-the-disk-space.html
 - GNU - [[https://www.gnu.org/help/help.html][Helping GNU]]
@@ -598,13 +646,22 @@ CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
   - https://linustechtips.com/main/
 
 ****** documentation and general education
+:PROPERTIES:
+:ID:       ec0fbb20-4909-4ab7-8ba2-c48836743d01
+:END:
   - https://www.kernel.org/doc/html/latest/admin-guide/index.html
   - general education- https://www.reddit.com/r/linux4noobs/comments/fntvl7/between_linux_essentials_linux_and_lpic1_which/
   - https://refspecs.linuxfoundation.org/
 ****** interfaces
+:PROPERTIES:
+:ID:       1696cc89-66bc-454c-8659-95f354b79d82
+:END:
   - https://github.com/tbodt/ish/projects/7
   - https://github.com/Airblader/i3
 ****** variables
+:PROPERTIES:
+:ID:       d16cef2b-b679-48db-958c-2105b06478ba
+:END:
   - PATH
     - https://unix.stackexchange.com/questions/26047/how-to-correctly-add-a-path-to-path
       - note on config files where environmental variables can be set: 
@@ -624,6 +681,9 @@ CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
     - [[https://stackoverflow.com/questions/1727280/is-there-a-way-to-edit-a-symlink-without-deleting-it-first][stack: create and edit symlinks]]- ln -s /location/to/link linkname
     - @ files are symlinks?https://unix.stackexchange.com/questions/191717/what-does-the-symbol-mean-on-filenames
 ****** tools
+:PROPERTIES:
+:ID:       6057b49e-f8d4-42fb-8fec-5a80a802dd92
+:END:
   - ifconfig
     - [[file:/usr/share/man/man8/ifconfig.8.gz]] 
 - gnu parallel
@@ -635,6 +695,7 @@ CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :PROPERTIES:
 :ID:       fe8ca086-cd69-4f40-a96d-3e99678c400e
 :END:
+- https://www.google.com/search?q=trash-cli+linux 
 #+begin_src bash 
 #
 # Install
@@ -646,6 +707,9 @@ sudo python setup.py install
 #
 #+end_src
 ****** commands
+:PROPERTIES:
+:ID:       6cf0206e-fe85-44bb-a84b-b6c63c3adf6c
+:END:
   |----------------------+-------------------------------------|
   | function             | command                             |
   |----------------------+-------------------------------------|
@@ -658,6 +722,9 @@ sudo python setup.py install
 - https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
 - find large files sudo du -a /home | sort -n -r | head -n 10
 ****** processes
+:PROPERTIES:
+:ID:       319f84a8-ad1d-4a05-8bc9-af43f20963d6
+:END:
 https://superuser.com/questions/185880/how-to-convert-a-pdf-document-to-png
 - https://www.google.com/search?q=linux+command+line+convert+jpg+to+pdf
 - https://www.google.com/search?q=linux+change+rm+to+recycle+bin
@@ -1084,6 +1151,9 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
   - [ ] wine windows
 
 ******* ideas
+:PROPERTIES:
+:ID:       cada664d-a4ad-4727-ab23-ef5deed68e15
+:END:
 
   - https://www.google.com/search?q=libreoffice+save+new+slide+layout
   - get better highlightin on ubuntu menus
@@ -1131,6 +1201,9 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
 
 
 ****** ideas
+:PROPERTIES:
+:ID:       51710d48-bcbb-4709-bd5e-9774546bbbda
+:END:
 - https://github.com/Fmstrat/winapps
 ***** MacOS
 :PROPERTIES:
@@ -1437,6 +1510,9 @@ https://help.github.com/en/articles/about-project-boards
 CLOCK: [2019-02-06 Wed 16:12]--[2019-02-06 Wed 17:05] =>  0:53
 :END:
 *** General reference
+:PROPERTIES:
+:ID:       48dfc684-aa60-4222-8641-d1646b3451be
+:END:
 - https://www.reddit.com/r/programming/comments/f9ut5f/the_most_recommended_programming_books_of_alltime/
 - https://stackoverflow.com/questions/1711/what-is-the-single-most-influential-book-every-programmer-should-read
 - https://altbulletin.com/how-to-code-like-the-top-programmers-at-nasa-10-critical-rules/
@@ -1458,6 +1534,9 @@ CLOCK: [2019-02-06 Wed 16:12]--[2019-02-06 Wed 17:05] =>  0:53
   - procedure-oriented- sequence of actions is more important to data
     - 'top down'
 *** languages
+:PROPERTIES:
+:ID:       b9145567-7654-45d7-abb9-4418d3f12b90
+:END:
 - C++
   - http://www.seqan.de/
   - https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/
@@ -1499,6 +1578,9 @@ CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
 ***** interfaces, platforms, and IDEs
+:PROPERTIES:
+:ID:       7db4987d-0daa-4d58-8660-37fbe566d8be
+:END:
 - emacs
   - https://www.reddit.com/r/orgmode/comments/johcin/org_mode_org_roam_poetry_for_python_literate/
   - elpy
@@ -1548,6 +1630,9 @@ CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
   - https://github.com/lambdalisue/jupyter-vim-binding
 - visual studio- https://code.visualstudio.com/docs/python/python-tutorial
 ***** tutorials, courses, learning resources, best practices
+:PROPERTIES:
+:ID:       f6377a77-334d-4084-82df-9c50bd605af9
+:END:
 - [[https://www.edx.org/course/statistics-and-probability-in-data-science-using-python][edX stats with python]]
 - Learning resources
   - [[https://www.reddit.com/r/datascience/comments/7u4c05/python_tools_that_everyone_should_know_about/][reddit: data science python tools that everyone should know about]]
@@ -1575,6 +1660,9 @@ CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 - https://www.simple-is-better.org/template/pyratemp.html
 - https://en.m.wikipedia.org/wiki/Zen_of_Python
 ***** applications
+:PROPERTIES:
+:ID:       25602177-b0aa-4c5a-8a54-c74a872b7ef5
+:END:
 :LOGBOOK:
 CLOCK: [2020-12-10 Thu 20:06]--[2020-12-11 Fri 07:51] => 11:45
 :END:
@@ -1629,9 +1717,15 @@ rx_dict = {
 - full use case examples
   - [[https://www.reddit.com/r/programming/comments/651fzh/wedding_at_scale_how_i_used_twilio_python_and/][reddit: Wedding at Scale: How I Used Twilio, Python and Google to Automate My Wedding]]
 ***** [[https://docs.python.org/3/][documentation]]
+:PROPERTIES:
+:ID:       5947bbe8-732f-4df3-82c0-19706ae44ada
+:END:
   - functions
     - https://www.datacamp.com/community/tutorials/functions-python-tutorial
 ***** packages
+:PROPERTIES:
+:ID:       7facb855-05a8-4cc5-b61e-cc3112251524
+:END:
 - https://seaborn.pydata.org/generated/seaborn.barplot.html#seaborn.barplot
 - https://www.reddit.com/r/datascience/comments/itzylb/the_numpy_paper_is_out_nature_open_access_paper/
 - https://www.selenium.dev/
@@ -2110,6 +2204,7 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+https://www.oncotarget.com/article/5183/text/
 # Declare variable if currently empty
 if [ -z ${repo+x} ]; then repo=~/repos/bergom_rna; fi
 
@@ -2690,6 +2785,9 @@ pandoc -S $test | xclip -selection clipboard
 
 
 ** ESS with R running through docker
+:PROPERTIES:
+:ID:       7cb5af61-5a19-40ce-96ad-b5b5df51daae
+:END:
 - ess on docker
   - http://ess.r-project.org/Manual/ess.html#Activating-and-Loading-ESS
   - and get docker ip
