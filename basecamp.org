@@ -1282,6 +1282,7 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
+https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin
 - processes
   - initializing
     - https://www.google.com/search?q=initialize+git+repo
