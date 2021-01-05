@@ -204,11 +204,11 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :ID:       9ecdf234-2e25-486f-926d-ee71a7179a96
 :END:
 - commands
-  |-------------------------------------+-------------------------------------|
-  | function                            | command                             |
-  |-------------------------------------+-------------------------------------|
-  | <35>                                | <35>                                |
-  |                                     |                                     |
+  |----------+---------|
+  | function | command |
+  |----------+---------|
+  | <35>     | <35>    |
+  |          |         |
 - processes
   - https://www.google.com/search?q=gimp+crop+image
   - https://www.google.com/search?q=gimp+convert+to+black+and+white
@@ -269,11 +269,11 @@ CLOCK: [2017-11-10 Fri 11:40]--[2017-11-10 Fri 11:57] =>  0:17
 CLOCK: [2017-11-10 Fri 10:45]--[2017-11-10 Fri 11:31] =>  0:46
 :END:
 - commands
-  |-------------------------------------+-------------------------------------|
-  | function                            | command                             |
-  |-------------------------------------+-------------------------------------|
-  | <35>                                | <35>                                |
-  |                                     |                                     |
+  |----------+---------|
+  | function | command |
+  |----------+---------|
+  | <35>     | <35>    |
+  |          |         |
 - [[http://www.graphviz.org/documentation/][documentation]] and guides
   - [[http://www.graphviz.org/doc/info/lang.html][The DOT Language]]
   - [[http://www.tonyballantyne.com/graphs.html][Drawing Graphs using Dot and Graphviz]]
@@ -535,12 +535,12 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - awk
   - [[https://stackoverflow.com/questions/47091464/print-for-loop-input-filename-on-piped-awk-output][file name as variable]]
   - commands
-    |-------------------------------------+-------------------------------------|
-    | function                            | command                             |
-    |-------------------------------------+-------------------------------------|
-    | <35>                                | <35>                                |
-    | set delimiters                      | 'BEGIN {FS="<DELIM>";OFS="<DELIM>"  |
-    |                                     |                                     |
+    |----------------+------------------------------------|
+    | function       | command                            |
+    |----------------+------------------------------------|
+    | <35>           | <35>                               |
+    | set delimiters | 'BEGIN {FS="<DELIM>";OFS="<DELIM>" |
+    |                |                                    |
   - processes
     - https://www.google.com/search?q=awk+pass+variable 
     - [[https://stackoverflow.com/questions/19149731/use-awk-to-find-average-of-a-column][find average]]
@@ -611,11 +611,11 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - rsync
   - [[https://rsync.samba.org/]]
   - commands
-    |-------------------------------------+-------------------------------------|
-    | function                            | command                             |
-    |-------------------------------------+-------------------------------------|
-    | <35>                                | <35>                                |
-    |                                     |                                     |
+    |----------+---------|
+    | function | command |
+    |----------+---------|
+    | <35>     | <35>    |
+    |          |         |
   - processes
   - standards and best practice
   - [[https://rsync.samba.org/documentation.html][documentation]]
@@ -642,11 +642,11 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - unzip - https://askubuntu.com/questions/994731/how-to-skip-unzipping-a-file-that-already-exists
 - Unison
   - commands
-    |-------------------------------------+-------------------------------------|
-    | function                            | command                             |
-    |-------------------------------------+-------------------------------------|
-    | <35>                                | <35>                                |
-    |                                     |                                     |
+    |----------+---------|
+    | function | command |
+    |----------+---------|
+    | <35>     | <35>    |
+    |          |         |
   - processes
   - [[https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html][documentation]]
   - applications
@@ -1268,12 +1268,12 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
 - https://www.howtogeek.com/312755/what-is-the-process-windowserver-and-why-is-it-running-on-my-mac/
 - [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][How to allow install of non app store or identified developers on MacOS Sierra]]
 - Command Table
-  | Function             | Command                   | Notes                |
-  |----------------------+---------------------------+----------------------|
-  |                      |                           | <20>                 |
+  | Function             | Command                   | Notes                                                                                                               |
+  |----------------------+---------------------------+---------------------------------------------------------------------------------------------------------------------|
+  |                      |                           | <20>                                                                                                                |
   | List process to kill | ps -A\ grep -m1 <PROCESS> | https://stackoverflow.com/questions/11546765/how-to-get-the-pid-of-a-process-by-giving-the-process-name-in-mac-os-x |
-  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/ |
-  |                      |                           |                      |
+  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                                               |
+  |                      |                           |                                                                                                                     |
 - https://stackoverflow.com/questions/17935301/how-to-force-mac-os-to-open-search-with-google-in-chrome
 - Window management
   - Default layouts
@@ -1429,21 +1429,21 @@ done
     - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
   - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
 - commands
-  | Action                         | Command                             |
-  |--------------------------------+-------------------------------------|
-  | <30>                           | <35>                                |
-  | Create repo                    | git init                            |
-  | Ignore files                   | touch .gitignore                    |
-  | Add (stage) file               | git add                             |
-  | Add recursive                  | git add --all                       |
-  | Remove (unstage)               | git reset                           |
-  | Last update                    | git log --name-status HEAD^..HEAD   |
-  | To be commited                 | git status                          |
-  | List untracked                 | git ls-files --others --exclude-standard |
-  | List tracked                   | git ls-tree -r master --name-only   |
-  | Stop tracking repo             | rm -rf .git/                        |
-  | View list of commits           | git log                             |
-  | View file changes              | git diff - HEAD --staged            |
+  | Action               | Command                                  |
+  |----------------------+------------------------------------------|
+  | <30>                 | <35>                                     |
+  | Create repo          | git init                                 |
+  | Ignore files         | touch .gitignore                         |
+  | Add (stage) file     | git add                                  |
+  | Add recursive        | git add --all                            |
+  | Remove (unstage)     | git reset                                |
+  | Last update          | git log --name-status HEAD^..HEAD        |
+  | To be commited       | git status                               |
+  | List untracked       | git ls-files --others --exclude-standard |
+  | List tracked         | git ls-tree -r master --name-only        |
+  | Stop tracking repo   | rm -rf .git/                             |
+  | View list of commits | git log                                  |
+  | View file changes    | git diff - HEAD --staged                 |
   - Staging
     - git add 'stages' a file- makes it ready to add to repo
     - git reset unstages
@@ -1539,11 +1539,11 @@ https://github.blog/2019-08-08-github-actions-now-supports-ci-cd/?WT.mc_id=devto
 https://help.github.com/en/articles/about-project-boards
 - https://www.sciencedirect.com/science/article/pii/S0950584914001050
 - commands
-  |-------------------------------------+-------------------------------------|
-  | function                            | command                             |
-  |-------------------------------------+-------------------------------------|
-  | <35>                                | <35>                                |
-  |                                     |                                     |
+  |----------+---------|
+  | function | command |
+  |----------+---------|
+  | <35>     | <35>    |
+  |          |         |
 - processes
 - documentation
 - applications
@@ -2259,6 +2259,7 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+pipe to bash http://www.peteryu.ca/tutorials/shellscripting/batch_rename
 https://www.oncotarget.com/article/5183/text/
 # Declare variable if currently empty
 if [ -z ${repo+x} ]; then repo=~/repos/bergom_rna; fi
