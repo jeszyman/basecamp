@@ -673,6 +673,7 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 CLOCK: [2020-12-15 Tue 06:51]--[2020-12-15 Tue 07:08] =>  0:17
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+https://unix.stackexchange.com/questions/227876/how-to-set-custom-resolution-using-xrandr-when-the-resolution-is-not-available-i
 - umount https://stackoverflow.com/questions/7878707/how-to-unmount-a-busy-device
 - https://www.google.com/search?q=linux+system+RAM 
 - remove nfs stale file handle https://unix.stackexchange.com/questions/36297/how-can-i-resolve-a-stale-nfs-handle
@@ -1866,7 +1867,7 @@ CLOCK: [2019-02-19 Tue 11:04]--[2019-02-19 Tue 11:25] =>  0:21
 #+BEGIN_SRC emacs-lisp :results replace
 (list "cons" "newelt" "balsh")
 #+END_SRC
-
+https://www.reddit.com/r/emacs/comments/kt3mvf/introduction_to_emacs_lisp_fundamentals_live_18/
 #+RESULTS[bbf62e487081f8e947ef5d004eb0bf97f38c1537]: block-1
 | cons | newelt | balsh |
 
