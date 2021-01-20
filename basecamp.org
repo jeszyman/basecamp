@@ -1337,61 +1337,6 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
-https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin
-- processes
-  - initializing
-    - https://www.google.com/search?q=initialize+git+repo
-    - git branch --set-upstream-to=origin/master master
-  - gitignore
-    - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
-    - https://labs.consol.de/development/git/2017/02/22/gitignore.html
-  - submodules
-    - sync
-    #+name: 
-    #+begin_src bash :tangle ~/repos/basecamp/src/bash/daily_git_commit.sh
-#!/bin/bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-#                                                                              #
-#                       Script to automate git pulls                           #
-#             from a set of repositories within the same root dir              #
-#                                                                              #
-#########1#########2#########3#########4#########5#########6#########7#########8
-# 
-date_today=$(date +%F)
-# 1. Script Checks
-#
-## Check if git exist
-command -v git >/dev/null 2>&1 # stop if git not found
-if [ $? -eq 1 ]; then
-    echo "Git not found"
-    exit 1; fi
-##
-## Check if any repos exist
-shopt -s nullglob
-repo_dirs=(~/repos/*)
-if [ ${#repo_dirs[@]} -eq 0 ]; then
-    echo "No repos at ~/repos/"
-    exit 1; fi
-shopt -u nullglob
-##
-# 2. Pull Function 
-#                      
-for d in $HOME/repos/*
-do 
-    [[ ! -d "$d" ]] && continue
-    echo "$d" &&
-    cd "$d" &&
-    git add -A &&
-    git commit -am $date_today &&
-    git pull &&
-    git submodule update --recursive &&
-    git submodule update --remote && 
-    git push 
-    cd "$OLDPWD"
-done
-#
-#+end_src      
-    
 
 
 
@@ -1409,9 +1354,64 @@ done
 
 
 
+
+- processes
+  - initializing
+    - https://www.google.com/search?q=initialize+git+repo
+    - git branch --set-upstream-to=origin/master master
+  - gitignore
+    - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
+    - https://labs.consol.de/development/git/2017/02/22/gitignore.html
+  - submodules
+    - initialize git submodule update --recursive --init
+    - sync
+        #+name: 
+        #+begin_src bash :tangle ~/repos/basecamp/src/bash/daily_git_commit.sh
+    #!/bin/bash
+    #########1#########2#########3#########4#########5#########6#########7#########8
+    #                                                                              #
+    #                       Script to automate git pulls                           #
+    #             from a set of repositories within the same root dir              #
+    #                                                                              #
+    #########1#########2#########3#########4#########5#########6#########7#########8
+    # 
+    date_today=$(date +%F)
+    # 1. Script Checks
+    #
+    ## Check if git exist
+    command -v git >/dev/null 2>&1 # stop if git not found
+    if [ $? -eq 1 ]; then
+        echo "Git not found"
+        exit 1; fi
+    ##
+    ## Check if any repos exist
+    shopt -s nullglob
+    repo_dirs=(~/repos/*)
+    if [ ${#repo_dirs[@]} -eq 0 ]; then
+        echo "No repos at ~/repos/"
+        exit 1; fi
+    shopt -u nullglob
+    ##
+    # 2. Pull Function 
+    #                      
+    for d in $HOME/repos/*
+    do 
+        [[ ! -d "$d" ]] && continue
+        echo "$d" &&
+        cd "$d" &&
+        git add -A &&
+        git commit -am $date_today &&
+        git pull &&
+        git submodule update --recursive &&
+        git submodule update --remote && 
+        git push 
+        cd "$OLDPWD"
+    done
+    #
+    #+end_src      
+    - https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin    
     - https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
     - add git submodule add <SUBMODULE>
-    - initialize git submodule update --recursive --init
     - push and pull submodules
       - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
     - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
