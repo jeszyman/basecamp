@@ -1363,6 +1363,7 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
     - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
     - https://labs.consol.de/development/git/2017/02/22/gitignore.html
   - submodules
+    - add git submodule add <SUBMODULE>
     - initialize git submodule update --recursive --init
     - sync
         #+name: 
@@ -1411,7 +1412,6 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
     #+end_src      
     - https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin    
     - https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
-    - add git submodule add <SUBMODULE>
     - push and pull submodules
       - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
     - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
