@@ -1337,25 +1337,8 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
-
-
-
-#    git submodule foreach --recursive git checkout master
-#    git submodule foreach --recursive git commit -am "2020-12-16"
-#    git submodule foreach --recursive git pull
-#    git submodule foreach --recursive git push
-
-# Sync from git submodule
-# cd $repo
-# git submodule foreach --recursive git checkout master
-# git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
-# git submodule foreach --recursive git pull
-# git submodule foreach --recursive git push
-
-
-
-
 - processes
+  - view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
   - initializing
     - https://www.google.com/search?q=initialize+git+repo
     - git branch --set-upstream-to=origin/master master
@@ -1418,7 +1401,7 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
     - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
   - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
   - [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]] 
-  - searching commits
+  - searching within commits
     - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
   - reverting
     - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
@@ -1470,6 +1453,11 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
   - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
   - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
   - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
+  - submodule commands
+    - # git submodule foreach --recursive git checkout master
+    - # git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
+    - # git submodule foreach --recursive git pull
+    - # git submodule foreach --recursive git push
 - best practices
   - for git repos, use submodules to push common code up - https://git-scm.com/book/en/v2/Git-Tools-Submodules
 - Scripts
