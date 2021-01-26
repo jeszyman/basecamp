@@ -2,60 +2,33 @@
 :PROPERTIES:
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
+- use ulimit to prevent sever brick
+#+name: 
+#+begin_src bash :tangle no
+open(){
+    # Check for parameters, return usage 
+    if [[ $# -eq 0 ]] ; then
+        printf "\n open 
+              \n xdg-open wrapper
+              \n \$1 = file to open
+              \n  "
+        exit 0
+    elif [ $1 == *.pdf ] ;then
+        okular $1 & exit
+    else
+        xdg-open $1
+    fi
+}
+
+open 
+okular ~/library/allen2015.pdf 
+#+end_src
+
 
 #+name: 
 #+begin_src bash :tangle no
-#!/bin/bash
-date=$(date +%Y-%m-%d)
-
-for d in $HOME/repos/*
-do 
-#	[[ ! -d "$d" ]] && continue
-    echo "$d"
-    cd "$d"
-    git add -A && \
-        git  commit -a -m "$date" && \
-        git push && \
-        git submodule foreach --recursive git add -A && git commit -am "$date" && \
-        git submodule foreach --recursive git push
-done             
-
-#!/bin/bash
-date=$(date +%Y-%m-%d)
-for d in $HOME/repos/*
-do 
-#	[[ ! -d "$d" ]] && continue
-	echo "$d"
-	cd "$d"
-	git add -A && \
-        git commit -a -m "$date" && \
-        git push && \
-        git submodule foreach --recursive git checkout master &&\
-        git submodule foreach --recursive git add -A && git commit -am "$date" && \
-        git submodule foreach --recursive git push
-done             
-
-git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
-git submodule foreach --recursive git push
-git submodule foreach --recursive git pull
-
-cd $repo
-git submodule foreach --recursive git checkout master
-
-
-git submodule foreach --recursive git pull
-
-
-        
-done
 
 #+end_src
-
-:PROPERTIES:
-:ID:       d28e2349-4e1e-4b50-a30f-d3dfc592fed4
-:END:
-
-https://www.google.com/search?client=ubuntu&hs=w80&sxsrf=ALeKk02nCefgbT-UzhMVn2emvtD5Hw-xbA%3A1608387013058&ei=xQneX7P-AtOD9PwPgImv6AY&q=chrome+view+excel+file+in+browser&oq=chrome+view+excel+file+in+browser&gs_lcp=CgZwc3ktYWIQAzIFCAAQzQIyBQgAEM0CMgUIABDNAjIFCAAQzQI6BAgAEEc6AggAOgYIABAHEB46BggAEAUQHjoGCAAQCBAeOggIABAIEAcQHjoECCEQClCS5g5Y75MPYKKWD2gBcAJ4AIABzgGIAZ8MkgEGMTUuMC4xmAEAoAEBqgEHZ3dzLXdpesgBCMABAQ&sclient=psy-ab&ved=0ahUKEwjz9MvEnNrtAhXTAZ0JHYDEC20Q4dUDCA0&uact=5
 ** Setup
 :PROPERTIES:
 :ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
@@ -75,9 +48,6 @@ repo=~/repos/"${project}"
 mkdir -p "${repo}"/src/shell
 #+end_src
 ** [[id:569d1afa-e991-47b7-be15-3dd6364f5258][LINK TO my bash functions]]
-:PROPERTIES:
-:ID:       408903f5-eacd-453e-86f6-75b3bbcb54e4
-:END:
 ** [[id:cd560390-aa1e-4c9e-8317-08610e5de42a][LINK TO linux]] 
 :PROPERTIES:
 :ID:       691fe673-ca62-4737-ab8c-055b3a098edf
@@ -89,6 +59,7 @@ mkdir -p "${repo}"/src/shell
 :LOGBOOK:
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
+
 - text editors
   - vim https://www.reddit.com/r/linux4noobs/comments/iy3mcc/vim_cheatsheet_for_noobs_with_corrections/
 - data storage and transfer
@@ -107,6 +78,7 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :PROPERTIES:
 :ID:       6dbf1097-a795-4397-bfee-97e4dc79bd07
 :END:
+- [[https://www.google.com/search?client=ubuntu&hs=w80&sxsrf=ALeKk02nCefgbT-UzhMVn2emvtD5Hw-xbA%3A1608387013058&ei=xQneX7P-AtOD9PwPgImv6AY&q=chrome+view+excel+file+in+browser&oq=chrome+view+excel+file+in+browser&gs_lcp=CgZwc3ktYWIQAzIFCAAQzQIyBQgAEM0CMgUIABDNAjIFCAAQzQI6BAgAEEc6AggAOgYIABAHEB46BggAEAUQHjoGCAAQCBAeOggIABAIEAcQHjoECCEQClCS5g5Y75MPYKKWD2gBcAJ4AIABzgGIAZ8MkgEGMTUuMC4xmAEAoAEBqgEHZ3dzLXdpesgBCMABAQ&sclient=psy-ab&ved=0ahUKEwjz9MvEnNrtAhXTAZ0JHYDEC20Q4dUDCA0&uact=5][chrome view excel file in browser]]
 - by application
   - pdf ocr
     - https://softwarerecs.stackexchange.com/questions/3412/free-ocr-software-that-makes-a-pdf-searchable-with-searchable-text-at-the-right
@@ -121,16 +93,6 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 - https://extensions.libreoffice.org/extensions
 - trash http://hasseg.org/trash/
 - [[https://rclone.org/][rclone]]
-
-- VLC
-  - https://webapps.stackexchange.com/questions/tagged/google-contacts?sort=votes&pageSize=15
-  - [[https://apple.stackexchange.com/questions/127386/how-do-i-vary-the-playback-speed-in-vlc-using-keyboard-shortcuts][VLC playback]]
-            |--------------+---------------|
-            | Faster       | CMD + =       |
-            | Slower       | CMD -         |
-            | Jump back    | CMD ALT LEFT  |
-            | Jump forward | CMD ALT RIGHT |
-- [[https://www.chromium.org/user-experience/keyboard-access][chromium keyboard shorcuts]]
 - VLC
   - https://webapps.stackexchange.com/questions/tagged/google-contacts?sort=votes&pageSize=15
   - [[https://apple.stackexchange.com/questions/127386/how-do-i-vary-the-playback-speed-in-vlc-using-keyboard-shortcuts][VLC playback]]
@@ -139,10 +101,9 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
     | Slower       | CMD -         |
     | Jump back    | CMD ALT LEFT  |
     | Jump forward | CMD ALT RIGHT |
-
+- [[https://www.chromium.org/user-experience/keyboard-access][chromium keyboard shorcuts]]
 - https://youtube-dl.org/
 - https://github.com/eudaldgr/youtube-dl
-
 **** virtualbox
 :PROPERTIES:
 :ID:       147fb935-7526-497f-ab84-2b7903ea996e
@@ -673,18 +634,13 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 CLOCK: [2020-12-15 Tue 06:51]--[2020-12-15 Tue 07:08] =>  0:17
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
-https://unix.stackexchange.com/questions/227876/how-to-set-custom-resolution-using-xrandr-when-the-resolution-is-not-available-i
-- umount https://stackoverflow.com/questions/7878707/how-to-unmount-a-busy-device
-- https://www.google.com/search?q=linux+system+RAM 
-- remove nfs stale file handle https://unix.stackexchange.com/questions/36297/how-can-i-resolve-a-stale-nfs-handle
+- https://unix.stackexchange.com/questions/227876/how-to-set-custom-resolution-using-xrandr-when-the-resolution-is-not-available-i
 - linux software by application
   - system restore
     - https://github.com/teejee2008/timeshift
   - i3
     - https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
   - for dir sizes, use ncdu
-- linux it certification
-  - https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
 - applications
   - sysadmin
     - https://unix.stackexchange.com/questions/87908/how-do-you-empty-the-buffers-and-cache-on-a-linux-system
@@ -780,7 +736,10 @@ sudo python setup.py install
 :PROPERTIES:
 :ID:       319f84a8-ad1d-4a05-8bc9-af43f20963d6
 :END:
-https://superuser.com/questions/185880/how-to-convert-a-pdf-document-to-png
+- mount
+  - remove nfs stale file handle https://unix.stackexchange.com/questions/36297/how-can-i-resolve-a-stale-nfs-handle
+  - umount https://stackoverflow.com/questions/7878707/how-to-unmount-a-busy-device
+- https://superuser.com/questions/185880/how-to-convert-a-pdf-document-to-png
 - https://www.google.com/search?q=linux+command+line+convert+jpg+to+pdf
 - https://www.google.com/search?q=linux+change+rm+to+recycle+bin
   - https://github.com/andreafrancia/trash-cli
@@ -836,6 +795,14 @@ CLOCK: [2019-06-02 Sun 08:37]--[2019-06-02 Sun 08:49] =>  0:12
 CLOCK: [2019-06-01 Sat 09:36]--[2019-06-01 Sat 09:40] =>  0:04
 :END:
 - apt package management
+  - https://askubuntu.com/questions/tagged/apt
+  - 
+    #+name: 
+#+begin_src bash :tangle no
+apt list --installed | grep emacs
+#+end_src
+  - https://www.google.com/search?q=apt+list+packages  
+  - remove 
   - ppa lists at 
 - https://www.tecmint.com/set-display-screen-resolution-in-ubuntu/
 https://askubuntu.com/questions/283559/how-can-i-run-disk-utility-in-terminal-via-a-comand-line
@@ -1259,6 +1226,8 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
 :PROPERTIES:
 :ID:       51710d48-bcbb-4709-bd5e-9774546bbbda
 :END:
+- linux it certification
+  - https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
 - https://github.com/Fmstrat/winapps
 ***** MacOS
 :PROPERTIES:
@@ -1337,6 +1306,54 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
+#+name: 
+#+begin_src bash :tangle no
+#!/bin/bash
+date=$(date +%Y-%m-%d)
+
+for d in $HOME/repos/*
+do 
+#	[[ ! -d "$d" ]] && continue
+    echo "$d"
+    cd "$d"
+    git add -A && \
+        git  commit -a -m "$date" && \
+        git push && \
+        git submodule foreach --recursive git add -A && git commit -am "$date" && \
+        git submodule foreach --recursive git push
+done             
+
+#!/bin/bash
+date=$(date +%Y-%m-%d)
+for d in $HOME/repos/*
+do 
+#	[[ ! -d "$d" ]] && continue
+	echo "$d"
+	cd "$d"
+	git add -A && \
+        git commit -a -m "$date" && \
+        git push && \
+        git submodule foreach --recursive git checkout master &&\
+        git submodule foreach --recursive git add -A && git commit -am "$date" && \
+        git submodule foreach --recursive git push
+done             
+
+git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
+git submodule foreach --recursive git push
+git submodule foreach --recursive git pull
+
+cd $repo
+git submodule foreach --recursive git checkout master
+
+
+git submodule foreach --recursive git pull
+
+
+        
+done
+
+#+end_src
+
 - processes
   - view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
   - initializing
@@ -3323,5 +3340,5 @@ docker run --rm -p 6379:6379 <CONTAINER>
 #+startup: overview
 # Local Variables:
 # truncate-lines: nil
-# org-confirm-elsip-link-function: nil
 # End:
+;;always registers unsafe # org-confirm-elsip-link-function: nil
