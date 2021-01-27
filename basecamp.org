@@ -2,6 +2,7 @@
 :PROPERTIES:
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
+- workflow idea- connect server as mnt w/ https://unix.stackexchange.com/questions/184965/open-file-from-remote-computer-on-host-computer
 - use ulimit to prevent sever brick
 #+name: 
 #+begin_src bash :tangle no
