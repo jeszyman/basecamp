@@ -49,6 +49,9 @@ repo=~/repos/"${project}"
 mkdir -p "${repo}"/src/shell
 #+end_src
 ** [[id:569d1afa-e991-47b7-be15-3dd6364f5258][LINK TO my bash functions]]
+:PROPERTIES:
+:ID:       6162c48f-b91d-46b4-87ed-70607ac82591
+:END:
 ** [[id:cd560390-aa1e-4c9e-8317-08610e5de42a][LINK TO linux]] 
 :PROPERTIES:
 :ID:       691fe673-ca62-4737-ab8c-055b3a098edf
