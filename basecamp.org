@@ -2,34 +2,802 @@
 :PROPERTIES:
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
-- workflow idea- connect server as mnt w/ https://unix.stackexchange.com/questions/184965/open-file-from-remote-computer-on-host-computer
-- use ulimit to prevent sever brick
-#+name: 
-#+begin_src bash :tangle no
-open(){
-    # Check for parameters, return usage 
-    if [[ $# -eq 0 ]] ; then
-        printf "\n open 
-              \n xdg-open wrapper
-              \n \$1 = file to open
-              \n  "
-        exit 0
-    elif [ $1 == *.pdf ] ;then
-        okular $1 & exit
-    else
-        xdg-open $1
-    fi
+** R Statistical Computing                                           :career:
+:PROPERTIES:
+:ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
+:END:
+:LOGBOOK:
+CLOCK: [2020-12-11 Fri 12:22]--[2020-12-11 Fri 13:47] =>  1:25
+CLOCK: [2020-08-11 Tue 11:47]--[2020-08-11 Tue 11:49] =>  0:02
+CLOCK: [2020-07-31 Fri 09:19]--[2020-07-31 Fri 09:23] =>  0:04
+CLOCK: [2019-03-18 Mon 14:11]--[2019-03-18 Mon 14:36] =>  0:25
+CLOCK: [2019-01-08 Tue 18:55]--[2019-01-08 Tue 19:14] =>  0:19
+CLOCK: [2019-01-03 Thu 16:04]--[2019-01-03 Thu 17:00] =>  0:56
+CLOCK: [2018-08-07 Tue 13:13]--[2018-08-07 Tue 13:38] =>  0:25
+CLOCK: [2018-07-17 Tue 13:53]--[2018-07-17 Tue 14:31] =>  0:38
+CLOCK: [2017-09-14 Thu 11:16]--[2017-09-14 Thu 11:18] =>  0:02
+CLOCK: [2017-08-25 Fri 11:01]--[2017-08-25 Fri 11:26] =>  0:25
+CLOCK: [2017-08-25 Fri 10:35]--[2017-08-25 Fri 10:37] =>  0:02
+CLOCK: [2017-08-25 Fri 10:08]--[2017-08-25 Fri 10:35] =>  0:27
+CLOCK: [2017-08-16 Wed 16:55]--[2017-08-16 Wed 17:10] =>  0:15
+CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
+CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
+CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
+:END:
+*** processes
+:PROPERTIES:
+:ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
+:END:
+**** writing functions
+:PROPERTIES:
+:ID:       479569fe-229d-4d2f-ba08-b871d3ad64ac
+:END:
+- 
+- ifelse stop functions
+  - see [[id:afb6af15-e984-4150-9e95-d28368ebca2e][pull in R-immutable elements and perform data checks]]
+- https://stackoverflow.com/questions/19261159/r-applying-a-function-to-a-subset-of-a-data-frame#19261262
+**** making packages
+:PROPERTIES:
+:ID:       fe1f71d0-5ace-4075-b36d-082a1199490a
+:END:
+  - http://kbroman.org/pkg_primer/pages/github.html
+  - https://cran.r-project.org/web/packages/policies.html#Submission
+  - https://support.rstudio.com/hc/en-us/articles/200486488-Developing-Packages-with-RStudio?mobile_site=true
+  - [[https://cran.r-project.org/doc/manuals/r-release/R-exts.html][cran: guide to writing R extensions]]
+  - http://r-pkgs.had.co.nz/
+  - Referring to other packages: https://stackoverflow.com/questions/36874904/r-how-do-i-make-my-package-use-another-package
+
+**** Basic mathematical processes
+:PROPERTIES:
+:ID:       1cda08a5-5e3d-49bd-96aa-c262abada15d
+:END:
+- Rounding
+  - https://www.rdocumentation.org/packages/base/versions/3.4.1/topics/Round
+**** Data processing processes
+:PROPERTIES:
+:ID:       8960fc7b-1c15-45c7-90f7-d01dadf388a0
+:END:
+- dataframes
+  - # RENAME AS LIST BY https://statisticsglobe.com/rename-column-name-in-r-data-frame/
+- import
+  - https://stackoverflow.com/questions/23678691/converting-a-text-file-into-a-vector-in-r
+    - https://www.google.com/search?q=R+import+file+as+vector
+- Regular expressions (REGEX) in R
+  - [[https://www.rdocumentation.org/packages/base/versions/3.5.1/topics/regex][documentation]]
+  - [[http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html][POSIX documentation]]
+  - See also regular expression 
+  - Quick guides
+    - [[http://www.endmemo.com/program/R/gsub.php][Simplified syntax]]
+    - [[https://stackoverflow.com/questions/2973436/regex-lookahead-lookbehind-and-atomic-groups][Look around examples]]
+    - [[https://www.rdocumentation.org/packages/stringi/versions/1.1.6/topics/stringi-search-regex#l_details][Operators]]
+**** Statistical processes 
+:PROPERTIES:
+:ID:       8bafa2dc-73e0-4ce5-ba32-180b419fb813
+:END:
+- https://stats.stackexchange.com/questions/8605/column-wise-matrix-normalization-in-r
+
+- https://stat.ethz.ch/R-manual/R-devel/library/stats/html/fisher.test.html
+- http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r#spearman-rank-correlation-coefficient
+- https://rpubs.com/aaronsc32/spearman-rank-correlation
+- ROC & cutpoint
+  - https://cran.r-project.org/web/packages/cutpointr/vignettes/cutpointr.html
+  - https://web.expasy.org/pROC/
+ 
+**** System setup
+:PROPERTIES:
+:ID:       a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc
+:END:
+
+- install
+  - https://unix.stackexchange.com/questions/149451/install-r-in-my-own-directory
+- https://www.google.com/search?q=R+check+hostname 
+- https://www.google.com/search?q=R+where+to+store+packages 
+*** [[LINK TO Machine Learning]]
+:PROPERTIES:
+:ID:       8063a40e-df60-449d-9641-6eea42e47f9c
+:END:
+*** [[LINK TO Reproducible Research]]
+:PROPERTIES:
+:ID:       aa3f8528-0603-42b4-9e1e-8a27b9aaf8b3
+:END:
+*** best practices, style
+:PROPERTIES:
+:ID:       419ba6f0-4977-4eed-9d25-93a45933ad56
+:END:
+- Rscript format best practices
+  - Differentiate working and testing sections 
+- Style guides
+  - [[https://google.github.io/styleguide/Rguide.xml][Google]] 
+    - ideas
+      - for naming, use ICANN convention  specific <- general
+  - [[http://adv-r.had.co.nz/Style.html][Advanced R]] cite:wickham2014
+  - [[https://style.tidyverse.org/documentation.html][Tidyverse]]
+  - characters- "For portable R code (including that to be used in R packages) only A–Za–z0–9 should be used." 
+  - two-space indentation
+  - spaces
+    - before and after =, +, -, <, etc.
+    - after comma
+  - variable_names_with_underscore 
+- R style guides
+  - http://adv-r.had.co.nz/Style.html
+  - https://journal.r-project.org/archive/2012/RJ-2012-018/RJ-2012-018.pdf
+  - https://www.r-bloggers.com/consistent-naming-conventions-in-r/
+  - https://stackoverflow.com/questions/1944910/what-is-your-preferred-style-for-naming-variables-in-r
+  - https://stackoverflow.com/questions/10013545/are-there-any-official-naming-conventions-for-r
+  - http://jef.works/R-style-guide/
+  - https://csgillespie.wordpress.com/2010/11/23/r-style-guide/
+  - https://google.github.io/styleguide/Rguide.xml
+- examples
+  - https://github.com/TheEconomist/us-potus-model/blob/master/scripts/model/final_2016.R
+
+- https://google.github.io/styleguide/Rguide.html
+*** commands
+:PROPERTIES:
+:ID:       5deed8c7-777a-414e-8df5-281f08fe98c7
+:END:
+  | function             | command                                                                                  |
+  |----------------------+------------------------------------------------------------------------------------------|
+  |                      | <50>                                                                                     |
+  | get help w/ function | help(<FUNCT>)                                                                            |
+  | rename columns       | plyr::rename(<DF>, c("<OLD>"="<NEW>"))                                                   |
+  | drop columns         | <DF2>=<DF>[,-which(names(<DF)> %in% <DROP>)]                                             |
+  | reorder columns      | https://stackoverflow.com/questions/5620885/how-does-one-reorder-columns-in-a-data-frame |
+  | remove before        | gsub("^.*<CHAR>","",<TARGET>)                                                            |
+  | remove after         | gsub("<CHAR>.*$","",<TARGET>)                                                            |
+  | save hx              | savehistory("<OUTPUT_FILE>")                                                             |
+  | cumm density plot    | [[https://ggplot2.tidyverse.org/reference/stat_ecdf.html][stat_ecdf()]]                                                                              |
+  | sort                 | sorted=unsorted[with(unsorted, order(by)),]                                              |
+*** [[https://www.r-project.org/other-docs.html][documentation]]
+:PROPERTIES:
+:ID:       5387846b-2130-468f-8d94-1f53fe2b5541
+:END:
+  - [[https://cran.r-project.org/manuals.html][cran manuals]]
+    - 
+      - 3
+        - 3.4 The class of an object
+  - cite:r_core_team2018 
+  - cite:venables2018 
+  - [[https://www.rdocumentation.org/][all package documentation]]
+  - [[https://www.rdocumentation.org/][RDocumentation]]
+*** markup
+:PROPERTIES:
+:ID:       b3d911e9-161e-44cd-96e8-e403ba3c3c58
+:END:
+  - https://www.r-bloggers.com/blogging-with-rmarkdown-knitr-and-jekyll/
+*** applications
+:PROPERTIES:
+:ID:       9d7edb43-f1d6-4ac9-9f76-312be12d14c6
+:END:
+
+- [[https://community.rstudio.com/t/shiny-contest-submission-spatialepiapp-for-disease-surveillance/22699][disease surveill shiny]]
+- Data Science
+ - [[https://datascienceplus.com/clean-your-data-in-seconds-with-this-r-function/][Hmisc for data cleaning]]
+ - [[http://www.cyclismo.org/tutorial/R/][cyclismo.org R tutorial]]
+ - [[http://proquest.safaribooksonline.com/9781784390815][R for Data Science Cookbook]]
+ - cite:grolemund
+ - missing values
+   - https://stackoverflow.com/questions/4862178/remove-rows-with-all-or-some-nas-missing-values-in-data-frame
+ - data summaries
+   - round(prop.table(table(iris$Species)) * 100, digits = 1)
+- R for Machine Learning
+ - [[https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/#one][A Complete Tutorial on Tree Based Modeling from Scratch (in R & Python)]]
+- [[https://stackoverflow.com/questions/7906332/how-to-calculate-combination-and-permutation-in-r][How to calculate combination and permutation in R? {closed}]] 
+- cite:lewis2010 http://proquest.safaribooksonline.com/9780763758080
+- [[https://gist.github.com/halhen/659780120accd82e043986c8b57deae0][github: europe.R]]
+[[http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/][histogram]]
+[[http://sape.inf.usi.ch/quick-reference/ggplot2/colour][ggplot2 color scheme]]
+[[http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/#modifying-the-text-of-legend-titles-and-labels][modify ggplot2 legend text]]
+
+[[http://statisticalrecipes.blogspot.com/2015/07/cowplot-arrange-ggplot2-figures-in-grid.html][Cowplot]]
+[[https://cran.r-project.org/web/packages/cowplot/vignettes/plot_grid.html][another cowplot vignette]]
+
+**** examples
+:PROPERTIES:
+:ID:       246e1239-f53d-4cb3-a8e9-dc75f6da321e
+:END:
+- http://www.rforecasting.com/
+- cite:wertheim2014 R used in JMD!
+**** plots, graphs, visualizations, ggplot
+:PROPERTIES:
+:ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
+:END:
+- https://ggrepel.slowkow.com/articles/examples.html
+- https://github.com/thomasp85/patchwork
+- https://moodymudskipper.github.io/flow/articles/Draw-a-function.html
+- https://www.google.com/search?q=cowplot+make+inset 
+- https://bookdown.org/rdpeng/exdata/plotting-and-color-in-r.html
+- - http://www.sthda.com/english/wiki/ggplot2-legend-easy-steps-to-change-the-position-and-the-appearance-of-a-graph-legend-in-r-software
+- https://www.r-graph-gallery.com/all-graphs.html
+- er diagrams - https://rich-iannone.github.io/DiagrammeR/index.html
+- visualizations
+
+  - [[http://minimaxir.com/2017/08/ggplot2-web/][How to Make High Quality Data Visualizations for Websites With R and ggplot2]]
+  - vens https://stackoverflow.com/questions/8713994/venn-diagram-proportional-and-color-shading-with-semi-transparency
+  - [[https://stackoverflow.com/questions/33594642/beautiful-pie-charts-with-r/33594843][pie charts]]
+http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/
+- [[https://www.youtube.com/watch?feature=youtu.be&v=rBp3eYHrsfo&app=desktop&t=0s][plotly interactive graphs]]
+**** Probability and Statistics with R
+:PROPERTIES:
+:ID:       26211e92-7ff9-4520-a9a7-cac04027e610
+:END:
+- For basic statistics, see cite:mangiafico2005 [[http://rcompanion.org/rcompanion/e_01.html][R Companion to Biostats Handbook]]
+- [[https://www.r-bloggers.com/bayesian-network-in-r-introduction/][Bayesian network in R: Introduction]]
+  #+BEGIN_SRC R
+data(coronary)
+install.packages("bnlearn")
+library(bnlearn)
+coronary
+#+END_SRC
+- Causal Inference
+  - http://www.ccd.pitt.edu/causal-discovery-introduction/
+  - https://bd2kccd.github.io/docs/causal-cmd/
+- [[http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r][Correlation Test Between Two Variables in R]]
+- [[https://www.analyticsvidhya.com/blog/2015/11/beginners-guide-on-logistic-regression-in-r/][Beginner's guide to logistic regression in R]]
+***** Inferential Testing
+:PROPERTIES:
+:ID:       85A16229-6FDB-4CAA-B23E-3A3A08F96BD7
+:END:
+
+****** Statistical Test Template
+:PROPERTIES:
+:ID:       A4CA9F60-8E82-4655-B6F5-2780A4CD93C5
+:END:
+
+ Purpose: Asks whether...
+ Equation: 
+ Assumptions: 
+
+****** Testing Assumptions
+:PROPERTIES:
+:ID:       531DD201-BBB4-4C21-BDDE-02982DB43847
+:END:
+
+******* Normalcy
+:PROPERTIES:
+:ID:       DF687DB7-128D-49E4-B83B-5D4E7F83DC52
+:END:
+
+******** Shapiro-Wilk
+:PROPERTIES:
+:ID:       76DD7F99-072F-49D7-A08C-7A77F48BCDAE
+:END:
+
+ shaprio.test(VECTOR)
+
+ null-hypothesis of this test is that the population is normally distributed
+
+******** QQ plot
+:PROPERTIES:
+:ID:       38C4C432-EFF6-45F8-8A2A-AC5F5E68015D
+:END:
+
+****** Significance Testing
+:PROPERTIES:
+:ID:       CE56656E-9272-488A-A94E-5FB8F84F6E52
+:END:
+
+******* Categorical by chi square
+:PROPERTIES:
+:ID:       2223CFCB-A07A-4BF8-93D8-3A5E377EA317
+:END:
+
+******* Independent, non-normal, 2-populations: Wilcoxon-Mann Whitney
+:PROPERTIES:
+:ID:       B1DEBDF9-D94A-40EB-BC3C-DDEB3006AAD2
+:END:
+
+******* Nonparametric, >2 populations: Kruskal-Wallis
+:PROPERTIES:
+:ID:       5FEA38FE-3723-4ECF-8D9C-4A256163F55A
+:END:
+
+ Purpose: Asks whether...
+ Equation: 
+ Assumptions:  
+
+****** Regression Modeling
+:PROPERTIES:
+:ID:       4C723421-9630-4CD9-B586-BDA73E809CE1
+:END:
+
+- [[file:~/Box%20Sync/library/Harrell,15%20Regression%20modeling%20stratgies.pdf][Harrell,15 Regression modeling stratgies]]
+
+**** General linear model glm()
+:PROPERTIES:
+:ID:       3B10C6E7-5D13-4BE4-9807-F60FC53A513B
+:END:
+:LOGBOOK:
+CLOCK: [2018-01-01 Mon 15:02]--[2018-01-01 Mon 15:25] =>  0:23
+CLOCK: [2017-09-14 Thu 11:18]--[2017-09-14 Thu 11:44] =>  0:26
+:END:
+- [ ] full code example
+- https://onlinecourses.science.psu.edu/stat504/node/150
+- https://datascienceplus.com/perform-logistic-regression-in-r/
+- https://www.r-bloggers.com/compare-regression-results-to-a-specific-factor-level-in-r/
+- https://radiant-rstats.github.io/docs/model/logistic.html
+- https://onlinecourses.science.psu.edu/stat504/book/export/html/149
+- https://nlp.stanford.edu/manning/courses/ling289/logistic.pdf
+- http://data.princeton.edu/R/glms.html
+- Logistic regression in R
+  - 
+  - Examples
+    - http://sphweb.bumc.bu.edu/otlt/MPH-Modules/BS/R/R-Manual/R-Manual20.html
+  - [[https://www.r-bloggers.com/how-to-perform-a-logistic-regression-in-r/][rblogger: logistic regression]]
+    - Data cleaning
+- glm for multiple logistic regression
+  - cite:mangiafico2005 @ 242
+#+BEGIN_SRC R
+# Load data:
+
+training.data.raw=read.csv('/Users/JeffBook/Desktop/Python-Data-Science-and-Machine-Learning-Bootcamp/Machine Learning Sections/Logistic-Regression/titanic_train.csv', header=T,na.strings=c(""))
+
+# Clean data
+#  Identify and remove missing data by column: 
+
+sapply(training.data.raw,function(x)sum(is.na(x)))
+sapply(training.data.raw,function(x) length(unique(x)))
+library(Amelia)
+missmap(training.data.raw, main='Missing values vs observed')
+remove=c('Cabin','PassengerId')
+data = training.data.raw[,-which(names(training.data.raw) %in% remove)]
+
+#  By Row
+#   Fill in missing data:
+
+data$Age[is.na(data$Age)] = mean(data$Age,na.rm=T)
+is.factor(data$Sex)
+contrasts(data$Sex)
+
+#   Remove missing by row: 
+
+head(data$Embarked)
+data=data[!is.na(data$Embarked),]
+rownames(data)=NULL
+
+# Fit model, apply glm():
+
+train=data[1:400,]
+test=data[401:889,]
+model=glm(Survived ~.,family=binomial(link='logit'),data=train)
+summary(model)
+
+# Assess model
+#  ANOVA for chisq by variable:
+
+anova(model, test='Chisq')
+
+#  Assess predictive ability with predict: 
+#  ROC curve:
+
+library(pscl)
+pR2(model)
+library(ROCR)
+#+END_SRC
+
+*** ideas
+:PROPERTIES:
+:ID:       d3e14906-80f0-409b-b8df-8d98da11f09f
+:END:
+:LOGBOOK:
+CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
+:END:
+  - script to check for install and install only if necessary 
+  - ideas
+    - define path variables in r
+    - [ ] how to stop R ESS tab complete from pinging countries?
+
+
+*** bioconductor
+:PROPERTIES:
+:ID:       ac5c9fbe-7ce7-4092-989b-e63884fdd9df
+:END:
+
+- https://www.bioconductor.org/help/course-materials/2016/BioC2016/ConcurrentWorkshops4/Yin/bioc-workflow.html
+- [[https://bioconductor.org/packages/release/bioc/vignettes/biomaRt/inst/doc/biomaRt.html#retrieve-all-hugo-gene-symbols-of-genes-that-are-located-on-chromosomes-1720-or-y-and-are-associated-with-specific-go-terms][The biomaRt users guide]]
+*** Variable types 
+:PROPERTIES:
+:ID:       7c76cdb1-3e3d-4846-b825-9826769b12cb
+:END:
+- objects
+  - Data.frame / data.table operations
+    - [[https://stackoverflow.com/questions/11996135/create-a-sequential-number-counter-for-rows-within-each-group-of-a-dataframe][Create a sequential number (counter) for rows within each group of a dataframe]]
+    - [[http://r.789695.n4.nabble.com/Create-sequential-vector-for-values-in-another-column-td4678059.html][create sequential vector values in another column]]
+    - [[https://stackoverflow.com/questions/24027605/determine-the-number-of-na-values-in-a-column][stack: Determine the number of NA values in a column]]
+    - [[https://stackoverflow.com/questions/15140944/r-which-statement-with-multiple-conditions][stack: R: `which` statement with multiple conditions]]
+    - order with e.g.: newdata <- mtcars[order(mpg, cyl),]
+    - dplyr
+      - [[http://www.cookbook-r.com/Manipulating_data/Renaming_levels_of_a_factor/][cookbook: Renaming factor levels with dplyr]]
+  - character-level manipulations
+    - Trim characters with substr()
+  - Object structures
+    - https://www.r-bloggers.com/adding-metadata-to-variables/
+  - functions
+    - [[https://support.bioconductor.org/p/8355/][example of modifying an existing function]]
+  - dataframe
+    - dataframe manipulations [[https://stackoverflow.com/questions/5234117/how-to-drop-columns-by-name-in-a-data-frame][stack: how to drop columns by name]]
+- tables
+  #+BEGIN_SRC R
+source("~/repos/bin/R/setup.R")
+install.packages("flextable")
+library(flextable)
+myft = flextable(head(mtcars),col_keys=c("am", "carb"))
+myft
+#+END_SRC
+  - https://cran.r-project.org/web/packages/flextable/vignettes/overview.html
+  - see import of org table in [[id:878CB95A-3B65-4DB3-B18A-D9F873B796B4][3 Tables]]
+- text parsing
+  - https://stackoverflow.com/questions/42628575/exclude-everything-after-the-second-occurrence-of-a-certain-string
+  - https://stackoverflow.com/questions/12297859/remove-all-text-before-colon
+  - https://datascience.stackexchange.com/questions/8922/removing-strings-after-a-certain-character-in-a-given-text
+- time
+  - 
+  - [[https://stackoverflow.com/questions/43460329/converting-datetime-from-character-to-posixct-object][stack: Converting datetime from character to POSIXct object]]
+  - [[http://neondataskills.org/R/time-series-convert-date-time-class-POSIX/][Time Series 02: Dealing With Dates & Times in R - as.Date, POSIXct, POSIXlt]]
+  - [[http://www.noamross.net/blog/2014/2/10/using-times-and-dates-in-r---presentation-code.html][POSIXct times]]
+    - [[http://stackoverflow.com/questions/5585898/why-doesnt-r-recognize-cst-as-a-valid-timezone][central time]]
+*** tutorials, guides, general reference
+:PROPERTIES:
+:ID:       28dae063-9c59-412b-99ef-949a14c9ca35
+:END:
+  - http://www.r-chart.com/
+  - online education
+    - https://hackernoon.com/5-free-r-programming-courses-for-data-scientists-and-ml-programmers-5732cb9e10
+    - [[http://www.r-tutor.com/elementary-statistics][rTutorial for Statistics]]
+      - [[http://www.r-tutor.com/elementary-statistics/numerical-measures/variance][rTutorial variance]]
+      - [[http://www.r-tutor.com/elementary-statistics/non-parametric-methods/kruskal-wallis-test][rTutorial Kruskal-Wallis]]
+    - https://www.coursera.org/learn/r-data-visualization/supplement/Ma3Bj/introduction
+  - https://www.reddit.com/r/statistics/comments/afp83l/r_and_how_to_get_started/
+  - cite:wickham2014
+  - https://user2020.r-project.org/program/contributed/
+- miscellaneous
+  - [[https://www.reddit.com/r/datascience/comments/8dpkih/my_favorite_function_in_r_is/?st=jgkzwj8p&sh=45b024c6][reddit: my favorite function in R is _]]
+  - [[https://www.methodsconsultants.com/tutorial/what-does-it-mean-to-say-r-is-an-object-oriented-programming-language/][What Does it Mean to Say R is an Object-Oriented Programming Language?]]
+*** interfaces
+:PROPERTIES:
+:ID:       50f3f0af-8280-46f1-9f2b-5cc48395d032
+:END:
+  - graphviz
+    - https://rich-iannone.github.io/DiagrammeR/index.html
+  - shiny
+    - https://rstudio.github.io/shinydashboard/examples.html
+    - https://towardsdatascience.com/creating-an-exam-archive-system-with-a-data-scientists-toolkit-a080d497a9a0
+  - export 
+    - https://stackoverflow.com/questions/49245296/quickly-write-vector-to-file-r
+  - docker w/ R and ESS
+    - http://ess.r-project.org/Manual/ess.html#ESS-processes-on-Remote-Computers
+    - https://phoenixnap.com/kb/how-to-ssh-into-docker-container
+    - https://stat.ethz.ch/pipermail/ess-help/2017-April/011171.html
+
+
+
+- interactions
+  - system interactions
+    - standard plotting device for macos is quartz
+      - http://stat.ethz.ch/R-manual/R-patched/library/grDevices/html/quartz.html
+  - [[file:~/.emacs.d/settings.org::*14%20Working%20with%20source%20code-%20Org%20Babel][14 Working with source code- Org Babel]]
+  - [[file:~/.emacs.d/settings.org::*Local%20R%20setup][R Local Setup]]
+  - system interactions
+    - Export and outputs
+      - [[https://www.r-bloggers.com/stargazer-package-for-beautiful-latex-tables-from-r-statistical-models-output/][rbloggers: latex table export]]
+      - for tbl outputs- https://stackoverflow.com/questions/32548622/r-output-results-in-table
+    - Import
+      - Input formatting and manipulations
+        - [[http://r.789695.n4.nabble.com/split-strings-in-a-vector-and-convert-it-to-a-data-frame-td1475216.html][For functions making columns]]
+      - [[https://theodi.org/article/how-to-use-r-to-access-data-on-the-web/][How To Use R To Access Data On The Web]]
+      - Google sheets package
+        - [[https://datascienceplus.com/how-to-use-googlesheets-to-connect-r-to-google-sheets/][How to Use googlesheets to Connect R to Google Sheets]]
+        - [[https://stackoverflow.com/questions/22873602/importing-data-into-r-from-google-spreadsheet][stack: from Google sheets]]
+        - [[http://htmlpreview.github.io/?https://raw.githubusercontent.com/jennybc/googlesheets/master/vignettes/basic-usage.html][vignette]]
+        - [[https://github.com/jennybc/googlesheets][github]]
+    - R and python
+      - [[https://www.reddit.com/r/statistics/comments/8de54s/is_r_better_than_python_at_anything_i_started/][reddit: Is R better than Python at anything? I started learning R half a year ago and I wonder if I should switch.]]
+      - [[https://www.reddit.com/r/datascience/comments/8dec78/transitioning_to_r_from_python/?st=jgkzwior&sh=ad5d425c][reddit: Transitioning to R from Python]]
+- Interfaces
+  - Data
+    - [[https://www.quandl.com/tools/r]]
+  - [[https://www.r-bloggers.com/a-million-ways-to-connect-r-and-excel/][R-bloggers: connect R to excel]]
+*** Working through a data task in R
+:PROPERTIES:
+:header-args: :dir ~/tmp :session *tmp* :results silent
+:CREATED:  [2019-03-19 Tue 14:39]
+:ID:       D36CD3D8-A14D-4937-9FA0-726C46832362
+:END:
+:LOGBOOK:
+CLOCK: [2019-03-19 Tue 14:35]--[2019-03-19 Tue 16:45] =>  2:10
+:END:
+- setup
+  - environment
+    - version control
+    - orgmode babel code block properties
+- a priori work
+  - background
+  - ab initio https://en.wikipedia.org/wiki/Ab_initio
+  - data model
+    - define an expected, final data model (or set of data models)
+      - variable,type,limits,distribution
+      - /e.g./ a list of patient laboratory result:
+        variable,type,limits,distribution
+        patient,factor,none,discrete-uniform
+        visit,factor,none,binomial
+        test,factor,none,none
+        time_order,POSIXct,START/END,uniform
+        time_result,POSIXct,START/END,uniform
+        result,numeric,RANGE,Gaussian
+      - org-table-create-or-convert-from-region with C-c | 
+        | variable    | type    | notes                   |
+        |-------------+---------+-------------------------|
+        | accession   | factor  | total 1000; primary key |
+        | visit       | factor  | <#accession             |
+        | patient     | factor  | <#visit                 |
+        | test        | factor  | none                    |
+        | time_result | POSIXct | START/END               |
+        | result      | numeric | RANGE                   |
+        - identify primary key, here accession identifies unique rows 
+      - set seed for consistent generation of random numbers
+        #+BEGIN_SRC R
+set.seed(314)
+        #+END_SRC
+      - create lists and vectors
+        #+BEGIN_SRC R
+source("~/Rscripts/setup.R")
+pkl=1000 # There will be 1000 unique accession numbers (primary key length)
+time_start =  as.POSIXct('2018-10-01T01:00:00z', format = "%Y-%m-%dT%H:%M:%S")
+time_end = as.POSIXct('2018-11-01T01:00:00z', format = '%Y-%m-%dT%H:%M:%S')
+diff_minutes_max = difftime(time_end,time_start, units = "mins")
+diff_minutes_all = sample(1:diff_minutes_max, pkl, replace = T)
+result_folate = rnorm(200, 25, 12)
+result_MCV = rnorm(400, 88, 8) # A normal distribution around mean MCV
+result_WBC = rnorm(400, 7500, 3500)
+
+# vectors
+accession = sample(1:pkl, pkl, replace = F) # 1000 unique accession #s
+visit = sample(1:500, pkl, replace = T) # 500 patient visits
+patient = sample(1:350, pkl, replace=T) # 350 patients
+time_result = time_start + diff_minutes_all
+result = c(result_folate,result_MCV,result_WBC)
+test=c(rep.int("folate", 200), rep.int("MCV", 400), rep.int("WBC", 400))
+df=data.frame(accession,visit,patient,time_result,test,result)
+df
+        #+END_SRC
+  - design of analysis 
+- data ? manifuplation 
+- a posteriori work 
+
+*** Creating, Modeling, and Toy Data
+:PROPERTIES:
+:ID:       46253EF9-7B35-403F-BA1B-24F4FCA750D6
+:CREATED:  [2019-03-17 Sun 15:17]
+:END:
+
+- [[https://stats.stackexchange.com/questions/tagged/random-variable?sort=frequent][stack: random-variable questions]]
+- [[https://stackoverflow.com/questions/46595060/generate-random-time-data-that-is-uniformly-distributed-using-r][random time data]]
+- [[https://stackoverflow.com/questions/31153186/r-split-data-into-2-parts-randomly][R split data into 2 parts randomly]]
+- [[https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/00Index.html][Built-in datasets]]
+- time intervals can be created by just adding numeric representing seconds to existing time
+- Random numbers
+  - https://stats.stackexchange.com/questions/30303/how-to-simulate-data-that-satisfy-specific-constraints-such-as-having-specific-m
+  - https://gist.github.com/MonkmanMH/7740998
+  - http://www.cookbook-r.com/Numbers/Generating_random_numbers/
+- DATA MODELS ARE TRANSFERABLE BACK TO GENERAL!!!
+- [[http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/00Index.html][built-in datasets]]
+- https://www.rdocumentation.org/packages/base/versions/3.5.1/topics/data.frame
+- variable naming
+- toy data
+  - https://stats.stackexchange.com/questions/30303/how-to-simulate-data-that-satisfy-specific-constraints-such-as-having-specific-m
+  - [[file:~/data/library/compend.org::*Creating%20and%20Modeling%20Data][Creating and Modeling Data]]
+#+BEGIN_SRC R
+# toy data frame of medical data
+patient=1:1000 # 1000 patients
+# 10,000 visits with some repeats
+result=#numeric lab result between 0 and 1
+
+runif(3, min=0, max=100)
+#+END_SRC
+
+*** My R projects
+:PROPERTIES:
+:ID:       A322C7D5-FCF7-4173-8D10-EF8CDFD12B2B
+:END:
+
+- [[file:~/Box%20Sync/career/clin_research/folate/folate.org][Folate]]
+- [[file:~/Box%20Sync/career/clin_research/miox/miox.org][Miox]]
+- [[file:~/Box%20Sync/career/clin_research/folate/macrocytosis/macrocytosis.R][Macrocytosis]]
+- [[file:~/Box%20Sync/career/clin_research/clinical.informatics.elective/clin_informatics.org][Clinical Informatics Session 2]]
+
+*** Packages
+:PROPERTIES:
+:ID:       13053897-37D7-4068-B3D0-5A6660BA0CD3
+:END:
+- https://topepo.github.io/caret/#
+- https://cran.r-project.org/web/packages/cutpointr/vignettes/cutpointr.html
+- https://old.reddit.com/r/datascience/comments/av4z50/what_are_some_very_useful_lesser_known_r_packages/
+- Grab list of packages: 
+  #+BEGIN_SRC R
+ip = as.data.frame(installed.packages()[,c(1,3:4)])
+ip = ip[is.na(ip$Priority),1:2,drop=FALSE]
+ip
+  #+END_SRC 
+- cite:xtable2016
+- data.table
+  - [[https://rstudio-pubs-static.s3.amazonaws.com/52230_5ae0d25125b544caab32f75f0360e775.html][joining with data.table]]
+- cite:googlesheets2017
+- [[http://stackoverflow.com/questions/25672974/caught-segfault-error-in-r][uninstall/install for seg faults]]
+- reshape2
+  - http://seananderson.ca/2013/10/19/reshape.html
+
+**** tidyverse
+:PROPERTIES:
+:CREATED:  [2019-03-19 Tue 14:06]
+:ID:       E8EA40A5-A1C1-44D7-8985-5D8568714698
+:END:
+:LOGBOOK:
+CLOCK: [2020-07-29 Wed 11:00]--[2020-07-29 Wed 11:20] =>  0:20
+:END:
+- processes
+  - https://www.google.com/search?q=dplyr+set+factor+levels
+- https://github.com/hrbrmstr/hrbrthemes
+- https://www.reddit.com/r/rstats/comments/2war5a/ggplot2_drop_level_from_legend/
+- http://www.sthda.com/english/wiki/be-awesome-in-ggplot2-a-practical-guide-to-be-highly-effective-r-software-and-data-visualization
+- http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels
+- http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/
+- http://www.sthda.com/english/wiki/be-awesome-in-ggplot2-a-practical-guide-to-be-highly-effective-r-software-and-data-visualization
+- http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html
+- https://ggplot2.tidyverse.org/reference/geom_boxplot.html
+- https://stackoverflow.com/questions/17120729/ggplot2-plotting-non-contiguous-time-durations-as-a-bar-chart
+- https://stackoverflow.com/users/16632/hadley
+- [[https://ggplot2.tidyverse.org/reference/][documentation]]
+  - https://ggplot2.tidyverse.org/reference/stat_ecdf.html
+- https://www.google.com/search?q=ggplot+cumulative+density
+- [[https://stackoverflow.com/questions/5208679/order-bars-in-ggplot2-bar-graph][stack: order bars]]
+- [[https://stackoverflow.com/questions/1249548/side-by-side-plots-with-ggplot2][stack: side by side plots with ggplot2]]
+- ggplot
+- https://www.google.com/search?q=ggplot+best+size+presentation
+- real time update? 
+- https://cran.r-project.org/web/packages/cowplot/vignettes/shared_legends.html
+- [[https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf][ggplot2 cheat sheet]]
+- [[https://stackoverflow.com/questions/7549694/adding-regression-line-equation-and-r2-on-graph/7549819#7549819][stack: Adding Regression Line Equation and R2 on graph]]
+- [[https://www.r-statistics.com/2016/11/ggedit-interactive-ggplot-aesthetic-and-theme-editor/][ggedit – interactive ggplot aesthetic and theme editor]]
+- https://github.com/tidyverse/ggplot2/issues/2158
+- commands
+  |----------+---------|
+  | function | command |
+  |----------+---------|
+  | <35>     | <35>    |
+  |          |         |
+- standards and best practice
+- documentation
+- applications
+- reference
+  - [[file:~/.emacs.d/snippets/org-mode/software]]
+*** R Training
+:PROPERTIES:
+:ID:       2EDD5335-C4BC-4B9F-9140-81A25062D4A6
+:END:
+- https://journal.r-project.org/
+- [[http://ww2.coastal.edu/kingw/statistics/R-tutorials/text/quick&dirty_R.txt][Quick and Dirty R Guide]]
+- [[https://www.r-bloggers.com/package-party-conditional-inference-trees/][inference trees with party]]
+- [[https://www.edx.org/course/statistics-r-harvardx-ph525-1x][EdX: Statisitcs and R]]
+- cite:YaRrr_Book
+  cite:muenchen2011r
+ [[https://cran.r-project.org/doc/manuals/R-intro.html][cran r intro]]
+- http://stats.stackexchange.com/questions/138/free-resources-for-learning-r
+[[https://www.bioconductor.org/help/course-materials/][Bioconductor courses and conferences]]
+- http://moo.nac.uci.edu/~hjm/R_BioC_example.html
+-  [[https://www.reddit.com/r/statistics/comments/5677zi/im_pursing_graduate_school_in_social_psychology/][R Swirl Package]]
+
+*** Shiny
+:PROPERTIES:
+:ID:       03623477-AB96-4BD1-A504-126F1FCB3343
+:END:
+http://bioinformatics.sdstate.edu/idep/
+- [[https://github.com/tylermorganwall/skpr][skpr experimental design suite]]
+:PROPERTIES:
+:ID:       1A1FED56-214D-4ECC-9502-70F6E0D6FDE8
+:END:
+#+NAME: shiny template
+#+BEGIN_SRC R
+
+library(shiny)
+
+ui = fluidPage()
+
+server = function(input, output) {}
+
+shinyApp(ui = ui, server = server)
+
+#+END_SRC
+
+#+NAME: input function
+#+BEGIN_SRC R
+
+library(shiny)
+
+ui = fluidPage(sliderInput(inputId = 'num',
+                  label = 'Choose a number',
+                  value = 25, min = 1, max = 100))
+
+server = function(input, output) {}
+
+shinyApp(ui = ui, server = server)
+
+#+END_SRC
+
+- shiny
+  - [[shiny
+  - [[http://shiny.rstudio.com/][shiny for R]]
+  - [[https://daattali.com/shiny/lightsout/][shiny lights out game]]
+  - [[https://www.shinyapps.io/admin/#/dashboard][shinyapps.io]]
+  - http://zevross.com/blog/2016/04/19/r-powered-web-applications-with-shiny-a-tutorial-and-cheat-sheet-with-40-example-apps/
+- input functions
+  - button
+    - actionButton()
+    - submitButton()
+  - checkbox, single- checkboxInput()
+  - checkbox group- checkboxGroupInput()
+  - date- dateInput()
+  - date range- dateRangeInput()
+  - file input- fileInput()
+  - numeric input- numericInput() 
+  - password input- passwordInput()
+  - radio buttons- radioButtons()
+  - select box- selectInput()
+  - sliders- sliderInput()
+  - text input- textInput()
+- outputs
+  - dataTableOutput() (interactive)
+  - htmlOutput()
+  - imageOutput()
+  - plotOutput()
+  - tableOutput()
+  - textOutput()
+  - uiOutput()
+  - verbatimTextOutput()
+- server builds output function from inputs
+  - workflow
+    - save output to output$
+    - build output with render*()
+    - access input values with input$
+  - save objects to output$<ELEMENT>
+    - link server and output element names
+    - render fuctions
+      - renderDataTable()
+      - renderImage()
+      - renderPlot()
+      - renderPrint()
+      - renderTable()
+      - renderText()
+      - renderUI()
+- sharing
+  - requires directory with app.R
+  - shinyapps.io server
+  - https://www.shinyapps.io/admin/#/dashboard
+
+#+BEGIN_SRC R
+install.packages('rsconnect')
+library(shiny)
+
+ui = fluidPage(
+    sliderInput(inputId = 'num',
+                label = 'Choose a number',
+                value = 25, min = 1, max = 100),
+    plotOutput('hist')
+)
+
+server = function(input, output) {
+    output$hist = renderplot({
+        hist(rnorm(input$num))
+    })
 }
 
-open 
-okular ~/library/allen2015.pdf 
-#+end_src
+shinyApp(ui= ui, server = server)
 
+?rsconnect
 
-#+name: 
-#+begin_src bash :tangle no
+rsconnect::setAccountInfo(name='jeszyman', token='7D5593D7025B8BECC9FFBBD2D9AA4D56', secret='sbbKu1u92+rnimHDSzLhL500cOMn/wy7rVdTva2+')
+#+END_SRC
 
-#+end_src
+#+RESULTS:
+
 ** Setup
 :PROPERTIES:
 :ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
@@ -638,6 +1406,7 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 CLOCK: [2020-12-15 Tue 06:51]--[2020-12-15 Tue 07:08] =>  0:17
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+- use ulimit to prevent sever brick
 - https://unix.stackexchange.com/questions/227876/how-to-set-custom-resolution-using-xrandr-when-the-resolution-is-not-available-i
 - linux software by application
   - system restore
@@ -2695,6 +3464,30 @@ cd /home
 (setq lsp-bash-highlight-parsing-errors 1)
 (setq lsp-bash-explanshell-endpoint 1)
 (setq lsp-bash-glob-pattern 1)
+#+end_src
+****** dev
+:PROPERTIES:
+:ID:       e4020f0e-ee6b-4d52-862a-8be622e8a590
+:END:
+#+name: 
+#+begin_src bash :tangle no
+open(){
+    # Check for parameters, return usage 
+    if [[ $# -eq 0 ]] ; then
+        printf "\n open 
+              \n xdg-open wrapper
+              \n \$1 = file to open
+              \n  "
+        exit 0
+    elif [ $1 == *.pdf ] ;then
+        okular $1 & exit
+    else
+        xdg-open $1
+    fi
+}
+
+open 
+okular ~/library/allen2015.pdf 
 #+end_src
 
 ****** [[file:~/repos/basecamp/src/shell/functions.sh][Common Process Functions]]
