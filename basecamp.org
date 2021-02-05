@@ -2372,6 +2372,7 @@ CLOCK: [2019-02-06 Wed 16:12]--[2019-02-06 Wed 17:05] =>  0:53
 :ID:       b9145567-7654-45d7-abb9-4418d3f12b90
 :END:
 - C++
+  - https://www.freecodecamp.org/news/learn-object-oriented-programming-oop-in-c-full-video-course/
   - http://www.seqan.de/
   - https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/
 - [[https://github.com/mohd-akram/languages][Language graph using cytoscape]]
@@ -3675,6 +3676,7 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
+- https://www.freecodecamp.org/news/the-docker-handbook/
 - Interactive docker initialization
 #+name: 
 #+begin_src bash :session *shell2* :tangle no
