@@ -24,6 +24,65 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
+*** best practices, style
+:PROPERTIES:
+:ID:       419ba6f0-4977-4eed-9d25-93a45933ad56
+:END:
+- Rscript format best practices
+  - Differentiate working and testing sections 
+- Style guides
+  - [[https://google.github.io/styleguide/Rguide.xml][Google]] 
+    - ideas
+      - for naming, use ICANN convention  specific <- general
+  - [[http://adv-r.had.co.nz/Style.html][Advanced R]] cite:wickham2014
+  - [[https://style.tidyverse.org/documentation.html][Tidyverse]]
+  - characters- "For portable R code (including that to be used in R packages) only A–Za–z0–9 should be used." 
+  - two-space indentation
+  - spaces
+    - before and after =, +, -, <, etc.
+    - after comma
+  - variable_names_with_underscore 
+- R style guides
+  - http://adv-r.had.co.nz/Style.html
+  - https://journal.r-project.org/archive/2012/RJ-2012-018/RJ-2012-018.pdf
+  - https://www.r-bloggers.com/consistent-naming-conventions-in-r/
+  - https://stackoverflow.com/questions/1944910/what-is-your-preferred-style-for-naming-variables-in-r
+  - https://stackoverflow.com/questions/10013545/are-there-any-official-naming-conventions-for-r
+  - http://jef.works/R-style-guide/
+  - https://csgillespie.wordpress.com/2010/11/23/r-style-guide/
+  - https://google.github.io/styleguide/Rguide.xml
+- examples
+  - https://github.com/TheEconomist/us-potus-model/blob/master/scripts/model/final_2016.R
+
+- https://google.github.io/styleguide/Rguide.html
+*** [[https://www.r-project.org/other-docs.html][documentation]]
+:PROPERTIES:
+:ID:       5387846b-2130-468f-8d94-1f53fe2b5541
+:END:
+  - [[https://cran.r-project.org/manuals.html][cran manuals]]
+    - 
+      - 3
+        - 3.4 The class of an object
+  - cite:r_core_team2018 
+  - cite:venables2018 
+  - [[https://www.rdocumentation.org/][all package documentation]]
+  - [[https://www.rdocumentation.org/][RDocumentation]]
+*** commands
+:PROPERTIES:
+:ID:       5deed8c7-777a-414e-8df5-281f08fe98c7
+:END:
+  | function             | command                                                                                  |
+  |----------------------+------------------------------------------------------------------------------------------|
+  |                      | <50>                                                                                     |
+  | get help w/ function | help(<FUNCT>)                                                                            |
+  | rename columns       | plyr::rename(<DF>, c("<OLD>"="<NEW>"))                                                   |
+  | drop columns         | <DF2>=<DF>[,-which(names(<DF)> %in% <DROP>)]                                             |
+  | reorder columns      | https://stackoverflow.com/questions/5620885/how-does-one-reorder-columns-in-a-data-frame |
+  | remove before        | gsub("^.*<CHAR>","",<TARGET>)                                                            |
+  | remove after         | gsub("<CHAR>.*$","",<TARGET>)                                                            |
+  | save hx              | savehistory("<OUTPUT_FILE>")                                                             |
+  | cumm density plot    | [[https://ggplot2.tidyverse.org/reference/stat_ecdf.html][stat_ecdf()]]                                                                              |
+  | sort                 | sorted=unsorted[with(unsorted, order(by)),]                                              |
 *** processes
 :PROPERTIES:
 :ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
@@ -92,6 +151,80 @@ CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
   - https://unix.stackexchange.com/questions/149451/install-r-in-my-own-directory
 - https://www.google.com/search?q=R+check+hostname 
 - https://www.google.com/search?q=R+where+to+store+packages 
+*** Packages
+:PROPERTIES:
+:ID:       13053897-37D7-4068-B3D0-5A6660BA0CD3
+:END:
+- pheatmap
+  - https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/
+- https://topepo.github.io/caret/#
+- https://cran.r-project.org/web/packages/cutpointr/vignettes/cutpointr.html
+- https://old.reddit.com/r/datascience/comments/av4z50/what_are_some_very_useful_lesser_known_r_packages/
+- Grab list of packages: 
+  #+BEGIN_SRC R
+ip = as.data.frame(installed.packages()[,c(1,3:4)])
+ip = ip[is.na(ip$Priority),1:2,drop=FALSE]
+ip
+  #+END_SRC 
+- cite:xtable2016
+- data.table
+  - [[https://rstudio-pubs-static.s3.amazonaws.com/52230_5ae0d25125b544caab32f75f0360e775.html][joining with data.table]]
+- cite:googlesheets2017
+- [[http://stackoverflow.com/questions/25672974/caught-segfault-error-in-r][uninstall/install for seg faults]]
+- reshape2
+  - http://seananderson.ca/2013/10/19/reshape.html
+
+**** tidyverse
+:PROPERTIES:
+:CREATED:  [2019-03-19 Tue 14:06]
+:ID:       E8EA40A5-A1C1-44D7-8985-5D8568714698
+:END:
+:LOGBOOK:
+CLOCK: [2020-07-29 Wed 11:00]--[2020-07-29 Wed 11:20] =>  0:20
+:END:
+- processes
+  - https://www.google.com/search?q=dplyr+set+factor+levels
+- https://github.com/hrbrmstr/hrbrthemes
+- https://www.reddit.com/r/rstats/comments/2war5a/ggplot2_drop_level_from_legend/
+- http://www.sthda.com/english/wiki/be-awesome-in-ggplot2-a-practical-guide-to-be-highly-effective-r-software-and-data-visualization
+- http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels
+- http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/
+- http://www.sthda.com/english/wiki/be-awesome-in-ggplot2-a-practical-guide-to-be-highly-effective-r-software-and-data-visualization
+- http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html
+- https://ggplot2.tidyverse.org/reference/geom_boxplot.html
+- https://stackoverflow.com/questions/17120729/ggplot2-plotting-non-contiguous-time-durations-as-a-bar-chart
+- https://stackoverflow.com/users/16632/hadley
+- [[https://ggplot2.tidyverse.org/reference/][documentation]]
+  - https://ggplot2.tidyverse.org/reference/stat_ecdf.html
+- https://www.google.com/search?q=ggplot+cumulative+density
+- [[https://stackoverflow.com/questions/5208679/order-bars-in-ggplot2-bar-graph][stack: order bars]]
+- [[https://stackoverflow.com/questions/1249548/side-by-side-plots-with-ggplot2][stack: side by side plots with ggplot2]]
+- ggplot
+- https://www.google.com/search?q=ggplot+best+size+presentation
+- real time update? 
+- https://cran.r-project.org/web/packages/cowplot/vignettes/shared_legends.html
+- [[https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf][ggplot2 cheat sheet]]
+- [[https://stackoverflow.com/questions/7549694/adding-regression-line-equation-and-r2-on-graph/7549819#7549819][stack: Adding Regression Line Equation and R2 on graph]]
+- [[https://www.r-statistics.com/2016/11/ggedit-interactive-ggplot-aesthetic-and-theme-editor/][ggedit – interactive ggplot aesthetic and theme editor]]
+- https://github.com/tidyverse/ggplot2/issues/2158
+- commands
+  |----------+---------|
+  | function | command |
+  |----------+---------|
+  | <35>     | <35>    |
+  |          |         |
+- standards and best practice
+- documentation
+- applications
+- reference
+  - [[file:~/.emacs.d/snippets/org-mode/software]]
+**** bioconductor
+:PROPERTIES:
+:ID:       ac5c9fbe-7ce7-4092-989b-e63884fdd9df
+:END:
+
+- https://www.bioconductor.org/help/course-materials/2016/BioC2016/ConcurrentWorkshops4/Yin/bioc-workflow.html
+- [[https://bioconductor.org/packages/release/bioc/vignettes/biomaRt/inst/doc/biomaRt.html#retrieve-all-hugo-gene-symbols-of-genes-that-are-located-on-chromosomes-1720-or-y-and-are-associated-with-specific-go-terms][The biomaRt users guide]]
 *** [[LINK TO Machine Learning]]
 :PROPERTIES:
 :ID:       8063a40e-df60-449d-9641-6eea42e47f9c
@@ -100,70 +233,6 @@ CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :PROPERTIES:
 :ID:       aa3f8528-0603-42b4-9e1e-8a27b9aaf8b3
 :END:
-*** best practices, style
-:PROPERTIES:
-:ID:       419ba6f0-4977-4eed-9d25-93a45933ad56
-:END:
-- Rscript format best practices
-  - Differentiate working and testing sections 
-- Style guides
-  - [[https://google.github.io/styleguide/Rguide.xml][Google]] 
-    - ideas
-      - for naming, use ICANN convention  specific <- general
-  - [[http://adv-r.had.co.nz/Style.html][Advanced R]] cite:wickham2014
-  - [[https://style.tidyverse.org/documentation.html][Tidyverse]]
-  - characters- "For portable R code (including that to be used in R packages) only A–Za–z0–9 should be used." 
-  - two-space indentation
-  - spaces
-    - before and after =, +, -, <, etc.
-    - after comma
-  - variable_names_with_underscore 
-- R style guides
-  - http://adv-r.had.co.nz/Style.html
-  - https://journal.r-project.org/archive/2012/RJ-2012-018/RJ-2012-018.pdf
-  - https://www.r-bloggers.com/consistent-naming-conventions-in-r/
-  - https://stackoverflow.com/questions/1944910/what-is-your-preferred-style-for-naming-variables-in-r
-  - https://stackoverflow.com/questions/10013545/are-there-any-official-naming-conventions-for-r
-  - http://jef.works/R-style-guide/
-  - https://csgillespie.wordpress.com/2010/11/23/r-style-guide/
-  - https://google.github.io/styleguide/Rguide.xml
-- examples
-  - https://github.com/TheEconomist/us-potus-model/blob/master/scripts/model/final_2016.R
-
-- https://google.github.io/styleguide/Rguide.html
-*** commands
-:PROPERTIES:
-:ID:       5deed8c7-777a-414e-8df5-281f08fe98c7
-:END:
-  | function             | command                                                                                  |
-  |----------------------+------------------------------------------------------------------------------------------|
-  |                      | <50>                                                                                     |
-  | get help w/ function | help(<FUNCT>)                                                                            |
-  | rename columns       | plyr::rename(<DF>, c("<OLD>"="<NEW>"))                                                   |
-  | drop columns         | <DF2>=<DF>[,-which(names(<DF)> %in% <DROP>)]                                             |
-  | reorder columns      | https://stackoverflow.com/questions/5620885/how-does-one-reorder-columns-in-a-data-frame |
-  | remove before        | gsub("^.*<CHAR>","",<TARGET>)                                                            |
-  | remove after         | gsub("<CHAR>.*$","",<TARGET>)                                                            |
-  | save hx              | savehistory("<OUTPUT_FILE>")                                                             |
-  | cumm density plot    | [[https://ggplot2.tidyverse.org/reference/stat_ecdf.html][stat_ecdf()]]                                                                              |
-  | sort                 | sorted=unsorted[with(unsorted, order(by)),]                                              |
-*** [[https://www.r-project.org/other-docs.html][documentation]]
-:PROPERTIES:
-:ID:       5387846b-2130-468f-8d94-1f53fe2b5541
-:END:
-  - [[https://cran.r-project.org/manuals.html][cran manuals]]
-    - 
-      - 3
-        - 3.4 The class of an object
-  - cite:r_core_team2018 
-  - cite:venables2018 
-  - [[https://www.rdocumentation.org/][all package documentation]]
-  - [[https://www.rdocumentation.org/][RDocumentation]]
-*** markup
-:PROPERTIES:
-:ID:       b3d911e9-161e-44cd-96e8-e403ba3c3c58
-:END:
-  - https://www.r-bloggers.com/blogging-with-rmarkdown-knitr-and-jekyll/
 *** applications
 :PROPERTIES:
 :ID:       9d7edb43-f1d6-4ac9-9f76-312be12d14c6
@@ -374,26 +443,124 @@ pR2(model)
 library(ROCR)
 #+END_SRC
 
-*** ideas
+**** markup
 :PROPERTIES:
-:ID:       d3e14906-80f0-409b-b8df-8d98da11f09f
+:ID:       b3d911e9-161e-44cd-96e8-e403ba3c3c58
 :END:
-:LOGBOOK:
-CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
-:END:
-  - script to check for install and install only if necessary 
-  - ideas
-    - define path variables in r
-    - [ ] how to stop R ESS tab complete from pinging countries?
-
-
-*** bioconductor
+  - https://www.r-bloggers.com/blogging-with-rmarkdown-knitr-and-jekyll/
+**** Shiny
 :PROPERTIES:
-:ID:       ac5c9fbe-7ce7-4092-989b-e63884fdd9df
+:ID:       03623477-AB96-4BD1-A504-126F1FCB3343
 :END:
+http://bioinformatics.sdstate.edu/idep/
+- [[https://github.com/tylermorganwall/skpr][skpr experimental design suite]]
+:PROPERTIES:
+:ID:       1A1FED56-214D-4ECC-9502-70F6E0D6FDE8
+:END:
+#+NAME: shiny template
+#+BEGIN_SRC R
 
-- https://www.bioconductor.org/help/course-materials/2016/BioC2016/ConcurrentWorkshops4/Yin/bioc-workflow.html
-- [[https://bioconductor.org/packages/release/bioc/vignettes/biomaRt/inst/doc/biomaRt.html#retrieve-all-hugo-gene-symbols-of-genes-that-are-located-on-chromosomes-1720-or-y-and-are-associated-with-specific-go-terms][The biomaRt users guide]]
+library(shiny)
+
+ui = fluidPage()
+
+server = function(input, output) {}
+
+shinyApp(ui = ui, server = server)
+
+#+END_SRC
+
+#+NAME: input function
+#+BEGIN_SRC R
+
+library(shiny)
+
+ui = fluidPage(sliderInput(inputId = 'num',
+                  label = 'Choose a number',
+                  value = 25, min = 1, max = 100))
+
+server = function(input, output) {}
+
+shinyApp(ui = ui, server = server)
+
+#+END_SRC
+
+- shiny
+  - [[shiny
+  - [[http://shiny.rstudio.com/][shiny for R]]
+  - [[https://daattali.com/shiny/lightsout/][shiny lights out game]]
+  - [[https://www.shinyapps.io/admin/#/dashboard][shinyapps.io]]
+  - http://zevross.com/blog/2016/04/19/r-powered-web-applications-with-shiny-a-tutorial-and-cheat-sheet-with-40-example-apps/
+- input functions
+  - button
+    - actionButton()
+    - submitButton()
+  - checkbox, single- checkboxInput()
+  - checkbox group- checkboxGroupInput()
+  - date- dateInput()
+  - date range- dateRangeInput()
+  - file input- fileInput()
+  - numeric input- numericInput() 
+  - password input- passwordInput()
+  - radio buttons- radioButtons()
+  - select box- selectInput()
+  - sliders- sliderInput()
+  - text input- textInput()
+- outputs
+  - dataTableOutput() (interactive)
+  - htmlOutput()
+  - imageOutput()
+  - plotOutput()
+  - tableOutput()
+  - textOutput()
+  - uiOutput()
+  - verbatimTextOutput()
+- server builds output function from inputs
+  - workflow
+    - save output to output$
+    - build output with render*()
+    - access input values with input$
+  - save objects to output$<ELEMENT>
+    - link server and output element names
+    - render fuctions
+      - renderDataTable()
+      - renderImage()
+      - renderPlot()
+      - renderPrint()
+      - renderTable()
+      - renderText()
+      - renderUI()
+- sharing
+  - requires directory with app.R
+  - shinyapps.io server
+  - https://www.shinyapps.io/admin/#/dashboard
+
+#+BEGIN_SRC R
+install.packages('rsconnect')
+library(shiny)
+
+ui = fluidPage(
+    sliderInput(inputId = 'num',
+                label = 'Choose a number',
+                value = 25, min = 1, max = 100),
+    plotOutput('hist')
+)
+
+server = function(input, output) {
+    output$hist = renderplot({
+        hist(rnorm(input$num))
+    })
+}
+
+shinyApp(ui= ui, server = server)
+
+?rsconnect
+
+rsconnect::setAccountInfo(name='jeszyman', token='7D5593D7025B8BECC9FFBBD2D9AA4D56', secret='sbbKu1u92+rnimHDSzLhL500cOMn/wy7rVdTva2+')
+#+END_SRC
+
+#+RESULTS:
+
 *** Variable types 
 :PROPERTIES:
 :ID:       7c76cdb1-3e3d-4846-b825-9826769b12cb
@@ -604,71 +771,6 @@ runif(3, min=0, max=100)
 - [[file:~/Box%20Sync/career/clin_research/folate/macrocytosis/macrocytosis.R][Macrocytosis]]
 - [[file:~/Box%20Sync/career/clin_research/clinical.informatics.elective/clin_informatics.org][Clinical Informatics Session 2]]
 
-*** Packages
-:PROPERTIES:
-:ID:       13053897-37D7-4068-B3D0-5A6660BA0CD3
-:END:
-- https://topepo.github.io/caret/#
-- https://cran.r-project.org/web/packages/cutpointr/vignettes/cutpointr.html
-- https://old.reddit.com/r/datascience/comments/av4z50/what_are_some_very_useful_lesser_known_r_packages/
-- Grab list of packages: 
-  #+BEGIN_SRC R
-ip = as.data.frame(installed.packages()[,c(1,3:4)])
-ip = ip[is.na(ip$Priority),1:2,drop=FALSE]
-ip
-  #+END_SRC 
-- cite:xtable2016
-- data.table
-  - [[https://rstudio-pubs-static.s3.amazonaws.com/52230_5ae0d25125b544caab32f75f0360e775.html][joining with data.table]]
-- cite:googlesheets2017
-- [[http://stackoverflow.com/questions/25672974/caught-segfault-error-in-r][uninstall/install for seg faults]]
-- reshape2
-  - http://seananderson.ca/2013/10/19/reshape.html
-
-**** tidyverse
-:PROPERTIES:
-:CREATED:  [2019-03-19 Tue 14:06]
-:ID:       E8EA40A5-A1C1-44D7-8985-5D8568714698
-:END:
-:LOGBOOK:
-CLOCK: [2020-07-29 Wed 11:00]--[2020-07-29 Wed 11:20] =>  0:20
-:END:
-- processes
-  - https://www.google.com/search?q=dplyr+set+factor+levels
-- https://github.com/hrbrmstr/hrbrthemes
-- https://www.reddit.com/r/rstats/comments/2war5a/ggplot2_drop_level_from_legend/
-- http://www.sthda.com/english/wiki/be-awesome-in-ggplot2-a-practical-guide-to-be-highly-effective-r-software-and-data-visualization
-- http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels
-- http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/
-- http://www.sthda.com/english/wiki/be-awesome-in-ggplot2-a-practical-guide-to-be-highly-effective-r-software-and-data-visualization
-- http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html
-- https://ggplot2.tidyverse.org/reference/geom_boxplot.html
-- https://stackoverflow.com/questions/17120729/ggplot2-plotting-non-contiguous-time-durations-as-a-bar-chart
-- https://stackoverflow.com/users/16632/hadley
-- [[https://ggplot2.tidyverse.org/reference/][documentation]]
-  - https://ggplot2.tidyverse.org/reference/stat_ecdf.html
-- https://www.google.com/search?q=ggplot+cumulative+density
-- [[https://stackoverflow.com/questions/5208679/order-bars-in-ggplot2-bar-graph][stack: order bars]]
-- [[https://stackoverflow.com/questions/1249548/side-by-side-plots-with-ggplot2][stack: side by side plots with ggplot2]]
-- ggplot
-- https://www.google.com/search?q=ggplot+best+size+presentation
-- real time update? 
-- https://cran.r-project.org/web/packages/cowplot/vignettes/shared_legends.html
-- [[https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf][ggplot2 cheat sheet]]
-- [[https://stackoverflow.com/questions/7549694/adding-regression-line-equation-and-r2-on-graph/7549819#7549819][stack: Adding Regression Line Equation and R2 on graph]]
-- [[https://www.r-statistics.com/2016/11/ggedit-interactive-ggplot-aesthetic-and-theme-editor/][ggedit – interactive ggplot aesthetic and theme editor]]
-- https://github.com/tidyverse/ggplot2/issues/2158
-- commands
-  |----------+---------|
-  | function | command |
-  |----------+---------|
-  | <35>     | <35>    |
-  |          |         |
-- standards and best practice
-- documentation
-- applications
-- reference
-  - [[file:~/.emacs.d/snippets/org-mode/software]]
 *** R Training
 :PROPERTIES:
 :ID:       2EDD5335-C4BC-4B9F-9140-81A25062D4A6
@@ -685,118 +787,18 @@ CLOCK: [2020-07-29 Wed 11:00]--[2020-07-29 Wed 11:20] =>  0:20
 - http://moo.nac.uci.edu/~hjm/R_BioC_example.html
 -  [[https://www.reddit.com/r/statistics/comments/5677zi/im_pursing_graduate_school_in_social_psychology/][R Swirl Package]]
 
-*** Shiny
+*** ideas
 :PROPERTIES:
-:ID:       03623477-AB96-4BD1-A504-126F1FCB3343
+:ID:       d3e14906-80f0-409b-b8df-8d98da11f09f
 :END:
-http://bioinformatics.sdstate.edu/idep/
-- [[https://github.com/tylermorganwall/skpr][skpr experimental design suite]]
-:PROPERTIES:
-:ID:       1A1FED56-214D-4ECC-9502-70F6E0D6FDE8
+:LOGBOOK:
+CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
 :END:
-#+NAME: shiny template
-#+BEGIN_SRC R
+  - script to check for install and install only if necessary 
+  - ideas
+    - define path variables in r
+    - [ ] how to stop R ESS tab complete from pinging countries?
 
-library(shiny)
-
-ui = fluidPage()
-
-server = function(input, output) {}
-
-shinyApp(ui = ui, server = server)
-
-#+END_SRC
-
-#+NAME: input function
-#+BEGIN_SRC R
-
-library(shiny)
-
-ui = fluidPage(sliderInput(inputId = 'num',
-                  label = 'Choose a number',
-                  value = 25, min = 1, max = 100))
-
-server = function(input, output) {}
-
-shinyApp(ui = ui, server = server)
-
-#+END_SRC
-
-- shiny
-  - [[shiny
-  - [[http://shiny.rstudio.com/][shiny for R]]
-  - [[https://daattali.com/shiny/lightsout/][shiny lights out game]]
-  - [[https://www.shinyapps.io/admin/#/dashboard][shinyapps.io]]
-  - http://zevross.com/blog/2016/04/19/r-powered-web-applications-with-shiny-a-tutorial-and-cheat-sheet-with-40-example-apps/
-- input functions
-  - button
-    - actionButton()
-    - submitButton()
-  - checkbox, single- checkboxInput()
-  - checkbox group- checkboxGroupInput()
-  - date- dateInput()
-  - date range- dateRangeInput()
-  - file input- fileInput()
-  - numeric input- numericInput() 
-  - password input- passwordInput()
-  - radio buttons- radioButtons()
-  - select box- selectInput()
-  - sliders- sliderInput()
-  - text input- textInput()
-- outputs
-  - dataTableOutput() (interactive)
-  - htmlOutput()
-  - imageOutput()
-  - plotOutput()
-  - tableOutput()
-  - textOutput()
-  - uiOutput()
-  - verbatimTextOutput()
-- server builds output function from inputs
-  - workflow
-    - save output to output$
-    - build output with render*()
-    - access input values with input$
-  - save objects to output$<ELEMENT>
-    - link server and output element names
-    - render fuctions
-      - renderDataTable()
-      - renderImage()
-      - renderPlot()
-      - renderPrint()
-      - renderTable()
-      - renderText()
-      - renderUI()
-- sharing
-  - requires directory with app.R
-  - shinyapps.io server
-  - https://www.shinyapps.io/admin/#/dashboard
-
-#+BEGIN_SRC R
-install.packages('rsconnect')
-library(shiny)
-
-ui = fluidPage(
-    sliderInput(inputId = 'num',
-                label = 'Choose a number',
-                value = 25, min = 1, max = 100),
-    plotOutput('hist')
-)
-
-server = function(input, output) {
-    output$hist = renderplot({
-        hist(rnorm(input$num))
-    })
-}
-
-shinyApp(ui= ui, server = server)
-
-?rsconnect
-
-rsconnect::setAccountInfo(name='jeszyman', token='7D5593D7025B8BECC9FFBBD2D9AA4D56', secret='sbbKu1u92+rnimHDSzLhL500cOMn/wy7rVdTva2+')
-#+END_SRC
-
-#+RESULTS:
 
 ** Setup
 :PROPERTIES:
@@ -1406,14 +1408,12 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 CLOCK: [2020-12-15 Tue 06:51]--[2020-12-15 Tue 07:08] =>  0:17
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
-- use ulimit to prevent sever brick
-- https://unix.stackexchange.com/questions/227876/how-to-set-custom-resolution-using-xrandr-when-the-resolution-is-not-available-i
-- linux software by application
-  - system restore
-    - https://github.com/teejee2008/timeshift
-  - i3
-    - https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
-  - for dir sizes, use ncdu
+- [[https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux][optical character recognition in linux]]
+- i3
+  - https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
+- for dir sizes, use ncdu
+- system restore
+  - https://github.com/teejee2008/timeshift
 - applications
   - sysadmin
     - https://unix.stackexchange.com/questions/87908/how-do-you-empty-the-buffers-and-cache-on-a-linux-system
@@ -1423,25 +1423,32 @@ CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
     - https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
   - ocr
     - https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
-- GNU
-  - gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
-- reference
-  - [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
-  - https://linustechtips.com/main/
 
+****** GNU
+:PROPERTIES:
+:ID:       e2e4606f-de26-4247-8577-1e1a708e0a5a
+:END:
+  - gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
+****** X Window System 
+:PROPERTIES:
+:ID:       bc5ab32a-387d-400a-b72c-ac29d743493f
+:END:
+- https://unix.stackexchange.com/questions/227876/how-to-set-custom-resolution-using-xrandr-when-the-resolution-is-not-available-i
 ****** documentation and general education
 :PROPERTIES:
 :ID:       ec0fbb20-4909-4ab7-8ba2-c48836743d01
 :END:
-  - https://www.kernel.org/doc/html/latest/admin-guide/index.html
-  - general education- https://www.reddit.com/r/linux4noobs/comments/fntvl7/between_linux_essentials_linux_and_lpic1_which/
-  - https://refspecs.linuxfoundation.org/
+- [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
+- https://linustechtips.com/main/
+- https://www.kernel.org/doc/html/latest/admin-guide/index.html
+- general education- https://www.reddit.com/r/linux4noobs/comments/fntvl7/between_linux_essentials_linux_and_lpic1_which/
+- https://refspecs.linuxfoundation.org/
 ****** interfaces
 :PROPERTIES:
 :ID:       1696cc89-66bc-454c-8659-95f354b79d82
 :END:
-  - https://github.com/tbodt/ish/projects/7
-  - https://github.com/Airblader/i3
+- https://github.com/tbodt/ish/projects/7
+- https://github.com/Airblader/i3
 ****** variables
 :PROPERTIES:
 :ID:       d16cef2b-b679-48db-958c-2105b06478ba
@@ -1567,6 +1574,8 @@ CLOCK: [2019-06-04 Tue 17:34]--[2019-06-04 Tue 17:38] =>  0:04
 CLOCK: [2019-06-02 Sun 08:37]--[2019-06-02 Sun 08:49] =>  0:12
 CLOCK: [2019-06-01 Sat 09:36]--[2019-06-01 Sat 09:40] =>  0:04
 :END:
+- 
+- https://askubuntu.com/questions/1041965/mounting-server-dir-to-local-dir
 - apt package management
   - https://askubuntu.com/questions/tagged/apt
   - 
@@ -1847,6 +1856,7 @@ https://www.reddit.com/r/linux4noobs/comments/h9d5v4/how_to_improve_increase_the
 :ID:       BCD2D984-7185-47C0-9ECB-B1F40314595C
 :END:
 
+- use ulimit to prevent sever brick
 - [ ] server-linux build
   - https://www.reddit.com/r/IWantToLearn/comments/87brq8/iwtl_how_to_build_a_home_server/?st=jfjrnjjw&sh=775fb75f
   - https://www.reddit.com/r/buildapc/comments/6g40g4/i_dedicated_my_last_3_years_to_buildapc/
@@ -2642,6 +2652,7 @@ CLOCK: [2019-02-19 Tue 11:04]--[2019-02-19 Tue 11:25] =>  0:21
 :PROPERTIES:
 :ID:       BF9D824A-02EF-4580-97A1-B887299AD461
 :END:
+https://www.emacswiki.org/emacs/ElispCookbook
 #+name: block-1
 #+BEGIN_SRC emacs-lisp :results replace
 (list "cons" "newelt" "balsh")
@@ -2899,16 +2910,16 @@ if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; 
     - https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script#:~:text=All%20by%20itself%2C%20exit%20implies,successful%20completion%20of%20your%20script.&text=However%20by%20specifying%20the%201,exited%20with%20an%20error%20condition.
   - arrays
     - [[https://stackoverflow.com/questions/18921350/shell-script-correct-way-to-declare-an-empty-array][declare array]]
-    - [[https://unix.stackexchange.com/questions/125632/printing-an-array-to-a-file-with-each-element-of-the-array-in-a-new-line-in-bash][print array with line breaks]]
-    - https://www.google.com/search?q=bash+create+array 
-    - https://www.google.com/search?q=bash+pass+array+to+for+loop 
-    - pass to array 
+    - populate
+      - from list of variables
       - pass each line of file
         - https://riptutorial.com/bash/example/19457/read-lines-of-a-file-into-an-array
       - pass cat output
         - https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
       - https://www.google.com/search?q=pass+cat+output+to+array+variable
       - command output https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
+    - [[https://unix.stackexchange.com/questions/125632/printing-an-array-to-a-file-with-each-element-of-the-array-in-a-new-line-in-bash][print array with line breaks]]
+    - https://www.google.com/search?q=bash+pass+array+to+for+loop 
   - for loops
     - examples
       - Recursively git commit with date tag
