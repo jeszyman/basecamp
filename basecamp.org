@@ -1408,6 +1408,7 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 CLOCK: [2020-12-15 Tue 06:51]--[2020-12-15 Tue 07:08] =>  0:17
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+- https://stackoverflow.com/questions/49598797/remove-pdf-annotations-via-command-line
 - [[https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux][optical character recognition in linux]]
 - i3
   - https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
@@ -1423,6 +1424,575 @@ CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
     - https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
   - ocr
     - https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
+
+****** linux                                                       :software:
+:PROPERTIES:
+:CREATED:  [2020-01-09 Thu 15:46]
+:ID:       cd560390-aa1e-4c9e-8317-08610e5de42a
+:END:
+:LOGBOOK:
+CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
+:END:
+https://github.com/teejee2008/timeshift
+https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
+https://unix.stackexchange.com/questions/53542/how-to-determine-the-filesystem-of-an-unmounted-device
+https://unix.stackexchange.com/questions/18925/how-to-mount-a-device-in-linux
+- gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
+- https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
+- [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
+- find large files sudo du -a /home | sort -n -r | head -n 10
+- https://linustechtips.com/main/
+- https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
+- for dir sizes, use ncdu
+https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
+******* documentation and general education
+:PROPERTIES:
+:ID:       0aed9c3f-c216-40e8-a80d-7bc54443ef5c
+:END:
+  - https://www.kernel.org/doc/html/latest/admin-guide/index.html
+  - general education- https://www.reddit.com/r/linux4noobs/comments/fntvl7/between_linux_essentials_linux_and_lpic1_which/
+  - https://refspecs.linuxfoundation.org/
+******* interfaces
+:PROPERTIES:
+:ID:       48801280-4d0f-4da3-a5da-6c661add36cd
+:END:
+  - https://github.com/tbodt/ish/projects/7
+  - https://github.com/Airblader/i3
+******* variables
+:PROPERTIES:
+:ID:       03fe412e-42fb-4fd8-b951-28562140b8a8
+:END:
+  - PATH
+    - https://unix.stackexchange.com/questions/26047/how-to-correctly-add-a-path-to-path
+      - note on config files where environmental variables can be set: 
+        - ~/.bashrc is config for interactive bash
+        - ~/.profile / ~/.bash_profile- see https://askubuntu.com/questions/298532/why-wont-environment-variables-added-to-profile-show-up-in-screen
+    - [[https://unix.stackexchange.com/questions/3809/how-can-i-make-a-program-executable-from-everywhere][How can I make a program executable from everywhere]]
+  - Permissions
+    - [[https://www.csun.edu/~csunitr/guides/unixpermissions.html][user permissions]]
+    - common chmods
+      - 600- owner read/write only
+      - 660- owner plus group read/write
+      - 664 everyone read / write
+      - see [[https://mail.google.com/mail/u/0/#search/hiseq3000/15628d36aa827e42][this email]] from Paul at GTAC 
+      - [[http://stackoverflow.com/questions/3740152/how-to-set-chmod-for-a-folder-and-all-of-its-subfolders-and-files-in-linux-ubunt][How do I set chmod for a folder and all of its subfolders and files in Linux Ubuntu Terminal? {closed}]]
+  - Symbolic links
+    - [[https://stackoverflow.com/questions/16017500/how-to-see-full-symlink-path][see path with readlink -f]]
+    - [[https://stackoverflow.com/questions/1727280/is-there-a-way-to-edit-a-symlink-without-deleting-it-first][stack: create and edit symlinks]]- ln -s /location/to/link linkname
+    - @ files are symlinks?https://unix.stackexchange.com/questions/191717/what-does-the-symbol-mean-on-filenames
+******* tools
+:PROPERTIES:
+:ID:       3c1966ac-c5ad-49d9-ad45-9c87a5c7450b
+:END:
+  - ifconfig
+    - [[file:/usr/share/man/man8/ifconfig.8.gz]] 
+- gnu parallel
+  - https://www.msi.umn.edu/support/faq/how-can-i-use-gnu-parallel-run-lot-commands-parallel
+  - https://www.biostars.org/p/63816/
+  - https://www.biostars.org/p/216905/
+  - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
+******** trash-cli
+:PROPERTIES:
+:ID:       fe8ca086-cd69-4f40-a96d-3e99678c400e
+:END:
+#+begin_src bash 
+#
+# Install
+cd /opt
+sudo git clone https://github.com/andreafrancia/trash-cli.git
+cd trash-cli
+sudo python setup.py install
+#
+#
+#+end_src
+******* commands
+:PROPERTIES:
+:ID:       56b7a8f4-25d7-41a2-a0b5-cdb8a86481cc
+:END:
+  |----------------------+-------------------------------------|
+  | function             | command                             |
+  |----------------------+-------------------------------------|
+  | mount partition      | udisksctl mount -b /dev/<PARTITION> |
+  |                      |                                     |
+  | unzip .bz2           | tar --bzip2 -xvf <FILE>             |
+  | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]]                               |
+  | see systemd services | systemctl list-units --type=service |
+  | see ubuntu version   | lsb_release -a                      |
+- https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
+******* processes
+:PROPERTIES:
+:ID:       0f7af99f-aee7-4572-97cb-2ab0a6adcfbd
+:END:
+- https://www.google.com/search?q=linux+command+line+convert+jpg+to+pdf
+- https://www.google.com/search?q=linux+change+rm+to+recycle+bin
+  - https://github.com/andreafrancia/trash-cli
+- https://www.google.com/search?q=linux+get+server+specs
+- files
+  - prevent delete
+    - w/ chattr
+      - sudo chattr +i <FILE> (remove with -i)
+      - for dirs, sudo chattr -R +i <DIR>
+    - https://www.google.com/search?q=linux+protect+files+from+delete
+  - opening
+    - https://forum.artixlinux.org/index.php/topic,1129.0.html
+  - decompressing
+    - https://www.reddit.com/r/linuxmasterrace/comments/et9e36/best_function_ever/
+  - convert
+    - https://askubuntu.com/questions/493584/convert-images-to-pdf
+    - png to pdf- use ImageMagick convert command 
+  - merge pdfs
+    - https://askubuntu.com/questions/2799/how-to-merge-several-pdf-files
+- backup
+  - https://www.reddit.com/r/commandline/comments/fr6the/linuxtimemachine_rsyncbased_osxlike_time_machine/
+- storage setup and manipulations
+  - http://www.rodsbooks.com/gdisk/walkthrough.html
+- reporting
+  - https://github.com/Heholord/FalconStats/tree/master
+- create an interface
+  - https://www.reddit.com/r/commandline/comments/f8nxyx/bash_how_is_it_possible_to_create_an_interface/
+- install
+  - UNetbootin https://tuxboot.org/installation/
+******* Ubuntu                                                     :software:
+:PROPERTIES:
+:ID:       c28ef36f-5b5c-4789-90da-270e56fc4898
+:CREATED:  [2019-06-20 Thu 10:34]
+:END:
+:LOGBOOK:
+CLOCK: [2019-07-18 Thu 16:09]--[2019-07-18 Thu 16:25] =>  0:16
+CLOCK: [2019-06-20 Thu 10:34]--[2019-06-20 Thu 11:49] =>  1:15
+CLOCK: [2019-06-20 Thu 08:31]--[2019-06-20 Thu 10:30] =>  1:59
+CLOCK: [2019-06-15 Sat 09:34]--[2019-06-15 Sat 09:46] =>  0:12
+CLOCK: [2019-06-06 Thu 11:27]--[2019-06-06 Thu 11:57] =>  0:30
+CLOCK: [2019-06-04 Tue 17:34]--[2019-06-04 Tue 17:38] =>  0:04
+CLOCK: [2019-06-02 Sun 08:37]--[2019-06-02 Sun 08:49] =>  0:12
+CLOCK: [2019-06-01 Sat 09:36]--[2019-06-01 Sat 09:40] =>  0:04
+CLOCK: [2019-08-13 Tue 12:17]--[2019-08-13 Tue 12:36] =>  0:19
+CLOCK: [2019-08-12 Mon 13:28]--[2019-08-12 Mon 14:21] =>  0:53
+CLOCK: [2019-07-18 Thu 16:09]--[2019-07-18 Thu 16:25] =>  0:16
+CLOCK: [2019-06-20 Thu 10:34]--[2019-06-20 Thu 11:49] =>  1:15
+CLOCK: [2019-06-20 Thu 08:31]--[2019-06-20 Thu 10:30] =>  1:59
+CLOCK: [2019-06-15 Sat 09:34]--[2019-06-15 Sat 09:46] =>  0:12
+CLOCK: [2019-06-06 Thu 11:27]--[2019-06-06 Thu 11:57] =>  0:30
+CLOCK: [2019-06-04 Tue 17:34]--[2019-06-04 Tue 17:38] =>  0:04
+CLOCK: [2019-06-02 Sun 08:37]--[2019-06-02 Sun 08:49] =>  0:12
+CLOCK: [2019-06-01 Sat 09:36]--[2019-06-01 Sat 09:40] =>  0:04
+:END:
+https://askubuntu.com/questions/283559/how-can-i-run-disk-utility-in-terminal-via-a-comand-line
+- processes
+  - power management - https://askubuntu.com/questions/1078939/ubuntu-18-04-battery-life
+  - intall
+    - https://askubuntu.com/questions/381261/file-system-and-mount-point
+    - https://help.ubuntu.com/community/DiskSpace
+    - https://askubuntu.com/questions/33697/how-do-i-add-swap-after-system-installation
+  - audio https://askubuntu.com/questions/998336/disable-and-enable-audio-output-from-the-command-line
+  - set software to open files
+    - https://help.ubuntu.com/community/AddingMimeTypes
+    - https://askubuntu.com/questions/90214/how-do-i-set-the-default-program
+    - in file:~/repos/dotfiles
+  - allow access to local via ssh
+    - sudo ufw allow ssh
+    - sudo ufw enable
+    - ifconfig -a (not lo, for wifi is like wlp3s0), use inet
+    - can test on local 
+  - screen capture - use scrot
+  - systemd (system daemons) 
+    - emacs client
+      - [[file:~/.config/systemd/user/emacs.service]]
+      - https://www.emacswiki.org/emacs/EmacsAsDaemon#toc2
+    - box rclone mount
+      - https://www.jamescoyle.net/how-to/3116-rclone-systemd-startup-mount-script
+      - [[file:/usr/share/man/man1/fusermount]]
+      - [[file:/etc/systemd/system/rclone.service]]
+      - https://www.google.com/search?q="rclone"+"box"+"systemd"+"daemon"+"mount"
+    - Google drive sync via insync
+      - [ ] document start process, systemd
+    - general
+      - https://www.tutorialdocs.com/article/learn-systemd-commands-in-20-minutes.html
+      - https://www.linode.com/docs/quick-answers/linux/start-service-at-boot/
+  - screen brightness and contrast
+    - https://askubuntu.com/questions/149054/how-to-change-lcd-brightness-from-command-line-or-via-script
+    - https://askubuntu.com/questions/62249/how-do-you-change-brightness-color-and-sharpness-from-command-line
+    - https://askubuntu.com/questions/149054/how-to-change-lcd-brightness-from-command-line-or-via-script
+    - https://askubuntu.com/questions/56155/how-can-i-change-brightness-through-terminal
+  - caps lock
+    - https://askubuntu.com/questions/80254/how-do-i-turn-off-caps-lock-the-lock-not-the-key-by-command-line
+  - virtualbox
+    - https://itsfoss.com/install-windows-10-virtualbox-linux/
+  - persistent new monitor config
+    - https://askubuntu.com/questions/754231/how-do-i-save-my-new-resolution-setting-with-xrandr
+  - vpn
+    - https://www.google.com/search?q=launch+cisco+anyconnect+command+line&oq=launch+anyconnect+&aqs=chrome.3.69i57j0l5.7868j0j4&client=ubuntu&sourceid=chrome&ie=UTF-8
+    - https://wustl.account.box.com/login?redirect_url=https%3A%2F%2Fwustl.app.box.com%2Fs%2F7mwx46dgvij2r1m5bidsql6hupouzvmw
+  - swap setup
+    - [[https://stackoverflow.com/questions/33412987/what-is-the-meaning-of-running-out-of-swap][stack: What is the meaning of running out of swap? {closed}]]
+    - swapon -s
+    - http://www.thegeekstuff.com/2010/08/how-to-add-swap-space/?utm_source=feedburner
+    - https://www.computerhope.com/unix/mkswap.htm
+  - https://stackoverflow.com/questions/14788345/how-to-install-the-jdk-on-ubuntu-linux
+  - ports and firewall https://www.cyberciti.biz/faq/how-to-open-firewall-port-on-ubuntu-linux-12-04-14-04-lts/
+- structure
+  - df disks
+    - spaces for RAM
+      - /run
+      - /run/shm
+- commands
+  | function | command |
+  |----------+---------|
+  - see which apps open which files: https://askubuntu.com/questions/204823/how-do-you-change-the-default-document-viewer-to-okular
+- documentation
+- software
+  - i3
+    - https://i3wm.org/docs/userguide.html#_scratchpad
+    - https://www.reddit.com/r/i3wm/comments/95z285/opening_all_terminal_applications_directly_from/
+    - https://www.reddit.com/r/i3wm/comments/8hpjb6/i3_lock_screen/
+  - https://faq.i3wm.org/question/4074/changing-window-title.1.html
+  - https://faq.i3wm.org/question/1730/warning-popup-when-battery-very-low.1.html
+  - ubuntu-specific software
+    - i3 https://i3wm.org/docs/
+    - https://i3wm.org/docs/refcard.html
+- reference
+  - swap
+    - [[https://stackoverflow.com/questions/33412987/what-is-the-meaning-of-running-out-of-swap][stack: What is the meaning of running out of swap? {closed}]]
+    - swapon -s
+    - http://www.thegeekstuff.com/2010/08/how-to-add-swap-space/?utm_source=feedburner
+    - https://www.computerhope.com/unix/mkswap.htm
+  - processes
+    - https://askubuntu.com/questions/149054/how-to-change-lcd-brightness-from-command-line-or-via-script
+    - https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux
+    - https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux
+    - https://askubuntu.com/questions/62249/how-do-you-change-brightness-color-and-sharpness-from-command-line
+    - https://askubuntu.com/questions/149054/how-to-change-lcd-brightness-from-command-line-or-via-script
+    - box rclone mount
+      - [2019-06-20 Thu]
+        - works
+        - enabled at startup
+      - [[file:/etc/systemd/system/rclone.service]]
+      - cannot get linux webdav working
+    - Google drive sync via insync
+      - [ ] document start process, systemd
+    - https://www.emacswiki.org/emacs/EmacsAsDaemon#toc2
+    - check version w/ cat /proc/version 
+    - https://askubuntu.com/questions/80254/how-do-i-turn-off-caps-lock-the-lock-not-the-key-by-command-line
+    - https://itsfoss.com/install-windows-10-virtualbox-linux/
+    - https://askubuntu.com/questions/56155/how-can-i-change-brightness-through-terminal
+    - see which apps open which files: https://askubuntu.com/questions/204823/how-do-you-change-the-default-document-viewer-to-okular
+    - persistent new monitor config
+      - https://askubuntu.com/questions/754231/how-do-i-save-my-new-resolution-setting-with-xrandr
+    - vpn
+      - https://www.google.com/search?q=launch+cisco+anyconnect+command+line&oq=launch+anyconnect+&aqs=chrome.3.69i57j0l5.7868j0j4&client=ubuntu&sourceid=chrome&ie=UTF-8
+      - https://wustl.account.box.com/login?redirect_url=https%3A%2F%2Fwustl.app.box.com%2Fs%2F7mwx46dgvij2r1m5bidsql6hupouzvmw
+    - https://www.linode.com/docs/quick-answers/linux/start-service-at-boot/
+    - https://support.displaylink.com/knowledgebase/articles/675136-how-to-configure-displaylink-displays-on-ubuntu
+  - documentation
+  - software
+    - okular
+      - https://docs.kde.org/trunk5/en/kdegraphics/okular/okular.pdf 
+      - https://www.google.com/search?q=okular+remap+keyboard+shortcuts
+    - i3
+      - https://www.reddit.com/r/i3wm/comments/8hpjb6/i3_lock_screen/
+    - https://faq.i3wm.org/question/4074/changing-window-title.1.html
+    - https://faq.i3wm.org/question/1730/warning-popup-when-battery-very-low.1.html
+  - https://askubuntu.com/questions/22592/is-it-safe-to-rename-special-user-folders
+- [ ] setup printer interface
+  - https://ubuntuforums.org/showthread.php?t=1900967
+- [ ] setup terminal emulator mouseless copy
+  - https://stackoverflow.com/questions/3348800/gnome-terminal-how-to-copy-selection-to-clipboard-automatically/3432302
+  - https://www.google.com/search?q=gnome-terminal+vim+copy+paste&oq=gnome-terminal+vim+copy&aqs=chrome.1.69i57j0.5563j0j7&client=ubuntu&sourceid=chrome&ie=UTF-8
+  - https://www.google.com/search?q=tmux+mouseless+vim+copy&oq=tmux+mouseless+vim+copy&aqs=chrome..69i57j69i64.21772j0j7&client=ubuntu&sourceid=chrome&ie=UTF-8
+  - need copy paste out of gnome terminal into X clipboard
+    - https://askubuntu.com/questions/413436/copy-current-terminal-prompt-to-clipboard
+  - https://wiki.termux.com/wiki/Main_Page
+  - https://unix.stackexchange.com/questions/91863/terminal-copy-from-cli-without-using-mouse
+- [ ] setup low power procedure for macbook linux
+- [[https://www.gnome.org/gnome-3/][consider gnome for os]]
+- [[http://www.amazon.com/Chromebook-10-1-Inch-Convertible-Touchscreen-Rockchip/dp/B00ZS4HK0Q/ref=sr_1_2?ie=UTF8&qid=1458342379&sr=8-2&keywords=ASUS+Chromebook+Flip][chromebook flip]]
+- linux external brain project
+- linux window commands
+  - for app menu: alt + space
+- window management- xmonad app
+- task list
+  - disable tap on trackpad
+  - reduce text size
+  - r clone? 
+  - manage disk partition mess
+  - hide lubuntu menu bar
+  - windows key to lauch programs
+  - remove firefox
+  - solution to sync org
+  - solution for reading pdf
+  - solution for reading kindle
+  - solution for music
+  - solution for podcasts
+  - speed up lubunu
+    - optimize hardware- ram?
+  - keyboard shortcuts to organize windows
+    - about 1/2 thru [[http://varunbpatil.github.io/2013/09/20/xmonad/#.Vu2d0t9ytOA][this xmonad guide]]
+  - get chrome working
+  - get start launch working
+  - full no trackpad?
+  - r studio solution
+  - completed
+    - [[http://ubuntuforums.org/showthread.php?t=1880394][these updates]]
+    - install chromium
+- [[http://www.pcmag.com/article2/0,2817,2488836,00.asp][hardware?]]
+******** macbook ubuntu build
+:PROPERTIES:
+:ID:       34C28D0E-A905-4700-A20E-557E79BC7DDC
+:CREATED:  [2019-05-28 Tue 19:53]
+:END:
+:LOGBOOK:
+CLOCK: [2019-05-28 Tue 19:54]--[2019-05-28 Tue 20:00] =>  0:06
+CLOCK: [2019-05-28 Tue 12:47]--[2019-05-28 Tue 14:03] =>  1:16
+CLOCK: [2019-05-27 Mon 19:41]--[2019-05-27 Mon 19:48] =>  0:07
+CLOCK: [2019-05-27 Mon 19:00]--[2019-05-27 Mon 19:41] =>  0:41
+CLOCK: [2019-05-26 Sun 10:13]--[2019-05-26 Sun 10:15] =>  0:02
+CLOCK: [2019-05-26 Sun 08:39]--[2019-05-26 Sun 10:06] =>  1:27
+CLOCK: [2019-05-26 Sun 07:00]--[2019-05-26 Sun 08:24] =>  1:24
+CLOCK: [2019-05-24 Fri 20:45]--[2019-05-24 Fri 22:06] =>  1:21
+CLOCK: [2018-10-29 Mon 13:54]--[2018-10-29 Mon 13:55] =>  0:01
+CLOCK: [2018-09-20 Thu 16:40]--[2018-09-20 Thu 17:57] =>  1:17
+:END:
+https://www.reddit.com/r/linux4noobs/comments/h9d5v4/how_to_improve_increase_the_battery_life_of_a/
+- https://support.displaylink.com/knowledgebase/articles/675136-how-to-configure-displaylink-displays-on-ubuntu
+- macbook
+  - [ ] setup low power procedure for macbook linux
+  - [ ] setup printer interface
+    - https://ubuntuforums.org/showthread.php?t=1900967
+  - [ ] need to reconfig trash
+1. [X] swap was installed 
+2. [X] safe rm through [[http://pages.stern.nyu.edu/~marriaga/software/libtrash/][libtrash]]
+3. [X] local mail 
+   - [X] installs
+     - [X] mbsync
+     - [X] mu
+   - [X] mbsync config
+   - [X] mu indexing 
+4. [X] citations
+   - [X] vc bib.bib- in ~/org
+   - zotero
+     - [X] move to opt, sync jeszyman3 account,
+     - [X] zotfile
+     - [X] better-bibtex
+       - [X] need to reset better biblatex keys
+     - [X] export to ~/org/bib.bib
+5. [X] orgzly-syncthing integration
+   1. [X] auto-revert https://stackoverflow.com/questions/1480572/how-to-have-emacs-auto-refresh-all-buffers-when-files-have-changed-on-disk
+   2. [X] auto save-some-buffers
+      - in settings dev: https://www.emacswiki.org/emacs/AutoSave#toc4
+6. [X] add anki
+7. reference
+   - emacs server daemon is running, launch client with emacsclient -create-frame & disown
+   - [[file:~/data/library/compend.org::*UNIX][UNIX]]
+   - https://tutorials.ubuntu.com/
+   - https://askubuntu.com/questions/746627/caldav-client-for-ubuntu
+   - http://www.linuxfromscratch.org/
+     - https://www.linuxquestions.org/questions/linux-newbie-8/is-it-worth-getting-into-linux-from-scratch-4175498646/
+   - [[https://www.reddit.com/r/linuxmasterrace/comments/8d3d1i/as_someone_who_needs_office365_im_glad_wine/][reddit: wine for linux]]
+   - connections
+     - jeff-mac-book:multiple <-> wustl Box via rclone 
+     - jeff-mac-book:? <-> zotero
+     - jeff-mac-book:~/org <-> synchthing <-> jeff-android:~/org <-> orgzly app
+   - i3
+     -  https://www.reddit.com/r/i3wm/comments/2xoo9m/what_is_the_best_way_to_remap_ctrlkey_with/
+     - manage wifi with nmtui
+   - [X] install R see [[id:F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD][R]]
+   - syncthing
+     - [[https://www.ma-no.org/en/install-syncthing-on-ubuntu-16-04-using-debian-repository][setup as persistent service]]
+     - http://127.0.0.1:8384/
+   - software installs- below incomplete, check via cmdline
+     - downloaded binaries
+       - rclone
+       - zotero
+     - apt
+       - installs
+         - sudo apt-get update -y && sudo apt-get install -y syncthing vim pandoc emacs curl
+   - completed work
+     - wifi
+       - not necessary if requested at startup
+       - https://askubuntu.com/questions/896140/how-to-connect-to-wifi-network-with-i3wm
+     - github setup
+       - ssh key
+         - https://help.github.com/en/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+         - https://help.github.com/en/articles/adding-a-new-ssh-key-to-your-github-account
+   - monitor w/ xrandr
+     - use arandr gui
+     - https://askubuntu.com/questions/91221/how-to-tell-xubuntu-not-to-clone-but-to-expand-the-laptop-display-to-the-externa
+   - i3 caps lock as ctrl- https://www.reddit.com/r/i3wm/comments/2xoo9m/what$
+   - [[https://askubuntu.com/questions/106351/running-programs-in-the-background-from-terminal][stack: Running programs in the background from terminal]]
+   - swap partition https://askubuntu.com/questions/464402/choosing-partition-types-for-swap-and-root-and-choosing-device-for-bootloader-in
+   - https://superuser.com/questions/164059/how-to-force-network-manager-to-rescan-connections
+8. [X] cleanup
+9. ideas
+   - - GPD Pocket: 7.0
+   - [  https://www.google.com/search?q=gnome-terminal+iterm2
+     1. how to do mouseless copy https://www.google.com/search?q=gnome+terminal+mouseless+copy
+     2. or maybe ubuntu phone? 
+   - [  super-mobile
+     - http://www.geekbuying.com/help/customer_service/return_policy
+     - https://www.reddit.com/r/GPDPocket/search?q=ubuntu&restrict_sr=on&sort=relevance&t=all
+     - https://github.com/stockmind/gpd-pocket-ubuntu-respin
+     - https://www.slashgear.com/gpd-pocket-is-a-7-inch-windows-10-ubuntu-laptop-15475055/
+     - https://liliputing.com/2017/06/gpd-pocket-7-inch-windows-laptop-is-now-available-for-500-no-crowdfunding-required.html
+       - https://www.indiegogo.com/projects/gpd-pocket-7-0-umpc-laptop-ubuntu-or-win-10-os-laptop--2#/
+   - [  raspberry pie connect
+     - [  personal dictionary local under vc
+     - https://www.reddit.com/r/unixporn/comments/bp6p2b/bspwm_new_york_livestream_wallpaper/
+     - https://www.reddit.com/r/GalaxyNote8/comments/bg3v3a/linux_on_dex_now_supports_s8_and_s9_and_note_8/
+     - [  [[https://pmbio.org/module-01-setup/0001/02/01/AWS_Intro/#setting-up-an-apache-web-server][apache web service access to data]]
+     - [  cleanup emacs init
+
+******** Server build
+:PROPERTIES:
+:ID:       BCD2D984-7185-47C0-9ECB-B1F40314595C
+:END:
+
+- [ ] server-linux build
+  - https://www.reddit.com/r/IWantToLearn/comments/87brq8/iwtl_how_to_build_a_home_server/?st=jfjrnjjw&sh=775fb75f
+  - https://www.reddit.com/r/buildapc/comments/6g40g4/i_dedicated_my_last_3_years_to_buildapc/
+  - hackintosh-compatible hardware? https://www.google.com/search?q=cheapest+hackintosh+hardware&rlz=1CDGOYI_enUS769US769&oq=cheapest+hackintosh+hardware&aqs=chrome..69i57.20469j0j4&hl=en-US&sourceid=chrome-mobile&ie=UTF-8
+    - - https://www.reddit.com/r/buildapc/comments/2lhvjr/build_complete_hackintosh_with_a_side_of_gaming/
+  - [[https://askubuntu.com/questions/647495/which-is-most-timemachine-like-backup-program-for-ubuntu][stack:Which is Most TimeMachine-like Backup Program for Ubuntu?]]
+  - https://askubuntu.com/questions/308897/convert-ubuntu-physical-machine-to-virtual-machine
+  - https://askubuntu.com/questions/32499/migrate-from-a-virtual-machine-vm-to-a-physical-system?rq=1
+
+********* Work build
+:PROPERTIES:
+:ID:       6C960771-38BB-4A48-95ED-576D79547489
+:END:
+:LOGBOOK:
+CLOCK: [2018-11-25 Sun 11:39]--[2018-11-25 Sun 13:37] =>  1:58
+CLOCK: [2018-11-16 Fri 08:26]--[2018-11-16 Fri 11:24] =>  2:58
+CLOCK: [2018-11-15 Thu 15:00]--[2018-11-15 Thu 15:34] =>  0:34
+CLOCK: [2018-10-29 Mon 15:17]--[2018-10-29 Mon 16:43] =>  1:26
+CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
+:END:
+- WebDAV setup
+  - https://linuxize.com/post/how-to-set-up-apache-virtual-hosts-on-ubuntu-18-04/
+  - https://linuxconfig.org/webdav-server-setup-on-ubuntu-linux
+  - http://10.21.36.114/index.html
+  - Process
+    - Designate location
+    - Enable modules
+    - Configure 
+  - stack
+    - apache2
+  - https://www.digitalocean.com/community/tutorials/how-to-configure-webdav-access-with-apache-on-ubuntu-14-04
+    - Glossary
+      - Apache is a web server 
+      - "WebDAV is an extension of the HTTP protocol that allows users to manage files on servers"
+    - 
+- hardware
+- stack
+  - ubuntu 18.04 LTS
+    - [[https://help.ubuntu.com/lts/serverguide/index.html.en][Documentation]]
+      - [[https://help.ubuntu.com/lts/serverguide/openssh-server.html.en][OpenSSH Server]]
+- [ ] connection
+  - remote desktop
+  - ssh jeff@10.21.36.114
+  - keys? 
+  - stack
+    - [[https://www.openssh.com/manual.html][openssh]]
+- [ ] data synchronization
+  - stack
+    - [[https://rclone.org/box/][rclone]]
+    - [[https://wustl.app.box.com/folder/0][wustl box]]
+  - [ ] sync library box storage with rclone
+  - [ ] sync project work with github
+    - - https://pages.github.com/
+    - limit project directories to 1 gig https://help.github.com/articles/what-is-my-disk-quota/
+  - chron sync wrapper
+- [ ] os maintenance
+  - daemons
+    - cron work see ~/cron
+      - [ ] scheduled reports
+        - https://www.linux.com/blog/linux-101-check-disk-space-command
+      - notes and resources
+        - [[https://help.ubuntu.com/community/CronHowto][Ubuntu documentation CronHowto]]
+      - ideas
+        - https://www.google.com/search?q=best+cron+job+examples&oq=best+cron+job+examples&aqs=chrome..69i57.11620j1j9&sourceid=chrome&ie=UTF-8
+  - [ ] keyboard layout control
+  - [ ] directory management
+    - see [[file:~/Box%20Sync/personal/maintenance/maintenance.org::*Information%20Maintenance][Information Maintenance]] 
+    - [[http://www.pathname.com/fhs/pub/fhs-2.3.pdf][file system hierarchy standard]]
+    - https://unix.stackexchange.com/questions/15230/file-and-directory-naming-conventions
+      - "remember as you think up a structure that permissions are hierarchical. In order for somebody to have permissions on a given folder, they need to have at least execute permissions on every folder ABOVE that folder. If you have anything in your home directory that you share, it needs to be near the top"
+    - https://unix.stackexchange.com/questions/201768/storing-shell-scripts
+  - RESUME w/ weekly system report script- exit code 2
+- [ ] work-linux time machine and portability 
+- [ ] export
+- [ ] backup work machine
+- ideas
+  - [ ] change rm to direct to del folder 
+- [X] past work
+  - [X] setup key pair with macos
+    - see https://www.thegeekstuff.com/2008/11/3-steps-to-perform-ssh-login-without-password-using-ssh-keygen-ssh-copy-id
+    - also alias to work-linux [[file:~/.bash_profile]]
+
+********** update
+:PROPERTIES:
+:ID:       66803E55-A70F-4D49-A4D6-31520A3617DC
+:END:
+
+********** Connections
+:PROPERTIES:
+:ID:       449D6647-FF79-48FE-8649-DD2DEF23FB93
+:CREATED:  [2019-03-17 Sun 15:46]
+:END:
+
+- [ ] connections
+  - [ ] remote desktop or ssh gui
+    - https://www.makeuseof.com/tag/ubuntu-remote-desktop-builtin-vnc-compatible-dead-easy/
+  - [ ] wine windows
+
+******** ideas
+:PROPERTIES:
+:ID:       c8c52c75-195d-48dd-85ff-0ca43524dd7f
+:END:
+
+  - https://www.google.com/search?q=libreoffice+save+new+slide+layout
+  - get better highlightin on ubuntu menus
+  - linux portable OS
+    - through git repo calls
+      - ~/.emacs.d
+      - ~/org
+      - 
+  - I3 control panel?
+  - https://www.reddit.com/r/i3wm/comments/a00s8p/made_myself_a_pretty_popup_cheat_sheet/
+  - how to vc and sync config files
+  - https://www.google.com/search?q=libreoffice+save+new+slide+layout
+  - get better highlightin on ubuntu menus
+  - linux portable OS
+    - through git repo calls
+      - ~/.emacs.d
+      - ~/org
+      - 
+  - I3 control panel?
+  - https://www.reddit.com/r/i3wm/comments/a00s8p/made_myself_a_pretty_popup_cheat_sheet/
+  - [ ] setup terminal emulator mouseless copy
+    - https://stackoverflow.com/questions/3348800/gnome-terminal-how-to-copy-selection-to-clipboard-automatically/3432302
+    - https://www.google.com/search?q=gnome-terminal+vim+copy+paste&oq=gnome-terminal+vim+copy&aqs=chrome.1.69i57j0.5563j0j7&client=ubuntu&sourceid=chrome&ie=UTF-8
+    - https://www.google.com/search?q=tmux+mouseless+vim+copy&oq=tmux+mouseless+vim+copy&aqs=chrome..69i57j69i64.21772j0j7&client=ubuntu&sourceid=chrome&ie=UTF-8
+    - need copy paste out of gnome terminal into X clipboard
+      - https://askubuntu.com/questions/413436/copy-current-terminal-prompt-to-clipboard
+    - https://wiki.termux.com/wiki/Main_Page
+    - https://unix.stackexchange.com/questions/91863/terminal-copy-from-cli-without-using-mouse
+  - https://www.reddit.com/r/commandline/comments/ceo8lt/ideas_for_good_use_of_the_caps_lock_key/
+- http://n-o-d-e.net/post/141489192021/how-to-create-a-handheld-linux-terminal-v2
+********* USB build
+:PROPERTIES:
+:ID:       D367D5DD-4E6E-43EC-A1FF-F3F14B24D2D9
+:END:
+
+- porteus
+  - [[http://porteus.org/][hoempage]]
+- - linux
+  - toolbox
+    - OS with apps
+    - 7zip
+    - gparted
+    - emacs for all OS
+  - show battery life
+
 
 ****** GNU
 :PROPERTIES:
@@ -1574,7 +2144,7 @@ CLOCK: [2019-06-04 Tue 17:34]--[2019-06-04 Tue 17:38] =>  0:04
 CLOCK: [2019-06-02 Sun 08:37]--[2019-06-02 Sun 08:49] =>  0:12
 CLOCK: [2019-06-01 Sat 09:36]--[2019-06-01 Sat 09:40] =>  0:04
 :END:
-- 
+- https://itsfoss.com/install-microsoft-fonts-ubuntu/
 - https://askubuntu.com/questions/1041965/mounting-server-dir-to-local-dir
 - apt package management
   - https://askubuntu.com/questions/tagged/apt
@@ -2422,6 +2992,7 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
+https://www.youtube.com/watch?v=GPVsHOlRBBI&ab_channel=freeCodeCamp.org
 ***** interfaces, platforms, and IDEs
 :PROPERTIES:
 :ID:       7db4987d-0daa-4d58-8660-37fbe566d8be
