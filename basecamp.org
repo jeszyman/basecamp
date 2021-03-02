@@ -24,6 +24,7 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
+- https://cran.r-project.org/web/packages/tikzDevice/vignettes/tikzDevice.pdf
 *** best practices, style
 :PROPERTIES:
 :ID:       419ba6f0-4977-4eed-9d25-93a45933ad56
@@ -911,6 +912,7 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :PROPERTIES:
 :ID:       569921c4-c8fe-4037-a2be-3c3f7844cd86
 :END:
+https://askubuntu.com/questions/962878/how-to-change-okulars-find-highlight-color#:~:text=To%20do%20so%20(Okular%20v1,%2D%3E%20And%20change%20default%20color.
 - https://www.google.com/search?q=okular+open+in+new+windows
 - [[https://docs.kde.org/stable5/en/kdegraphics/okular//][documentation]]
 - https://docs.kde.org/trunk5/en/kdegraphics/okular/okular.pdf 
@@ -2993,6 +2995,7 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
+https://stackoverflow.blog/2021/02/23/level-up-mastering-statistics-with-python-part-2/?cb=1&_ga=2.59352485.940265309.1614263567-766544545.1565628865
 https://www.youtube.com/watch?v=GPVsHOlRBBI&ab_channel=freeCodeCamp.org
 ***** interfaces, platforms, and IDEs
 :PROPERTIES:
