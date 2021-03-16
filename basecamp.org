@@ -2,6 +2,30 @@
 :PROPERTIES:
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
+** Setup
+:PROPERTIES:
+:ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
+:END:
+#+name: global_setup
+#+begin_src bash :tangle no
+repo=~/repos/basecamp
+
+#+end_src
+
+- repo setup
+  - workflow
+    - code dev in org file
+    - validated code pushed to ./src/
+      - ideas get write protection
+    - common code pushed to submodule repos
+  - local-setup.sh
+  - global-setup.sh
+#+name: basecamp_setup
+#+begin_src bash :tangle no
+project=basecamp
+repo=~/repos/"${project}"
+mkdir -p "${repo}"/src/shell
+#+end_src
 ** R Statistical Computing                                           :career:
 :PROPERTIES:
 :ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
@@ -24,6 +48,9 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
+  - https://www.r-bloggers.com/load-save-and-rda-files/
+
+https://packagemanager.rstudio.com/client/#/repos/1/overview
 - https://cran.r-project.org/web/packages/tikzDevice/vignettes/tikzDevice.pdf
 *** best practices, style
 :PROPERTIES:
@@ -802,24 +829,6 @@ CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
     - [ ] how to stop R ESS tab complete from pinging countries?
 
 
-** Setup
-:PROPERTIES:
-:ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
-:END:
-- repo setup
-  - workflow
-    - code dev in org file
-    - validated code pushed to ./src/
-      - ideas get write protection
-    - common code pushed to submodule repos
-  - local-setup.sh
-  - global-setup.sh
-#+name: basecamp_setup
-#+begin_src bash :tangle no
-project=basecamp
-repo=~/repos/"${project}"
-mkdir -p "${repo}"/src/shell
-#+end_src
 ** [[id:569d1afa-e991-47b7-be15-3dd6364f5258][LINK TO my bash functions]]
 :PROPERTIES:
 :ID:       6162c48f-b91d-46b4-87ed-70607ac82591
@@ -905,9 +914,9 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :CREATED:  [2020-10-04 Sun 10:05]
 :ID:       e68592b2-5e86-48c9-a2c2-5983e53d34f8
 :END:
-- inkscape
-  - https://stackoverflow.com/questions/15710673/inkscape-too-slow-when-importing-r-plots
-  - https://inkscape.org/forums/questions/line-spacing/
+- https://www.google.com/search?q=inkscape+import+replace+PDF+fonts
+- https://stackoverflow.com/questions/15710673/inkscape-too-slow-when-importing-r-plots
+- https://inkscape.org/forums/questions/line-spacing/
 **** okular
 :PROPERTIES:
 :ID:       569921c4-c8fe-4037-a2be-3c3f7844cd86
@@ -4265,10 +4274,12 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
+- Dockerfile best practices ideas
+  - include comment w/ build time
 - https://www.freecodecamp.org/news/the-docker-handbook/
 - Interactive docker initialization
-#+name: 
-#+begin_src bash :session *shell2* :tangle no
+  #+name: 
+  #+begin_src bash :session *shell2* :tangle no
 echo test 
 #+end_src
   #+name: interactive_docker_initalization
@@ -4326,15 +4337,14 @@ docker_interactive() {
 #
 
 #+end_src
-#+name: 
-#+begin_src bash :tangle no
+  #+name: 
+  #+begin_src bash :tangle no
 cd ~/repos/basecamp
 docker build . --file Dockerfile --tag jeszyman/basecamp
 docker push jeszyman/basecamp
 cd 
 docker run jeszyman/test
 #+end_src
-
 - user repos (like mine are / not : for FROM build command!!!
 - docker-related bash functions
   - build command examples
@@ -4437,107 +4447,11 @@ docker build . --file Dockerfile --tag jeszyman/test
 ##
 
 #+end_src
-## identifies server in docker containers
-server_ask() {
-    echo -n "Choose your server: "
-    read SERVER
-    SERVER="${SERVER:=chaudhuri-roche}"
-}
-#+name: global_setup
-#+begin_src bash :tangle no
-repo=~/repos/basecamp
-
-#+end_src
-
-
-#+name: docker_build
-#+begin_src bash :tangle no
-cd $repo
-docker build . --file Dockerfile --tag jeszyman/test
-
-docker ps
-docker exec -it b95de4b12b87 bash
-
-docker inspect -f \
-       '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' \
-       b95de4b12b87
-
-docker run -p 127.0.0.5:80:8080 jeszyman/test
-
-docker run -it --expose 8080 -p 127.0.0.1:8080:8080 jeszyman/test
-
-docker run --rm --name some-nginx jeszyman/test
-docker run -it -d -p 180:180 --name test2 jeszyman/test
-
-docker container ls
-docker container inspect --format '{{ .NetworkSettings.IPAddress }}' test2
-curl 172.17.0.5 -p 180
-#+end_src
-
-
-
-=======
-              (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$image"')' /bin/bash;;
-          esac
-      fi    
-  }
-  #
-  docker_interactive
-  basecamp
-  ##
-  ## Interactive docker initialization
-  docker_interactive() {
-      image="USER INPUT"
-      read -p "image name: " image
-      case $HOSTNAME in
-          (radonc-cancerbio) docker run -it \
-                                    -v /media/:/media/ \
-                                    -v /home/:/home/ \
-                                    -u $(id -u ${USER}) \
-                                    jeszyman/$image \
-                                    /bin/bash;;
-          (jeff-*) docker run -it \
-                          -v /home/:/home/ \
-                          -u $(id -u ${USER}) \
-                          -e "USER=jeszyman" \
-                          -e "repo=/home/jeszyman/repos/mpnst" \
-                          -e "localdata=/home/jeszyman/data/career/washu/radonc/chaudhuri/mpnst" \
-                          jeszyman/$image \
-                          /bin/bash;;
-          (jeszyman-*) docker run -it \
-                              -v /home/:/home/ \
-                              -u $(id -u ${USER}) \
-                              -e "USER=jeszyman" \
-                              -e "repo=/home/jeszyman/repos/mpnst" \
-                              -e "localdata=/home/jeszyman/data/career/washu/radonc/chaudhuri/mpnst" \
-                              jeszyman/$image \
-                              /bin/bash;;
-          (acl*) docker run -it \
-                        -v /drive3/:/drive3/ \
-                        -v /duo4/:/duo4/ \
-                        -v /mnt/:/mnt/ \
-                        -v /home/:/home/ \
-                        -u $(id -u ${USER}) \
-                        -e "USER=jszymanski" \
-                        -e "repo=/drive3/users/jszymanski/repos/mpnst" \
-                        -e "localdata=/mnt/xt3/mpnst" \
-                        jeszyman/$image \
-                        /bin/bash;;
-          (ACL*) docker run -it \
-                        -v /home/:/home/ \
-                        -v /duo4/:/duo4/ \
-                        -u $(id -u ${USER}):$(id -g ${USER}) \
-                        -e "USER=jszymanski" \
-                        -e "repo=/drive3/users/jszymanski/repos/mpnst" \
-                        -e "localdata=/mnt/xt3/mpnst" \
-                        jeszyman/$image \
-                        /bin/bash;;
-          (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$image"')' /bin/bash;;
-      esac
-  }
-  #
-
-  #+end_src
+  - ## identifies server in docker containers
+     server_ask() {
+      echo -n "Choose your server: "
+      read SERVER
+      SERVER="${SERVER:=chaudhuri-roche}"
 - run dockers w/ uname https://github.com/JAremko/docker-emacs
 - emacs ess docker ssh
   - https://github.com/emacs-ess/ESS/issues/928
@@ -4678,6 +4592,11 @@ docker run --rm -p 6379:6379 <CONTAINER>
   - compose
     - https://www.reddit.com/r/docker/comments/cwe2bt/a_handy_dockercompose_commands_and_examples/
 - ideas
+  - add multiple R versions
+    - https://support.rstudio.com/hc/en-us/articles/215488098-Installing-multiple-versions-of-R
+    - https://stackoverflow.com/questions/24019503/installing-multiple-versions-of-r
+    - https://cran.r-project.org/bin/linux/ubuntu/
+    - https://unix.stackexchange.com/questions/538915/installing-updating-r-3-6-on-ubuntu-18-04
   - https://stackoverflow.com/questions/54412054/can-you-convert-build-a-docker-image-into-a-full-os-image
   - https://duckduckgo.com/?q=docker+container+daemon&t=canonical&ia=web
   - ideas
