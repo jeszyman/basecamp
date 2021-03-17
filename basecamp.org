@@ -2,6 +2,7 @@
 :PROPERTIES:
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
+https://replit.com/@JeffSzymanski/test#main.sh
 ** Setup
 :PROPERTIES:
 :ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
@@ -3378,6 +3379,10 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+- find 
+  - https://www.google.com/search?q=bash+find+and+delete 
+  - https://www.google.com/search?q=bash+find+by+date
+    - https://stackoverflow.com/questions/158044/how-to-use-find-to-search-for-files-created-on-a-specific-date
 - [[https://www.gnu.org/software/bash/manual/bash.html][documentation]] and general reference
   - guides, tutorials, cheatsheets, books
     - [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Linux documentation project: Advanced Bash-Scripting Guide]]
