@@ -1000,7 +1000,7 @@ https://askubuntu.com/questions/962878/how-to-change-okulars-find-highlight-colo
 CLOCK: [2020-01-16 Thu 08:16]--[2020-01-16 Thu 08:45] =>  0:29
 CLOCK: [2019-03-04 Mon 14:59]--[2019-03-04 Mon 15:17] =>  0:18
 :END:
-https://github.com/willsALMANJ/Zutilo
+- https://github.com/willsALMANJ/Zutilo
 - zotfile
 - better biblatex 
 - [[https://www.zotero.org/support/][documentation]]
@@ -3029,6 +3029,7 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
+https://www.dataquest.io/
 https://www.freecodecamp.org/news/the-python-handbook/
 https://stackoverflow.blog/2021/02/23/level-up-mastering-statistics-with-python-part-2/?cb=1&_ga=2.59352485.940265309.1614263567-766544545.1565628865
 https://www.youtube.com/watch?v=GPVsHOlRBBI&ab_channel=freeCodeCamp.org
