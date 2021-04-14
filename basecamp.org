@@ -2,6 +2,8 @@
 :PROPERTIES:
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
+https://www.reddit.com/r/datascience/comments/mlfy02/what_is_your_ds_stack_and_roast_mine/
+https://www.earthdatascience.org/courses/intro-to-earth-data-science/open-reproducible-science/get-started-open-reproducible-science/open-science-tools-git-bash-jupyter/
 https://replit.com/@JeffSzymanski/test#main.sh
 ** Setup
 :PROPERTIES:
@@ -49,6 +51,8 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
+- better than ggsave: - https://rdrr.io/cran/cowplot/man/save_plot.html
+- exporting tables- - https://cran.r-project.org/web/packages/gridExtra/vignettes/tableGrob.html
 - test data examples
   #+BEGIN_SRC R
 source("~/Rscripts/setup.R")
