@@ -2,33 +2,367 @@
 :PROPERTIES:
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
-https://www.reddit.com/r/datascience/comments/mlfy02/what_is_your_ds_stack_and_roast_mine/
-https://www.earthdatascience.org/courses/intro-to-earth-data-science/open-reproducible-science/get-started-open-reproducible-science/open-science-tools-git-bash-jupyter/
-https://replit.com/@JeffSzymanski/test#main.sh
+** Operating Systems
+:PROPERTIES:
+:ID:       16DB2FD8-1988-48E4-8D8D-E69398823A70
+:END:
+
+where are osx dameons? 
+- Windows
+  - http://stackoverflow.com/questions/7195503/setting-up-a-cron-job-in-windows
+- Containers and virtual machines
+  - [[https://stackoverflow.com/questions/16047306/how-is-docker-different-from-a-normal-virtual-machine][Docker vs. virtual machine]]
+    - VMs have only virtual access to kernal through hypervisor
+    - containers run apps natively on real kernal
+    - Docker image contains only the differences from the base
+    - Docker shares the kernal, VM does not
+    - Containers have only libraries and settings to make software work
+    - https://github.com/wsargent/docker-cheat-sheet
+    - Containers can share kernal with other containers
+    - https://www.docker.com/what-container
+      - [[file:compend.org_imgs/20170828_091936_19148Pqg.png]]
+  - Virtual Box
+    - copying a VM- go to export appliance 
+    - in VirtualBox, double-press <CMD> to tab out to mac programs
+
+*** image development
+:PROPERTIES:
+:CREATED:  [2019-05-29 Wed 14:47]
+:ID:       82b8ccaa-3bb3-4a71-8123-bce4f20c5242
+:END:
+:LOGBOOK:
+CLOCK: [2019-05-29 Wed 14:47]--[2019-05-29 Wed 15:05] =>  0:18
+:END:
+
+*** UNIX-based                                              :software:career:
+:PROPERTIES:
+:ID:       BDC42DA2-A632-4FB7-A586-E100B2A045DC
+:CREATED:  [2019-08-15 Thu 16:17]
+:END:
+:LOGBOOK:
+CLOCK: [2020-06-25 Thu 07:47]--[2020-06-25 Thu 08:13] =>  0:26
+CLOCK: [2020-02-12 Wed 10:15]--[2020-02-12 Wed 10:19] =>  0:04
+CLOCK: [2019-09-18 Wed 14:02]--[2019-09-18 Wed 14:40] =>  0:38
+CLOCK: [2019-08-30 Fri 09:48]--[2019-08-30 Fri 09:53] =>  0:05
+CLOCK: [2019-08-15 Thu 16:15]--[2019-08-15 Thu 16:45] =>  0:30
+CLOCK: [2019-05-21 Tue 10:42]--[2019-05-21 Tue 11:04] =>  0:22
+CLOCK: [2019-05-15 Wed 16:15]--[2019-05-15 Wed 19:33] =>  3:18
+CLOCK: [2019-03-06 Wed 10:15]--[2019-03-06 Wed 12:14] =>  1:59
+CLOCK: [2019-03-06 Wed 09:30]--[2019-03-06 Wed 10:00] =>  0:30
+CLOCK: [2019-01-12 Sat 08:41]--[2019-01-12 Sat 08:51] =>  0:10
+CLOCK: [2018-09-10 Mon 14:04]--[2018-09-10 Mon 14:43] =>  0:39
+CLOCK: [2018-04-28 Sat 18:04]--[2018-04-28 Sat 18:05] =>  0:01
+CLOCK: [2018-04-28 Sat 17:43]--[2018-04-28 Sat 17:45] =>  0:02
+CLOCK: [2017-11-29 Wed 14:14]--[2017-11-29 Wed 15:00] =>  0:46
+CLOCK: [2017-10-25 Wed 10:37]--[2017-10-25 Wed 10:48] =>  0:11
+CLOCK: [2017-10-25 Wed 09:48]--[2017-10-25 Wed 10:23] =>  0:35
+CLOCK: [2017-10-12 Thu 13:37]--[2017-10-12 Thu 13:40] =>  0:03
+CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
+:END:
+**** processes
+:PROPERTIES:
+:ID:       f6c816d4-6f1a-4954-bf90-ed90de4d0979
+:END:
+- account management
+  - https://www.google.com/search?q=unix+create+user 
+**** general
+:PROPERTIES:
+:ID:       b387cb19-73dd-4783-8e57-8da47837e129
+:END:
+- guides, tutorials, cheatsheets 
+  - http://www.ee.surrey.ac.uk/Teaching/Unix/
+  - [[http://linuxcommand.org/][LinuxCommand.org]]
+  - [[http://korflab.ucdavis.edu/Unix_and_Perl/current.html][UC Davis Unix and Perl for biologists]]
+  - http://www.chm.bris.ac.uk/compres/unix/index.html
+  - http://www.commandlinefu.com/commands/browse
+  - [[http://catb.org/jargon/html/U/Unix.html][Unix name origin]]
+  - [[https://sanctum.geek.nz/arabesque/unix-as-ide-introduction/][Unix as IDE: Introduction]] 
+  - [[http://cecs.wright.edu/~p/mateti/Courses/333/Top/index.html][Wright State CEG 333: Introduction to Unix]]
+  - [[http://www.commandlinefu.com/commands/browse/sort-by-votes][commandlinefu]]
+  - [[https://unix.stackexchange.com/questions/12762/how-do-i-temporarily-bypass-an-alias-in-tcsh][How do I temporarily bypass an alias in tcsh?]]
+  - [[https://unix.stackexchange.com/][stack: unix]]
+  - [[https://en.wikibooks.org/wiki/Guide_to_Unix][wikibooks: unix]]
+  - http://www.thegeekstuff.com/
+  - [[http://mywiki.wooledge.org/FullBashGuide][Full bash guide]]
+  - https://www.reddit.com/r/commandline/comments/9md3pp/a_very_useful_bashrc_file/
+  - https://sneak.berlin/20191011/stupid-unix-tricks/
+- standards and best practices
+  - POSIX
+  - naming conventions- [[https://unix.stackexchange.com/questions/49008/for-filenames-are-underscores-or-dashes-more-common-in-unix-file-names][stack: For filenames, are underscores or dashes more common in Unix file names? {closed}]]
+- file structure
+  - https://unix.stackexchange.com/questions/4186/what-is-usr-local-bin
+- POSIX
+  - [[https://github.com/dylanaraps/pure-sh-bible][pure sh bible]]
+**** tools (software)
+:PROPERTIES:
+:ID:       4a8bbace-0e0a-4eb2-92fd-03048d6f1ec5
+:END:
+:LOGBOOK:
+CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
+:END:
+- https://github.com/denisidoro/navi
+- awk
+  - [[https://stackoverflow.com/questions/47091464/print-for-loop-input-filename-on-piped-awk-output][file name as variable]]
+  - commands
+    |----------------------+-----------------|
+    | function             | command         |
+    |----------------------+-----------------|
+    | <35>                 | <35>            |
+    | set delimiter        | -F<DELIM>       |
+    | set output delimiter | OFS = "<DELIM>" |
+    |                      |                 |
+  - processes
+    - https://www.google.com/search?q=awk+pass+variable 
+    - [[https://stackoverflow.com/questions/19149731/use-awk-to-find-average-of-a-column][find average]]
+    - https://www.google.com/search?q=awk+print+except+first
+    - sorting
+      - [[https://stackoverflow.com/questions/17048188/how-to-use-awk-sort-by-column-3][sort column]]
+      - [[https://stackoverflow.com/questions/5917576/sort-a-text-file-by-line-length-including-spaces][by line length]]
+    - variables
+      - [[https://stackoverflow.com/questions/19075671/how-do-i-use-shell-variables-in-an-awk-script][external from shell]]
+      - https://www.linuxnix.com/awk-scripting-learn-awk-built-in-variables-with-examples/
+    - [[https://stackoverflow.com/questions/17001849/awk-partly-string-match-if-column-word-partly-matches][stack: awk partly string match (if column/word partly matches)]]
+  - standards and best practice
+  - documentation
+    - [[http://www.tutorialspoint.com/awk/awk_basic_examples.htm][AWK - Basic Examples]] 
+  - applications
+    - [[http://reasoniamhere.com/2013/09/16/awk-gtf-how-to-analyze-a-transcriptome-like-a-pro-part-1/][AWK GTF! How to Analyze a Transcriptome Like a Pro]]
+  - reference
+    - [[file:~/.emacs.d/snippets/org-mode/software]]
+- cron
+  - commands
+    | function                          | command                                   |
+    |-----------------------------------+-------------------------------------------|
+    | access user-specific crontab file | env EDITOR=nano sudo crontab -e -u <USER> |
+    | see jobs                          | sudo crontab -u <USER> -l                 |
+    | create job                        | sudo crontab -u <USER> -e                 |
+  - [[https://stackoverflow.com/questions/4984725/how-to-test-a-weekly-cron-job][Test]]
+  - [[https://askubuntu.com/questions/419548/how-to-set-up-a-root-cron-job-properly?noredirect=1&lq=1][Access root]]
+  - [[https://crontab.guru/every-week][Guide to times]]
+  - [[https://ole.michelsen.dk/blog/schedule-jobs-with-crontab-on-mac-osx.html][On macos]]
+  - https://opensource.com/article/17/11/how-use-cron-linux
+- curl
+  - https://www.reddit.com/r/commandline/comments/am28qh/try_curl_httpwttrin_image_of_a_shell/
+- cut
+- du
+  - - https://stackoverflow.com/questions/15141588/exclude-all-permission-denied-messages-from-du
+- GNU tools
+  - make
+    - tutorial https://github.com/kyclark/make-tutorial
+  - grep
+    - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
+  - nohup
+    - https://unix.stackexchange.com/questions/373461/open-less-scrolled-to-the-end
+  - grep
+    - [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
+- grep 
+  - https://www.thegeekstuff.com/2011/10/grep-or-and-not-operators/
+  - https://unix.stackexchange.com/questions/37313/how-do-i-grep-for-multiple-patterns-with-pattern-having-a-pipe-character/37316
+- gunzip
+  - 
+- head and tail
+  - to trim file header lines
+    - e.g.: tail -n +2 file.txt > file.stdout
+- https://github.com/tqdm/tqdm/blob/master/README.rst
+- https://www.reddit.com/r/commandline/comments/7ejk45/what_are_some_of_awesome_curl_web_commands/
+- https://www.reddit.com/r/commandline/comments/ad6ryp/10_tools_to_power_up_your_command_line_dev/
+- http://www.theunixschool.com/p/awk-sed.html
+- ls
+  - [[https://unix.stackexchange.com/questions/48492/list-only-regular-files-but-not-directories-in-current-directory][List only regular files (but not directories) in current directory]]
+  - file size w/ ls -l --block-size=M
+- [[https://askubuntu.com/questions/185661/hide-files-ending-in-tilde][ls- hide files ending in tilde]]
+- mail
+  - 
+- make
+  - - https://stackoverflow.com/questions/3239343/make-install-but-not-to-default-directories
+- [[- https://www.xpdfreader.com/pdftotext-man.html][pdftotext]]
+- pigz
+  - https://zlib.net/pigz/
+- rsync
+  - [[https://rsync.samba.org/]]
+  - commands
+    |----------+---------|
+    | function | command |
+    |----------+---------|
+    | <35>     | <35>    |
+    |          |         |
+  - processes
+  - standards and best practice
+  - [[https://rsync.samba.org/documentation.html][documentation]]
+  - applications
+  - reference
+    - [[file:~/.emacs.d/snippets/org-mode/software]]
+- [[https://www.gnu.org/software/sed/][sed]]
+  - https://www.google.com/search?q=sed+replace+space+with+tab
+  - [[https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed][use shell variables]]
+  - [[https://stackoverflow.com/questions/5410757/how-to-delete-from-a-text-file-all-lines-that-contain-a-specific-string][delete lines with pattern]]
+  - [[https://unix.stackexchange.com/questions/99350/how-to-insert-text-before-the-first-line-of-a-file#:~:text=14%20Answers&text=Use%20sed%20's%20insert%20(%20i,text%20in%20the%20preceding%20line.&text=Also%20note%20that%20some%20non,effect%20as%20with%20GNU%20sed%20).&text=Echo%20is%20used%20to%20get%20the%20text.][insert before first line]]
+  - https://www.google.com/search?q=sed+remove+first+line 
+  - https://www.google.com/search?q=sed+remove+lines+containting+string
+  - [[https://www.youtube.com/watch?v=3cLbeYQ2Veg][youtube: sed commands in linux]]
+  - [[http://www.brunolinux.com/02-The_Terminal/Find_and%2520Replace_with_Sed.html][Find and replace with SED]]
+  - Then, using sed: sed -e '5,10d;12d' filename (deletes lines 5-10 and 12)
+  - https://www.google.com/search?q=sed+add+above+first+line 
+- to concat csvs- https://www.quora.com/How-do-you-combine-multiple-csv-files-into-a-single-file-using-the-command-line
+- unzip - https://askubuntu.com/questions/994731/how-to-skip-unzipping-a-file-that-already-exists
+- Unison
+  - commands
+    |----------+---------|
+    | function | command |
+    |----------+---------|
+    | <35>     | <35>    |
+    |          |         |
+  - processes
+  - [[https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html][documentation]]
+  - applications
+- wget
+  - pass list to wget- https://www.tecmint.com/commandline-download-accelerators-for-linux/amp/
+  - https://superuser.com/questions/283481/how-do-i-properly-set-wget-to-download-only-new-files
+    - AND SET -O !!
+- X11
+  - https://www.windowmaker.org/
+***** ssh 
+:PROPERTIES:
+:ID:       054f0013-9355-4194-8fbd-646b54db2f70
+:END:
+- permissions setup
+  #+begin_src bash
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/id_rsa
+chmod 600 ~/.ssh/id_rsa.pub
+#+end_src
+- private key must be 
+- computer https://dev.to/zduey/how-to-set-up-an-ssh-server-on-a-home-computer
+- http://www.linuxproblem.org/art_9.htm
+- multiplexing connections- https://www.techrepublic.com/article/how-to-use-multiplexing-to-speed-up-the-ssh/
+- https://stackoverflow.com/questions/12715233/why-can-i-ping-a-server-but-not-connect-via-ssh
+- https://serverfault.com/questions/334448/why-is-ssh-password-authentication-a-security-risk
+- https://dev.to/zduey/how-to-set-up-an-ssh-server-on-a-home-computer
+**** ideas
+:PROPERTIES:
+:ID:       bd78d1e4-cdac-4ccd-af57-e410e8c0cc23
+:END:
+- idea for citrix script- - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
+- ideas- check disk space https://www.cyberciti.biz/tips/shell-script-to-watch-the-disk-space.html
+- GNU - [[https://www.gnu.org/help/help.html][Helping GNU]]
+- [[https://www.reddit.com/r/commandline/comments/7d5fwa/jobson_automatically_turn_commandline/][reddit: automatically turn command-line applications into webapps]]
+**** MacOS
+:PROPERTIES:
+:ID:       80A0FABE-EB39-4BFC-8478-8044E6D84761
+:END:
+
+- http://www.theinstructional.com/guides/disk-management-from-the-command-line-part-2
+- https://www.howtogeek.com/312755/what-is-the-process-windowserver-and-why-is-it-running-on-my-mac/
+- [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][How to allow install of non app store or identified developers on MacOS Sierra]]
+- Command Table
+  | Function             | Command                   | Notes                                                                                                               |
+  |----------------------+---------------------------+---------------------------------------------------------------------------------------------------------------------|
+  |                      |                           | <20>                                                                                                                |
+  | List process to kill | ps -A\ grep -m1 <PROCESS> | https://stackoverflow.com/questions/11546765/how-to-get-the-pid-of-a-process-by-giving-the-process-name-in-mac-os-x |
+  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                                               |
+  |                      |                           |                                                                                                                     |
+- https://stackoverflow.com/questions/17935301/how-to-force-mac-os-to-open-search-with-google-in-chrome
+- Window management
+  - Default layouts
+    - https://github.com/jigish/slate
+    - http://autumnapps.com/breeze/
+    - https://apple.stackexchange.com/questions/3133/how-do-i-make-windows-save-their-position-on-screen-after-re-attaching-a-display
+- [[http://osxdaily.com/2010/06/09/screen-capture-in-mac-os-x/][Screen capture]]
+- https://apple.stackexchange.com/questions/55432/keyboard-shortcut-for-restoring-applications-from-the-mac-os-x-dock
+- hide dock: <CMD>+<ALT>+d
+- [[http://www.chriswrites.com/how-to-view-and-kill-processes-using-the-terminal-in-mac-os-x/][How to View and Kill Processes Using the Terminal in Mac OS X]]
+- Check out the brew edit command
+http://www.mitchchn.me/2014/os-x-terminal/
+
+  - osx
+    - [[http://apple.stackexchange.com/?tab=featured][mac stack exchange]]
+    - [[http://zmjones.com/mac-setup/][setting up osx for data analysis]]
+    - [[http://osxdaily.com/2009/02/25/show-hidden-files-in-os-x/][hidden files]]
+
+
+** All repo setup
+#+begin_src bash :tangle ./src/all_repo_setup.sh
+unset repoDIRs
+repoDIRs=(data figures imgs method miscellaneous presentations pubs reports results testing tex)
+for dir in "${repoDIRs[@]}"
+do
+    mkdir -p $repo/"$dir"
+done
+#+end_src
 ** Setup
 :PROPERTIES:
 :ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
 :END:
-#+name: global_setup
-#+begin_src bash :tangle no
-repo=~/repos/basecamp
-
-#+end_src
-
 - repo setup
   - workflow
     - code dev in org file
     - validated code pushed to ./src/
       - ideas get write protection
     - common code pushed to submodule repos
-  - local-setup.sh
-  - global-setup.sh
-#+name: basecamp_setup
-#+begin_src bash :tangle no
-project=basecamp
-repo=~/repos/"${project}"
-mkdir -p "${repo}"/src/shell
+*** R basecamp setup 
+:PROPERTIES:
+:ID:       a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc
+:END:
+- Check CRAN packages, install as needed
+  #+begin_src R :tangle ./src/setup.R 
+#########1#########2#########3#########4#########5#########6#########7#########8
+# Check CRAN packages, install as needed
+##
+packages = c(
+  "circlize",
+  'cowplot',
+  "cutpointr",
+  "data.table",
+  "factoextra",
+  "ggplot2",
+  'ggpubr',
+  "ggpval",
+  "ggsci",
+  "ggvenn",
+  "ggrepel",
+  "grid",
+  "gridExtra",
+  "kableExtra",
+  "naniar",
+  "pheatmap",
+  "RColorBrewer",
+  "readr",
+  "readxl",
+  "scales",
+  "tidyverse"
+)
+
+##
+package.check = lapply(
+  packages,
+  FUN=function(x) {
+    if (!require(x, character.only=T)) {
+      install.packages(x, dependencies=T)
+      library(x,character.only=T)
+    }
+  }
+)
+
 #+end_src
+- Set environment variables
+  #+begin_src R :tangle ./src/setup.R
+#########1#########2#########3#########4#########5#########6#########7#########8
+# Set variables
+select=dplyr::select
+filter=dplyr::filter
+#+end_src
+- install
+  - https://unix.stackexchange.com/questions/149451/install-r-in-my-own-directory
+- Data model functions
+  ## Data checks
+### Check primary key uniqeness
+primeKeyUnique = function(df,pk){
+  nrow(df)==length(unique(df[,pk]))
+}
+
+
+- https://www.google.com/search?q=R+check+hostname 
+- https://www.google.com/search?q=R+where+to+store+packages 
 ** R Statistical Computing                                           :career:
 :PROPERTIES:
 :ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
@@ -51,34 +385,10 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
-- better than ggsave: - https://rdrr.io/cran/cowplot/man/save_plot.html
-- exporting tables- - https://cran.r-project.org/web/packages/gridExtra/vignettes/tableGrob.html
-- test data examples
-  #+BEGIN_SRC R
-source("~/Rscripts/setup.R")
-set.seed(314)
-pkl=1000 # There will be 1000 unique accession numbers (primary key length)
-time_start =  as.POSIXct('2018-10-01T01:00:00z', format = "%Y-%m-%dT%H:%M:%S")
-time_end = as.POSIXct('2018-11-01T01:00:00z', format = '%Y-%m-%dT%H:%M:%S')
-diff_minutes_max = difftime(time_end,time_start, units = "mins")
-diff_minutes_all = sample(1:diff_minutes_max, pkl, replace = T)
-result_folate = rnorm(200, 25, 12)
-result_MCV = rnorm(400, 88, 8) # A normal distribution around mean MCV
-result_WBC = rnorm(400, 7500, 3500)
-
-# vectors
-accession = sample(1:pkl, pkl, replace = F) # 1000 unique accession #s
-visit = sample(1:500, pkl, replace = T) # 500 patient visits
-patient = sample(1:350, pkl, replace=T) # 350 patients
-time_result = time_start + diff_minutes_all
-result = c(result_folate,result_MCV,result_WBC)
-test=c(rep.int("folate", 200), rep.int("MCV", 400), rep.int("WBC", 400))
-df=data.frame(accession,visit,patient,time_result,test,result)
-df
-      #+END_SRC
-- https://www.r-bloggers.com/load-save-and-rda-files/
-- https://packagemanager.rstudio.com/client/#/repos/1/overview
+http://haozhu233.github.io/kableExtra/best_practice_for_newline_in_latex_table.pdf
+https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html
 - https://cran.r-project.org/web/packages/tikzDevice/vignettes/tikzDevice.pdf
+*** [[id:a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc][LINK TO R basecamp setup]]
 *** best practices, style
 :PROPERTIES:
 :ID:       419ba6f0-4977-4eed-9d25-93a45933ad56
@@ -110,6 +420,29 @@ df
   - https://github.com/TheEconomist/us-potus-model/blob/master/scripts/model/final_2016.R
 
 - https://google.github.io/styleguide/Rguide.html
+*** test data examples
+  #+BEGIN_SRC R
+source("~/Rscripts/setup.R")
+set.seed(314)
+pkl=1000 # There will be 1000 unique accession numbers (primary key length)
+time_start =  as.POSIXct('2018-10-01T01:00:00z', format = "%Y-%m-%dT%H:%M:%S")
+time_end = as.POSIXct('2018-11-01T01:00:00z', format = '%Y-%m-%dT%H:%M:%S')
+diff_minutes_max = difftime(time_end,time_start, units = "mins")
+diff_minutes_all = sample(1:diff_minutes_max, pkl, replace = T)
+result_folate = rnorm(200, 25, 12)
+result_MCV = rnorm(400, 88, 8) # A normal distribution around mean MCV
+result_WBC = rnorm(400, 7500, 3500)
+
+# vectors
+accession = sample(1:pkl, pkl, replace = F) # 1000 unique accession #s
+visit = sample(1:500, pkl, replace = T) # 500 patient visits
+patient = sample(1:350, pkl, replace=T) # 350 patients
+time_result = time_start + diff_minutes_all
+result = c(result_folate,result_MCV,result_WBC)
+test=c(rep.int("folate", 200), rep.int("MCV", 400), rep.int("WBC", 400))
+df=data.frame(accession,visit,patient,time_result,test,result)
+df
+      #+END_SRC
 *** [[https://www.r-project.org/other-docs.html][documentation]]
 :PROPERTIES:
 :ID:       5387846b-2130-468f-8d94-1f53fe2b5541
@@ -142,11 +475,18 @@ df
 :PROPERTIES:
 :ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
 :END:
+- save and load
+  - https://www.r-bloggers.com/load-save-and-rda-files/
+  - saving - use - better than ggsave: - https://rdrr.io/cran/cowplot/man/save_plot.html
+- export tables
+  - exporting tables- - - https://cran.r-project.org/web/packages/gridExtra/vignettes/tableGrob.html
+  - https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+  - https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_pdf.pdf
 **** writing functions
 :PROPERTIES:
 :ID:       479569fe-229d-4d2f-ba08-b871d3ad64ac
 :END:
-- 
+- https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html- 
 - ifelse stop functions
   - see [[id:afb6af15-e984-4150-9e95-d28368ebca2e][pull in R-immutable elements and perform data checks]]
 - https://stackoverflow.com/questions/19261159/r-applying-a-function-to-a-subset-of-a-data-frame#19261262
@@ -197,19 +537,12 @@ df
   - https://cran.r-project.org/web/packages/cutpointr/vignettes/cutpointr.html
   - https://web.expasy.org/pROC/
  
-**** System setup
-:PROPERTIES:
-:ID:       a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc
-:END:
-
-- install
-  - https://unix.stackexchange.com/questions/149451/install-r-in-my-own-directory
-- https://www.google.com/search?q=R+check+hostname 
-- https://www.google.com/search?q=R+where+to+store+packages 
+**** [[id:a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc][LINK TO R basecamp setup]]
 *** Packages
 :PROPERTIES:
 :ID:       13053897-37D7-4068-B3D0-5A6660BA0CD3
 :END:
+- https://packagemanager.rstudio.com/client/#/repos/1/overview
 - pheatmap
   - https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/
 - https://topepo.github.io/caret/#
@@ -237,6 +570,8 @@ ip
 :LOGBOOK:
 CLOCK: [2020-07-29 Wed 11:00]--[2020-07-29 Wed 11:20] =>  0:20
 :END:
+- https://b-rodrigues.github.io/modern_R/
+- https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
 - processes
   - https://www.google.com/search?q=dplyr+set+factor+levels
 - https://github.com/hrbrmstr/hrbrthemes
@@ -325,6 +660,8 @@ CLOCK: [2020-07-29 Wed 11:00]--[2020-07-29 Wed 11:20] =>  0:20
 :PROPERTIES:
 :ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
 :END:
+https://wilkelab.org/cowplot/articles/themes.html
+https://ggplot2-book.org/index.html
 https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html
 - https://ggrepel.slowkow.com/articles/examples.html
 - https://github.com/thomasp85/patchwork
@@ -345,6 +682,7 @@ http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-
 :PROPERTIES:
 :ID:       26211e92-7ff9-4520-a9a7-cac04027e610
 :END:
+https://cran.r-project.org/web/views/Econometrics.html
 - For basic statistics, see cite:mangiafico2005 [[http://rcompanion.org/rcompanion/e_01.html][R Companion to Biostats Handbook]]
 - [[https://www.r-bloggers.com/bayesian-network-in-r-introduction/][Bayesian network in R: Introduction]]
   #+BEGIN_SRC R
@@ -1217,12 +1555,14 @@ where are osx dameons?
 CLOCK: [2019-05-29 Wed 14:47]--[2019-05-29 Wed 15:05] =>  0:18
 :END:
 
-**** UNIX-based :career:                                           :software:
+**** UNIX-based                                                    :software:career:
 :PROPERTIES:
 :ID:       BDC42DA2-A632-4FB7-A586-E100B2A045DC
 :CREATED:  [2019-08-15 Thu 16:17]
 :END:
 :LOGBOOK:
+CLOCK: [2020-12-15 Tue 06:51]--[2020-12-15 Tue 07:08] =>  0:17
+CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 CLOCK: [2020-06-25 Thu 07:47]--[2020-06-25 Thu 08:13] =>  0:26
 CLOCK: [2020-02-12 Wed 10:15]--[2020-02-12 Wed 10:19] =>  0:04
 CLOCK: [2019-09-18 Wed 14:02]--[2019-09-18 Wed 14:40] =>  0:38
@@ -1242,211 +1582,7 @@ CLOCK: [2017-10-25 Wed 09:48]--[2017-10-25 Wed 10:23] =>  0:35
 CLOCK: [2017-10-12 Thu 13:37]--[2017-10-12 Thu 13:40] =>  0:03
 CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 :END:
-https://www.reddit.com/r/commandline/comments/ka6izh/open_book_study_group_for_the_linux_command_line/
 https://docs.monadical.com/s/system-monitoring-tools
-***** processes
-:PROPERTIES:
-:ID:       3973f50f-db8f-4a82-8a8e-212d3e0b03af
-:END:
-- account management
-  - https://www.google.com/search?q=unix+create+user 
-***** general
-:PROPERTIES:
-:ID:       234aa816-28c7-4a09-bdc0-0116322d0b9c
-:END:
-- guides, tutorials, cheatsheets 
-  - http://www.ee.surrey.ac.uk/Teaching/Unix/
-  - [[http://linuxcommand.org/][LinuxCommand.org]]
-  - [[http://korflab.ucdavis.edu/Unix_and_Perl/current.html][UC Davis Unix and Perl for biologists]]
-  - http://www.chm.bris.ac.uk/compres/unix/index.html
-  - http://www.commandlinefu.com/commands/browse
-  - [[http://catb.org/jargon/html/U/Unix.html][Unix name origin]]
-  - [[https://sanctum.geek.nz/arabesque/unix-as-ide-introduction/][Unix as IDE: Introduction]] 
-  - [[http://cecs.wright.edu/~p/mateti/Courses/333/Top/index.html][Wright State CEG 333: Introduction to Unix]]
-  - [[http://www.commandlinefu.com/commands/browse/sort-by-votes][commandlinefu]]
-  - [[https://unix.stackexchange.com/questions/12762/how-do-i-temporarily-bypass-an-alias-in-tcsh][How do I temporarily bypass an alias in tcsh?]]
-  - [[https://unix.stackexchange.com/][stack: unix]]
-  - [[https://en.wikibooks.org/wiki/Guide_to_Unix][wikibooks: unix]]
-  - http://www.thegeekstuff.com/
-  - https://sneak.berlin/20191011/stupid-unix-tricks/
-- standards and best practices
-  - POSIX
-  - naming conventions- [[https://unix.stackexchange.com/questions/49008/for-filenames-are-underscores-or-dashes-more-common-in-unix-file-names][stack: For filenames, are underscores or dashes more common in Unix file names? {closed}]]
-- file structure
-  - https://unix.stackexchange.com/questions/4186/what-is-usr-local-bin
-- POSIX
-  - [[https://github.com/dylanaraps/pure-sh-bible][pure sh bible]]
-***** UNIX tools
-:PROPERTIES:
-:ID:       ca6d1cc3-2489-4616-8125-3ed27a3c3740
-:END:
-:LOGBOOK:
-CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
-:END:
-- execute interactive woman calls
-  #+begin_src emacs-lisp
-(defmacro with-minibuffer-input (form &rest inputs)
-  (declare (indent 1))
-  `(minibuffer-with-setup-hook
-       (lambda ()
-         (minibuffer-input-provider ',inputs))
-     ,form))
-
-(defun minibuffer-input-provider (inputs)
-  (let ((hook (make-symbol "hook")))
-    (fset hook (lambda ()
-                 (remove-hook 'post-command-hook hook)
-                 (when inputs
-                   (when (= 0 (minibuffer-depth))
-                     (error "Too many inputs"))
-                   (when (cdr inputs)
-                     (add-hook 'post-command-hook hook))
-                   (insert (pop inputs))
-                   (exit-minibuffer))))
-    (add-hook 'post-command-hook hook)))
-#+end_src
-- https://github.com/denisidoro/navi
-- awk
-  - [[https://stackoverflow.com/questions/47091464/print-for-loop-input-filename-on-piped-awk-output][file name as variable]]
-  - commands
-    |----------------+------------------------------------|
-    | function       | command                            |
-    |----------------+------------------------------------|
-    | <35>           | <35>                               |
-    | set delimiters | 'BEGIN {FS="<DELIM>";OFS="<DELIM>" |
-    |                |                                    |
-  - processes
-    - https://www.google.com/search?q=awk+pass+variable 
-    - [[https://stackoverflow.com/questions/19149731/use-awk-to-find-average-of-a-column][find average]]
-    - https://www.google.com/search?q=awk+print+except+first
-    - sorting
-      - [[https://stackoverflow.com/questions/17048188/how-to-use-awk-sort-by-column-3][sort column]]
-      - [[https://stackoverflow.com/questions/5917576/sort-a-text-file-by-line-length-including-spaces][by line length]]
-    - variables
-      - [[https://stackoverflow.com/questions/19075671/how-do-i-use-shell-variables-in-an-awk-script][external from shell]]
-      - https://www.linuxnix.com/awk-scripting-learn-awk-built-in-variables-with-examples/
-    - [[https://stackoverflow.com/questions/17001849/awk-partly-string-match-if-column-word-partly-matches][stack: awk partly string match (if column/word partly matches)]]
-  - standards and best practice
-  - documentation
-    - [[http://www.tutorialspoint.com/awk/awk_basic_examples.htm][AWK - Basic Examples]] 
-  - applications
-    - [[http://reasoniamhere.com/2013/09/16/awk-gtf-how-to-analyze-a-transcriptome-like-a-pro-part-1/][AWK GTF! How to Analyze a Transcriptome Like a Pro]]
-  - reference
-    - [[file:~/.emacs.d/snippets/org-mode/software]]
-- cron
-  - commands
-    | function                          | command                                   |
-    |-----------------------------------+-------------------------------------------|
-    | access user-specific crontab file | env EDITOR=nano sudo crontab -e -u <USER> |
-    | see jobs                          | sudo crontab -u <USER> -l                 |
-    | create job                        | sudo crontab -u <USER> -e                 |
-  - [[https://stackoverflow.com/questions/4984725/how-to-test-a-weekly-cron-job][Test]]
-  - [[https://askubuntu.com/questions/419548/how-to-set-up-a-root-cron-job-properly?noredirect=1&lq=1][Access root]]
-  - [[https://crontab.guru/every-week][Guide to times]]
-  - [[https://ole.michelsen.dk/blog/schedule-jobs-with-crontab-on-mac-osx.html][On macos]]
-  - https://opensource.com/article/17/11/how-use-cron-linux
-- curl
-  - https://www.reddit.com/r/commandline/comments/am28qh/try_curl_httpwttrin_image_of_a_shell/
-- cut
-- du
-  - - https://stackoverflow.com/questions/15141588/exclude-all-permission-denied-messages-from-du
-- GNU tools
-  - make
-    - tutorial https://github.com/kyclark/make-tutorial
-  - grep
-    - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
-  - nohup
-    - https://unix.stackexchange.com/questions/373461/open-less-scrolled-to-the-end
-  - grep
-    - [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
-- grep 
-  - https://www.thegeekstuff.com/2011/10/grep-or-and-not-operators/
-  - https://unix.stackexchange.com/questions/37313/how-do-i-grep-for-multiple-patterns-with-pattern-having-a-pipe-character/37316
-- [[elisp:(with-minibuffer-input (call-interactively 'woman) "gunzip")][gunzip] [[elisp:(with-minibuffer-input (call-interactively 'woman) "gunzip")][gunzip]]
-   - https://www.google.com/search?q=gunzip+keep+source 
-- head and tail
-  - to trim file header lines
-    - e.g.: tail -n +2 file.txt > file.stdout
-- https://github.com/tqdm/tqdm/blob/master/README.rst
-- https://www.reddit.com/r/commandline/comments/7ejk45/what_are_some_of_awesome_curl_web_commands/
-- https://www.reddit.com/r/commandline/comments/ad6ryp/10_tools_to_power_up_your_command_line_dev/
-- http://www.theunixschool.com/p/awk-sed.html
-- ls
-  - [[https://unix.stackexchange.com/questions/48492/list-only-regular-files-but-not-directories-in-current-directory][List only regular files (but not directories) in current directory]]
-  - file size w/ ls -l --block-size=M
-- [[https://askubuntu.com/questions/185661/hide-files-ending-in-tilde][ls- hide files ending in tilde]]
-- mail
-  - 
-- make
-  - - https://stackoverflow.com/questions/3239343/make-install-but-not-to-default-directories
-- [[- https://www.xpdfreader.com/pdftotext-man.html][pdftotext]]
-- pigz
-  - https://zlib.net/pigz/
-- rsync
-  - [[https://rsync.samba.org/]]
-  - commands
-    |----------+---------|
-    | function | command |
-    |----------+---------|
-    | <35>     | <35>    |
-    |          |         |
-  - processes
-  - standards and best practice
-  - [[https://rsync.samba.org/documentation.html][documentation]]
-  - applications
-  - reference
-    - [[file:~/.emacs.d/snippets/org-mode/software]]
-- [[https://www.gnu.org/software/sed/][sed]]
-  - https://www.google.com/search?q=sed+replace+space+with+tab
-  - [[https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed][use shell variables]]
-  - [[https://stackoverflow.com/questions/5410757/how-to-delete-from-a-text-file-all-lines-that-contain-a-specific-string][delete lines with pattern]]
-  - [[https://unix.stackexchange.com/questions/99350/how-to-insert-text-before-the-first-line-of-a-file#:~:text=14%20Answers&text=Use%20sed%20's%20insert%20(%20i,text%20in%20the%20preceding%20line.&text=Also%20note%20that%20some%20non,effect%20as%20with%20GNU%20sed%20).&text=Echo%20is%20used%20to%20get%20the%20text.][insert before first line]]
-  - https://www.google.com/search?q=sed+remove+first+line 
-  - https://www.google.com/search?q=sed+remove+lines+containting+string
-  - [[https://www.youtube.com/watch?v=3cLbeYQ2Veg][youtube: sed commands in linux]]
-  - [[http://www.brunolinux.com/02-The_Terminal/Find_and%2520Replace_with_Sed.html][Find and replace with SED]]
-  - Then, using sed: sed -e '5,10d;12d' filename (deletes lines 5-10 and 12)
-  - https://www.google.com/search?q=sed+add+above+first+line 
-- ssh 
-  - https://superuser.com/questions/8077/how-do-i-set-up-ssh-so-i-dont-have-to-type-my-password
-  - https://stackoverflow.com/questions/12715233/why-can-i-ping-a-server-but-not-connect-via-ssh
-  - https://serverfault.com/questions/334448/why-is-ssh-password-authentication-a-security-risk
-  - https://dev.to/zduey/how-to-set-up-an-ssh-server-on-a-home-computer
-- to concat csvs- https://www.quora.com/How-do-you-combine-multiple-csv-files-into-a-single-file-using-the-command-line
-- unzip - https://askubuntu.com/questions/994731/how-to-skip-unzipping-a-file-that-already-exists
-- Unison
-  - commands
-    |----------+---------|
-    | function | command |
-    |----------+---------|
-    | <35>     | <35>    |
-    |          |         |
-  - processes
-  - [[https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html][documentation]]
-  - applications
-- [[elisp:(with-minibuffer-input (call-interactively 'woman) "wget")][wget]]
-  - [[https://www.tecmint.com/commandline-download-accelerators-for-linux/amp/][pass list to]]
-  - [[https://superuser.com/questions/283481/how-do-i-properly-set-wget-to-download-only-new-files][download only on server side change]]
-    - AND SET -O !!
-- X11
-  - https://www.windowmaker.org/
-***** ideas
-:PROPERTIES:
-:ID:       1ddc60ab-106c-4c31-835e-c36e54427b13
-:END:
-- idea for citrix script- - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
-- ideas- check disk space https://www.cyberciti.biz/tips/shell-script-to-watch-the-disk-space.html
-- GNU - [[https://www.gnu.org/help/help.html][Helping GNU]]
-- [[https://www.reddit.com/r/commandline/comments/7d5fwa/jobson_automatically_turn_commandline/][reddit: automatically turn command-line applications into webapps]]
-***** linux :software:career:
-:PROPERTIES:
-:CREATED:  [2020-01-09 Thu 15:46]
-:ID:       cd560390-aa1e-4c9e-8317-08610e5de42a
-:END:
-:LOGBOOK:
-CLOCK: [2020-12-15 Tue 06:51]--[2020-12-15 Tue 07:08] =>  0:17
-CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
-:END:
 https://github.com/autokey/autokey
 https://www.freecodecamp.org/news/linux-server-course-system-configuration-and-operation/
 - https://stackoverflow.com/questions/49598797/remove-pdf-annotations-via-command-line
@@ -1466,7 +1602,7 @@ https://www.freecodecamp.org/news/linux-server-course-system-configuration-and-o
   - ocr
     - https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
 
-****** linux                                                       :software:
+***** Linux                                                        :software:career:
 :PROPERTIES:
 :CREATED:  [2020-01-09 Thu 15:46]
 :ID:       cd560390-aa1e-4c9e-8317-08610e5de42a
@@ -1474,10 +1610,8 @@ https://www.freecodecamp.org/news/linux-server-course-system-configuration-and-o
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
-https://github.com/teejee2008/timeshift
-https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
-https://unix.stackexchange.com/questions/53542/how-to-determine-the-filesystem-of-an-unmounted-device
-https://unix.stackexchange.com/questions/18925/how-to-mount-a-device-in-linux
+- https://github.com/teejee2008/timeshift
+- https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
 - gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
 - https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
 - [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
@@ -1486,84 +1620,15 @@ https://unix.stackexchange.com/questions/18925/how-to-mount-a-device-in-linux
 - https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
 - for dir sizes, use ncdu
 https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
-******* documentation and general education
-:PROPERTIES:
-:ID:       0aed9c3f-c216-40e8-a80d-7bc54443ef5c
-:END:
-  - https://www.kernel.org/doc/html/latest/admin-guide/index.html
-  - general education- https://www.reddit.com/r/linux4noobs/comments/fntvl7/between_linux_essentials_linux_and_lpic1_which/
-  - https://refspecs.linuxfoundation.org/
-******* interfaces
-:PROPERTIES:
-:ID:       48801280-4d0f-4da3-a5da-6c661add36cd
-:END:
-  - https://github.com/tbodt/ish/projects/7
-  - https://github.com/Airblader/i3
-******* variables
-:PROPERTIES:
-:ID:       03fe412e-42fb-4fd8-b951-28562140b8a8
-:END:
-  - PATH
-    - https://unix.stackexchange.com/questions/26047/how-to-correctly-add-a-path-to-path
-      - note on config files where environmental variables can be set: 
-        - ~/.bashrc is config for interactive bash
-        - ~/.profile / ~/.bash_profile- see https://askubuntu.com/questions/298532/why-wont-environment-variables-added-to-profile-show-up-in-screen
-    - [[https://unix.stackexchange.com/questions/3809/how-can-i-make-a-program-executable-from-everywhere][How can I make a program executable from everywhere]]
-  - Permissions
-    - [[https://www.csun.edu/~csunitr/guides/unixpermissions.html][user permissions]]
-    - common chmods
-      - 600- owner read/write only
-      - 660- owner plus group read/write
-      - 664 everyone read / write
-      - see [[https://mail.google.com/mail/u/0/#search/hiseq3000/15628d36aa827e42][this email]] from Paul at GTAC 
-      - [[http://stackoverflow.com/questions/3740152/how-to-set-chmod-for-a-folder-and-all-of-its-subfolders-and-files-in-linux-ubunt][How do I set chmod for a folder and all of its subfolders and files in Linux Ubuntu Terminal? {closed}]]
-  - Symbolic links
-    - [[https://stackoverflow.com/questions/16017500/how-to-see-full-symlink-path][see path with readlink -f]]
-    - [[https://stackoverflow.com/questions/1727280/is-there-a-way-to-edit-a-symlink-without-deleting-it-first][stack: create and edit symlinks]]- ln -s /location/to/link linkname
-    - @ files are symlinks?https://unix.stackexchange.com/questions/191717/what-does-the-symbol-mean-on-filenames
-******* tools
-:PROPERTIES:
-:ID:       3c1966ac-c5ad-49d9-ad45-9c87a5c7450b
-:END:
-  - ifconfig
-    - [[file:/usr/share/man/man8/ifconfig.8.gz]] 
-- gnu parallel
-  - https://www.msi.umn.edu/support/faq/how-can-i-use-gnu-parallel-run-lot-commands-parallel
-  - https://www.biostars.org/p/63816/
-  - https://www.biostars.org/p/216905/
-  - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
-******** trash-cli
-:PROPERTIES:
-:ID:       fe8ca086-cd69-4f40-a96d-3e99678c400e
-:END:
-#+begin_src bash 
-#
-# Install
-cd /opt
-sudo git clone https://github.com/andreafrancia/trash-cli.git
-cd trash-cli
-sudo python setup.py install
-#
-#
-#+end_src
-******* commands
-:PROPERTIES:
-:ID:       56b7a8f4-25d7-41a2-a0b5-cdb8a86481cc
-:END:
-  |----------------------+-------------------------------------|
-  | function             | command                             |
-  |----------------------+-------------------------------------|
-  | mount partition      | udisksctl mount -b /dev/<PARTITION> |
-  |                      |                                     |
-  | unzip .bz2           | tar --bzip2 -xvf <FILE>             |
-  | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]]                               |
-  | see systemd services | systemctl list-units --type=service |
-  | see ubuntu version   | lsb_release -a                      |
-- https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
-******* processes
+***** Processes
 :PROPERTIES:
 :ID:       0f7af99f-aee7-4572-97cb-2ab0a6adcfbd
 :END:
+- mount
+  - https://unix.stackexchange.com/questions/53542/how-to-determine-the-filesystem-of-an-unmounted-device
+  - https://unix.stackexchange.com/questions/18925/how-to-mount-a-device-in-linux
+  - remove nfs stale file handle https://unix.stackexchange.com/questions/36297/how-can-i-resolve-a-stale-nfs-handle
+  - umount https://stackoverflow.com/questions/7878707/how-to-unmount-a-busy-device
 - https://www.google.com/search?q=linux+command+line+convert+jpg+to+pdf
 - https://www.google.com/search?q=linux+change+rm+to+recycle+bin
   - https://github.com/andreafrancia/trash-cli
@@ -1593,7 +1658,82 @@ sudo python setup.py install
   - https://www.reddit.com/r/commandline/comments/f8nxyx/bash_how_is_it_possible_to_create_an_interface/
 - install
   - UNetbootin https://tuxboot.org/installation/
-******* Ubuntu                                                     :software:
+- https://superuser.com/questions/185880/how-to-convert-a-pdf-document-to-png
+***** Documentation and general education
+:PROPERTIES:
+:ID:       0aed9c3f-c216-40e8-a80d-7bc54443ef5c
+:END:
+  - https://www.kernel.org/doc/html/latest/admin-guide/index.html
+  - general education- https://www.reddit.com/r/linux4noobs/comments/fntvl7/between_linux_essentials_linux_and_lpic1_which/
+  - https://refspecs.linuxfoundation.org/
+***** interfaces
+:PROPERTIES:
+:ID:       48801280-4d0f-4da3-a5da-6c661add36cd
+:END:
+  - https://github.com/tbodt/ish/projects/7
+  - https://github.com/Airblader/i3
+***** variables
+:PROPERTIES:
+:ID:       03fe412e-42fb-4fd8-b951-28562140b8a8
+:END:
+  - PATH
+    - https://unix.stackexchange.com/questions/26047/how-to-correctly-add-a-path-to-path
+      - note on config files where environmental variables can be set: 
+        - ~/.bashrc is config for interactive bash
+        - ~/.profile / ~/.bash_profile- see https://askubuntu.com/questions/298532/why-wont-environment-variables-added-to-profile-show-up-in-screen
+    - [[https://unix.stackexchange.com/questions/3809/how-can-i-make-a-program-executable-from-everywhere][How can I make a program executable from everywhere]]
+  - Permissions
+    - [[https://www.csun.edu/~csunitr/guides/unixpermissions.html][user permissions]]
+    - common chmods
+      - 600- owner read/write only
+      - 660- owner plus group read/write
+      - 664 everyone read / write
+      - see [[https://mail.google.com/mail/u/0/#search/hiseq3000/15628d36aa827e42][this email]] from Paul at GTAC 
+      - [[http://stackoverflow.com/questions/3740152/how-to-set-chmod-for-a-folder-and-all-of-its-subfolders-and-files-in-linux-ubunt][How do I set chmod for a folder and all of its subfolders and files in Linux Ubuntu Terminal? {closed}]]
+  - Symbolic links
+    - [[https://stackoverflow.com/questions/16017500/how-to-see-full-symlink-path][see path with readlink -f]]
+    - [[https://stackoverflow.com/questions/1727280/is-there-a-way-to-edit-a-symlink-without-deleting-it-first][stack: create and edit symlinks]]- ln -s /location/to/link linkname
+    - @ files are symlinks?https://unix.stackexchange.com/questions/191717/what-does-the-symbol-mean-on-filenames
+***** tools
+:PROPERTIES:
+:ID:       3c1966ac-c5ad-49d9-ad45-9c87a5c7450b
+:END:
+  - ifconfig
+    - [[file:/usr/share/man/man8/ifconfig.8.gz]] 
+- gnu parallel
+  - https://www.msi.umn.edu/support/faq/how-can-i-use-gnu-parallel-run-lot-commands-parallel
+  - https://www.biostars.org/p/63816/
+  - https://www.biostars.org/p/216905/
+  - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
+****** trash-cli
+:PROPERTIES:
+:ID:       fe8ca086-cd69-4f40-a96d-3e99678c400e
+:END:
+#+begin_src bash 
+#
+# Install
+cd /opt
+sudo git clone https://github.com/andreafrancia/trash-cli.git
+cd trash-cli
+sudo python setup.py install
+#
+#
+#+end_src
+***** commands
+:PROPERTIES:
+:ID:       56b7a8f4-25d7-41a2-a0b5-cdb8a86481cc
+:END:
+  |----------------------+-------------------------------------|
+  | function             | command                             |
+  |----------------------+-------------------------------------|
+  | mount partition      | udisksctl mount -b /dev/<PARTITION> |
+  |                      |                                     |
+  | unzip .bz2           | tar --bzip2 -xvf <FILE>             |
+  | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]]                               |
+  | see systemd services | systemctl list-units --type=service |
+  | see ubuntu version   | lsb_release -a                      |
+- https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
+***** Ubuntu                                                       :software:
 :PROPERTIES:
 :ID:       c28ef36f-5b5c-4789-90da-270e56fc4898
 :CREATED:  [2019-06-20 Thu 10:34]
@@ -1776,7 +1916,7 @@ https://askubuntu.com/questions/283559/how-can-i-run-disk-utility-in-terminal-vi
     - [[http://ubuntuforums.org/showthread.php?t=1880394][these updates]]
     - install chromium
 - [[http://www.pcmag.com/article2/0,2817,2488836,00.asp][hardware?]]
-******** macbook ubuntu build
+****** macbook ubuntu build
 :PROPERTIES:
 :ID:       34C28D0E-A905-4700-A20E-557E79BC7DDC
 :CREATED:  [2019-05-28 Tue 19:53]
@@ -1882,7 +2022,7 @@ https://www.reddit.com/r/linux4noobs/comments/h9d5v4/how_to_improve_increase_the
      - [  [[https://pmbio.org/module-01-setup/0001/02/01/AWS_Intro/#setting-up-an-apache-web-server][apache web service access to data]]
      - [  cleanup emacs init
 
-******** Server build
+****** Server build
 :PROPERTIES:
 :ID:       BCD2D984-7185-47C0-9ECB-B1F40314595C
 :END:
@@ -1896,7 +2036,7 @@ https://www.reddit.com/r/linux4noobs/comments/h9d5v4/how_to_improve_increase_the
   - https://askubuntu.com/questions/308897/convert-ubuntu-physical-machine-to-virtual-machine
   - https://askubuntu.com/questions/32499/migrate-from-a-virtual-machine-vm-to-a-physical-system?rq=1
 
-********* Work build
+******* Work build
 :PROPERTIES:
 :ID:       6C960771-38BB-4A48-95ED-576D79547489
 :END:
@@ -1969,12 +2109,12 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
     - see https://www.thegeekstuff.com/2008/11/3-steps-to-perform-ssh-login-without-password-using-ssh-keygen-ssh-copy-id
     - also alias to work-linux [[file:~/.bash_profile]]
 
-********** update
+******** update
 :PROPERTIES:
 :ID:       66803E55-A70F-4D49-A4D6-31520A3617DC
 :END:
 
-********** Connections
+******** Connections
 :PROPERTIES:
 :ID:       449D6647-FF79-48FE-8649-DD2DEF23FB93
 :CREATED:  [2019-03-17 Sun 15:46]
@@ -1985,7 +2125,7 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
     - https://www.makeuseof.com/tag/ubuntu-remote-desktop-builtin-vnc-compatible-dead-easy/
   - [ ] wine windows
 
-******** ideas
+****** ideas
 :PROPERTIES:
 :ID:       c8c52c75-195d-48dd-85ff-0ca43524dd7f
 :END:
@@ -2019,7 +2159,7 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
     - https://unix.stackexchange.com/questions/91863/terminal-copy-from-cli-without-using-mouse
   - https://www.reddit.com/r/commandline/comments/ceo8lt/ideas_for_good_use_of_the_caps_lock_key/
 - http://n-o-d-e.net/post/141489192021/how-to-create-a-handheld-linux-terminal-v2
-********* USB build
+******* USB build
 :PROPERTIES:
 :ID:       D367D5DD-4E6E-43EC-A1FF-F3F14B24D2D9
 :END:
@@ -2035,17 +2175,17 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
   - show battery life
 
 
-****** GNU
+***** GNU
 :PROPERTIES:
 :ID:       e2e4606f-de26-4247-8577-1e1a708e0a5a
 :END:
   - gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
-****** X Window System 
+***** X Window System 
 :PROPERTIES:
 :ID:       bc5ab32a-387d-400a-b72c-ac29d743493f
 :END:
 - https://unix.stackexchange.com/questions/227876/how-to-set-custom-resolution-using-xrandr-when-the-resolution-is-not-available-i
-****** documentation and general education
+***** documentation and general education
 :PROPERTIES:
 :ID:       ec0fbb20-4909-4ab7-8ba2-c48836743d01
 :END:
@@ -2054,13 +2194,13 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
 - https://www.kernel.org/doc/html/latest/admin-guide/index.html
 - general education- https://www.reddit.com/r/linux4noobs/comments/fntvl7/between_linux_essentials_linux_and_lpic1_which/
 - https://refspecs.linuxfoundation.org/
-****** interfaces
+***** interfaces
 :PROPERTIES:
 :ID:       1696cc89-66bc-454c-8659-95f354b79d82
 :END:
 - https://github.com/tbodt/ish/projects/7
 - https://github.com/Airblader/i3
-****** variables
+***** variables
 :PROPERTIES:
 :ID:       d16cef2b-b679-48db-958c-2105b06478ba
 :END:
@@ -2082,7 +2222,7 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
     - [[https://stackoverflow.com/questions/16017500/how-to-see-full-symlink-path][see path with readlink -f]]
     - [[https://stackoverflow.com/questions/1727280/is-there-a-way-to-edit-a-symlink-without-deleting-it-first][stack: create and edit symlinks]]- ln -s /location/to/link linkname
     - @ files are symlinks?https://unix.stackexchange.com/questions/191717/what-does-the-symbol-mean-on-filenames
-****** tools
+***** tools
 :PROPERTIES:
 :ID:       6057b49e-f8d4-42fb-8fec-5a80a802dd92
 :END:
@@ -2093,7 +2233,7 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
   - https://www.biostars.org/p/63816/
   - https://www.biostars.org/p/216905/
   - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
-******* trash-cli
+****** trash-cli
 :PROPERTIES:
 :ID:       fe8ca086-cd69-4f40-a96d-3e99678c400e
 :END:
@@ -2108,7 +2248,7 @@ sudo python setup.py install
 #
 #
 #+end_src
-****** commands
+***** commands
 :PROPERTIES:
 :ID:       6cf0206e-fe85-44bb-a84b-b6c63c3adf6c
 :END:
@@ -2123,44 +2263,7 @@ sudo python setup.py install
   | see ubuntu version   | lsb_release -a                      |
 - https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
 - find large files sudo du -a /home | sort -n -r | head -n 10
-****** processes
-:PROPERTIES:
-:ID:       319f84a8-ad1d-4a05-8bc9-af43f20963d6
-:END:
-- mount
-  - remove nfs stale file handle https://unix.stackexchange.com/questions/36297/how-can-i-resolve-a-stale-nfs-handle
-  - umount https://stackoverflow.com/questions/7878707/how-to-unmount-a-busy-device
-- https://superuser.com/questions/185880/how-to-convert-a-pdf-document-to-png
-- https://www.google.com/search?q=linux+command+line+convert+jpg+to+pdf
-- https://www.google.com/search?q=linux+change+rm+to+recycle+bin
-  - https://github.com/andreafrancia/trash-cli
-- https://www.google.com/search?q=linux+get+server+specs
-- files
-  - prevent delete
-    - w/ chattr
-      - sudo chattr +i <FILE> (remove with -i)
-      - for dirs, sudo chattr -R +i <DIR>
-    - https://www.google.com/search?q=linux+protect+files+from+delete
-  - opening
-    - https://forum.artixlinux.org/index.php/topic,1129.0.html
-  - decompressing
-    - https://www.reddit.com/r/linuxmasterrace/comments/et9e36/best_function_ever/
-  - convert
-    - https://askubuntu.com/questions/493584/convert-images-to-pdf
-    - png to pdf- use ImageMagick convert command 
-  - merge pdfs
-    - https://askubuntu.com/questions/2799/how-to-merge-several-pdf-files
-- backup
-  - https://www.reddit.com/r/commandline/comments/fr6the/linuxtimemachine_rsyncbased_osxlike_time_machine/
-- storage setup and manipulations
-  - http://www.rodsbooks.com/gdisk/walkthrough.html
-- reporting
-  - https://github.com/Heholord/FalconStats/tree/master
-- create an interface
-  - https://www.reddit.com/r/commandline/comments/f8nxyx/bash_how_is_it_possible_to_create_an_interface/
-- install
-  - UNetbootin https://tuxboot.org/installation/
-****** Ubuntu                                                      :software:
+***** Ubuntu                                                       :software:
 :PROPERTIES:
 :ID:       c28ef36f-5b5c-4789-90da-270e56fc4898
 :CREATED:  [2019-06-20 Thu 10:34]
@@ -2356,7 +2459,7 @@ https://askubuntu.com/questions/283559/how-can-i-run-disk-utility-in-terminal-vi
     - [[http://ubuntuforums.org/showthread.php?t=1880394][these updates]]
     - install chromium
 - [[http://www.pcmag.com/article2/0,2817,2488836,00.asp][hardware?]]
-******* macbook ubuntu build
+****** macbook ubuntu build
 :PROPERTIES:
 :ID:       34C28D0E-A905-4700-A20E-557E79BC7DDC
 :CREATED:  [2019-05-28 Tue 19:53]
@@ -2462,7 +2565,7 @@ https://www.reddit.com/r/linux4noobs/comments/h9d5v4/how_to_improve_increase_the
      - [  [[https://pmbio.org/module-01-setup/0001/02/01/AWS_Intro/#setting-up-an-apache-web-server][apache web service access to data]]
      - [  cleanup emacs init
 
-******* Server build
+****** Server build
 :PROPERTIES:
 :ID:       BCD2D984-7185-47C0-9ECB-B1F40314595C
 :END:
@@ -2477,7 +2580,7 @@ https://www.reddit.com/r/linux4noobs/comments/h9d5v4/how_to_improve_increase_the
   - https://askubuntu.com/questions/308897/convert-ubuntu-physical-machine-to-virtual-machine
   - https://askubuntu.com/questions/32499/migrate-from-a-virtual-machine-vm-to-a-physical-system?rq=1
 
-******** Work build
+******* Work build
 :PROPERTIES:
 :ID:       6C960771-38BB-4A48-95ED-576D79547489
 :END:
@@ -2550,12 +2653,12 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
     - see https://www.thegeekstuff.com/2008/11/3-steps-to-perform-ssh-login-without-password-using-ssh-keygen-ssh-copy-id
     - also alias to work-linux [[file:~/.bash_profile]]
 
-********* update
+******** update
 :PROPERTIES:
 :ID:       66803E55-A70F-4D49-A4D6-31520A3617DC
 :END:
 
-********* Connections
+******** Connections
 :PROPERTIES:
 :ID:       449D6647-FF79-48FE-8649-DD2DEF23FB93
 :CREATED:  [2019-03-17 Sun 15:46]
@@ -2566,7 +2669,7 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
     - https://www.makeuseof.com/tag/ubuntu-remote-desktop-builtin-vnc-compatible-dead-easy/
   - [ ] wine windows
 
-******* ideas
+****** ideas
 :PROPERTIES:
 :ID:       cada664d-a4ad-4727-ab23-ef5deed68e15
 :END:
@@ -2600,7 +2703,7 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
     - https://unix.stackexchange.com/questions/91863/terminal-copy-from-cli-without-using-mouse
   - https://www.reddit.com/r/commandline/comments/ceo8lt/ideas_for_good_use_of_the_caps_lock_key/
 - http://n-o-d-e.net/post/141489192021/how-to-create-a-handheld-linux-terminal-v2
-******** USB build
+******* USB build
 :PROPERTIES:
 :ID:       D367D5DD-4E6E-43EC-A1FF-F3F14B24D2D9
 :END:
@@ -2616,13 +2719,209 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
   - show battery life
 
 
-****** ideas
+***** ideas
 :PROPERTIES:
 :ID:       51710d48-bcbb-4709-bd5e-9774546bbbda
 :END:
 - linux it certification
   - https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
 - https://github.com/Fmstrat/winapps
+***** processes
+:PROPERTIES:
+:ID:       3973f50f-db8f-4a82-8a8e-212d3e0b03af
+:END:
+- account management
+  - https://www.google.com/search?q=unix+create+user 
+***** general
+:PROPERTIES:
+:ID:       234aa816-28c7-4a09-bdc0-0116322d0b9c
+:END:
+- https://www.reddit.com/r/commandline/comments/ka6izh/open_book_study_group_for_the_linux_command_line/
+
+- guides, tutorials, cheatsheets 
+  - http://www.ee.surrey.ac.uk/Teaching/Unix/
+  - [[http://linuxcommand.org/][LinuxCommand.org]]
+  - [[http://korflab.ucdavis.edu/Unix_and_Perl/current.html][UC Davis Unix and Perl for biologists]]
+  - http://www.chm.bris.ac.uk/compres/unix/index.html
+  - http://www.commandlinefu.com/commands/browse
+  - [[http://catb.org/jargon/html/U/Unix.html][Unix name origin]]
+  - [[https://sanctum.geek.nz/arabesque/unix-as-ide-introduction/][Unix as IDE: Introduction]] 
+  - [[http://cecs.wright.edu/~p/mateti/Courses/333/Top/index.html][Wright State CEG 333: Introduction to Unix]]
+  - [[http://www.commandlinefu.com/commands/browse/sort-by-votes][commandlinefu]]
+  - [[https://unix.stackexchange.com/questions/12762/how-do-i-temporarily-bypass-an-alias-in-tcsh][How do I temporarily bypass an alias in tcsh?]]
+  - [[https://unix.stackexchange.com/][stack: unix]]
+  - [[https://en.wikibooks.org/wiki/Guide_to_Unix][wikibooks: unix]]
+  - http://www.thegeekstuff.com/
+  - https://sneak.berlin/20191011/stupid-unix-tricks/
+- standards and best practices
+  - POSIX
+  - naming conventions- [[https://unix.stackexchange.com/questions/49008/for-filenames-are-underscores-or-dashes-more-common-in-unix-file-names][stack: For filenames, are underscores or dashes more common in Unix file names? {closed}]]
+- file structure
+  - https://unix.stackexchange.com/questions/4186/what-is-usr-local-bin
+- POSIX
+  - [[https://github.com/dylanaraps/pure-sh-bible][pure sh bible]]
+***** UNIX tools
+:PROPERTIES:
+:ID:       ca6d1cc3-2489-4616-8125-3ed27a3c3740
+:END:
+:LOGBOOK:
+CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
+:END:
+- execute interactive woman calls
+  #+begin_src emacs-lisp
+(defmacro with-minibuffer-input (form &rest inputs)
+  (declare (indent 1))
+  `(minibuffer-with-setup-hook
+       (lambda ()
+         (minibuffer-input-provider ',inputs))
+     ,form))
+
+(defun minibuffer-input-provider (inputs)
+  (let ((hook (make-symbol "hook")))
+    (fset hook (lambda ()
+                 (remove-hook 'post-command-hook hook)
+                 (when inputs
+                   (when (= 0 (minibuffer-depth))
+                     (error "Too many inputs"))
+                   (when (cdr inputs)
+                     (add-hook 'post-command-hook hook))
+                   (insert (pop inputs))
+                   (exit-minibuffer))))
+    (add-hook 'post-command-hook hook)))
+#+end_src
+- https://github.com/denisidoro/navi
+- awk
+  - [[https://stackoverflow.com/questions/47091464/print-for-loop-input-filename-on-piped-awk-output][file name as variable]]
+  - commands
+    |----------------+------------------------------------|
+    | function       | command                            |
+    |----------------+------------------------------------|
+    | <35>           | <35>                               |
+    | set delimiters | 'BEGIN {FS="<DELIM>";OFS="<DELIM>" |
+    |                |                                    |
+  - processes
+    - https://www.google.com/search?q=awk+pass+variable 
+    - [[https://stackoverflow.com/questions/19149731/use-awk-to-find-average-of-a-column][find average]]
+    - https://www.google.com/search?q=awk+print+except+first
+    - sorting
+      - [[https://stackoverflow.com/questions/17048188/how-to-use-awk-sort-by-column-3][sort column]]
+      - [[https://stackoverflow.com/questions/5917576/sort-a-text-file-by-line-length-including-spaces][by line length]]
+    - variables
+      - [[https://stackoverflow.com/questions/19075671/how-do-i-use-shell-variables-in-an-awk-script][external from shell]]
+      - https://www.linuxnix.com/awk-scripting-learn-awk-built-in-variables-with-examples/
+    - [[https://stackoverflow.com/questions/17001849/awk-partly-string-match-if-column-word-partly-matches][stack: awk partly string match (if column/word partly matches)]]
+  - standards and best practice
+  - documentation
+    - [[http://www.tutorialspoint.com/awk/awk_basic_examples.htm][AWK - Basic Examples]] 
+  - applications
+    - [[http://reasoniamhere.com/2013/09/16/awk-gtf-how-to-analyze-a-transcriptome-like-a-pro-part-1/][AWK GTF! How to Analyze a Transcriptome Like a Pro]]
+  - reference
+    - [[file:~/.emacs.d/snippets/org-mode/software]]
+- cron
+  - commands
+    | function                          | command                                   |
+    |-----------------------------------+-------------------------------------------|
+    | access user-specific crontab file | env EDITOR=nano sudo crontab -e -u <USER> |
+    | see jobs                          | sudo crontab -u <USER> -l                 |
+    | create job                        | sudo crontab -u <USER> -e                 |
+  - [[https://stackoverflow.com/questions/4984725/how-to-test-a-weekly-cron-job][Test]]
+  - [[https://askubuntu.com/questions/419548/how-to-set-up-a-root-cron-job-properly?noredirect=1&lq=1][Access root]]
+  - [[https://crontab.guru/every-week][Guide to times]]
+  - [[https://ole.michelsen.dk/blog/schedule-jobs-with-crontab-on-mac-osx.html][On macos]]
+  - https://opensource.com/article/17/11/how-use-cron-linux
+- curl
+  - https://www.reddit.com/r/commandline/comments/am28qh/try_curl_httpwttrin_image_of_a_shell/
+- cut
+- du
+  - - https://stackoverflow.com/questions/15141588/exclude-all-permission-denied-messages-from-du
+- GNU tools
+  - make
+    - tutorial https://github.com/kyclark/make-tutorial
+  - grep
+    - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
+  - nohup
+    - https://unix.stackexchange.com/questions/373461/open-less-scrolled-to-the-end
+  - grep
+    - [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
+- grep 
+  - https://www.thegeekstuff.com/2011/10/grep-or-and-not-operators/
+  - https://unix.stackexchange.com/questions/37313/how-do-i-grep-for-multiple-patterns-with-pattern-having-a-pipe-character/37316
+- [[elisp:(with-minibuffer-input (call-interactively 'woman) "gunzip")][gunzip] [[elisp:(with-minibuffer-input (call-interactively 'woman) "gunzip")][gunzip]]
+   - https://www.google.com/search?q=gunzip+keep+source 
+- head and tail
+  - to trim file header lines
+    - e.g.: tail -n +2 file.txt > file.stdout
+- https://github.com/tqdm/tqdm/blob/master/README.rst
+- https://www.reddit.com/r/commandline/comments/7ejk45/what_are_some_of_awesome_curl_web_commands/
+- https://www.reddit.com/r/commandline/comments/ad6ryp/10_tools_to_power_up_your_command_line_dev/
+- http://www.theunixschool.com/p/awk-sed.html
+- ls
+  - [[https://unix.stackexchange.com/questions/48492/list-only-regular-files-but-not-directories-in-current-directory][List only regular files (but not directories) in current directory]]
+  - file size w/ ls -l --block-size=M
+- [[https://askubuntu.com/questions/185661/hide-files-ending-in-tilde][ls- hide files ending in tilde]]
+- mail
+  - 
+- make
+  - - https://stackoverflow.com/questions/3239343/make-install-but-not-to-default-directories
+- [[- https://www.xpdfreader.com/pdftotext-man.html][pdftotext]]
+- pigz
+  - https://zlib.net/pigz/
+- rsync
+  - [[https://rsync.samba.org/]]
+  - commands
+    |----------+---------|
+    | function | command |
+    |----------+---------|
+    | <35>     | <35>    |
+    |          |         |
+  - processes
+  - standards and best practice
+  - [[https://rsync.samba.org/documentation.html][documentation]]
+  - applications
+  - reference
+    - [[file:~/.emacs.d/snippets/org-mode/software]]
+- [[https://www.gnu.org/software/sed/][sed]]
+  - https://www.google.com/search?q=sed+replace+space+with+tab
+  - [[https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed][use shell variables]]
+  - [[https://stackoverflow.com/questions/5410757/how-to-delete-from-a-text-file-all-lines-that-contain-a-specific-string][delete lines with pattern]]
+  - [[https://unix.stackexchange.com/questions/99350/how-to-insert-text-before-the-first-line-of-a-file#:~:text=14%20Answers&text=Use%20sed%20's%20insert%20(%20i,text%20in%20the%20preceding%20line.&text=Also%20note%20that%20some%20non,effect%20as%20with%20GNU%20sed%20).&text=Echo%20is%20used%20to%20get%20the%20text.][insert before first line]]
+  - https://www.google.com/search?q=sed+remove+first+line 
+  - https://www.google.com/search?q=sed+remove+lines+containting+string
+  - [[https://www.youtube.com/watch?v=3cLbeYQ2Veg][youtube: sed commands in linux]]
+  - [[http://www.brunolinux.com/02-The_Terminal/Find_and%2520Replace_with_Sed.html][Find and replace with SED]]
+  - Then, using sed: sed -e '5,10d;12d' filename (deletes lines 5-10 and 12)
+  - https://www.google.com/search?q=sed+add+above+first+line 
+- ssh 
+  - https://superuser.com/questions/8077/how-do-i-set-up-ssh-so-i-dont-have-to-type-my-password
+  - https://stackoverflow.com/questions/12715233/why-can-i-ping-a-server-but-not-connect-via-ssh
+  - https://serverfault.com/questions/334448/why-is-ssh-password-authentication-a-security-risk
+  - https://dev.to/zduey/how-to-set-up-an-ssh-server-on-a-home-computer
+- to concat csvs- https://www.quora.com/How-do-you-combine-multiple-csv-files-into-a-single-file-using-the-command-line
+- unzip - https://askubuntu.com/questions/994731/how-to-skip-unzipping-a-file-that-already-exists
+- Unison
+  - commands
+    |----------+---------|
+    | function | command |
+    |----------+---------|
+    | <35>     | <35>    |
+    |          |         |
+  - processes
+  - [[https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html][documentation]]
+  - applications
+- [[elisp:(with-minibuffer-input (call-interactively 'woman) "wget")][wget]]
+  - [[https://www.tecmint.com/commandline-download-accelerators-for-linux/amp/][pass list to]]
+  - [[https://superuser.com/questions/283481/how-do-i-properly-set-wget-to-download-only-new-files][download only on server side change]]
+    - AND SET -O !!
+- X11
+  - https://www.windowmaker.org/
+***** ideas
+:PROPERTIES:
+:ID:       1ddc60ab-106c-4c31-835e-c36e54427b13
+:END:
+- idea for citrix script- - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
+- ideas- check disk space https://www.cyberciti.biz/tips/shell-script-to-watch-the-disk-space.html
+- GNU - [[https://www.gnu.org/help/help.html][Helping GNU]]
+- [[https://www.reddit.com/r/commandline/comments/7d5fwa/jobson_automatically_turn_commandline/][reddit: automatically turn command-line applications into webapps]]
 ***** MacOS
 :PROPERTIES:
 :ID:       80A0FABE-EB39-4BFC-8478-8044E6D84761
@@ -2761,7 +3060,7 @@ done
     - initialize git submodule update --recursive --init
     - sync
         #+name: 
-        #+begin_src bash :tangle ~/repos/basecamp/src/bash/daily_git_commit.sh
+        #+begin_src bash :tangle ~/repos/basecamp/src/daily_git_commit.sh
     #!/bin/bash
     #########1#########2#########3#########4#########5#########6#########7#########8
     #                                                                              #
@@ -3033,6 +3332,7 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
+https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
 https://www.dataquest.io/
 https://www.freecodecamp.org/news/the-python-handbook/
 https://stackoverflow.blog/2021/02/23/level-up-mastering-statistics-with-python-part-2/?cb=1&_ga=2.59352485.940265309.1614263567-766544545.1565628865
@@ -3406,6 +3706,7 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+- if [ "${file: -4}" == ".txt" ] https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
 - find 
   - https://www.google.com/search?q=bash+find+and+delete 
   - https://www.google.com/search?q=bash+find+by+date
@@ -3528,6 +3829,7 @@ if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; 
   - exits
     - https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script#:~:text=All%20by%20itself%2C%20exit%20implies,successful%20completion%20of%20your%20script.&text=However%20by%20specifying%20the%201,exited%20with%20an%20error%20condition.
   - arrays
+    - remove
     - [[https://stackoverflow.com/questions/18921350/shell-script-correct-way-to-declare-an-empty-array][declare array]]
     - populate
       - from list of variables
@@ -3669,112 +3971,6 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
-pipe to bash http://www.peteryu.ca/tutorials/shellscripting/batch_rename
-https://www.oncotarget.com/article/5183/text/
-# Declare variable if currently empty
-if [ -z ${repo+x} ]; then repo=~/repos/bergom_rna; fi
-
-
-- commands
-  |---------------------------------------+-------------------------------------------------|
-  | function                              | command                                         |
-  |---------------------------------------+-------------------------------------------------|
-  | <35>                                  | <35>                                            |
-  | [[https://www.gnu.org/software/bash/manual/bash.html#Bash-Conditional-Expressions][newer/older by mod date]]               | -nt -ot                                         |
-  | du -shc .                             | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]]                       |
-  | remove alias                          | unalias <ALIAS_NAME>                            |
-  | add alias                             | alias <ALIAS>="<COMMAND>"                       |
-  | l                                     | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\(' |
-  | change password                       | passwd                                          |
-  | search manual pages                   | /                                               |
-  | disk usage, top level                 | du -h --summarize                               |
-  | see total disk usage                  | df -h                                           |
-  | see files location on physical disk   | df <PATH>                                       |
-  | download in background & resume broke | wget -bqc <PATH>                                |
-  | see distro                            | lsb_release -a                                  |
-  | see system disks                      | lsblk                                           |
-  | add to path (temporary?)              | export PATH=$PATH:/new/path                     |
-  | show full path                        | readlink -f                                     |
-  | for loop on array                     | for i in "${arr[@]}""                           |
-  |                                       |                                                 |
-  - find disk usage https://unix.stackexchange.com/questions/67806/how-to-recursively-find-the-amount-stored-in-directory
-    - https://unix.stackexchange.com/questions/314394/my-hard-disk-is-full-how-can-i-determine-whats-taking-up-space
-  - [[https://stackoverflow.com/questions/6509650/extract-directory-from-path][directory of file as variable]]
-  - show running processes with top
-  - Common UNIX command line operations table
-    | Get lines in file | wc -l <FILE> |
-    |                   |              |
-    - [[http://www.cyberciti.biz/faq/tar-extract-linux/][Tarball extraction]]
-    - [[https://www.howtogeek.com/howto/ubuntu/split-a-text-file-in-half-or-any-percentage-on-ubuntu-linux/][Split a text file in half (or any percentage) on Ubuntu Linux]]
-  - Search
-    - Recursively search subdirectories
-      - [[https://askubuntu.com/questions/307876/how-to-search-for-files-recursively-into-subdirectories][How to Search for Files Recursively into Subdirectories]]
-      - [[https://stackoverflow.com/questions/1987926/how-do-i-grep-recursively][Recursively search subdirectories with grep -r "<SEARCH>" .]]
-    - Search for file: find . -name <pattern> -print
-      - https://kb.iu.edu/d/admm
-  - grep -r --unclude \*.R "as.Date" ~/
-  - functions
-    - https://ubuntuforums.org/showthread.php?t=1166951
-    - https://www.biostars.org/p/271330/
-  - mkdir -p will ignore if dir exists 
-  - printing across terminal width
-    - https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
-  - [[https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo][printf vs echo]]
-  - https://stackoverflow.com/questions/34567826/what-is-usage-in-shell-scripting/34567852#:~:text=It's%20a%20just%20a%20convention,filename%3D%241%20fi%20...
-  - https://stackoverflow.com/questions/687780/documenting-shell-scripts-parameters
-  - https://stackoverflow.com/questions/2953081/how-can-i-write-a-heredoc-to-a-file-in-bash-script
-  - https://www.google.com/search?q=bash+echo+tab 
-- [[https://www.gnu.org/software/bash/manual/bash.html][documentation]] and general reference
-  - https://www.gnu.org/software/bash/manual/html_node/index.html#SEC_Contents
-  - [[https://www.gnu.org/software/bash/manual/html_node/index.html#SEC_Contents][gnu bash reference manual]]
-  - guides, tutorials, cheatsheets, books
-    - http://mywiki.wooledge.org/BashGuide
-    - General guides and tutorials
-      - [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Linux documentation project: Advanced Bash-Scripting Guide]]
-      - http://bash3boilerplate.sh/
-      - [[https://bash.cyberciti.biz/guide/Main_Page][Linux Shell Scripting Tutorial]]
-      - http://ryanstutorials.net/bash-scripting-tutorial/
-      - http://linuxcommand.org/lc3_writing_shell_scripts.php
-      - https://www.youtube.com/watch?v=3ME7gayYeUQ
-      - https://www.youtube.com/results?search_query=shell+scripts+bioinformatics&page=&utm_source=opensearch
-      - https://google.github.io/styleguide/shell.xml
-      - http://mywiki.wooledge.org/BashGuide
-    - http://www.davidpashley.com/articles/writing-robust-shell-scripts/
-    - https://emb.carnegiescience.edu/sites/default/files/140602-sedawkbash.key_.pdf
-    - https://github.com/dylanaraps/pure-bash-bible
-    - https://devhints.io/bash
-    - https://www.ibm.com/developerworks/aix/library/au-satbash.html
-    - [[http://tldp.org/LDP/LG/issue18/bash.html][string manipulations]]
-    - cite:veeraraghavan2002 
-    - http://tldp.org/LDP/abs/html/
-    - https://github.com/onceupon/Bash-Oneliner
-    - https://devhints.io/bash?source=post_page---------------------------
-    - [[https://www.ostechnix.com/test-your-bash-skills-by-playing-command-line-games/][bash games]]
-    - [[https://www.reddit.com/r/commandline/comments/kbeoe/you_can_make_readline_and_bash_much_more_user/?st=j6k0lbfa&sh=6d214d1f][reddit: You can make readline (and bash) much more user friendly by adding a few options to ~/.inputrc]]
-    - best practices
-      - include error calling, but avoid -e http://mywiki.wooledge.org/BashFAQ/105
-      - https://www.google.com/search?q=shell+script+formatting+best+practices
-      - include usage example
-      - a -c flag essentially adds an extra shell around multi-part command, see https://superuser.com/questions/1214597/calling-a-script-with-bash-c-option
-      - ideas
-      - [[file:~/.emacs.d/snippets/sh-mode/write.bash]]
-      - https://stackoverflow.com/questions/33297857/how-to-check-dependency-in-bash-script
-    - https://unix.stackexchange.com/questions/42728/what-does-31-12-23-do-in-a-script
-    - http://tldp.org/LDP/abs/html/index.html
-    - https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
-    - https://github.com/dylanaraps/pure-bash-bible
-    - https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md
-  - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
-  - https://github.com/hopeseekr/BashScripts
-  - https://www.reddit.com/r/programming/comments/aw0zko/bash_creating_tabcompletion_for_your_programs/
-- ideas
-  - check and set file permissions as best practice
-  - ideas for function development protocol-
-    - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
-- interfaces
-  - emacs
-    - https://stackoverflow.com/questions/1008750/ide-emacs-mode-for-shell-scripting-in-bash-sh-etc
-    - http://www.skybert.net/emacs/bash-linting-in-emacs/
 - processes 
   - comments https://www.google.com/search?q=bash+comment+in+pipe
   - exits
@@ -3884,6 +4080,110 @@ if [ -z ${repo+x} ]; then repo=~/repos/bergom_rna; fi
   - function template- add run type
     - updating
     - overwrite
+  - # Declare variable if currently empty
+    if [ -z ${repo+x} ]; then repo=~/repos/bergom_rna; fi
+  - pipe to bash http://www.peteryu.ca/tutorials/shellscripting/batch_rename
+- https://www.oncotarget.com/article/5183/text/
+- commands
+  |---------------------------------------+-------------------------------------------------|
+  | function                              | command                                         |
+  |---------------------------------------+-------------------------------------------------|
+  | <35>                                  | <35>                                            |
+  | [[https://www.gnu.org/software/bash/manual/bash.html#Bash-Conditional-Expressions][newer/older by mod date]]               | -nt -ot                                         |
+  | du -shc .                             | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]]                       |
+  | remove alias                          | unalias <ALIAS_NAME>                            |
+  | add alias                             | alias <ALIAS>="<COMMAND>"                       |
+  | l                                     | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\(' |
+  | change password                       | passwd                                          |
+  | search manual pages                   | /                                               |
+  | disk usage, top level                 | du -h --summarize                               |
+  | see total disk usage                  | df -h                                           |
+  | see files location on physical disk   | df <PATH>                                       |
+  | download in background & resume broke | wget -bqc <PATH>                                |
+  | see distro                            | lsb_release -a                                  |
+  | see system disks                      | lsblk                                           |
+  | add to path (temporary?)              | export PATH=$PATH:/new/path                     |
+  | show full path                        | readlink -f                                     |
+  | for loop on array                     | for i in "${arr[@]}""                           |
+  |                                       |                                                 |
+  - find disk usage https://unix.stackexchange.com/questions/67806/how-to-recursively-find-the-amount-stored-in-directory
+    - https://unix.stackexchange.com/questions/314394/my-hard-disk-is-full-how-can-i-determine-whats-taking-up-space
+  - [[https://stackoverflow.com/questions/6509650/extract-directory-from-path][directory of file as variable]]
+  - show running processes with top
+  - Common UNIX command line operations table
+    | Get lines in file | wc -l <FILE> |
+    |                   |              |
+    - [[http://www.cyberciti.biz/faq/tar-extract-linux/][Tarball extraction]]
+    - [[https://www.howtogeek.com/howto/ubuntu/split-a-text-file-in-half-or-any-percentage-on-ubuntu-linux/][Split a text file in half (or any percentage) on Ubuntu Linux]]
+  - Search
+    - Recursively search subdirectories
+      - [[https://askubuntu.com/questions/307876/how-to-search-for-files-recursively-into-subdirectories][How to Search for Files Recursively into Subdirectories]]
+      - [[https://stackoverflow.com/questions/1987926/how-do-i-grep-recursively][Recursively search subdirectories with grep -r "<SEARCH>" .]]
+    - Search for file: find . -name <pattern> -print
+      - https://kb.iu.edu/d/admm
+  - grep -r --unclude \*.R "as.Date" ~/
+  - functions
+    - https://ubuntuforums.org/showthread.php?t=1166951
+    - https://www.biostars.org/p/271330/
+  - mkdir -p will ignore if dir exists 
+  - printing across terminal width
+    - https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
+  - [[https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo][printf vs echo]]
+  - https://stackoverflow.com/questions/34567826/what-is-usage-in-shell-scripting/34567852#:~:text=It's%20a%20just%20a%20convention,filename%3D%241%20fi%20...
+  - https://stackoverflow.com/questions/687780/documenting-shell-scripts-parameters
+  - https://stackoverflow.com/questions/2953081/how-can-i-write-a-heredoc-to-a-file-in-bash-script
+  - https://www.google.com/search?q=bash+echo+tab 
+- [[https://www.gnu.org/software/bash/manual/bash.html][documentation]] and general reference
+  - https://www.gnu.org/software/bash/manual/html_node/index.html#SEC_Contents
+  - [[https://www.gnu.org/software/bash/manual/html_node/index.html#SEC_Contents][gnu bash reference manual]]
+  - guides, tutorials, cheatsheets, books
+    - http://mywiki.wooledge.org/BashGuide
+    - General guides and tutorials
+      - [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Linux documentation project: Advanced Bash-Scripting Guide]]
+      - http://bash3boilerplate.sh/
+      - [[https://bash.cyberciti.biz/guide/Main_Page][Linux Shell Scripting Tutorial]]
+      - http://ryanstutorials.net/bash-scripting-tutorial/
+      - http://linuxcommand.org/lc3_writing_shell_scripts.php
+      - https://www.youtube.com/watch?v=3ME7gayYeUQ
+      - https://www.youtube.com/results?search_query=shell+scripts+bioinformatics&page=&utm_source=opensearch
+      - https://google.github.io/styleguide/shell.xml
+      - http://mywiki.wooledge.org/BashGuide
+    - http://www.davidpashley.com/articles/writing-robust-shell-scripts/
+    - https://emb.carnegiescience.edu/sites/default/files/140602-sedawkbash.key_.pdf
+    - https://github.com/dylanaraps/pure-bash-bible
+    - https://devhints.io/bash
+    - https://www.ibm.com/developerworks/aix/library/au-satbash.html
+    - [[http://tldp.org/LDP/LG/issue18/bash.html][string manipulations]]
+    - cite:veeraraghavan2002 
+    - http://tldp.org/LDP/abs/html/
+    - https://github.com/onceupon/Bash-Oneliner
+    - https://devhints.io/bash?source=post_page---------------------------
+    - [[https://www.ostechnix.com/test-your-bash-skills-by-playing-command-line-games/][bash games]]
+    - [[https://www.reddit.com/r/commandline/comments/kbeoe/you_can_make_readline_and_bash_much_more_user/?st=j6k0lbfa&sh=6d214d1f][reddit: You can make readline (and bash) much more user friendly by adding a few options to ~/.inputrc]]
+    - best practices
+      - include error calling, but avoid -e http://mywiki.wooledge.org/BashFAQ/105
+      - https://www.google.com/search?q=shell+script+formatting+best+practices
+      - include usage example
+      - a -c flag essentially adds an extra shell around multi-part command, see https://superuser.com/questions/1214597/calling-a-script-with-bash-c-option
+      - ideas
+      - [[file:~/.emacs.d/snippets/sh-mode/write.bash]]
+      - https://stackoverflow.com/questions/33297857/how-to-check-dependency-in-bash-script
+    - https://unix.stackexchange.com/questions/42728/what-does-31-12-23-do-in-a-script
+    - http://tldp.org/LDP/abs/html/index.html
+    - https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
+    - https://github.com/dylanaraps/pure-bash-bible
+    - https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md
+  - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
+  - https://github.com/hopeseekr/BashScripts
+  - https://www.reddit.com/r/programming/comments/aw0zko/bash_creating_tabcompletion_for_your_programs/
+- ideas
+  - check and set file permissions as best practice
+  - ideas for function development protocol-
+    - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
+- interfaces
+  - emacs
+    - https://stackoverflow.com/questions/1008750/ide-emacs-mode-for-shell-scripting-in-bash-sh-etc
+    - http://www.skybert.net/emacs/bash-linting-in-emacs/
 - users and groups
   | function                  | command                   |
   |---------------------------+---------------------------|
@@ -3897,13 +4197,15 @@ if [ -z ${repo+x} ]; then repo=~/repos/bergom_rna; fi
   | change user primary group |                           |
 - https://unix.stackexchange.com/questions/359832/converting-csv-to-tsv
 - https://stackoverflow.com/questions/12522269/how-to-find-the-largest-file-in-a-directory-and-its-subdirectories
-***** my bash functions -> [[file:~/repos/basecamp/src/bash/]]
+***** my bash functions
 :PROPERTIES:
 :ID:       569d1afa-e991-47b7-be15-3dd6364f5258
 :END:
-http://mywiki.wooledge.org/BashGuide
-#+name: git_pull_all
-#+begin_src bash :tangle ./src/git_pull_all.sh :dir ~/repos/basecamp
+- http://mywiki.wooledge.org/BashGuide
+- [[file:~/repos/dotfiles/bashrc]]
+- Git pull all repos
+  #+name: git_pull_all
+  #+begin_src bash :tangle ./src/git_pull_all.sh :dir ~/repos/basecamp
 #!/bin/bash
 #########1#########2#########3#########4#########5#########6#########7#########8
 #                                                                              #
@@ -3942,9 +4244,51 @@ do
 done
 #
 #+end_src
+# Check setup exit status
+if [ "$?" != "0" ]; then
+    echo "setup error" 1>&2
+    exit 1
+else
+    echo "Setup completed successfully"
+fi
+
+#+begin_src bash :tangle ./src/functions.sh
+# Check for docker environment
+docker_check() {
+if [ -f /.dockerenv ]; then
+    echo "shell already in docker, exiting"
+    exit 1
+fi
+}
+
+#+end_src
+
+#+name:check_software_dependencies
+#+begin_src bash :tangle ./src/functions.sh
+#########1#########2#########3#########4#########5#########6#########7#########8
+function check_dependencies {
+    if [[ $# -eq 0 ]] || [[ $1 = -h ]] || [[ $1 = --help ]] ; then
+        printf "\n check_dependencies 
+                     \n Uses WHICH command to confirm software install
+                     \n \$1 = a bash array of software names, e.g. dependencies=("docker" "wget" "bash")
+                     \n  "  
+    else
+        local -n arr=$1
+        for dependency in "${arr[@]}"
+        do
+            if [ "$(which $dependency)" = "" ] ; then
+                echo "EARLY EXIT- $dependency needs to be installed and on PATH"
+                exit 0
+            else
+                echo "$dependency installed"
+            fi
+        done
+    fi
+}
+#+end_src
 
 #+name:symlink-by-csv-script 
-#+begin_src sh :tangle ./src/bash/bash_functions.sh
+#+begin_src sh :tangle ./src/bash_functions.sh
 #
 ######################
 ### symlink-by-csv ###
@@ -4013,7 +4357,7 @@ pandoc -S $test | xclip -selection clipboard
 #+end_src
 
 #+name: check_local_software
-#+begin_src bash :tangle ./src/bash/bash_functions.sh
+#+begin_src bash :tangle ./src/bash_functions.sh
 check_local_software(){
     # Usage
     ##
@@ -4049,35 +4393,58 @@ done
 - bash functions
   - docker interactive
   #+name: 
-  #+begin_src bash :tangle ./src/bash/bash_functions.sh
-
+  #+begin_src bash :tangle ./src/functions.sh
 docker_interactive() {
     if [ -f /.dockerenv ]; then
         echo "shell already in docker, exiting"
         exit 1
     else
-        repo="USER INPUT"
-        read -p "image name: " image
+        account="USER INPUT"
+        container="USER INPUT"
+        read -p "docker account name: " account
+        account="${account:=jeszyman}"
+        read -p "container name: " container
+        container="${container:=biotools}"
         case $HOSTNAME in
             (radonc-cancerbio) docker run -it \
-                                      -v /mnt/:/mnt/ \
-                                      -v /home/:/home/ \
-                                      -u $(id -u ${USER}) \
-                                      -e "USER=jeszyman" \
-                                      -e "HOME=/home/jeszyman" \
-                                      jeszyman/$image \
+                                      --env HOME=${HOME} \
+                                      --hostname ${HOSTNAME} \
+                                      --user $(id -u ${USER}) \
+                                      --volume /home/:/home/ \
+                                      --volume /mnt/:/mnt/ \
+                                      --volume /tmp/:/tmp/ \
+                                      $account/$container \
                                       /bin/bash;;
-            (jeff-*) docker run -it \
-=======
-:PROPERTIES:
-:ID:       943a0e83-cb72-482c-b4eb-dc7e5303f2ce
-:END:
-:LOGBOOK:
-CLOCK: [2020-10-29 Thu 11:50]--[2020-10-29 Thu 12:01] =>  0:11
-:END:
-
-#+begin_src emacs-lisp
-(setq comint-scroll-to-bottom-on-output t)
+            (acl*) docker run -it \
+                          --env HOME=${HOME} \
+                          --hostname ${HOSTNAME} \
+                          -v /drive3/:/drive3/ \
+                          -v /duo4/:/duo4/ \
+                          -v /home/:/home/ \
+                          -u $(id -u ${USER}) \
+                          $account/$container \
+                          /bin/bash;;
+            (ACL*) docker run -it \
+                          --env HOME=${HOME} \
+                          --hostname ${HOSTNAME} \
+                          -v /home/:/home/ \
+                          -v /duo4/:/duo4/ \
+                          -u $(id -u ${USER}) \
+                          $account/$container \
+                          /bin/bash;;
+            (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker($account/'"$container"')' /bin/bash;;
+            (*) docker run -it \
+                       --env HOME=/home/${USER} \
+                       --hostname ${HOSTNAME} \
+                       --user $(id -u ${USER}) \
+                       --volume /home/:/home/ \
+                       --volume /mnt/:/mnt/ \
+                       --volume /tmp/:/tmp/ \
+                       $account/$container \
+                       /bin/bash;;
+        esac
+    fi
+}
 #+end_src
 
 #+name: 
@@ -4127,7 +4494,7 @@ okular ~/library/allen2015.pdf
 :ID:       15071151-f519-4c7f-b21f-997d6d7b6bc5
 :END:
 #+name: check_local_software
-#+begin_src bash :tangle ./src/bash/functions.sh
+#+begin_src bash :tangle ./src/functions.sh
 check_local_software(){
     if [[ $# -eq 0 ]] ; then
         printf "\n check_local_software 
@@ -4205,7 +4572,7 @@ jpg_to_pdf() {
 #+end_src
 
 #+name:symlink-by-csv-script 
-#+begin_src sh :tangle ./src/shell/functions.sh
+#+begin_src sh :tangle ./src/functions.sh
 #
 ######################
 ### symlink-by-csv ###
@@ -4306,6 +4673,7 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
+- https://stackoverflow.com/questions/16296753/can-you-run-gui-applications-in-a-docker-container/50356450#50356450
 - Dockerfile best practices ideas
   - include comment w/ build time
 - https://www.freecodecamp.org/news/the-docker-handbook/
@@ -4530,6 +4898,7 @@ docker run --rm -p 6379:6379 <CONTAINER>
     - https://www.google.com/search?q=docker+run+mount+home+directory
     - in timezone with a wget     tzdata command in the dockerfile, then docker run -e "TZ=America/Chicago" -it jeszyman/dev
     - https://confluence.ris.wustl.edu/display/RSUM/Docker+Wrapper+Environment+Variables
+  - remove https://docs.docker.com/config/pruning/
 - commands
   |-----------------------------+-----------------------------------|
   | function                    | command                           |
@@ -4639,10 +5008,17 @@ docker run --rm -p 6379:6379 <CONTAINER>
       - https://stackoverflow.com/questions/27679740/how-to-add-dockerfile-to-a-docker-registry-page
     - https://www.google.com/search?q=docker+container+retain+command+history
   - consider docker add to add scripts
+** Reference
+:PROPERTIES:
+:ID:       3eb81250-e885-4941-a559-997381abc196
+:END:
+- https://www.reddit.com/r/datascience/comments/mlfy02/what_is_your_ds_stack_and_roast_mine/
 ** Ideas
 :PROPERTIES:
 :ID:       58cecae5-0126-4608-b079-c0cb5c1835c8
 :END:
+- new platforms
+  - https://replit.com/@JeffSzymanski/test#main.sh
 - technical debt
   - universal unzip 
 - dev

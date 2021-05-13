@@ -28,60 +28,6 @@ check_local_software(){
 done
 }
 
-docker_interactive() {
-    if [ -f /.dockerenv ]; then
-        echo "shell already in docker, exiting"
-        exit 1
-    else
-        repo="USER INPUT"
-        read -p "image name: " image
-        case $HOSTNAME in
-            (radonc-cancerbio) docker run -it \
-                                      -v /mnt/:/mnt/ \
-                                      -v /home/:/home/ \
-                                      -u $(id -u ${USER}) \
-                                      -e "USER=jeszyman" \
-                                      -e "HOME=/home/jeszyman" \
-                                      jeszyman/$image \
-                                      /bin/bash;;
-            (jeff-*) docker run -it \
-                            -v /home/:/home/ \
-                            -u $(id -u ${USER}) \
-                            -e "USER=jeszyman" \
-                            -e "HOME=/home/jeszyman" \
-                            jeszyman/$image \
-                            /bin/bash;;
-            (jeszyman-*) docker run -it \
-                                -v /home/:/home/ \
-                                -u $(id -u ${USER}) \
-                                -e "USER=jeszyman" \
-                                -e "repo=$repo" \
-                                -e "data=$data" \
-                                jeszyman/$image \
-                                /bin/bash;;
-            (acl*) docker run -it \
-                          -v /drive3/:/drive3/ \
-                          -v /duo4/:/duo4/ \
-                          -v /mnt/:/mnt/ \
-                          -v /home/:/home/ \
-                          -u $(id -u ${USER}) \
-                          -e "USER=jszymanski" \
-                          jeszyman/$image \
-                          /bin/bash;;
-            (ACL*) docker run -it \
-                          -v /home/:/home/ \
-                          -v /duo4/:/duo4/ \
-                          -u $(id -u ${USER}):$(id -g ${USER}) \
-                          -e "USER=jszymanski" \
-                          jeszyman/$image \
-                          /bin/bash;;
-            (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$image"')' /bin/bash;;
-        esac
-    fi    
-}
-
-##
-
 #
 ######################
 ### symlink-by-csv ###
