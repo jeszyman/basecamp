@@ -2,6 +2,1538 @@
 :PROPERTIES:
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
+#+begin_src R :tangle ./src/setup.R
+# Set variables
+select=dplyr::select
+filter=dplyr::filter
+
+#+end_src
+- https://drivendata.github.io/cookiecutter-data-science/#directory-structure
+- https://github.com/dslp/dslp-repo-template
+** Information Science / Data Science
+:PROPERTIES:
+:ID:       39F11977-BE11-47CF-98B1-14CE6D9B97C4
+:END:
+:LOGBOOK:
+CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
+:END:
+- https://about.zenodo.org/
+- https://www.reddit.com/r/rstats/comments/b4ol4z/unbin_data_to_make_histogram/
+https://github.com/dslp/dslp-repo-template
+https://drivendata.github.io/cookiecutter-data-science/#directory-structure
+missing data http://factominer.free.fr/missMDA/appendix_These_Audigier.pdf
+https://www.reddit.com/r/datascience/comments/m6lssy/what_are_the_best_intro_classes_to_python_r_and/
+https://old.reddit.com/r/datascience/comments/libpdr/any_fun_easy_to_read_scientific_papers_youd/
+https://www.reddit.com/r/datascience/comments/lrkob9/interview_question_i_generally_ask_applicants/
+- https://stats.stackexchange.com/questions/238538/are-there-cases-where-pca-is-more-suitable-than-t-sne
+- https://www.google.com/search?q=python+generate+pseudodata&oq=python+generate+pseudodata&aqs=chrome..69i57j33i10i160.78460j0j4&sourceid=chrome-mobile&ie=UTF-8&cs=0
+- https://www.google.com/search?q=python+generate+pseudodata&oq=python+generate+pseudodata&aqs=chrome..69i57j33i10i160.78460j0j4&sourceid=chrome-mobile&ie=UTF-8&cs=0
+- https://mubaris.com/posts/kmeans-clustering/
+https://www.google.com/search?q=etl+conventions+pedsnet+cdm&oq=etl+conventions+pedsnet+cdm+&aqs=chrome..69i57.7764j0j7&client=ubuntu&sourceid=chrome&ie=UTF-8
+- https://www.ncbi.nlm.nih.gov/pubmed/32180547
+http://labs.rd.ciencias.ulisboa.pt/book/
+https://www.reddit.com/r/datascience/comments/fzweaf/my_giant_data_quality_checklist/
+- ontology creation in org-mode
+  - https://pypi.org/project/Owlready2/
+  - https://en.m.wikipedia.org/wiki/Ontology_components
+  - https://github.com/caiorss/org-wiki
+  - https://journals.tdl.org/jodi/index.php/jodi/article/view/131/129
+https://github.com/CSSEGISandData/COVID-19
+https://en.wikipedia.org/wiki/OpenRefine
+- ontologies
+  - https://en.wikipedia.org/wiki/Ontology_engineering
+  - https://en.wikipedia.org/wiki/Process_ontology
+  - https://en.wikipedia.org/wiki/Ontology_(information_science)#Components
+- https://bookriot.com/2019/09/20/data-science-books/amp/
+- https://www.blog.google/technology/research/open-source-and-open-data/amp/
+- http://openmetric.org/
+- https://www.reddit.com/r/datascience/comments/ceucnb/ibm_launches_the_data_asset_exchange_dax_an_an/
+- https://rafalab.github.io/dsbook/
+- https://www.reddit.com/r/datascience/comments/c66buk/top_github_data_science_project/
+- http://www.datasciencecourse.org/lectures/
+- https://www.reddit.com/r/datascience/comments/bo2p99/is_java_c_or_c_necessary/
+- http://www.thinkingondata.com/5-papers-about-data-science-project-management/
+- https://www.reddit.com/r/datascience/comments/brwlkx/data_science_production_process_bestpractices/
+- https://www.kdnuggets.com/2019/03/best-tips-agile-data-science-research.html
+- https://www.reddit.com/r/statistics/comments/b5sg97/what_makes_a_good_data_dictionary/
+- https://www.reddit.com/r/dataisbeautiful/comments/b1ao5h/estimating_pi_using_monte_carlo_simulation_oc/
+- https://plot.ly/
+- https://www.reddit.com/r/datascience/comments/am2cep/guidelines_for_writing_data_analysis_reports/
+- https://www.reddit.com/r/datasets/comments/akb4mr/what_is_a_dataset_that_you_cant_believe_is/
+- https://www.kdnuggets.com/2019/01/ontology-data-science.html
+- https://www.reddit.com/r/datascience/comments/ae4fc3/best_data_science_talk_one_can_watch/
+- https://www.reddit.com/r/datascience/comments/aczhjc/what_is_something_in_ds_that_has_blown_your_mind/
+- https://mail.google.com/mail/u/0/#inbox/FMfcgxvzMBjNBcSDwvrgwdcBssBKlWpn
+- https://towardsdatascience.com/a-long-term-data-science-roadmap-which-wont-help-you-become-an-expert-in-only-several-months-4436733e63ff
+- "Press, G. Cleaning big data: most time-consuming, least enjoyable data science task, survey says. Forbes (2016). Available at: https://www.forbes.com/sites/ gilpress/2016/03/23/data-preparation-most-time-consuming-least-enjoyabledata-science-task-survey-says/ (Accessed 22 Oct 2017). 9. Lohr, S. For Big-Data Scientists,'Janitor Work' Is Key Hurdle to Insights. (NY Times, 2014). 
+- [[https://slu-dss.github.io/news/][SLU DATA SCIENCE SEMINAR]]
+- https://www.reddit.com/r/dataisbeautiful/comments/9zbxhu/i_used_tinder_to_ab_test_whether_i_should_have_a/
+- https://www.wikidata.org/wiki/Wikidata:Main_Page
+- [[https://github.com/YaboLee/reddit_crawler][reddit crawler]]
+- [[http://docs.qgis.org/2.14/en/docs/index.html][QGIS documentation]]
+https://en.wikipedia.org/wiki/Data_model
+https://toolbox.google.com/datasetsearch
+https://www.google.com/search?q=Data+Derivation+Graph&safe=off&source=lnms&sa=X&ved=0ahUKEwiK4bvt3NvcAhVMb60KHUgFCkEQ_AUICSgA&biw=1280&bih=1126&dpr=1
+- https://www.reddit.com/r/dataisbeautiful/comments/8yrevu/oc_street_orientation_of_dutch_cities/
+- https://www.reddit.com/r/datascience/comments/8wmgu3/top_100_data_science_skills_scraped_from/
+- https://omictools.com/blog/dataontools-2-tool-development-and-collaboration-worldwide
+- https://www.reddit.com/r/dataisbeautiful/comments/8uo1q9/popcorn_analytics_oc/
+- https://www.reddit.com/r/datascience/comments/8haezl/python_google_sheets_api_tableau_public_full/
+- cite:ma2018
+- https://www.reddit.com/r/dataisbeautiful/comments/89tcd8/monthly_usa_birth_rate_19332015_more_charts_in/dwtcvkv/?st=jfpn11lm&sh=f8f9d265
+- https://www.reddit.com/r/dataisbeautiful/comments/8a4gbr/the_office_characters_most_distinguishing_words_oc/dwvr99n/?st=jfpn0x1j&sh=b083f7c5
+- https://cmap.ihmc.us/
+- http://www.datacarpentry.org/
+- http://courses.csail.mit.edu/18.337/2015/docs/50YearsDataScience.pdf
+- Knowledge representation
+  - Rules
+    - 
+- Quantity has a quality all its own
+- Business rules engines- drools
+- Data sources
+  - - https://gwu-libraries.github.io/sfm-ui/posts/2017-09-14-twitter-data
+  - https://meta.wikimedia.org/wiki/Research:Wikipedia_clickstream
+  - https://github.com/fivethirtyeight/data
+  - http://data.stackexchange.com/
+  - https://www.wikidata.org/wiki/Wikidata:Main_Page
+- Computable Knowledge
+  - Ontology
+    - https://protege.stanford.edu/conference/2006/submissions/slides/OWLTutorial_Part1.pdf
+    - Protege
+      - http://mowl-power.cs.man.ac.uk/protegeowltutorial/resources/ProtegeOWLTutorialP4_v1_2.pdf
+      - https://media.readthedocs.org/pdf/go-protege-tutorial/latest/go-protege-tutorial.pdf
+      - https://protege.stanford.edu/conference/2006/submissions/slides/AppDevelopmentTutorial_Part1.pdf
+    - - https://pypi.python.org/pypi/Owlready2
+    - https://www.w3.org/OWL/
+    - http://obofoundry.org/
+    - http://www.cs.man.ac.uk/~stevensr/menupages/background.php
+    - http://www.obofoundry.org/
+    - https://protegewiki.stanford.edu/wiki/Main_Page
+    - http://protege.stanford.edu/community.php
+    - https://www.youtube.com/watch?v=8Nf2xf5akoM
+    - https://www.ncbi.nlm.nih.gov/pubmed/27239556
+- Data mining
+  - KDD
+    - cite:fayyad1996
+- Network science
+  - [[http://vlado.fmf.uni-lj.si/pub/networks/pajek/][Pajek]]
+- Data science workflow
+  - [[https://cacm.acm.org/blogs/blog-cacm/169199-data-science-workflow-overview-and-challenges/fulltext][Association for computing machinery: Data science workflow overview]]
+  - Data preprocessing
+    - https://www.cdc.gov/globalhealth/healthprotection/fetp/training_modules/10/managing-data_pw_final_09252013.pdf
+    - http://www.comp.dit.ie/btierney/BSI/Han%20Book%20Ch3%20DataExploration.pdf
+    - cite:kotsiantis2006data
+- Web scraping
+  - https://medium.com/towards-data-science/using-scrapy-to-build-your-own-dataset-64ea2d7d4673
+- Online Educational Resources
+  - https://www.kaggle.com/
+  - [[https://www.edx.org/course/statistical-thinking-data-science-columbiax-ds101x-0?utm_medium=paid-social&utm_source=facebook&utm_campaign=fb-us-pc-cs-msft-dsc-stats-verla-feed&utm_content=fb-us-pc-cs-msft-dsc-stats-solidtextlogo][self-paced Columbia stat thinking for data science]]
+  - [[https://www.youtube.com/c/thesemicolon?app=desktop][youtube: the semicolon data science]]
+  - [[https://www.datacamp.com/home][data camp]]
+  - https://www.kaggle.com/learn/overview
+  - http://www.inference.phy.cam.ac.uk/itprnn_lectures/
+  - http://mlwhiz.com/blog/2017/03/26/top_data_science_resources_on_the_internet_right_now/
+- cite:wickham2016
+- Lexicography
+  - Elements
+    - Syntax: the study of the combinatorics of units of a language (without reference to their meaning)
+    - Semantics: the relationship between signifiers—like words, phrases, signs, and symbols—and what they stand for, their denotation.
+      - Semantic elements
+        - Synonym
+        - Antonym
+        - Hypernym- e.g. animal is a hypernym of mammal
+        - Hyponym- e.g. dog is a hyponym of mammal
+        - Meronym- e.g. bark is a meronym of tree
+        - Holonym- e.g. forest is a holonym of tree
+        - Troponym- a particular way to do entry's referent, e.g. trim and slice are troponyms of cut
+        - Coordinate term- terms that share a holonym, e.g. man and woman are coordinate terms for human 
+*** Dimensionality reduction
+:PROPERTIES:
+:ID:       48e06b9b-c3ba-4d84-bfd4-ba64e482be70
+:END:
+- https://stats.stackexchange.com/questions/14002/whats-the-difference-between-principal-component-analysis-and-multidimensional#:~:text=PCA%20is%20just%20a%20method,MDS%20is%20only%20a%20mapping.&text=One%20definition%20is%20that%20CMDS%20is%20a%20synonym%20of%20Torgerson's%20metric%20MDS
+
+https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-3310-7
+[[id:4165A14F-6BDE-4D8C-B556-A349A3F5B720][Principal Component Analysis]]
+*** High dimension data transformation
+:PROPERTIES:
+:ID:       588f6536-9db9-4279-9e67-800890c2de23
+:END:
+- cite:buschmann2016 pg 6010
+- log transformation for skew
+- rlog
+- vst
+*** [[id:F80F3FAF-1D79-40F5-934B-F74D19143DBD][LINK TO Probability and Statistics]]
+:PROPERTIES:
+:ID:       e2b15a0d-bc6d-48d6-9ea2-d7f6be07af31
+:END:
+*** Exploratory Data Analysis (EDA)
+:PROPERTIES:
+:ID:       A6C156F3-9442-4D8F-97F1-446729EC6193
+:CREATED:  [2019-04-22 Mon 15:23]
+:END:
+https://towardsdatascience.com/discovering-the-treasures-of-22-r-exploratory-analysis-packages-9bb1c5b4e6f8
+- DataExplorer::create_report()
+- univariate
+  - describe()
+- multivariate
+
+*** Artificial Intelligence
+:PROPERTIES:
+:ID:       A6C156F3-9442-4D8F-97F1-446729EC6006
+:END:
+
+- https://github.com/norvig/paip-lisp
+- http://aima.cs.berkeley.edu/
+- [[https://www.reddit.com/r/science/comments/65gf8q/selftaught_artificial_intelligence_beats_doctors/][reddit- ai beats docs]]
+- cite:russell2010
+- cite:sankar2014
+- https://www.edx.org/course/artificial-intelligence-ai-columbiax-csmm-101x
+- [[https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-034-artificial-intelligence-fall-2010/][MIT Artificial intelligence 2010]]
+- http://simplystatistics.org/2017/01/19/what-is-artificial-intelligence/
+
+**** Natural Language Processing (NLP)
+:PROPERTIES:
+:ID:       3B071811-9ADD-40AA-9D5F-0D9B73520BCE
+:END:
+:LOGBOOK:
+CLOCK: [2019-02-19 Tue 09:57]--[2019-02-19 Tue 10:24] =>  0:27
+CLOCK: [2017-05-02 Tue 11:09]--[2017-05-02 Tue 11:45] =>  0:36
+CLOCK: [2017-05-02 Tue 10:35]--[2017-05-02 Tue 11:09] =>  0:34
+:END:
+- [[id:E6900F8A-2302-4076-8B27-7963B3EC4CC0][Semantic and natural language processing lab]]
+- [[id:CA21AAC9-F147-4086-A24C-64451EE349F3][Python NLTK]]
+- applications
+  - [[https://www.reddit.com/r/dataisbeautiful/comments/8m9ha6/i_created_a_tool_to_automatically_extract_the/][summarization]]
+  - nl processing bot
+    - https://www.reddit.com/r/autotldr/comments/31bfht/theory_autotldr_concept/?st=j29fxbql&sh=b124ddb9
+    - https://www.reddit.com/r/autotldr/comments/31b9fm/faq_autotldr_bot/?st=j29fxbbd&sh=2c5a4683
+  - crawl a website for nl
+    - http://www.httrack.com/
+    - https://superuser.com/questions/14403/how-can-i-download-an-entire-website
+    - https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+  - healthcare
+    - [[http://clamp.uth.edu/][CLAMP Clinical Language Annotation, Modeling, and Processing Toolkit]]
+      - cite:soysal2017
+    - [[https://metamap.nlm.nih.gov/][metamap]]
+    - https://github.com/ncbi-nlp 
+    - Linguamatics at WashU
+      - [[id:DCCB84AB-69B7-4DCC-9BB3-B1DC3BDEE190][Payne Linguamatics]]
+      - [[id:C717DCDF-F41C-491C-97E3-CB001912EF16][<2017-04-19 10:24> Jackups Payne Cicerelli Linguamatics]]
+
+**** Columbia CSMM.101x Artificial Intelligence (AI)
+:PROPERTIES:
+:ID:       576B5CCD-28AF-43B2-B6A3-EF29AF391251
+:END:
+:LOGBOOK:
+CLOCK: [2017-02-15 Wed 14:06]--[2017-02-15 Wed 14:55] =>  0:49
+CLOCK: [2017-02-13 Mon 18:45]--[2017-02-13 Mon 19:53] =>  1:08
+:END:
+
+- [[http://aima.cs.berkeley.edu/code.html][textbook code repo]]
+same text, but previously using Undacity Stanford Artificial Intelligence 
+https://courses.edx.org/courses/course-v1:ColumbiaX+CSMM.101x+1T2017/courseware/72ad68365307491198cfcadeeb17baad/adbd7b28184343a1ab8532fbdadd7de4/
+
+***** Week 1: Introduction to AI
+:PROPERTIES:
+:ID:       674E10A4-77DB-4745-B98D-3CE96DD32D98
+:END:
+
+***** Week 2: Intelligent Agents and Uninformed Search
+:PROPERTIES:
+:ID:       D211037A-EB0C-4009-8265-18393AACDA9C
+:END:
+
+***** Week 3: Heuristic Search
+:PROPERTIES:
+:ID:       5E6688C5-3577-4831-B7C5-139402A7224E
+:END:
+
+***** Week 4: Advanced Search and Games
+:PROPERTIES:
+:ID:       302F3E5D-F45E-4456-9C65-8499A3E5CE29
+:END:
+
+***** Week 5: Machine Learning 1
+:PROPERTIES:
+:ID:       288686AD-0258-4B1D-A414-F0B73C0D3396
+:END:
+
+***** coursea notes
+:PROPERTIES:
+:ID:       7BB8A6D9-E527-44C2-A3FD-AB7C65A41D20
+:END:
+
+****** 1. Welcome to AI
+:PROPERTIES:
+:ID:       27F2848A-ADB4-45E2-BBC5-8F91C2A0EDEE
+:END:
+
+- Intelligent agent, perception-action cycle: [[file:org.org_imgs/20170206_122258_95886o5b.png]]
+
+- AI- a solution to uncertainty 
+- environment classifications
+  - Fully vs. partially observable environment
+  - Deterministic vs. Stochastic
+    - chess- deterministic
+    - dice- stochastic ~ random
+  - discrete vs. continuous
+  - benign vs. adversarial
+- Examples 
+
+****** 2. Problem Solving
+:PROPERTIES:
+:ID:       1F2B2E06-5707-49E6-9078-B3D39A0ABFEF
+:END:
+
+problem 
+- inital state
+- action
+- result (input state and action, output is new state)
+- goal test
+- path cost 
+
+tree function is a loop that adds paths. paths are collections of actions/results 
+
+uniform cost search (cheapest)
+
+algorithm properties
+- completeness
+- A* search if f + h where f is path function from start to location and h is length from location to destination, stops when shortest path is found
+  - if h(s) is < true cost, then A* finds lowest cost path
+- state space
+  - number of states
+- problem solving algorithms require
+  - fully observable
+  - discrete
+  - deterministic
+  - static
+
+**** <<<Machine Learning>>>                        :career:informatics:study:
+:PROPERTIES:
+:ID:       CFACF7AD-30FC-4200-92FE-3710B5DC5E9E
+:END:
+:LOGBOOK:
+CLOCK: [2020-10-26 Mon 08:51]--[2020-10-26 Mon 09:15] =>  0:24
+CLOCK: [2019-01-21 Mon 14:15]--[2019-01-21 Mon 14:42] =>  0:27
+CLOCK: [2019-01-21 Mon 11:21]--[2019-01-21 Mon 11:27] =>  0:06
+CLOCK: [2018-07-05 Thu 15:00]--[2018-07-05 Thu 15:04] =>  0:04
+CLOCK: [2018-07-05 Thu 14:25]--[2018-07-05 Thu 14:59] =>  0:34
+CLOCK: [2018-02-19 Mon 10:59]--[2018-02-19 Mon 11:07] =>  0:08
+CLOCK: [2018-01-08 Mon 15:07]--[2018-01-08 Mon 15:21] =>  0:14
+CLOCK: [2018-01-08 Mon 14:33]--[2018-01-08 Mon 14:59] =>  0:26
+CLOCK: [2018-01-08 Mon 14:17]--[2018-01-08 Mon 14:28] =>  0:11
+CLOCK: [2018-01-08 Mon 13:50]--[2018-01-08 Mon 14:05] =>  0:15
+CLOCK: [2017-08-25 Fri 09:15]--[2017-08-25 Fri 09:47] =>  0:32
+CLOCK: [2017-08-24 Thu 20:56]--[2017-08-24 Thu 21:44] =>  0:48
+CLOCK: [2017-08-24 Thu 19:55]--[2017-08-24 Thu 20:06] =>  0:11
+CLOCK: [2017-06-30 Fri 09:04]--[2017-06-30 Fri 09:10] =>  0:06
+CLOCK: [2017-06-30 Fri 07:58]--[2017-06-30 Fri 08:02] =>  0:04
+CLOCK: [2017-06-23 Fri 19:05]--[2017-06-23 Fri 19:35] =>  0:30
+CLOCK: [2018-06-27 Wed 11:59]--[2018-06-27 Wed 12:49] =>  0:50
+CLOCK: [2017-11-28 Tue 18:30]--[2017-11-28 Tue 19:30] =>  1:00
+:END:
+https://web.stanford.edu/class/stats202/intro.html
+cite:yala2021 
+https://github.com/qarchli
+https://www.sciencedirect.com/science/article/pii/S1874939919302500
+https://old.reddit.com/r/dataisbeautiful/comments/jkadd0/oc_distribution_of_emotions_during_the/
+- support vectors
+  - https://stats.stackexchange.com/questions/13194/support-vector-machines-and-regression
+***** [[Statistical Computing][LINK TO Statistical computing]]
+:PROPERTIES:
+:ID:       4b9459e9-4192-4e8c-afe9-f449dbdc73f9
+:END:
+***** general education and guides
+:PROPERTIES:
+:ID:       cb149912-d14b-4934-a0cc-9b4f0e10d9bd
+:END:
+  - https://developers.google.com/machine-learning/crash-course
+    - https://developers.google.com/machine-learning/data-prep/?utm_source=mlcc&utm_campaign=mlcc-next-steps&utm_medium=referral&utm_content=data-prep-ss
+  - https://old.reddit.com/r/datascience/comments/ia8gc6/amazons_machine_learning_university_is_making_its/
+  - https://www.reddit.com/r/MachineLearning/comments/fks2xv/d_what_machine_learning_concepts_would_you_like/
+  - https://www.reddit.com/r/datascience/comments/exk6ub/courses_as_good_as_andrew_ngs_ml_from_recent_years/
+   https://www.ibm.com/blogs/research/2019/07/ai-tools-for-cancer-research/
+  - https://towardsdatascience.com/top-7-data-science-course-repositories-on-github-11a47e4b8dc2
+  - https://pypi.org/project/aix360/
+  - https://chemicalstatistician.wordpress.com/2014/01/24/machine-learning-lesson-of-the-day-the-no-free-lunch-theorem/
+  - Overview
+    - http://www.cs.princeton.edu/courses/archive/spr08/cos511/scribe_notes/0204.pdf
+    - No free lunch
+    - <<<Overfitting>>>: model that performs better on a training set but worse on unseen data
+    - http://ethen8181.github.io/machine-learning/
+    - https://startupsventurecapital.com/essential-cheat-sheets-for-machine-learning-and-deep-learning-researchers-efb6a8ebd2e5
+  - Learning resources
+    - Tutorials and Examples
+      - Kaggle
+        - [[Kaggle titanic tutorial with R]]
+        - [[https://www.kaggle.com/c/house-prices-advanced-regression-techniques][House Prices: Advanced Regression Techniques]]
+      - [[https://spark.apache.org/docs/2.1.0/ml-classification-regression.html][Apache Spark Classification and regression]]
+      - [[https://developers.google.com/machine-learning/crash-course/][Google machine learning crash course]]
+      - Worked examples
+        - [[https://blog.insightdatascience.com/separating-overlapping-chromosomes-with-deep-learning-based-image-segmentation-22f97afd3283][Separating Overlapping Chromosomes with Deep Learning]]
+        - [[http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0174944][Can machine-learning improve cardiovascular risk prediction using routine clinical data?]]
+    - Full courses and texts
+      - [[https://www.r-bloggers.com/in-depth-introduction-to-machine-learning-in-15-hours-of-expert-videos/][r-bloggers machine learning intro videos]]
+      - http://web.stanford.edu/~hastie/sldm.html
+      - [[http://online.stanford.edu/course/machine-learning-su-2014][Stanford Machine learning 2014]]
+      - [[https://www.udemy.com/data-science-and-machine-learning-with-python-hands-on/learn/v4/overview][Data science and machine learning with Python]]
+      - [[https://www.datacamp.com/courses/machine-learning-toolbox?utm_source=fb_paid&utm_medium=fb_desktop&utm_campaign=dc_visitors][DataCamp machine learning toolbox]]
+      - [[https://www.datacamp.com/community/open-courses/kaggle-tutorial-on-machine-learing-the-sinking-of-the-titanic?utm_source=fb_paid&utm_medium=fb_desktop&utm_campaign=fb_ppa#gs.LVTutww][Kaggle R Tutorial on Machine Learning]]
+    - Books
+      - cite:hastie2009
+      - cite:james2013a
+      - cite:cleophas2015
+    - Data
+      - [[https://gengo.ai/articles/the-50-best-free-datasets-for-machine-learning/][The 50 Best Free Datasets for Machine Learning]]
+      - [[http://archive.ics.uci.edu/ml/index.php][UCI Machine Learning Repository]]
+      - https://www.kaggle.com/datasets
+    - [[https://jermwatt.github.io/mlrefined/][Blog for Machine learning refined book]]
+    - [[https://ai.google/education][Google AI education]]
+    - [[http://deeplearning.net/reading-list/][deeplearning.net reading list]]
+    - [[https://developers.google.com/machine-learning/crash-course/ml-intro][Google Machine Learning Crash Course]]
+    - [[https://github.com/stevebottos/stevebottos.github.io/blob/master/_downloads/HMM_Tutorial.pdf][hidden markov model tutorial]]
+  - [[https://www.zdnet.com/google-amp/article/google-ponders-the-shortcomings-of-machine-learning/][Google ponders the shortcomings of machine learning]]
+****** Udemy Python for Data Science and Machine Learning
+:PROPERTIES:
+:ID:       421B4E74-174E-4F42-8024-31EC23EEF602
+:END:
+:LOGBOOK:
+CLOCK: [2017-08-15 Tue 08:14]--[2017-08-15 Tue 09:21] =>  1:07
+CLOCK: [2017-08-11 Fri 10:05]--[2017-08-11 Fri 10:19] =>  0:14
+CLOCK: [2017-08-11 Fri 09:21]--[2017-08-11 Fri 10:05] =>  0:44
+CLOCK: [2017-08-09 Wed 07:59]--[2017-08-09 Wed 08:53] =>  0:54
+CLOCK: [2017-08-02 Wed 15:15]--[2017-08-02 Wed 15:36] =>  0:21
+CLOCK: [2017-08-02 Wed 14:37]--[2017-08-02 Wed 15:14] =>  0:37
+CLOCK: [2017-07-31 Mon 08:35]--[2017-07-31 Mon 09:11] =>  0:36
+CLOCK: [2017-07-31 Mon 07:42]--[2017-07-31 Mon 08:27] =>  0:45
+CLOCK: [2017-07-07 Fri 08:24]--[2017-07-07 Fri 08:58] =>  0:34
+CLOCK: [2017-07-07 Fri 08:15]--[2017-07-07 Fri 08:22] =>  0:07
+CLOCK: [2017-06-30 Fri 08:21]--[2017-06-30 Fri 09:03] =>  0:42
+CLOCK: [2017-06-30 Fri 08:02]--[2017-06-30 Fri 08:10] =>  0:08
+:END:
+- [[https://www.udemy.com/python-for-data-science-and-machine-learning-bootcamp/learn/v4/overview][Course link]]
+- Jupyter 
+- Notation
+  - Functions
+    - Function name- descriptor / : definition
+      - i.e.:
+      - e.g.: 
+- Python Crash Course
+  - Part 1
+    - Numbers
+      - either integer or float
+      - Exponent is e.g. 2 ** 4 = 16
+      - Mod % is remainder of division
+    - Variables
+      - separate_words_with_underscore
+      - can't start w/
+        - numbers
+        - special symbols
+    - Strings
+      - create with quotes
+      - print strings, e.g.: print('My number is {one} and my name is {two}' .format(one=num,two=name))
+      - indexing strings
+        - starts at zero!
+        - i.e. "slice" notation
+    - Lists
+      - append- e.g.: my_list = ['a','b','c'] <RETURN> my_list.append('d')
+      - edit
+      - nest
+    - dictionary- e.g. d = {'key1':'value','key2':'value2'}
+    - boolean
+    - tuples
+      - e.g. t = (1,2,3)
+      - unlike lists, tuples are immutable (cannot re-assign element)
+    - set
+      - list defined by only unique elements
+      - e.g.: new_set=set([1,2,3,1,2,3,2,4,5,6,2])
+        - {1, 2, 3, 4, 5, 6}
+      - add elements with <SET_NAME>.add(#), e.g: new_set.add(12)
+    - comparison operators- compare elements with boolean
+      - e.g.: 1 > 2
+    - logic operators
+      - and
+      - or
+    - if, if/else, elif
+      - elif is for stacked if/else statements
+        - only executes first true condition
+    - python uses space where other languages would include a bracket
+  - Part 3
+    - for loops- e.g.: for item in seq: print (item)
+    - while- e.g.: while i <5: print('i is: {}'.format(i)) i=1+1
+    - to stop an infinite loop, click Kernel->Restart
+    - range- e.g.: for x in range(0,5):print(x)
+    - list comprehension
+      - reduce typing with for loop lists
+      - e.g.: [num**2 for num in x] rather than for num in x: out.append(num**2)
+    - functions
+      - create- e.g.: def my_fun(param1):print(param1)
+      - returning values- e.g.: def square(num): return num**2
+      - documentation
+        - within triple quotes
+        - expand in jupyter with <SHIFT><TAB>
+  - Part 4
+    - map function
+      - apply function to list
+      - e.g.: list(map(times2,seq))
+    - lambda
+      - an annonymous function
+      - e.g.: list(map(lambda num: num*3,seq))
+    - filter
+      - filter out elements from a sequence
+    - string functions
+      - call with <STRING>.<FUNCTION>
+      - common
+        - split
+        - upper
+        - lower
+    - dictionary functions
+      - .keys
+      - .items
+    - list functions
+      - .pop - 'pop' last item off of a list
+      - .append
+    - tuple unpacking
+      - tuple- e.g.: x=[(1,2),(3,4),(5,6)]
+      - unpacking- e.g.: for (a,b) in x: print(b)
+  - [X] Exercises
+- NumPy
+  - Introduction to NumPy- linear algebra library 
+  - NumPy Arrays
+    - import numpy as np
+    - np.array(<LIST>)
+    - np.arange(<START>,<STOP>,<STEP SIZE>)
+    - np.#s
+      - np.zeros
+        - e.g.: np.zeros(3)
+        - np.zeros((5,5)) # this is a tuple
+      - np.ones
+    - np.linspace(<START>,<STOP>,<NUMBER OF POINTS>)- equally spaced points
+    - np.eye- identity matrix
+      - i.e.: np.eye(<DIMENSION>)
+    - randoms
+      - np.random.rand(<DIM1>,<DIM2>...) uniform from zero to 1
+      - np.random.randn(<DIM1>,<DIM2>...) normal distribution around zero
+      - np.random.randint(<LOW>,<HIGH>,<SIZE>)
+    - shape, reshape
+      - <ARRAY>.shape
+      - reshape(<DIM1>,<DIM2>)
+    - max and min
+      - max/min values
+        - <ARRAY>.max()
+        - <ARRAY>.min()
+      - max/min positions
+        - <ARRAY>.argmax()
+        - <ARRAU>.argmin()
+    - data type: <ARRAY>.dtype
+    - import functions to avoid calling np.
+      - e.g.: from numpy.random import randint
+  - NumPy Indexing and Selection
+    - Select from an array
+    - Single element: <ARRAY>[<INDEX POS>]
+    - Slice notation: <ARRAY>[<INDEX POS1>:<INDEX POS2>] 
+      - Everything up to POS: <ARRAY>[:<POS>]
+      - If calling slice of array an object, change affect original array
+        - or <ARRAY>.copy() to avoid
+    - 2-D arrays
+      - <ARRAY>brackbrack
+    - Booloean- e.g: <ARRAY> > 5
+    - Conditional selection- i.e.: <ARRAY>[<ARRAY> <CONDITIONAL>]
+      - e.g.: arr[arr<3]
+  - NumPy Opertations
+    - Array with array- per element arithmatic
+    - Array with scalars
+    - Universal array functions (np. functions)
+      - note np.max(arr) = arr.max()
+    - NumPy exercises overview 
+- Pandas
+  - Introduction to Pandas- Like dataframe for R
+  - Series
+    - numpy array with axis labels
+    - pd.Series(data, labels)
+  - DataFrames- just series which share an index
+    - 
+  - Missing Data
+    - dropna
+      - <DF>.dropna()
+      - columns with axis=1
+      - thresh- NON-na values to retain
+      - .fillna
+        - e.g.: df['A'].fillna(value=df['A'].mean())
+  - Groupby
+    - 2 Steps- e.g.:
+      - by_comp = df.groupby("Company")
+      - by_comp.mean()
+    - result is a df that can be passed to other functions
+  - Merging, joining, and concatenating
+    - e.g.:
+      - pd.concat([df1,df2,df3])
+      - pd.merge(left,right,how='inner',on='key')
+      - 
+  - Operations
+    - e.g.:
+      - unique and unique counts
+        - df['col2'].unique()
+        - df['col2'].value_counts()
+      - conditional selection- df[df['col1']>2]
+      - apply
+        - df['col1'].apply(times2)
+        - df['col2'].apply(lambda x: x*2)
+      - drop-
+      - index- df.columns
+      - sorting- df.sort_values('col2')
+      - booleans- df.isnull()
+      - pivot (multi-index)
+  - Data input and output
+    - i.e.:
+      - pd.read_excel('<FILE>',sheetname='<SHEET>')
+      - df=pd.read_csv('<FILE>')
+      - df.to_csv('<FILE>',index=False)
+      - html
+    - for html- e.g.:
+      - data = pd.read_html('https://www.fdic.gov/bank/individual/failed/banklist.html')
+      - then get the first html element
+    - sql
+***** platforms
+:PROPERTIES:
+:ID:       d5710651-ae8d-41b6-b71c-314f98484daf
+:END:
+  - https://realpython.com/podcasts/rpp/8/
+  - tensor flow
+    - https://www.reddit.com/r/MachineLearning/comments/fsphh0/p_simple_tensorflow_2x_collection_of_easytouse/
+    - https://github.com/microsoft/tensorwatch
+  - Tensor Flow
+    - cite:yu2018 
+    - [[http://bcomposes.com/2015/11/26/simple-end-to-end-tensorflow-examples/][Simple end-to-end TensorFlow examples]]
+      - https://github.com/jasonbaldridge/try-tf
+  - Weka
+    - cite:frank2004 
+    - [[http://www.cs.waikato.ac.nz/ml/weka/][Weka 3: Data Mining Software in Java]]
+    - [[http://machinelearningmastery.com/binary-classification-tutorial-weka/][How To Work Through a Binary Classification Project in Weka Step-By-Step]]
+  - Python
+    - [[https://github.com/rhiever/Data-Analysis-and-Machine-Learning-Projects/blob/master/example-data-science-notebook/Example%2520Machine%2520Learning%2520Notebook.ipynb][example machine learning notebook]]
+    - Pandas
+    - [[http://scikit-learn.org/stable/tutorial/machine_learning_map/][scikit-learn algorithm cheat sheet]]
+    - [[https://github.com/rushter/MLAlgorithms][github: Minimal and clean examples of machine learning algorithms]]
+  - R
+    - [[https://amunategui.github.io/binary-outcome-modeling/][Modeling 101 - Predicting Binary Outcomes with R, gbm, glmnet, and {caret}]]
+    - cite:james2013a
+  - [[https://prodi.gy/][prodigy ML tool focused on annotation]]
+  - [[https://towardsdatascience.com/python-for-data-science-from-scratch-part-i-390f01d91748][python data science from scratch]]
+  - https://www.reddit.com/r/datascience/comments/9cwddt/from_pandas_to_scikitlearn_a_new_exciting_workflow/
+***** datasets
+:PROPERTIES:
+:ID:       e0185c4b-df81-45a3-8f50-e2537f562e01
+:END:
+  - https://gengo.ai/datasets/18-free-life-sciences-medical-datasets-for-machine-learning/
+  - https://www.english-corpora.org/coca/
+***** design
+:PROPERTIES:
+:ID:       4481b858-3c85-4f49-8768-cf43758ef874
+:END:
+- [[http://www.fharrell.com/post/stat-ml/][Road Map for Choosing Between Statistical Modeling and Machine Learning]]
+- Data pre-processing
+  - Normalization
+    - Tree-based methods are scale-invariant
+    - http://sebastianraschka.com/Articles/2014_about_feature_scaling.html
+    - [[https://machinelearningmastery.com/normalize-standardize-time-series-data-python/][How to Normalize and Standardize Time Series Data in 
+Validation
+  - <<<Out-of-bag>>> error estimate (<<<OOB>>>)
+    - For random forest, 
+  - Conventional validation by subsetting data
+    - Training
+    - Test
+  - Confusion matrix
+    - https://en.wikipedia.org/wiki/Confusion_matrix
+  - Cross-validation- generalizes to new, smaller datasets 
+    - http://www.milanor.net/blog/cross-validation-for-predictive-analytics-using-r/
+    - K-fold
+      - SD of each test/train set
+      - Error rates over rounds 
+    - LOO
+    - Repeat random sub-sampling 
+  - see  chapter 5
+  - Validation approaches
+    - Validation set (e.g. randomly split dataset in two)
+***** machine learning methods
+:PROPERTIES:
+:ID:       40A2D1C9-E730-43E8-9726-DEECB3EE1641
+:END:
+:LOGBOOK:
+CLOCK: [2020-10-26 Mon 09:15]--[2020-10-26 Mon 09:25] =>  0:10
+:END:
+****** naive bayes classifier
+:PROPERTIES:
+:ID:       c4753ee7-7fed-4ec0-9f8e-950436a54b16
+:END:
+  - https://www.youtube.com/watch?v=CPqOCI0ahss&t=95s
+
+****** Supervised
+:PROPERTIES:
+:ID:       a874f9fe-9799-4ca4-b22d-73e323815047
+:END:
+  - [[*Logistic Regression][Logistic Regression]]
+  - Regression-based supervised learning
+  - [[https://en.wikipedia.org/wiki/Binary_classification][Wikipedia: binary classification]]
+  - Random forest 
+  - Classification-based supervised learning
+    - Neural networks
+      - https://blog.statsbot.co/neural-networks-for-beginners-d99f2235efca
+      - [[http://neuralnetworksanddeeplearning.com/chap4.html][neural nets intro]]
+    - Naive bayes
+      - Assumptions- features are independent 
+    - Decision Trees
+      - [[https://www.reddit.com/r/datascience/comments/62jsk9/decision_tree_explained_from_scratch_a_complete/][reddit: decision tree explained from scratch]]
+****** Unsupervised- exploratory, find underlying structure based on statistical properties
+:PROPERTIES:
+:ID:       2eabab54-c260-4fb8-9dd2-2a3e395fb3b5
+:END:
+  - Clustering
+    - Elbow method
+    - Hierarchical clustering
+    - K-means
+      - puts n observations into k clusters 
+      - useful for unlabeled data
+      - no a priori assumptions
+  - Maximum entropy classification
+
+****** Decision trees
+:PROPERTIES:
+:ID:       2383e27f-0f91-436d-8d34-e2f8595975cd
+:END:
+  - https://datascience.stackexchange.com/questions/6048/decision-tree-or-logistic-regression
+  - decision trees that I didn’t mention last time: they are biased to favour factors with many levels.
+  - in R- rpart
+******* <<<Random Forest>>>
+:PROPERTIES:
+:ID:       4FF74F86-E830-4D4E-B290-7BF09F7E00AB
+:END:
+- random forest
+  - https://stats.stackexchange.com/questions/141619/wont-highly-correlated-variables-in-random-forest-distort-accuracy-and-feature
+- https://www.reddit.com/r/statistics/comments/8hbwuh/how_can_we_select_the_strongest_decision_tree/
+- [[https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm][Breiman and Cutler Random Forests]]
+  - Error depends on
+    - Increases with increasing correlation between trees
+    - Decreases with low error of any individual tree
+- My examples
+  - [[file:~/Box%20Sync/career/order.interval/amia2018.org]]
+- Ensemble method- classification and regression
+- [[https://datascience.stackexchange.com/questions/6510/does-modeling-with-random-forests-requre-cross-validation][stack: random forest may require cross-validation]]
+- http://dni-institute.in/blogs/random-forest-using-r-step-by-step-tutorial/
+- cite:breiman2001 
+- https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm
+- http://blog.citizennet.com/blog/2012/11/10/random-forests-ensembles-and-performance-metrics
+- Variable importance metrics
+  - Decrease accuracy
+  - Decrease G=ini ~ how pure terminal nodes are
+- randomForest in R
+  - Only handles factors to 32 levels
+    - take two paths forward here, either
+      - change these levels to their underlying integers (using the unclass() function) and having the tree treat them as continuous variables
+      - , or manually reduce the number of levels to keep it under the threshold.
+- Sources of randomness in trees
+  - Bagging- Subsetting samples to test, with replacement (i.e. same row can repeat), does not control for strong features
+    - Out of bag observations are used to test tree performance
+  - Subsetting variables to test, usually srqt of the number of variables
+- Missing values are not tolerated
+  - These can be imputed by making a decision tree! 
+
+******** Random Forests with R
+:PROPERTIES:
+:ID:       95AB6400-7E60-4129-9CFA-34436285D5D2
+:END:
+
+********* R randomForest
+:PROPERTIES:
+:ID:       5E6D8972-1E72-4B40-9BA4-719F079FB350
+:END:
+
+A tutorial: https://www.tutorialspoint.com/r/r_random_forest.htm
+
+#+BEGIN_SRC R
+library(party)
+library(randomForest)
+head(readingSkills)
+output.forest=randomForest(nativeSpeaker ~ age + shoeSize + score, data = readingSkills)
+output.forest
+plot(output.forest)
+#+END_SRC
+- [[http://www.crcnetbase.com/doi/book/10.1201/9781315399102][data mining in R]]
+- [[https://www.r-bloggers.com/random-forests-in-r/][random forests in R]]
+
+********* DONE Kaggle titanic tutorial with R
+CLOSED: [2018-03-10 Sat 10:14]
+:PROPERTIES:
+:ID:       C0AC9886-B827-4254-B1EA-4B4C17C24CDD
+:END:
+:LOGBOOK:
+CLOCK: [2018-03-10 Sat 10:02]--[2018-03-10 Sat 10:14] =>  0:12
+CLOCK: [2017-08-25 Fri 12:19]--[2017-08-25 Fri 13:34] =>  1:15
+CLOCK: [2017-08-25 Fri 11:27]--[2017-08-25 Fri 11:29] =>  0:02
+CLOCK: [2017-08-25 Fri 10:37]--[2017-08-25 Fri 11:01] =>  0:24
+CLOCK: [2017-08-25 Fri 09:47]--[2017-08-25 Fri 10:08] =>  0:21
+:END:
+- [[http://trevorstephens.com/kaggle-titanic-tutorial/getting-started-with-r/][Titanic tutorial with R]]
+- Part 2 Prediction honing http://trevorstephens.com/kaggle-titanic-tutorial/r-part-2-the-gender-class-model/
+- Titanic: Getting Started With R - Part 3: Decision Trees
+  - Glass box model- all information available
+  - Method
+    - Scans complete data for best split
+    - Iterate until all rows have divided between the binary outcomes (terminal nodes)
+    - greedy. They make the decision on the current node which appear to be the best at the time
+      - e.g. cashier must make change for 30c using the smallest number of coins possible. A greedy algorithm would start with the coin that leaves the smallest amount of change left to pay:
+        - Greedy: 25 + 1 + 1 + 1 + 1 + 1 = 30c, with 6 coins
+        - Optimal: 15 + 15 = 30c, with 2 coins
+- Titanic: Getting Started With R - Part 4: Feature Engineering
+- Titanic: Getting Started With R - Part 5: Random Forests
+  - Random forests have less issues with overfitting b/c vote from large set of trees
+  - Variables per tree is typically sqrt of total available
+  - Gini is how pure nodes are at end of tree
+#+BEGIN_SRC R
+getwd()
+setwd('/Users/JeffBook/')
+train=read.csv('train.csv', stringsAsFactors=F)
+test=read.csv('test.csv', stringsAsFactors=F)
+test$Survived=rep(0,418)
+submit=data.frame(PassengerId=test$PassengerId, Survived= test$Survived)
+write.csv(submit, file='theyallperish.csv',row.names=F)
+prop.table(table(train$Sex, train$Survived),1)
+test$Survived=0
+test$Survived[test$Sex == 'female']=1
+summary(train$Age)
+train$Child=0
+train$Child[train$Age <18]=1
+aggregate(Survived ~ Child + Sex, data=train, FUN=sum)
+aggregate(Survived ~ Child + Sex, data=train, FUN=length)
+aggregate(Survived ~ Child + Sex, data=train, FUN=function(x) {sum(x)/length(x)})
+test$Survived=0
+test$Survived[test$Sex == 'female'] =1
+test$Survived[test$Sex == 'female' & test$Pclass == 3 & test$Fare >= 20]=0
+
+library(rpart)
+fit=rpart(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked,
+          data=train,
+          method='class')
+plot(fit)
+text(fit)
+
+
+library(rpart.plot)
+
+library(RColorBrewer)
+
+rpart.plot(fit)
+predict(fit,test,type='class') 
+fit=rpart(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked,
+          data=train,
+          method='class',
+          control=rpart.control(minsplit=2, cp=0))
+
+new.fit=prp(fit, snip=T)$obj
+
+train$Name[1]
+test$Survived=NA
+names(train)
+names(test)
+train=train[,!(names(train))=='Child']
+combi=rbind(train,test)
+combi$Name=as.character(combi$Name)
+combi$Name[1]
+strsplit(combi$Name[1], split='[,.]')
+strsplit(combi$Name[1], split='[,.]')[[1]][2]
+combi$Title=sapply(combi$Name, FUN=function(x) {strsplit(x, split='[,.]')[[1]][2]})
+combi$Title=sub(' ','',combi$Title)
+table(combi$Title)
+combi$Title[combi$Title %in% c('Mme','Mlle')]='Mlle'
+
+combi$Title[combi$Title %in% c('Capt', 'Don', 'Major', 'Sir')] <- 'Sir'
+combi$Title[combi$Title %in% c('Dona', 'Lady', 'the Countess', 'Jonkheer')] <- 'Lady'
+combi$Title=factor(combi$Title)
+combi$FamilySize=combi$SibSp + combi$Parch +1
+
+combi$Surname=sapply(combi$Name, FUN=function(x) {strsplit(x, split='[,.]')[[1]][1]})
+combi$FamilyID=paste(as.character(combi$FamilySize),combi$Surname, sep='')
+combi$FamilyID[combi$FamilySize == 2] = 'Small'
+table(combi$FamilyID)
+famIDs=data.frame(table(combi$FamilyID))
+famIDs=famIDs[famIDs$Freq==2,]
+combi$FamilyID[combi$FamilyID %in% famIDs$Var1]='Small'
+combi$Family=factor(combi$FamilyID)
+train=combi[1:891,]
+test=combi[892:1309,]
+fit=rpart(Survived ~Pclass + Sex + Age + SibSp + Parch + Fare + Embarked + Title + FamilySize + FamilyID,
+          data=train,
+          method='class')
+rpart.plot(fit)
+
+summary(combi$Age)
+
+Agefit=rpart(Age ~ Pclass + Sex + SibSp + Parch + Fare + Embarked + Title + FamilySize,
+             data=combi[!is.na(combi$Age),],
+             method='anova')
+combi$Age[is.na(combi$Age)]=predict(Agefit,combi[is.na(combi$Age),])
+summary(combi)
+summary(combi$Embarked)
+combi$Embarked[which(combi$Embarked=='')]='S'
+combi$Embarked=factor(combi$Embarked)
+combi$Fare[which(is.na(combi$Fare))]=median(combi$Fare, na.rm=T)
+combi$FamilyID2 <- combi$FamilyID
+combi$FamilyID2 <- as.character(combi$FamilyID2)
+combi$FamilyID2[combi$FamilySize <= 3] <- 'Small'
+combi$FamilyID2 <- factor(combi$FamilyID2)
+
+library(randomForest)
+set.seed(415)
+fit=randomForest(as.factor(Survived)~ Pclass + Age + SibSp + Parch + Fare + Embarked + Title + FamilySize + FamilyID2,
+                 data=train,
+                 importance=T,
+                 ntree=2000)
+library(ggplot2)
+varImpPlot(fit)
+Prediction=predict(fit,test)
+class(Prediction)
+summary(Prediction)
+268/(268+150)
+
+library(party)
+set.seed(415)
+train$Sex=as.factor(train$Sex)
+train$FamilyID=as.factor(train$FamilyID)
+fit=cforest(as.factor(Survived)~Pclass + Sex + Age + SibSp + Parch + Fare + Embarked + Title + FamilySize + FamilyID,
+            data=train,
+            controls=cforest_unbiased(ntree=2000, mtry=3))
+
+str(train)
+
+
+
+1=1
+#+END_SRC
+
+****** genetic algorithms
+:PROPERTIES:
+:ID:       a2351d48-c55f-4e48-9833-36f454b3def7
+:END:
+  - https://blog.floydhub.com/introduction-to-genetic-algorithms/
+  - https://towardsdatascience.com/evolution-of-a-salesman-a-complete-genetic-algorithm-tutorial-for-python-6fe5d2b3ca35
+****** generative adversarial network
+:PROPERTIES:
+:ID:       d879b135-9393-4da0-b9c8-e20e0f1bf0fc
+:END:
+- cite:lan2020
+- cite:lopez2020
+- cite:wang2020
+- https://developers.google.com/machine-learning/gan/gan_structure
+****** structural equation modeling
+:PROPERTIES:
+:ID:       cc10c6df-9fdb-410c-a62c-cc52e7ca0f55
+:END:
+- https://royalsocietypublishing.org/doi/10.1098/rsos.150541
+- https://www.cscu.cornell.edu/news/Handouts/SEM_fit.pdf
+- note SEM is causal https://en.wikipedia.org/wiki/Causal_inference#:~:text=Causal%20inference%20is%20the%20process,when%20the%20cause%20is%20changed.
+- https://www.pnas.org/content/114/25/E4914
+- https://www.nature.com/articles/s41396-019-0407-y
+- https://www.nature.com/articles/s41598-019-52886-z
+- https://socialsciences.mcmaster.ca/jfox/Misc/ISM-Japan/sems-notes.pdf
+- cite:huisman2018
+- cite:eldridge2017 
+- cite:kline2015  
+- cite:tomarken2005
+- [[https://blog.efpsa.org/2015/12/14/structural-equation-modeling-what-is-it-what-does-it-have-in-common-with-hippie-music-and-why-does-it-eat-cake-to-get-rid-of-measurement-error/][JEP blog SEM]]
+- http://joophox.net/publist/semfamre.pdf
+- https://lavaan.ugent.be/tutorial/cat.html
+- https://www.ianruginski.com/post/sem_handout1/
+- constructs are "pruged of measurement error"
+- test model structure by fit to patterns in observed data
+- OpenMx https://openmx.ssri.psu.edu//
+- combination of factor analysis and multiple regression analysis
+- estimates the multiple and interrelated dependence in a single analysis
+- application examples
+  - cite:angelini2017
+****** autoencoder
+:PROPERTIES:
+:ID:       5a6dfe61-3fe0-4e28-8998-93314486bcd9
+:END:
+- https://bmcmedinformdecismak.biomedcentral.com/articles/10.1186/s12911-020-1114-3
+- https://www.kaggle.com/saivarunk/dimensionality-reduction-using-keras-auto-encoder
+- https://statcompute.wordpress.com/2017/01/15/autoencoder-for-dimensionality-reduction/0  
+- https://stats.stackexchange.com/questions/397656/autoencoder-for-sparse-data
+- utility
+  - dimensionality reduction
+****** Artificial Neural Nets
+:PROPERTIES:
+:ID:       739D4D70-90F2-4D30-8F7C-63D648440A32
+:END:
+https://bmcmedgenomics.biomedcentral.com/articles/10.1186/s12920-019-0628-y
+- cite:lecun2015 
+- https://stanford.edu/~shervine/teaching/cs-229/cheatsheet-deep-learning
+- https://github.com/afshinea/stanford-cs-230-deep-learning
+- [[https://www.youtube.com/watch?v=bxe2T-V8XRs][Neural Networks Demystified]]
+- neural network
+  - https://www.r-bloggers.com/variable-importance-in-neural-networks/ 
+****** Logistic Regression
+:PROPERTIES:
+:ID:       5EB27BAF-0471-4A53-A48C-8268D2B023DA
+:END:
+:LOGBOOK:
+CLOCK: [2019-01-21 Mon 15:01]--[2019-01-21 Mon 15:29] =>  0:28
+:END:
+
+probability of class membership equals exp 
+
+logarithm of odds: 
+log (probability of X / prob 1-X)= B0 +B1X +B2X...
+
+always b/w zero and 1
+
+ " the objective of regularisation is to balance accuracy and simplicity. "
+
+"Where \lambda is a free parameter which is usually selected in such a way that the resulting model minimises the out of sample error. Typically, the optimal value of \lambda is found using grid search with cross-validation, "
+
+optimized lambda strikes balance of coeffienct bias and optimized likelihood
+
+- Regularization- for overfit models w/ high variance
+   - Ridge regression
+     - penalty creates small bias in over-fit data such that least squares fit plus lambda * slope^2 is minimuized
+     - optimized lambda balances benefit of bias from modified slope with change in sum squred residuals 
+     - penalty is lambda * slopes^2 
+     - requires
+   - LASSO variable selection and regularization for binary logistic regression
+     - https://www.youtube.com/watch?v=NGf0voTMlcs&t=14s
+     - lasso is just like ridge, e/c penalty is lambda * ABS(slope)
+     - Glmnet
+       - https://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection
+       - http://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html
+     - [[https://eight2late.wordpress.com/2017/07/11/a-gentle-introduction-to-logistic-regression-and-lasso-regularisation-using-r/][A gentle introduction to logistic regression and lasso regularisation using R]]
+     - [[https://stats.stackexchange.com/questions/135067/using-lasso-for-variable-selection-then-using-logit][Using LASSO for variable selection, then using Logit]]
+- dependent variable is categorical
+- subtypes
+  - binary
+    - See [[*Statistical Computing][R glm function]]
+    - Takes odds of event happening for levels of each IV
+    - Logarithm of ratio of those odds is continuous, transformed version of dependent variable
+    - Logit of successes is fit to predictors with conventional linear regression
+    - Exponential (inverse of log) converts linear regression result back to odds 
+  - multinomial
+  - ordinal
+- scaling
+  - https://stats.stackexchange.com/questions/290958/logistic-regression-and-scaling-of-features/290960
+- stats Logistic regression
+- [[https://www.ibm.com/support/knowledgecenter/en/SSLVMB_21.0.0/com.ibm.spss.statistics.help/logistic_regression_methods.htm][IBM: Logistic Regression Variable Selection Methods]]
+- cite:bursac2008
+- [[https://www.ibm.com/support/knowledgecenter/en/SSLVMB_24.0.0/spss/regression/idh_lreg.html][IBM: Logistic regression]]
+- https://statistics.laerd.com/spss-tutorials/binomial-logistic-regression-using-spss-statistics.php
+- [[https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/logistic-regression-analysis-r/tutorial/][Practical Guide to Logistic Regression Analysis in R]]
+- [[https://stackoverflow.com/questions/39550118/cross-validation-function-for-logistic-regression-in-r][stack: cross validation with caret]]
+- https://www.r-bloggers.com/evaluating-logistic-regression-models/
+- https://www.staff.ncl.ac.uk/mike.cox/III/spss10.pdf
+- http://www.restore.ac.uk/srme/www/fac/soc/wie/research-new/srme/modules/mod4/15/index.html
+- [[https://hackernoon.com/practical-machine-learning-ridge-regression-vs-lasso-a00326371ece][Practical machine learning: Ridge Regression vs. Lasso]]
+- [[http://thestatsgeek.com/2014/05/05/area-under-the-roc-curve-assessing-discrimination-in-logistic-regression/][Area under the ROC curve - assessing discrimination in logistic regression]]
+- https://rcompanion.org/rcompanion/e_07.html
+- http://www.utstat.toronto.edu/~brunner/oldclass/appliedf11/handouts/2101f11StepwiseLogisticR.pdf
+- https://www.r-bloggers.com/evaluating-logistic-regression-models/
+- https://www.quora.com/Should-input-data-to-logistic-regression-be-normalized
+- http://www.simafore.com/blog/bid/99443/Understand-3-critical-steps-in-developing-logistic-regression-models
+- https://www.r-bloggers.com/predicting-creditability-using-logistic-regression-in-r-cross-validating-the-classifier-part-2-2/
+
+****** Method comparisons
+:PROPERTIES:
+:ID:       56a2d711-20cf-4b87-b414-6823f33a2e28
+:END:
+  - cite:yoo2013 
+  - [[https://datascience.stackexchange.com/questions/6048/decision-tree-or-logistic-regression][stack: Decision tree or logistic regression?]]
+  - [[https://discuss.analyticsvidhya.com/t/what-is-the-difference-between-regression-and-random-forest-where-is-random-forest-more-effective/10095][What is the difference between regression and random forest.? where is random forest more effective?]]
+  - [[https://www.edvancer.in/logistic-regression-vs-decision-trees-vs-svm-part2/][Logistic Regression vs Decision Trees vs SVM: Part II]]
+  - [[https://www.quora.com/What-are-the-advantages-of-different-classification-algorithms][What are the advantages of different classification algorithms?]]
+  - [[https://blog.bigml.com/2016/09/28/logistic-regression-versus-decision-trees/][Logistic Regression versus Decision Trees]]
+  - - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3686280/
+  - https://cs.stackexchange.com/questions/10392/using-the-appropriate-machine-learning-algorithm
+  - comparisons of random forest and binary logistic
+    - ROC AUC http://thestatsgeek.com/2014/05/05/area-under-the-roc-curve-assessing-discrimination-in-logistic-regression/
+    - https://www.google.com/search?q=binary+logistic+regression+random+forest&oq=binary+logistic+regression+random+forest&aqs=chrome..69i57.7601j0j9&sourceid=chrome&ie=UTF-8
+  - CHECK ZOTERO https://arxiv.org/pdf/0804.0650.pdf
+  - - https://www.edvancer.in/logistic-regression-vs-decision-trees-vs-svm-part1/
+  - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3686280/
+***** visualization - see table 1 in [[#liu2019a][liu2019a]]
+:PROPERTIES:
+:ID:       b364b310-aaf2-4ebd-8e83-3a98f1ff06ce
+:END:
+  - viSNA/tSNE
+  - UMAP
+  - PhenoGraph
+  - X-shift
+  - SPADE
+  - CITRUS
+  - FlowSOM
+***** applications
+:PROPERTIES:
+:ID:       48e68cb6-e455-4765-b967-e84727e07a6a
+:END:
+  - https://minimaxir.com/2019/09/howto-gpt2/
+  - Large patient datasets
+    - - http://www.sciencedirect.com/science/article/pii/S1521689608000839
+  - computer vision
+    - https://aws.amazon.com/rekognition/
+  - cite:hume2017 
+  - https://adeshpande3.github.io/
+  - https://www.google.com/search?q=super+mario+genetic+algorithm
+***** ideas
+:PROPERTIES:
+:ID:       b0e0ccec-3083-41e4-a9b9-fafcee1788f9
+:END:
+  - DRAFT Machine learning workflow
+    - Prepare data
+      - Feature engineering- Calculate derived variables
+      - Eliminate variables from 
+        - Unique identifiers 
+    - Initial testing- exploratory prediction honing
+*** <<<Data Visualization>>>
+:PROPERTIES:
+:ID:       1DA3ABC0-79B0-4CED-B926-22B37840379D
+:END:
+:LOGBOOK:
+CLOCK: [2017-10-30 Mon 15:33]--[2017-10-30 Mon 15:46] =>  0:13
+CLOCK: [2017-10-30 Mon 14:55]--[2017-10-30 Mon 14:59] =>  0:04
+:END:
+https://www.freecodecamp.org/news/learn-data-visualization-in-this-free-17-hour-course/
+https://www.reddit.com/r/dataisbeautiful/comments/jkqbtk/oc_presidential_election_forecast_current/
+- https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003833
+- https://www.reddit.com/r/bioinformatics/comments/jd3k0x/what_is_the_most_aesthetically_pleasing_figure/
+- https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008259
+- https://old.reddit.com/r/orgmode/comments/jbl1ky/use_d3_js_and_graphviz_to_publish_git_dynamic/
+- [[https://vega.github.io/vega/docs/schemes/][dark2 scheme]]
+    - nice color scheme https://stackoverflow.com/questions/9563711/r-color-palettes-for-many-data-classes
+
+- https://setosa.io/#/
+- https://www.datarevelations.com/resources/bans/
+- http://compbio.ucsd.edu/making-heat-maps-r/
+- https://biit.cs.ut.ee/clustvis/
+https://github.com/paulvangentcom/python_corona_simulation?files=1
+https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
+https://www.davidrumsey.com/ll/thumbnailView.html?startUrl=%2F%2Fwww.davidrumsey.com%2Fluna%2Fservlet%2Fas%2Fsearch%3Fos%3D0%26mid%3DRUMSEY~8~1~275397~90048657%26sort%3DPub_List_No_InitialSort%2CPub_Date%2CPub_List_No%2CSeries_No%26bs%3D100
+http://www.npr.org/2013/01/18/169708761/edward-tufte-wants-you-to-see-better
+https://www.reddit.com/r/datascience/comments/diufp0/are_there_other_thinkers_with_different_ideas_in/
+https://towardsdatascience.com/recreating-gapminder-animation-in-2-lines-of-python-with-plotly-express-2060c73bedec
+https://www.reddit.com/r/dataisbeautiful/comments/b2fybb/animation_the_10_biggest_cities_in_the_world/
+https://www.reddit.com/r/dataisbeautiful/comments/adhzrw/watch_my_money_flow_an_animated_representation_of/edh0ksm/
+cite:rougier2014 
+https://www.reddit.com/r/dataisbeautiful/comments/aa92ex/seeing_theory/
+  - https://ourworldindata.org/
+https://pbs.twimg.com/media/C0NSXNuXAAIpUgN.jpg:large
+https://www.reddit.com/r/dataisbeautiful/comments/9yg8w9/googles_autocomplete_visualized_like_a_graph_link/
+- d3.js
+  - https://www.google.com/search?safe=off&rlz=1CDGOYI_enUS769US769&hl=en-US&ei=CAnMWuLGEOzGjwTquqnIAQ&q=d3+javascript&oq=d3+java&gs_l=mobile-gws-serp.1.0.0i67j0l4.3717.5619..6830...0....70.515.8..........1..mobile-gws-wiz-serp.......0i71j0i22i30j0i22i10i30j0i131.VC5uK7rClo4%3D
+https://www.theverge.com/platform/amp/2018/10/28/18022986/data-visualization-information-is-beautiful-2018
+https://www.awsgeek.com/
+https://www.reddit.com/r/statistics/comments/2jon2b/anyone_knows_how_are_made_the_graphs_on/#ampf=undefined
+- [[https://www.shipmap.org/]]
+- https://www.reddit.com/r/coolguides/comments/9l83yl/a_guide_4000_years_of_history/
+- https://www.reddit.com/r/dataisbeautiful/comments/9kg9ym/oc_recent_philosophy_visualized/
+- https://processing.org/
+- matlab example- - https://www.reddit.com/r/dataisbeautiful/comments/7ve4i8/comparison_between_two_quadruple_pendulums_with/
+- https://www.reddit.com/r/dataisbeautiful/comments/8nadwr/every_road_in_the_continental_us_oc/
+- https://datavizproject.com/function/part-to-whole/
+- https://datavizcatalogue.com/
+- http://web.cse.ohio-state.edu/~ji.62/VisProject/vis~.html
+- https://www.gapminder.org/
+  - https://www.gapminder.org/tools/#_state_time_delay:100;&marker_axis/_x_scaleType=linear;;;&data_/_lastModified:1521499532636;&chart-type=bubbles
+  - https://github.com/Gapminder
+- https://vizhub.healthdata.org/gbd-compare/
+- See also
+  - ggplot2
+- cite:Liu_2014
+- Representation types
+  - network visualization
+    - http://www.hiveplot.com/
+- Platforms
+  - - https://gephi.org/
+  - - http://chimera.labs.oreilly.com/books/1230000000345/index.html
+  - [[https://d3js.org/][D3 data driven documents]]
+    - - [[https://www.reddit.com/r/dataisbeautiful/comments/72c06m/im_elijah_meeks_author_of_d3js_in_action_and/][reddit: Elijah Meeks, author of D3Js]]
+    - http://vis.stanford.edu/protovis/ex/
+  - Tableau
+    - [[https://www.tableau.com/learn/training][Training videos]]
+      - 
+- Examples
+  - - http://www.shorttails.io/interactive-map-of-reddit-and-subreddit-similarity-calculator/
+  - https://www.reddit.com/r/dataisbeautiful/comments/7b7aa0/visualizing_the_depthfirst_search_recursive/dpfr49n/
+  - - https://beno.org.uk/metromapcreator/
+  - - http://www.besthealthdegrees.com/health-risks/
+  - https://github.com/USGS-VIZLAB/hurricane-irma
+  - - http://www.visualcapitalist.com/wp-content/uploads/2017/09/cognitive-bias-infographic.html
+  - - [[http://flowingdata.com/2017/01/24/one-dataset-visualized-25-ways/][One Dataset, Visualized 25 Ways]]
+  - [[https://www.reddit.com/r/dataisbeautiful/comments/6m0wo7/peak_time_for_sports_and_leisure_oc/][Peak time for sports and leisure {OC}]]
+  - https://pudding.cool/2017/03/film-dialogue/index.html
+  - https://pudding.cool/2017/05/song-repetition/
+  - [[http://students.brown.edu/seeing-theory/][brown.edu Seeing theory]]
+  - [[http://setosa.io/ev/principal-component-analysis/][setosa Principal Component Analysis Explained Visually]]
+  - [[https://trends.google.com/trends/explore][Google trends]]
+  - [[https://www.reddit.com/r/educationalgifs/comments/6iv0kk/how_herd_immunity_works/dj9a5e3/][gif simulation]]
+  - http://www.informationisbeautiful.net/visualizations/snake-oil-supplements/
+  - https://www.bloomberg.com/graphics/2015-whats-warming-the-world/
+  - [[https://www.reddit.com/r/dataisbeautiful/comments/6qnkg0/google_search_interest_follows_the_path_of_the/][reddit: Google search interest follows the path of the August 21, 2017 solar eclipse]]
+- Guides
+  - [[https://www.reddit.com/r/IWantToLearn/comments/62ns0p/how_do_i_create_infographic_videos/][reddit: IWTL how to make infographic videos]]
+
+**** Daniel Janies Visual Analytics of Pathogens                    :lecture:
+:PROPERTIES:
+:ID:       512A6FB6-364D-4AE2-8BBF-EA0F1B64A6E2
+:END:
+:LOGBOOK:
+CLOCK: [2018-01-29 Mon 11:59]--[2018-01-29 Mon 12:49] =>  0:50
+:END:
+https://www.ncbi.nlm.nih.gov/pathogens/
+radar graphs for antibiogram
+
+*** Databases and Database Management Systems
+:PROPERTIES:
+:ID:       A4A0EABF-3161-47AA-BDA4-E75DCB509201
+:END:
+
+- hadoop
+  - https://www.google.com/search?q=mapreduce&oq=mapreduce&aqs=chrome..69i57j0l5.1682j0j7&sourceid=chrome&ie=UTF-8
+- Metadata
+  - Ontology is metadata with technical and descriptive components 
+  - Technical
+    - Constraints and rules in syntax of interpreted language
+    - 
+    - Source documentation
+      - Columns of each table
+      - Inter-table relationships
+      - Enumerations (permissible values)
+- Database view: predefined query across multiple tables
+- See Healthcare Databases
+- Explorers and farmers
+- Integration
+  - Transformation 
+  - Understanding source data
+    - Identify the purpose of each table
+    - Understand constraints and checks
+  - Data model- a subset of the union of diverse data
+  - Logical and physical integration
+    - In physical, data is constructed in the global model instead of referred to 
+- cite:sarkar2014 Chapter 2
+- Relational database (RDB)
+  - Performance features
+    - Indexes
+      - B-tree
+      - hash-table
+      - join
+      - bitmap
+    - Pre-compute aggregates
+    - Caching
+    - Query optimization
+  - Schema specified by sql 
+  - Normalization: minimal duplication across tables
+- Schema: structure of a database
+- https://www.1keydata.com/datawarehousing/data-modeling-levels.html
+
+- Hadoop: open-source toolset that fractions data and computation
+  - opposed to enterprise approach with single, powerful computer
+  - Architecture
+    - MapReduce
+    - HDFS file system
+
+**** <<<Structured Query Language>>> (<<<SQL>>>)                     :career:
+:PROPERTIES:
+:ID:       5B25B211-1888-49DB-8857-A05137D1FF92
+:END:
+:LOGBOOK:
+CLOCK: [2018-12-12 Wed 16:31]--[2018-12-12 Wed 16:32] =>  0:01
+CLOCK: [2018-12-12 Wed 15:47]--[2018-12-12 Wed 16:29] =>  0:42
+:END:
+- https://bofh.org.uk/2019/02/25/baking-with-emacs/
+- https://github.com/schemacrawler/SchemaCrawler
+- https://blog.stefanproell.at/2016/01/11/create-an-er-diagram-of-an-existing-sqlite-database-or-manyoother-rdbms/
+- http://www.eliacom.com/mysql-gui-index.php
+- [[https://stackoverflow.com/questions/22673352/colorize-table-name-in-graphviz-entity-relationship-diagram][entity - relationship diagrams with graphviz]]
+- mysql
+  - commands
+    | admin login test | mysqladmin -u root -p version |
+  - operations
+    - [[https://stackoverflow.com/questions/1720244/create-new-user-in-mysql-and-give-it-full-access-to-one-database][Create new user in MySQL and give it full access to one database]]
+  - mysql - R - google sheets !https://www.quora.com/Is-there-a-method-to-convert-data-in-Google-sheets-to-MySQL
+  - install https://gist.github.com/nrollr/3f57fc15ded7dddddcc4e82fe137b58e
+  - temp password is K%2SwkF3VsiF
+  - reset with https://stackoverflow.com/questions/4359131/brew-install-mysql-on-mac-os/33924648#33924648
+  - [[https://stackoverflow.com/questions/15450091/for-a-newbie-error-2002-hy000-cant-connect-to-local-mysql-server-through-so][ERROR 2002]]
+- applications
+  - http://www.sequelpro.com/
+- Relational Database Management System (RDBMS)
+  - postgreSQL
+    - on work linux
+      - create db- sudo -u postgres -i https://stackoverflow.com/questions/11919391/postgresql-error-fatal-role-username-does-not-exist, 
+    - [[https://www.postgresql.org/docs/9.1/index.html][documentation]]
+    - [ ] get on command line q/ psql
+    - pgadmin
+      - ctrl-e runs querys!
+      - [[https://www.pgadmin.org/docs/pgadmin3/1.22/index.html][pgAdmin III documentation]]
+    - PostGreSQL with Python
+      - psycopg2
+      - juypter
+      - https://wiki.postgresql.org/wiki/Psycopg2_Tutorial
+  - [ ] create db https://stackoverflow.com/questions/8200917/postgresql-create-a-new-db-through-pgadmin-ui
+  - also dbi, montedb, msosql, mysql, sql mode...
+  - https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-sql.html
+- [[https://stackoverflow.com/questions/369266/how-to-document-a-database][stack: how to document a database]]
+- guides
+  - http://www.sqlstyle.guide/
+- tutorials
+  - https://www.dataquest.io/blog/sql-intermediate/
+- resume postgres tutorial on worklinux https://www.postgresql.org/docs/9.1/tutorial-populate.html
+
+***** DONE Udmey SQL Bootcamp                                        :career:
+CLOSED: [2017-06-23 Fri 18:56]
+:PROPERTIES:
+:ID:       9DCE5192-210C-42BF-B94C-C85C80C72A5D
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2017-06-22 Thu 16:41]
+CLOCK: [2017-06-22 Thu 15:42]--[2017-06-22 Thu 16:41] =>  0:59
+- State "DONE"       from "TODO"       [2017-06-21 Wed 14:06]
+CLOCK: [2017-06-21 Wed 13:10]--[2017-06-21 Wed 14:06] =>  0:56
+- State "DONE"       from "TODO"       [2017-06-20 Tue 11:22]
+CLOCK: [2017-06-20 Tue 10:46]--[2017-06-20 Tue 11:22] =>  0:36
+CLOCK: [2017-06-20 Tue 10:35]--[2017-06-20 Tue 10:45] =>  0:10
+CLOCK: [2017-06-20 Tue 10:13]--[2017-06-20 Tue 10:31] =>  0:18
+- State "DONE"       from "TODO"       [2017-06-19 Mon 15:29]
+CLOCK: [2017-06-19 Mon 14:48]--[2017-06-19 Mon 15:29] =>  0:41
+CLOCK: [2017-06-19 Mon 14:11]--[2017-06-19 Mon 14:38] =>  0:27
+- State "DONE"       from "TODO"       [2017-06-15 Thu 16:45]
+CLOCK: [2017-06-15 Thu 15:55]--[2017-06-15 Thu 16:45] =>  0:50
+CLOCK: [2017-06-13 Tue 14:42]--[2017-06-13 Tue 14:53] =>  0:11
+- State "DONE"       from "TODO"       [2017-06-12 Mon 20:44]
+CLOCK: [2017-06-12 Mon 20:06]--[2017-06-12 Mon 20:44] =>  0:38
+CLOCK: [2017-06-02 Fri 13:40]--[2017-06-02 Fri 14:01] =>  0:21
+- State "DONE"       from "TODO"       [2017-05-31 Wed 14:54]
+CLOCK: [2017-05-31 Wed 14:16]--[2017-05-31 Wed 14:54] =>  0:38
+CLOCK: [2017-05-31 Wed 13:40]--[2017-05-31 Wed 14:12] =>  0:32
+- State "DONE"       from "TODO"       [2017-05-24 Wed 12:42]
+CLOCK: [2017-05-24 Wed 12:26]--[2017-05-24 Wed 12:42] =>  0:16
+CLOCK: [2017-05-24 Wed 11:29]--[2017-05-24 Wed 12:15] =>  0:46
+- State "DONE"       from "TODO"       [2017-05-22 Mon 17:35]
+CLOCK: [2017-05-22 Mon 17:19]--[2017-05-22 Mon 17:35] =>  0:16
+CLOCK: [2017-05-22 Mon 16:35]--[2017-05-22 Mon 17:15] =>  0:40
+CLOCK: [2017-05-22 Mon 14:49]--[2017-05-22 Mon 14:56] =>  0:07
+- State "DONE"       from "TODO"       [2017-05-18 Thu 11:52]
+CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
+:END:
+- https://www.datacamp.com/courses/intro-to-sql-for-data-science
+- [[file:~/Box%20Sync/org/career.org::*Udemy%20SQL%20Bootcamp][Udemy SQL Bootcamp]]
+- http://www.sql-join.com/
+- http://stackoverflow.com/questions/6613802/question-about-setting-up-inventory-database
+- [[file:~/Box%20Sync/career/SQLNotes.pdf][Course notes]]
+- [[file:~/Box%20Sync/career/sql%20cheat%20sheet.png][sql cheat sheet]]
+- how are the data tables actually stored? 
+- Intro
+  - pgAdmin and _?_ install
+    - pgAdmin is the GUI
+- Databases and Tables
+  - Table schema: everything e/c data
+- SWL statement fundamentals
+  - sql is case insensitive
+  - SELECT column_1,column_2 FROM table_name;
+    - SELECT DISTINCT column_1,column_2 FROM table_name;
+      - column may have duplicate rows
+    - SELECT and WHERE- just rows matching particular condition: SELECT column_1, column_2, ... column_n FROM table_name WHERE conditions;
+      - where operators: =,>,<,>=,<=,!=,AND, OR
+      - can select single columns- e.g. SELECT email FROM customer WHERE first_name = 'Jared'; returns just emails
+  - COUNT
+    - SELECT COUNT(*) FROM table;
+    - SELECT COUNT(column) FROM table;
+    - SELSEC COUNT (DISTINCT column) FROM table
+      - e.g. SELECT COUNT (DISTINCT (amount)) FROM payment;
+  - LIMIT limit returned rows
+    - e.g. SELECT * FROM customer LIMIT 5;
+  - ORDER BY sorts results
+    - SELECT column_1, column_2 FROM table_name ORDER BY column_1 ASC
+    - ASC is the default,alternative is DESC
+  - WHERE and HAVING
+    - BETWEEN
+      - value BETWEEN low AND high
+      - value NOT BETWEEN low AND high
+      - e.g. SELECT amount,payment_date FROM payment WHERE payment_date BETWEEN '2007-02-07' AND '2007-02-15';
+    - IN
+      - value IN (SELECT value FROM tbl_name)
+      - e.g. SELECT customer_id,rental_id,return_date FROM rental WHERE customer_id IN (1,2) ORDER BY return_date DESC;
+    - LIKE
+      - SELECT columns FROM tbl WHERE colmn1 LIKE 'pattern%';
+      - e.g. SELECT first_name,last_name FROM customer WHERE first_name LIKE 'Jen%';
+      - wildcards
+        - % any sequence of char
+        - _ any single char
+      - ILIKE ignores case
+    - HAVING
+      - filter group rows that do not satisfy a condition
+      - SELECT column_1, aggregate_function(column_2) FROM table GROUP BY column_1 HAVING condition
+      - conditions
+        - HAVING sets conditions AFTER grouping
+        - WHERE  sets conditions BEFORE grouping
+- subquery: 
+- GROUP BY statements
+  - Aggreagte functions- MIN MAX AVG SUM
+    - e.g. SELECT ROUND(AVG(amount),2) FROM payment;
+  - SELECT column_1, aggregate_function(column_2) FROM table GROUP BY column_1;
+  - SELECT customer_id, SUM(amount) FROM payment GROUP BY customer_id;
+  - SELECT staff_id, COUNT(*) FROM payment GROUP BY staff_id;
+- AS
+  - SELECT column AS new_returned_name FROM table;
+  - SELECT column, SUM(amount) AS new_sum_name FROM table;
+- JOINS
+  - each table has primary key (pka)
+  - foreign key? (fka)- matches the pka of the other table
+  - inner join
+    - syntax: SELECT A.pka, A.c1, B.pkb,B.c2 FROM A INNER JOIN B on A.pka = B.fka
+      - A/B are the table names
+      - .column_name
+      - postgresql will scan for B rows that match the A key
+    - returns results that exist in both tables (overlap of the venn)
+    - SELECT customer.customer_id, first_name, last_name, email, amount, payment_date FROM customer INNER JOIN payment ON payment.customer_id = customer.customer_id;
+    - reduced command: SELECT film.title,lan.name FROM film JOIN language lan ON lan.language_id = film.language_id;
+      - abbreviating table name
+      - remove AS
+      - remove INNER
+  - other JOINs
+    - [[file:career.org_imgs/20170612_203746_66395j6p.png]]
+    - outer
+      - SELECT film.film_id,film.title,inventory_id FROM film LEFT OUTER JOIN inventory ON inventory.film_id = film.film_id;
+    - right
+  - UNION
+    - SELECT column_1,column_2 FROM tbl_1 UNION SELECT column_1,column_2 FROM tbl_2
+    - same # of columns from each table with compatible data types
+    - removes duplicates unless UNION ALL is used 
+- Advanced SQL Commands
+  - Math functions
+    - [[https://www.postgresql.org/docs/9.1/static/functions.html][Documentation]]
+    - operators: e.g. SELECT customer_id + payment_id AS new_id FROM payment;
+    - functions
+  - Timestamps and extract
+    - [[https://www.postgresql.org/docs/9.1/static/datatype-datetime.html][PostgreSQL day/time documentation]]
+    - e.g. SELECT SUM(amount),extract(month from payment_date) AS month FROM payment GROUP BY month;
+  - Strings
+    - [[https://www.postgresql.org/docs/9.1/static/functions.html][Documentation]]
+    - e.g. SELECT first_name || ' ' || last_name AS full_name FROM customer;
+  - SubQuery
+    - multiple SELECT statements as brackets in the WHERE clause
+    - e.g. rental rate higher than average rental rate: SELECT film_id,title,rental_rate FROM film WHERE rental_rate > (SELECT AVG(rental_rate) FROM film);
+    - e.g. SELECT inventory.film_id FROM rental INNER JOIN inventory ON inventory.inventory_id = rental.inventory_id WHERE return_date BETWEEN '2005-05-29' AND '2005-05-30';
+  - Self-Join
+    - merge two columns with the AS statement
+    - e.g. SELECT a.first_name,a.last_name,b.first_name,b.last_name,a.customer_id,b.customer_id FROM customer AS a, customer AS b WHERE a.first_name = b.last_name;
+- Assessment 2
+  - SELECT * FROM cd.facilities;
+  - SELECT name,membercost FROM cd.facilities;
+  - SELECT name,membercost FROM cd.facilities WHERE cd.facilities.membercost >0;
+  - SELECT name,membercost,monthlymaintenance FROM cd.facilities WHERE cd.facilities.membercost >0 AND membercost < (monthlymaintenance/50);
+  - SELECT name FROM cd.facilities WHERE name LIKE '%Tennis%';
+  - SELECT * FROM cd.facilities WHERE facid = 1 OR facid = 5;
+  - SELECT memid,surname,firstname,joindate FROM cd.members WHERE joindate > '2012-09-01';
+  - SELECT DISTINCT(surname) FROM cd.members ORDER BY surname LIMIT 10; 
+  - SELECT joindate FROM cd.members ORDER BY joindate DESC LIMIT 1;
+  - SELECT COUNT(guestcost) FROM cd.facilities WHERE guestcost >=10;
+  - SELECT facid,SUM(slots) FROM cd.bookings WHERE starttime >'2012-08-31' AND starttime <'2012-10-01' GROUP BY facid ORDER BY SUM(slots);
+  - SELECT facid,SUM(slots) FROM cd.bookings GROUP BY facid HAVING SUM(slots) >1000 ORDER BY facid;
+  - SELECT cd.bookings.facid,cd.bookings.starttime,cd.facilities.facid,cd.facilities.name FROM cd.bookings INNER JOIN cd.facilities on cd.bookings.facid=cd.facilities.facid WHERE starttime > '2012-09-20' AND starttime < '2012-09-22' AND name LIKE '%Tennis Court%' ORDER BY starttime;
+  - SELECT starttime FROM cd.bookings WHERE memid=(SELECT memid FROM cd.members WHERE surname = 'Farrell' AND firstname='David');
+- Creating Content
+  - Creating Databases and Tables
+    - specify data types
+      - character types
+        - char single
+        - char(n) fixed-length
+        - varchar variable-length
+      - integers
+        - smallint
+        - int
+        - serial- auto-increment
+      - floats
+        - float(n)
+        - real
+        - numeric
+      - temporal
+        - date
+        - time
+        - timestamp
+        - interval
+        - timestamptz
+    - Keys
+      - Primary- column for unique row id
+        - primary key constraints-
+        - one per table 
+      - Foreign
+        - the primary key of another table (child / referencing table)
+        - defined by foreign key constraint
+  - Create Table
+    - i.e.: CREATE TABLE table_name (column_name TYPE column_constraint, table_constraint) INHERITS existing_table_name;
+      - e.g.: CREATE TABLE table_name (column_name data_type PRIMARY KEY, column_name data_type, ...);
+      - column constraints
+        - NOT NULL
+        - UNIQUE
+        - PRIMARY KEY = NOT NULL + UNIQUE
+          - a multiple-column primary key can be made at table constraints
+        - CHECK
+        - REFERENCES- constrains to value of another table
+      - table constraints = column constraints
+      - e.g.: CREATE TABLE account(user_id serial PRIMARY KEY,username VARCHAR(50) UNIQUE NOT NULL,password VARCHAR(50) NOT NULL, email VARCHAR(335) UNIQUE NOT NULL, created_on TIMESTAMP NOT NULL, last_login TIMESTAMP);
+      - copy table structure- e.g.: CREATE TABLE link_copy (LIKE link);
+    - INSERT
+      - create table defines schema, not rows
+      - ie.: INSERT INTO table(column1,column2,...) VALUES (value1,value2,...),(value1,value2,...);
+      - e.g.: INSERT INTO link(url,name) VALUES ('www.google.com','Google');
+      - from another table: INSERT INTO table SELECT column1,column2,... FROM another_table WHERE condition;
+        - e.g.: INSERT INTO link_copy SELECT * FROM linkWHERE name LIKE ('%Bing%');
+  - UPDATE
+    - i.e. UPDATE table SET column1 = value1, column2 = value2,... WHERE condition;
+    - e.g. UPDATE link SET description = 'Name starts with an A' WHERE name LIKE 'A%';
+    - see returned results- e.g.: UPDATE link SET description = 'New Description' WHERE id = 1  RETURNING id,url,name,description;
+  - DELETE
+    - for rows
+      - i.e.: DELETE FROM table WHERE condition RETURNING column1,...;
+      - returns # of rows deleted
+      - e.g.: SELECT * FROM link; DELETE FROM link WHERE name LIKE 'B%';
+  - ALTER TABLE
+    - i.e.: ALERT TABLE table action;
+      - actions (many)
+        - ADD COLUMN
+        - DROP COLUMN
+    - e.g.: ALTER TABLE link RENAME COLUMN title TO new_title_name;
+    - e.g.: ALTER TABLE link ADD COLUMN active boolean;
+  - DROP TABLE i.e. DROP TABLE IF EXISTS table_name;
+  - Constraints
+    - CHECK 
+      - e.g.:CREATE TABLE new_users(id serial PRIMARY KEY,first_name VARCHAR(50),birth_date DATE CHECK (birth_date > '1900-01-01'));
+    - NOT NULL- row must have a value for this column
+    - UNIQUE  
+- Assessment 3
+- [ ] Create a new database called "School"
+  - constraints
+    - must have a phone number 
+    - must have ids as the primary key of the tables
+    - Phone numbers and emails must be unique to the individual.
+  - tables:
+    - teachers
+      - teacher_id, first_name, last_name,homeroom_number, department, email, and phone.
+    - students
+      - columns student_id, first_name,last_name, homeroom_number, phone,email, and graduation year.
+- [ ] Once you've made the tables, insert a student named Mark Watney (student_id=1) who has a phone number of 777-555-1234 and doesn't have an email. He graduates in 2035 and has 5 as a homeroom number.
+- [ ] Then insert a teacher names Jonas Salk (teacher_id = 1) who as a homeroom number of 5 and is from the Biology department. His contact info is: jsalk@school.org and a phone number of 777-555-4321.
+- View = stored query
+  - e.g.: CREATE VIEW customer_info AS SELECT first_name,last_name,email,address,phone FROM customer JOIN address ON customer.address_id=address.address_id;
+  - not creating new data, just saving the query
+  - ALERT VIEW
+  - DROP VIEW
+
+***** Ideas
+:PROPERTIES:
+:ID:       31F5C06A-6F4B-4FE0-842E-481BA241AB8E
+:END:
+
+- [[https://www.google.com/search?q=data+entry+website+to+sql&rlz=1CDGOYI_enUS715US716&oq=data+entry+website+to+sql&aqs=chrome..69i57.8665j0j9&hl=en-US&sourceid=chrome-mobile&ie=UTF-8][Google: data entry website to sql]]
+- [[https://www.google.com/search?safe=off&rlz=1CDGOYI_enUS715US716&hl=en-US&ei=HW5JWcPsPMHOjwSXsZTQAg&q=Make+a+glossary+with+sql&oq=Make+a+glossary+with+sql&gs_l=mobile-gws-serp.3..33i160k1.609342.621121.0.621950.15.15.0.0.0.0.900.4489.0j9j4-1j2j2.14.0....0...1.1.64.mobile-gws-serp..4.11.2269...0j0i67k1j0i7i30k1j0i7i10i30k1j0i22i30k1j33i22i29i30k1.LBD7UzJYOMM][Make a glossary with sql]]
+- SQL in Org Mode
+
 ** Operating Systems
 :PROPERTIES:
 :ID:       16DB2FD8-1988-48E4-8D8D-E69398823A70
@@ -682,7 +2214,7 @@ http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-
 :PROPERTIES:
 :ID:       26211e92-7ff9-4520-a9a7-cac04027e610
 :END:
-https://cran.r-project.org/web/views/Econometrics.html
+- https://cran.r-project.org/web/views/Econometrics.html
 - For basic statistics, see cite:mangiafico2005 [[http://rcompanion.org/rcompanion/e_01.html][R Companion to Biostats Handbook]]
 - [[https://www.r-bloggers.com/bayesian-network-in-r-introduction/][Bayesian network in R: Introduction]]
   #+BEGIN_SRC R
