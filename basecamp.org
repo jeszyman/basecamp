@@ -2,12 +2,7 @@
 :PROPERTIES:
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
-#+begin_src R :tangle ./src/setup.R
-# Set variables
-select=dplyr::select
-filter=dplyr::filter
 
-#+end_src
 - https://drivendata.github.io/cookiecutter-data-science/#directory-structure
 - https://github.com/dslp/dslp-repo-template
 ** Information Science / Data Science
@@ -17,6 +12,8 @@ filter=dplyr::filter
 :LOGBOOK:
 CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 :END:
+https://www.reddit.com/r/datascience/comments/mrwzkq/what_is_the_best_structured_ds_project_you_have/
+https://github.com/ben519/DataWrangling
 - https://about.zenodo.org/
 - https://www.reddit.com/r/rstats/comments/b4ol4z/unbin_data_to_make_histogram/
 https://github.com/dslp/dslp-repo-template
@@ -1835,6 +1832,13 @@ done
 :PROPERTIES:
 :ID:       a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc
 :END:
+- Set environmental variables
+  #+begin_src R :tangle ./src/setup.R
+# Set environmental variables
+select=dplyr::select
+filter=dplyr::filter
+
+#+end_src
 - Check CRAN packages, install as needed
   #+begin_src R :tangle ./src/setup.R 
 #########1#########2#########3#########4#########5#########6#########7#########8
@@ -1917,6 +1921,8 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
+https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
+https://adv-r.hadley.nz/
 http://haozhu233.github.io/kableExtra/best_practice_for_newline_in_latex_table.pdf
 https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html
 - https://cran.r-project.org/web/packages/tikzDevice/vignettes/tikzDevice.pdf
@@ -2003,7 +2009,7 @@ df
   | save hx              | savehistory("<OUTPUT_FILE>")                                                             |
   | cumm density plot    | [[https://ggplot2.tidyverse.org/reference/stat_ecdf.html][stat_ecdf()]]                                                                              |
   | sort                 | sorted=unsorted[with(unsorted, order(by)),]                                              |
-*** processes
+*** Processes
 :PROPERTIES:
 :ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
 :END:
@@ -2192,6 +2198,8 @@ CLOCK: [2020-07-29 Wed 11:00]--[2020-07-29 Wed 11:20] =>  0:20
 :PROPERTIES:
 :ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
 :END:
+https://r-charts.com/
+https://r-graphics.org/recipe-facet-label-appearance
 https://wilkelab.org/cowplot/articles/themes.html
 https://ggplot2-book.org/index.html
 https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html
@@ -3142,6 +3150,7 @@ https://www.freecodecamp.org/news/linux-server-course-system-configuration-and-o
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+- find / -xdev -type f -size +1G 2>&1 | grep -v "Permission denied"
 - https://github.com/teejee2008/timeshift
 - https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
 - gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
@@ -4795,6 +4804,7 @@ https://help.github.com/en/articles/about-project-boards
 :LOGBOOK:
 CLOCK: [2019-02-06 Wed 16:12]--[2019-02-06 Wed 17:05] =>  0:53
 :END:
+- https://x-team.com/blog/programming-best-practices/
 *** General reference
 :PROPERTIES:
 :ID:       48dfc684-aa60-4222-8641-d1646b3451be
@@ -4864,6 +4874,7 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
+https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
 https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
 https://www.dataquest.io/
 https://www.freecodecamp.org/news/the-python-handbook/
@@ -6177,6 +6188,8 @@ pandoc -S $test | xclip -selection clipboard
 :PROPERTIES:
 :ID:       7cb5af61-5a19-40ce-96ad-b5b5df51daae
 :END:
+https://github.com/emacs-ess/ESS/issues/1059
+https://stat.ethz.ch/pipermail/ess-help/2015-July/010628.html
 - ess on docker
   - http://ess.r-project.org/Manual/ess.html#Activating-and-Loading-ESS
   - and get docker ip
@@ -6205,6 +6218,7 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
+https://stackoverflow.com/questions/29480099/whats-the-difference-between-docker-compose-vs-dockerfile
 - https://stackoverflow.com/questions/16296753/can-you-run-gui-applications-in-a-docker-container/50356450#50356450
 - Dockerfile best practices ideas
   - include comment w/ build time

@@ -1,3 +1,7 @@
+# Set environmental variables
+select=dplyr::select
+filter=dplyr::filter
+
 #########1#########2#########3#########4#########5#########6#########7#########8
 # Check CRAN packages, install as needed
 ##
