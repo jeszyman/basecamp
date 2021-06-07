@@ -20,21 +20,21 @@ sudo python setup.py install
 #
 #
 
-      cd /tmp/
-      rm file1
-      rm file2
-      touch file2; sleep 2; touch file1
-      if [ file1 -nt file2 ]; then
-          echo "yes"
-      fi
+    cd /tmp/
+    rm file1
+    rm file2
+    touch file2; sleep 2; touch file1
+    if [ file1 -nt file2 ]; then
+        echo "yes"
+    fi
 
-      cd /tmp/
-      rm file1
-      rm file2
-      touch file2; sleep 2; touch file1
-      if [ file1 -nt file2 ]; then
-          echo "yes"
-      fi
+    cd /tmp/
+    rm file1
+    rm file2
+    touch file2; sleep 2; touch file1
+    if [ file1 -nt file2 ]; then
+        echo "yes"
+    fi
 
 #########1#########2#########3#########4#########5#########6#########7#########8#########9#########0#########1
 jpg_to_pdf() {

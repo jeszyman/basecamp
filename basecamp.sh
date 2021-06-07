@@ -1,17 +1,17 @@
   cd ~/
   find . -type d -name '.git' > ~/all-git-repos.txt
 
-     d=$(date +%Y-%m-%d)
-     echo "$d"
-     cd ~/Box\ Sync/
-     for i in ./*/ ; do (cd "$i" && git commit -a -m "$d"); done
-     end
+   d=$(date +%Y-%m-%d)
+   echo "$d"
+   cd ~/Box\ Sync/
+   for i in ./*/ ; do (cd "$i" && git commit -a -m "$d"); done
+   end
 
-     d=$(date +%Y-%m-%d)
-     echo "$d"
-     cd ~/Box\ Sync/
-     for i in ./*/ ; do (cd "$i" && git commit -a -m "$d"); done
-     end
+   d=$(date +%Y-%m-%d)
+   echo "$d"
+   cd ~/Box\ Sync/
+   for i in ./*/ ; do (cd "$i" && git commit -a -m "$d"); done
+   end
 
 #
 ###################################
