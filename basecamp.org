@@ -27,31 +27,31 @@ done
 # Check CRAN packages, install as needed
 ##
 packages = c(
-  "caret",
-  "circlize",
-  'cowplot',
-  "cutpointr",
-  "data.table",
-  "factoextra",
-  "FSA",
-  "ggplot2",
-  'ggpubr',
-  "ggpval",
-  "ggsci",
-  "ggvenn",
-  "ggrepel",
-  "grid",
-  "gridExtra",
-  "kableExtra",
-  "naniar",
-  "pheatmap",
-  "RColorBrewer",
-  "readr",
-  "readxl",
-  "scales",
-  "tidyverse"
+"caret",
+"circlize",
+'cowplot',
+"cutpointr",
+#"data.table",
+#"factoextra",
+"FSA",
+"ggplot2",
+#'ggpubr',
+"ggpval",
+"ggsci",
+"ggvenn",
+"ggrepel",
+"grid",
+"gridExtra",
+"kableExtra",
+"magrittr",
+"naniar",
+"pheatmap",
+"RColorBrewer",
+"readr",
+"readxl",
+"scales",
+"tidyverse"
 )
-
 #
 package.check = lapply(
   packages,
@@ -4099,7 +4099,9 @@ https://bmcmedgenomics.biomedcentral.com/articles/10.1186/s12920-019-0628-y
 :LOGBOOK:
 CLOCK: [2019-01-21 Mon 15:01]--[2019-01-21 Mon 15:29] =>  0:28
 :END:
-
+http://cran.nexr.com/web/packages/elrm/vignettes/elrm.pdf
+https://stats.idre.ucla.edu/r/dae/exact-logistic-regression/
+https://stats.idre.ucla.edu/r/dae/logit-regression/
 probability of class membership equals exp 
 
 logarithm of odds: 
