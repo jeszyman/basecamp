@@ -2,7 +2,6 @@
 :PROPERTIES:
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
-https://www.freecodecamp.org/news/teach-yourself-data-analytics-in-30-days/
 ** Setups
 :PROPERTIES:
 :ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
@@ -922,6 +921,7 @@ CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
 CLOCK: [2021-06-04 Fri 08:50]--[2021-06-04 Fri 09:53] =>  1:03
 CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 :END:
+- https://www.freecodecamp.org/news/teach-yourself-data-analytics-in-30-days/
 *** Data science project management
 - https://www.reddit.com/r/statistics/comments/b5sg97/what_makes_a_good_data_dictionary/
 - https://www.kdnuggets.com/2019/03/best-tips-agile-data-science-research.html
@@ -1775,15 +1775,17 @@ CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 :PROPERTIES:
 :ID:       7db1f632-6aa9-45ac-b499-0ed4e398618f
 :END:
+- file formats
+  - csv
+    - https://github.com/secretGeek/awesomecsv
+  - csv
+    - https://datatracker.ietf.org/doc/html/rfc4180
   - Image files
     - Raster
       - PNG- raster, compressible
-  - Character encoding
-    - ASCII- 1 bit
-    - Unicode- 2 bits
-  - file formats
-    - csv
-      - https://github.com/secretGeek/awesomecsv
+- Character encoding
+  - ASCII- 1 bit
+  - Unicode- 2 bits
 *** pdf files
 :PROPERTIES:
 :ID:       670ed8f4-bb93-4d93-b9ea-a142a599169f
