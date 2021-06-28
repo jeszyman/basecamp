@@ -2,6 +2,7 @@
 :PROPERTIES:
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
+https://www.freecodecamp.org/news/teach-yourself-data-analytics-in-30-days/
 ** Setups
 :PROPERTIES:
 :ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
@@ -42,6 +43,7 @@ packages = c(
 "ggrepel",
 "grid",
 "gridExtra",
+"Hmisc",
 "kableExtra",
 "magrittr",
 "naniar",
@@ -50,7 +52,8 @@ packages = c(
 "readr",
 "readxl",
 "scales",
-"tidyverse"
+"tidyverse",
+"viridis"
 )
 #
 package.check = lapply(
@@ -479,6 +482,7 @@ df
 :PROPERTIES:
 :ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
 :END:
+https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
 - saving - use - better than ggsave: - https://rdrr.io/cran/cowplot/man/save_plot.html
 - https://www.reddit.com/r/rstats/comments/b4ol4z/unbin_data_to_make_histogram/
 [[http://sape.inf.usi.ch/quick-reference/ggplot2/colour][ggplot2 color scheme]]
@@ -2429,6 +2433,7 @@ https://www.google.com/search?q=javascript+diagram&oq=Javascript+dia&aqs=chrome.
 CLOCK: [2020-06-14 Sun 19:38]--[2020-06-14 Sun 20:15] =>  0:37
 CLOCK: [2020-06-14 Sun 18:38]--[2020-06-14 Sun 18:58] =>  0:20
 :END:
+https://www.freecodecamp.org/news/full-javascript-course-for-beginners/
 https://www.freecodecamp.org/news/functional-programming-in-javascript-for-beginners/
 https://emacs-lsp.github.io/lsp-mode/tutorials/reactjs-tutorial/
 - https://github.com/morris/vanilla-todo
@@ -3230,13 +3235,21 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
   - https://unix.stackexchange.com/questions/4186/what-is-usr-local-bin
 - POSIX
   - [[https://github.com/dylanaraps/pure-sh-bible][pure sh bible]]
-***** tools (software)
+***** Tools (software)
 :PROPERTIES:
 :ID:       4a8bbace-0e0a-4eb2-92fd-03048d6f1ec5
 :END:
 :LOGBOOK:
 CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :END:
+- ifconfig
+  - [[file:/usr/share/man/man8/ifconfig.8.gz]] 
+- gnu parallel
+  - https://www.msi.umn.edu/support/faq/how-can-i-use-gnu-parallel-run-lot-commands-parallel
+  - https://www.biostars.org/p/63816/
+  - https://www.biostars.org/p/216905/
+  - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
+
 - https://github.com/denisidoro/navi
 - awk
   - [[https://stackoverflow.com/questions/47091464/print-for-loop-input-filename-on-piped-awk-output][file name as variable]]
@@ -3352,12 +3365,15 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
   - processes
   - [[https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html][documentation]]
   - applications
-- wget
-  - pass list to wget- https://www.tecmint.com/commandline-download-accelerators-for-linux/amp/
-  - https://superuser.com/questions/283481/how-do-i-properly-set-wget-to-download-only-new-files
-    - AND SET -O !!
 - X11
   - https://www.windowmaker.org/
+****** GNU tools
+- [[elisp:(with-minibuffer-input (call-interactively 'woman) "wget")][wget]]
+  - [[https://www.tecmint.com/commandline-download-accelerators-for-linux/amp/][pass list to]]
+  - [[https://superuser.com/questions/283481/how-do-i-properly-set-wget-to-download-only-new-files][download only on server side change]]
+    - AND SET -O !!
+  - download in background & resume broke  wget -bqc <PATH>
+  - clobber = overwrite
 ****** ssh 
 :PROPERTIES:
 :ID:       054f0013-9355-4194-8fbd-646b54db2f70
@@ -3441,6 +3457,7 @@ CLOCK: [2017-06-23 Fri 19:05]--[2017-06-23 Fri 19:35] =>  0:30
 CLOCK: [2018-06-27 Wed 11:59]--[2018-06-27 Wed 12:49] =>  0:50
 CLOCK: [2017-11-28 Tue 18:30]--[2017-11-28 Tue 19:30] =>  1:00
 :END:
+- Error-Correcting Output Codes
 - cite:ma2018
 https://web.stanford.edu/class/stats202/intro.html
 cite:yala2021 
@@ -4237,6 +4254,8 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :PROPERTIES:
 :ID:       6dbf1097-a795-4397-bfee-97e4dc79bd07
 :END:
+- GraphPad Prism
+  - Activation code https://mail.google.com/mail/u/0/#inbox/FMfcgzGkXmXrBzPdCzSHZjqpFxrFjGbb
 - [[https://www.google.com/search?client=ubuntu&hs=w80&sxsrf=ALeKk02nCefgbT-UzhMVn2emvtD5Hw-xbA%3A1608387013058&ei=xQneX7P-AtOD9PwPgImv6AY&q=chrome+view+excel+file+in+browser&oq=chrome+view+excel+file+in+browser&gs_lcp=CgZwc3ktYWIQAzIFCAAQzQIyBQgAEM0CMgUIABDNAjIFCAAQzQI6BAgAEEc6AggAOgYIABAHEB46BggAEAUQHjoGCAAQCBAeOggIABAIEAcQHjoECCEQClCS5g5Y75MPYKKWD2gBcAJ4AIABzgGIAZ8MkgEGMTUuMC4xmAEAoAEBqgEHZ3dzLXdpesgBCMABAQ&sclient=psy-ab&ved=0ahUKEwjz9MvEnNrtAhXTAZ0JHYDEC20Q4dUDCA0&uact=5][chrome view excel file in browser]]
 - by application
   - pdf ocr
@@ -4704,31 +4723,7 @@ https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-
     - [[https://stackoverflow.com/questions/16017500/how-to-see-full-symlink-path][see path with readlink -f]]
     - [[https://stackoverflow.com/questions/1727280/is-there-a-way-to-edit-a-symlink-without-deleting-it-first][stack: create and edit symlinks]]- ln -s /location/to/link linkname
     - @ files are symlinks?https://unix.stackexchange.com/questions/191717/what-does-the-symbol-mean-on-filenames
-***** tools
-:PROPERTIES:
-:ID:       3c1966ac-c5ad-49d9-ad45-9c87a5c7450b
-:END:
-  - ifconfig
-    - [[file:/usr/share/man/man8/ifconfig.8.gz]] 
-- gnu parallel
-  - https://www.msi.umn.edu/support/faq/how-can-i-use-gnu-parallel-run-lot-commands-parallel
-  - https://www.biostars.org/p/63816/
-  - https://www.biostars.org/p/216905/
-  - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
-****** trash-cli
-:PROPERTIES:
-:ID:       fe8ca086-cd69-4f40-a96d-3e99678c400e
-:END:
-#+begin_src bash 
-#
-# Install
-cd /opt
-sudo git clone https://github.com/andreafrancia/trash-cli.git
-cd trash-cli
-sudo python setup.py install
-#
-#
-#+end_src
+
 ***** commands
 :PROPERTIES:
 :ID:       56b7a8f4-25d7-41a2-a0b5-cdb8a86481cc
@@ -5918,10 +5913,6 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
   - processes
   - [[https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html][documentation]]
   - applications
-- [[elisp:(with-minibuffer-input (call-interactively 'woman) "wget")][wget]]
-  - [[https://www.tecmint.com/commandline-download-accelerators-for-linux/amp/][pass list to]]
-  - [[https://superuser.com/questions/283481/how-do-i-properly-set-wget-to-download-only-new-files][download only on server side change]]
-    - AND SET -O !!
 - X11
   - https://www.windowmaker.org/
 ***** ideas
@@ -6699,6 +6690,7 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
+https://www.freecodecamp.org/news/exploratory-data-analysis-with-numpy-pandas-matplotlib-seaborn/
 https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
 https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
 https://www.dataquest.io/
@@ -7129,27 +7121,26 @@ if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; 
 #+end_src
   - https://www.google.com/search?q=bash+variable+file+name+with+spaces 
 - commands
-  |---------------------------------------+-------------------------------------------------|
-  | function                              | command                                         |
-  |---------------------------------------+-------------------------------------------------|
-  | <35>                                  | <35>                                            |
-  | [[https://www.gnu.org/software/bash/manual/bash.html#Bash-Conditional-Expressions][newer/older by mod date]]               | -nt -ot                                         |
-  | du -shc .                             | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]]                       |
-  | remove alias                          | unalias <ALIAS_NAME>                            |
-  | add alias                             | alias <ALIAS>="<COMMAND>"                       |
-  | l                                     | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\(' |
-  | change password                       | passwd                                          |
-  | search manual pages                   | /                                               |
-  | disk usage, top level                 | du -h --summarize                               |
-  | see total disk usage                  | df -h                                           |
-  | see files location on physical disk   | df <PATH>                                       |
-  | download in background & resume broke | wget -bqc <PATH>                                |
-  | see distro                            | lsb_release -a                                  |
-  | see system disks                      | lsblk                                           |
-  | add to path (temporary?)              | export PATH=$PATH:/new/path                     |
-  | show full path                        | readlink -f                                     |
-  | for loop on array                     | for i in "${arr[@]}""                           |
-  |                                       |                                                 |
+  |-------------------------------------+-------------------------------------------------|
+  | function                            | command                                         |
+  |-------------------------------------+-------------------------------------------------|
+  | <35>                                | <35>                                            |
+  | [[https://www.gnu.org/software/bash/manual/bash.html#Bash-Conditional-Expressions][newer/older by mod date]]             | -nt -ot                                         |
+  | du -shc .                           | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]]                       |
+  | remove alias                        | unalias <ALIAS_NAME>                            |
+  | add alias                           | alias <ALIAS>="<COMMAND>"                       |
+  | l                                   | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\(' |
+  | change password                     | passwd                                          |
+  | search manual pages                 | /                                               |
+  | disk usage, top level               | du -h --summarize                               |
+  | see total disk usage                | df -h                                           |
+  | see files location on physical disk | df <PATH>                                       |
+  | see distro                          | lsb_release -a                                  |
+  | see system disks                    | lsblk                                           |
+  | add to path (temporary?)            | export PATH=$PATH:/new/path                     |
+  | show full path                      | readlink -f                                     |
+  | for loop on array                   | for i in "${arr[@]}""                           |
+  |                                     |                                                 |
   - find disk usage https://unix.stackexchange.com/questions/67806/how-to-recursively-find-the-amount-stored-in-directory
     - https://unix.stackexchange.com/questions/314394/my-hard-disk-is-full-how-can-i-determine-whats-taking-up-space
   - [[https://stackoverflow.com/questions/6509650/extract-directory-from-path][directory of file as variable]]
@@ -7453,27 +7444,26 @@ CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
   - pipe to bash http://www.peteryu.ca/tutorials/shellscripting/batch_rename
 - https://www.oncotarget.com/article/5183/text/
 - commands
-  |---------------------------------------+-------------------------------------------------|
-  | function                              | command                                         |
-  |---------------------------------------+-------------------------------------------------|
-  | <35>                                  | <35>                                            |
-  | [[https://www.gnu.org/software/bash/manual/bash.html#Bash-Conditional-Expressions][newer/older by mod date]]               | -nt -ot                                         |
-  | du -shc .                             | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]]                       |
-  | remove alias                          | unalias <ALIAS_NAME>                            |
-  | add alias                             | alias <ALIAS>="<COMMAND>"                       |
-  | l                                     | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\(' |
-  | change password                       | passwd                                          |
-  | search manual pages                   | /                                               |
-  | disk usage, top level                 | du -h --summarize                               |
-  | see total disk usage                  | df -h                                           |
-  | see files location on physical disk   | df <PATH>                                       |
-  | download in background & resume broke | wget -bqc <PATH>                                |
-  | see distro                            | lsb_release -a                                  |
-  | see system disks                      | lsblk                                           |
-  | add to path (temporary?)              | export PATH=$PATH:/new/path                     |
-  | show full path                        | readlink -f                                     |
-  | for loop on array                     | for i in "${arr[@]}""                           |
-  |                                       |                                                 |
+  |-------------------------------------+-------------------------------------------------|
+  | function                            | command                                         |
+  |-------------------------------------+-------------------------------------------------|
+  | <35>                                | <35>                                            |
+  | [[https://www.gnu.org/software/bash/manual/bash.html#Bash-Conditional-Expressions][newer/older by mod date]]             | -nt -ot                                         |
+  | du -shc .                           | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]]                       |
+  | remove alias                        | unalias <ALIAS_NAME>                            |
+  | add alias                           | alias <ALIAS>="<COMMAND>"                       |
+  | l                                   | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\(' |
+  | change password                     | passwd                                          |
+  | search manual pages                 | /                                               |
+  | disk usage, top level               | du -h --summarize                               |
+  | see total disk usage                | df -h                                           |
+  | see files location on physical disk | df <PATH>                                       |
+  | see distro                          | lsb_release -a                                  |
+  | see system disks                    | lsblk                                           |
+  | add to path (temporary?)            | export PATH=$PATH:/new/path                     |
+  | show full path                      | readlink -f                                     |
+  | for loop on array                   | for i in "${arr[@]}""                           |
+  |                                     |                                                 |
   - find disk usage https://unix.stackexchange.com/questions/67806/how-to-recursively-find-the-amount-stored-in-directory
     - https://unix.stackexchange.com/questions/314394/my-hard-disk-is-full-how-can-i-determine-whats-taking-up-space
   - [[https://stackoverflow.com/questions/6509650/extract-directory-from-path][directory of file as variable]]
