@@ -3238,7 +3238,7 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 - POSIX
   - [[https://github.com/dylanaraps/pure-sh-bible][pure sh bible]]
 ***** Tools (software)
-:PROPERTIES:
+PROPERTIES:
 :ID:       4a8bbace-0e0a-4eb2-92fd-03048d6f1ec5
 :END:
 :LOGBOOK:
@@ -3246,12 +3246,6 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :END:
 - ifconfig
   - [[file:/usr/share/man/man8/ifconfig.8.gz]] 
-- gnu parallel
-  - https://www.msi.umn.edu/support/faq/how-can-i-use-gnu-parallel-run-lot-commands-parallel
-  - https://www.biostars.org/p/63816/
-  - https://www.biostars.org/p/216905/
-  - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
-
 - https://github.com/denisidoro/navi
 - awk
   - [[https://stackoverflow.com/questions/47091464/print-for-loop-input-filename-on-piped-awk-output][file name as variable]]
@@ -3310,8 +3304,6 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - grep 
   - https://www.thegeekstuff.com/2011/10/grep-or-and-not-operators/
   - https://unix.stackexchange.com/questions/37313/how-do-i-grep-for-multiple-patterns-with-pattern-having-a-pipe-character/37316
-- gunzip
-  - 
 - head and tail
   - to trim file header lines
     - e.g.: tail -n +2 file.txt > file.stdout
@@ -3370,6 +3362,20 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - X11
   - https://www.windowmaker.org/
 ****** GNU tools
+- GNU tools
+- make
+  - tutorial https://github.com/kyclark/make-tutorial
+- grep
+  - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
+  - grep
+    - [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
+- nohup
+  - https://unix.stackexchange.com/questions/373461/open-less-scrolled-to-the-end
+- gnu parallel
+  - https://www.msi.umn.edu/support/faq/how-can-i-use-gnu-parallel-run-lot-commands-parallel
+  - https://www.biostars.org/p/63816/
+  - https://www.biostars.org/p/216905/
+  - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
 - [[elisp:(with-minibuffer-input (call-interactively 'woman) "wget")][wget]]
   - [[https://www.tecmint.com/commandline-download-accelerators-for-linux/amp/][pass list to]]
   - [[https://superuser.com/questions/283481/how-do-i-properly-set-wget-to-download-only-new-files][download only on server side change]]
@@ -5841,20 +5847,11 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - cut
 - du
   - - https://stackoverflow.com/questions/15141588/exclude-all-permission-denied-messages-from-du
-- GNU tools
-  - make
-    - tutorial https://github.com/kyclark/make-tutorial
-  - grep
-    - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
-  - nohup
-    - https://unix.stackexchange.com/questions/373461/open-less-scrolled-to-the-end
-  - grep
-    - [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
 - grep 
   - https://www.thegeekstuff.com/2011/10/grep-or-and-not-operators/
   - https://unix.stackexchange.com/questions/37313/how-do-i-grep-for-multiple-patterns-with-pattern-having-a-pipe-character/37316
-- [[elisp:(with-minibuffer-input (call-interactively 'woman) "gunzip")][gunzip] [[elisp:(with-minibuffer-input (call-interactively 'woman) "gunzip")][gunzip]]
-   - https://www.google.com/search?q=gunzip+keep+source 
+- gunzip / gzip
+  - https://www.google.com/search?q=gunzip+keep+source 
 - head and tail
   - to trim file header lines
     - e.g.: tail -n +2 file.txt > file.stdout
@@ -7068,6 +7065,7 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+- -z string is True if string is null, e.g.     if [ -z "$1" ] || [[ $1 == -h ]] || [[ $1 == --help ]]; 
 - if [ "${file: -4}" == ".txt" ] https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
 - find 
   - https://www.google.com/search?q=bash+find+and+delete 
