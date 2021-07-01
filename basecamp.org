@@ -3,7 +3,7 @@
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
 :LOGBOOK:
-CLOCK: [2021-06-30 Wed 11:54]
+CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 :END:
 - [ ] https://www.google.com/search?q=linux+sudo+pipe+password&oq=bash+pipe+sudo+pa&aqs=chrome.1.69i57j0i22i30l2.7394j0j4&sourceid=chrome&ie=UTF-8
 
@@ -7137,6 +7137,11 @@ CLOCK: [2020-06-25 Thu 08:13]--[2020-06-25 Thu 08:25] =>  0:12
 CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
+CLOCK: [2020-08-19 Wed 07:43]--[2020-08-19 Wed 07:54] =>  0:11
+CLOCK: [2020-06-25 Thu 08:13]--[2020-06-25 Thu 08:25] =>  0:12
+CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
+CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
+CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
 - -z string is True if string is null, e.g.     if [ -z "$1" ] || [[ $1 == -h ]] || [[ $1 == --help ]]; 
 - if [ "${file: -4}" == ".txt" ] https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
@@ -7392,27 +7397,18 @@ b=( "${a[@]}" )
        #minimum_bam_size=200000000
 - reference
   - https://github.com/shellspec/shellspec
-***** Bash Scripting
-:PROPERTIES:
-:ID:       89576FD2-F863-4220-BAD7-D4E179AEA644
-:END:
-:LOGBOOK:
-CLOCK: [2020-08-19 Wed 07:43]--[2020-08-19 Wed 07:54] =>  0:11
-CLOCK: [2020-06-25 Thu 08:13]--[2020-06-25 Thu 08:25] =>  0:12
-CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
-CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
-CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
-:END:
 - processes 
   - comments https://www.google.com/search?q=bash+comment+in+pipe
   - exits
     - https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script#:~:text=All%20by%20itself%2C%20exit%20implies,successful%20completion%20of%20your%20script.&text=However%20by%20specifying%20the%201,exited%20with%20an%20error%20condition.
   - arrays
+    - access all values "${array[@]}"
     - [[https://stackoverflow.com/questions/18921350/shell-script-correct-way-to-declare-an-empty-array][declare array]]
     - [[https://unix.stackexchange.com/questions/125632/printing-an-array-to-a-file-with-each-element-of-the-array-in-a-new-line-in-bash][print array with line breaks]]
     - https://www.google.com/search?q=bash+create+array 
     - https://www.google.com/search?q=bash+pass+array+to+for+loop 
     - pass to array 
+      - find https://stackoverflow.com/questions/23356779/how-can-i-store-the-find-command-results-as-an-array-in-bash/54561526#54561526
       - pass each line of file
         - https://riptutorial.com/bash/example/19457/read-lines-of-a-file-into-an-array
       - pass cat output
