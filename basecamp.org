@@ -5312,8 +5312,8 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
 :PROPERTIES:
 :ID:       6057b49e-f8d4-42fb-8fec-5a80a802dd92
 :END:
-  - ifconfig
-    - [[file:/usr/share/man/man8/ifconfig.8.gz]] 
+- ifconfig
+  - [[file:/usr/share/man/man8/ifconfig.8.gz]] 
 - gnu parallel
   - https://www.msi.umn.edu/support/faq/how-can-i-use-gnu-parallel-run-lot-commands-parallel
   - https://www.biostars.org/p/63816/
@@ -6072,62 +6072,18 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
-#+name: 
-#+begin_src bash :tangle no
-#!/bin/bash
-date=$(date +%Y-%m-%d)
-
-for d in $HOME/repos/*
-do 
-#	[[ ! -d "$d" ]] && continue
-    echo "$d"
-    cd "$d"
-    git add -A && \
-        git  commit -a -m "$date" && \
-        git push && \
-        git submodule foreach --recursive git add -A && git commit -am "$date" && \
-        git submodule foreach --recursive git push
-done             
-
-#!/bin/bash
-date=$(date +%Y-%m-%d)
-for d in $HOME/repos/*
-do 
-#	[[ ! -d "$d" ]] && continue
-	echo "$d"
-	cd "$d"
-	git add -A && \
-        git commit -a -m "$date" && \
-        git push && \
-        git submodule foreach --recursive git checkout master &&\
-        git submodule foreach --recursive git add -A && git commit -am "$date" && \
-        git submodule foreach --recursive git push
-done             
-
-git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
-git submodule foreach --recursive git push
-git submodule foreach --recursive git pull
-
-cd $repo
-git submodule foreach --recursive git checkout master
-
-
-git submodule foreach --recursive git pull
-
-
-        
-done
-
-#+end_src
-
-- processes
-  - view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
+- Processes and commands
   - initializing
     - https://www.google.com/search?q=initialize+git+repo
     - git branch --set-upstream-to=origin/master master
-  - gitignore
-    - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
-    - https://labs.consol.de/development/git/2017/02/22/gitignore.html
+  - config
+    - hooks
+      - beautiful file size limit pre-commit hook
+        - https://stackoverflow.com/questions/39576257/how-to-limit-file-size-on-commit
+      - to test, simply run as bash script 
+    - gitignore
+      - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
+      - https://labs.consol.de/development/git/2017/02/22/gitignore.html
   - submodules
     - add git submodule add <SUBMODULE>
     - initialize git submodule update --recursive --init
@@ -6182,6 +6138,8 @@ done
       - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
     - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
     - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
+  - [[https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git][undo]]    
+  - view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
   - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
   - [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]] 
   - searching within commits
@@ -6195,22 +6153,22 @@ done
     - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
     - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
   - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
-- commands
-  | Action               | Command                                  |
-  |----------------------+------------------------------------------|
-  | <30>                 | <35>                                     |
-  | Create repo          | git init                                 |
-  | Ignore files         | touch .gitignore                         |
-  | Add (stage) file     | git add                                  |
-  | Add recursive        | git add --all                            |
-  | Remove (unstage)     | git reset                                |
-  | Last update          | git log --name-status HEAD^..HEAD        |
-  | To be commited       | git status                               |
-  | List untracked       | git ls-files --others --exclude-standard |
-  | List tracked         | git ls-tree -r master --name-only        |
-  | Stop tracking repo   | rm -rf .git/                             |
-  | View list of commits | git log                                  |
-  | View file changes    | git diff - HEAD --staged                 |
+  - commands
+    | Action               | Command                                  |
+    |----------------------+------------------------------------------|
+    | <30>                 | <35>                                     |
+    | Create repo          | git init                                 |
+    | Ignore files         | touch .gitignore                         |
+    | Add (stage) file     | git add                                  |
+    | Add recursive        | git add --all                            |
+    | Remove (unstage)     | git reset                                |
+    | Last update          | git log --name-status HEAD^..HEAD        |
+    | To be commited       | git status                               |
+    | List untracked       | git ls-files --others --exclude-standard |
+    | List tracked         | git ls-tree -r master --name-only        |
+    | Stop tracking repo   | rm -rf .git/                             |
+    | View list of commits | git log                                  |
+    | View file changes    | git diff - HEAD --staged                 |
   - Staging
     - git add 'stages' a file- makes it ready to add to repo
     - git reset unstages
@@ -6241,9 +6199,55 @@ done
     - # git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
     - # git submodule foreach --recursive git pull
     - # git submodule foreach --recursive git push
-- best practices
+- Best practices
   - for git repos, use submodules to push common code up - https://git-scm.com/book/en/v2/Git-Tools-Submodules
 - Scripts
+  #+begin_src bash :tangle no
+#!/bin/bash
+date=$(date +%Y-%m-%d)
+
+for d in $HOME/repos/*
+do 
+#	[[ ! -d "$d" ]] && continue
+    echo "$d"
+    cd "$d"
+    git add -A && \
+        git  commit -a -m "$date" && \
+        git push && \
+        git submodule foreach --recursive git add -A && git commit -am "$date" && \
+        git submodule foreach --recursive git push
+done             
+
+#!/bin/bash
+date=$(date +%Y-%m-%d)
+for d in $HOME/repos/*
+do 
+#	[[ ! -d "$d" ]] && continue
+	echo "$d"
+	cd "$d"
+	git add -A && \
+        git commit -a -m "$date" && \
+        git push && \
+        git submodule foreach --recursive git checkout master &&\
+        git submodule foreach --recursive git add -A && git commit -am "$date" && \
+        git submodule foreach --recursive git push
+done             
+
+git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
+git submodule foreach --recursive git push
+git submodule foreach --recursive git pull
+
+cd $repo
+git submodule foreach --recursive git checkout master
+
+
+git submodule foreach --recursive git pull
+
+
+        
+done
+
+#+end_src
   #+name:list-directories-under-git-vc
   #+BEGIN_SRC sh :results silent
   cd ~/
@@ -6762,13 +6766,15 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
-https://www.freecodecamp.org/news/exploratory-data-analysis-with-numpy-pandas-matplotlib-seaborn/
-https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
-https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
-https://www.dataquest.io/
-https://www.freecodecamp.org/news/the-python-handbook/
-https://stackoverflow.blog/2021/02/23/level-up-mastering-statistics-with-python-part-2/?cb=1&_ga=2.59352485.940265309.1614263567-766544545.1565628865
-https://www.youtube.com/watch?v=GPVsHOlRBBI&ab_channel=freeCodeCamp.org
+- Standards and best practices
+  - [[https://www.python.org/dev/peps/pep-0008/][PEP 8]]
+- https://www.freecodecamp.org/news/exploratory-data-analysis-with-numpy-pandas-matplotlib-seaborn/
+- https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
+- https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
+- https://www.dataquest.io/
+- https://www.freecodecamp.org/news/the-python-handbook/
+- https://stackoverflow.blog/2021/02/23/level-up-mastering-statistics-with-python-part-2/?cb=1&_ga=2.59352485.940265309.1614263567-766544545.1565628865
+- https://www.youtube.com/watch?v=GPVsHOlRBBI&ab_channel=freeCodeCamp.org
 ***** interfaces, platforms, and IDEs
 :PROPERTIES:
 :ID:       7db4987d-0daa-4d58-8660-37fbe566d8be
@@ -7146,6 +7152,7 @@ CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 - -z string is True if string is null, e.g.     if [ -z "$1" ] || [[ $1 == -h ]] || [[ $1 == --help ]]; 
 - if [ "${file: -4}" == ".txt" ] https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
 - find 
+  - https://unix.stackexchange.com/questions/140367/finding-all-large-files-in-the-root-filesystem
   - https://www.google.com/search?q=bash+find+and+delete 
   - https://www.google.com/search?q=bash+find+by+date
     - https://stackoverflow.com/questions/158044/how-to-use-find-to-search-for-files-created-on-a-specific-date
