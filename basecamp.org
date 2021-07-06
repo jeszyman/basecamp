@@ -79,6 +79,16 @@ docker_interactive() {
 :PROPERTIES:
 :ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
 :END:
+*** My emacs IDEs
+- https://jmonlong.github.io/Hippocamplus/emacs/
+**** Ideas
+- custom send to shell functions https://emacs.stackexchange.com/questions/37887/send-region-to-shell-in-another-buffer
+- libvterm https://github.com/akermu/emacs-libvterm
+- isend mode
+  - https://github.com/ffevotte/isend-mode.el/blob/master/isend-mode.el
+  - https://stat.ethz.ch/pipermail/ess-help/2015-July/010628.html
+  - https://github.com/ffevotte/isend-mode.el
+
 *** All repo setup
 :PROPERTIES:
 :ID:       c90aaf71-7311-48d8-98e8-221be4ebc290
@@ -2398,6 +2408,9 @@ https://help.github.com/en/articles/about-project-boards
 :PROPERTIES:
 :ID:       3A02CE83-279F-4D28-A56E-A8AF1094B77B
 :END:
+https://docs.aws.amazon.com/efs/latest/ug/wt2-apache-web-server.html#wt2-apache-web-server-one-ec2-host
+
+https://www.freecodecamp.org/news/react-and-googlesheets/
 - Web scraping
   - [[https://github.com/YaboLee/reddit_crawler][reddit crawler]]
   - https://medium.com/towards-data-science/using-scrapy-to-build-your-own-dataset-64ea2d7d4673
@@ -4719,6 +4732,7 @@ https://www.freecodecamp.org/news/linux-server-course-system-configuration-and-o
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+https://github.com/cheesecakeufo/komorebi#what-is-komorebi
 - find / -xdev -type f -size +1G 2>&1 | grep -v "Permission denied"
 - https://github.com/teejee2008/timeshift
 - https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
@@ -6082,6 +6096,10 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
         - https://stackoverflow.com/questions/39576257/how-to-limit-file-size-on-commit
       - to test, simply run as bash script 
     - gitignore
+      - loading changes -
+        - git rm -r --cached .
+        - git add .
+        - commit
       - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
       - https://labs.consol.de/development/git/2017/02/22/gitignore.html
   - submodules
