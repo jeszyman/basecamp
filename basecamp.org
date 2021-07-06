@@ -7649,6 +7649,18 @@ b=( "${a[@]}" )
   | change user primary group |                           |
 - https://unix.stackexchange.com/questions/359832/converting-csv-to-tsv
 - https://stackoverflow.com/questions/12522269/how-to-find-the-largest-file-in-a-directory-and-its-subdirectories
+***** Bash YASnippets
+#+begin_src fundamental :tangle ~/.emacs.d/snippets/shell-mode/bash.print_array
+# -*- mode: snippet -*-
+# name: bash.print_array
+# key: bash.print_array
+# --
+printf '%s\n' "${${1:ARRAY_NAME}[@]}"
+$0
+#+end_src
+
+
+
 ***** my bash functions
 :PROPERTIES:
 :ID:       569d1afa-e991-47b7-be15-3dd6364f5258
