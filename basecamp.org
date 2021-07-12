@@ -80,8 +80,14 @@ docker_interactive() {
 :ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
 :END:
 *** My emacs IDEs
+:PROPERTIES:
+:ID:       2913d46c-63aa-4950-af70-a296a0a7a744
+:END:
 - https://jmonlong.github.io/Hippocamplus/emacs/
 **** Ideas
+:PROPERTIES:
+:ID:       ea022e58-f02d-4f37-831f-59bc0fb9957f
+:END:
 - custom send to shell functions https://emacs.stackexchange.com/questions/37887/send-region-to-shell-in-another-buffer
 - libvterm https://github.com/akermu/emacs-libvterm
 - isend mode
@@ -237,15 +243,27 @@ CLOCK: [2021-06-04 Fri 10:25]--[2021-06-04 Fri 10:58] =>  0:33
 CLOCK: [2019-03-19 Tue 14:35]--[2019-03-19 Tue 16:45] =>  2:10
 :END:
 ***** Examples
+:PROPERTIES:
+:ID:       045d1771-be15-4a8d-b0ac-ef326d93a54b
+:END:
 - [[https://gist.github.com/halhen/659780120accd82e043986c8b57deae0][github: europe.R]]
 ***** General reference
+:PROPERTIES:
+:ID:       c0532578-b5c9-429a-9c6d-381990dce081
+:END:
 - missing values
   - https://stackoverflow.com/questions/4862178/remove-rows-with-all-or-some-nas-missing-values-in-data-frame
 - https://rafalab.github.io/dsbook/
 - cite:wickham2016
 - [[https://datascienceplus.com/clean-your-data-in-seconds-with-this-r-function/][Hmisc for data cleaning]]
 ***** [[id:0e6f856f-2079-42fc-92f0-5af3b292c516][LINK TO Data project management and data wrangling with R]]
+:PROPERTIES:
+:ID:       4e8a9fb2-ec01-4e14-ba88-e850d8e1c05b
+:END:
 ***** [[id:39F11977-BE11-47CF-98B1-14CE6D9B97C4][LINK TO Information Science / Data Science]]
+:PROPERTIES:
+:ID:       356f811b-ca18-4a5b-b135-ca2ecaf68385
+:END:
 ***** [[id:a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc][LINK TO R basecamp setup]]
 :PROPERTIES:
 :ID:       ae65c4a5-7fe5-474c-90e3-b8b567017ac4
@@ -253,16 +271,28 @@ CLOCK: [2019-03-19 Tue 14:35]--[2019-03-19 Tue 16:45] =>  2:10
 
 
 **** import
+:PROPERTIES:
+:ID:       8fe67560-d881-4cc3-ad0f-fea419a81023
+:END:
   - https://stackoverflow.com/questions/23678691/converting-a-text-file-into-a-vector-in-r
     - https://www.google.com/search?q=R+import+file+as+vector
 **** Regular expressions (REGEX) in R
+:PROPERTIES:
+:ID:       af6ebe3c-92f2-4b87-8292-d5deac52bd00
+:END:
   - [[https://www.rdocumentation.org/packages/base/versions/3.5.1/topics/regex][documentation]]
   - [[http://www.endmemo.com/program/R/gsub.php][Simplified syntax]]
   - [[https://stackoverflow.com/questions/2973436/regex-lookahead-lookbehind-and-atomic-groups][Look around examples]]
   - [[https://www.rdocumentation.org/packages/stringi/versions/1.1.6/topics/stringi-search-regex#l_details][Operators]]
 **** By content area
+:PROPERTIES:
+:ID:       debfe01c-d2b4-46b8-9c40-b804c2c41082
+:END:
 - cite:lewis2010 http://proquest.safaribooksonline.com/9780763758080
 ***** [[id:7d5cda01-172e-49ee-8030-754402f3aa7d][LINK TO Data science in R]]
+:PROPERTIES:
+:ID:       ee748c37-9714-4ca6-aa81-5241061b2a61
+:END:
 ***** Math in R
 :PROPERTIES:
 :ID:       1cda08a5-5e3d-49bd-96aa-c262abada15d
@@ -367,6 +397,9 @@ coronary
 - [[file:~/Box%20Sync/library/Harrell,15%20Regression%20modeling%20stratgies.pdf][Harrell,15 Regression modeling stratgies]]
 
 ****** R for Machine Learning
+:PROPERTIES:
+:ID:       05014193-8038-4108-bf9d-11c56c33a63c
+:END:
  - [[https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/#one][A Complete Tutorial on Tree Based Modeling from Scratch (in R & Python)]]
 
 
@@ -443,6 +476,9 @@ library(ROCR)
 #+END_SRC
 
 **** By artifact
+:PROPERTIES:
+:ID:       941fdf22-9023-46b9-bc38-4a47719f291d
+:END:
 - Tables
   - export tables
   - exporting tables- - - https://cran.r-project.org/web/packages/gridExtra/vignettes/tableGrob.html
@@ -451,6 +487,9 @@ library(ROCR)
   - Kable
     - http://haozhu233.github.io/kableExtra/best_practice_for_newline_in_latex_table.pdf
 ***** [[id:19d01dcc-8fef-4c07-952a-da918b3dc775][LINK TO Visualizations in R including ggplot2]]
+:PROPERTIES:
+:ID:       28b714eb-59e3-4176-a866-f4fe0980bc65
+:END:
 ***** making packages
 :PROPERTIES:
 :ID:       fe1f71d0-5ace-4075-b36d-082a1199490a
@@ -463,6 +502,9 @@ library(ROCR)
   - Referring to other packages: https://stackoverflow.com/questions/36874904/r-how-do-i-make-my-package-use-another-package
 
 **** [[id:19d01dcc-8fef-4c07-952a-da918b3dc775][LINK TO Visualizations in R including ggplot2]]
+:PROPERTIES:
+:ID:       6e05325e-f80c-4aaf-a4f1-9e90b9db4ef6
+:END:
 **** Functions and programming
 :PROPERTIES:
 :ID:       479569fe-229d-4d2f-ba08-b871d3ad64ac
@@ -597,6 +639,7 @@ http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-
 *** General reference
 :PROPERTIES:
 :CREATED:  [2021-06-04 Fri 10:12]
+:ID:       707e5032-ae3d-4f3e-86eb-46917bec88f8
 :END:
 - https://www.r-bloggers.com/blogging-with-rmarkdown-knitr-and-jekyll/
 - https://adv-r.hadley.nz/
@@ -1006,6 +1049,9 @@ CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 :END:
 - https://www.freecodecamp.org/news/teach-yourself-data-analytics-in-30-days/
 *** Data science project management
+:PROPERTIES:
+:ID:       0b4dfeac-fc55-47b1-956c-38fb19eba7ff
+:END:
 - https://www.reddit.com/r/statistics/comments/b5sg97/what_makes_a_good_data_dictionary/
 - https://www.kdnuggets.com/2019/03/best-tips-agile-data-science-research.html
 - https://www.reddit.com/r/datascience/comments/brwlkx/data_science_production_process_bestpractices/
@@ -1028,6 +1074,9 @@ CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
     - http://www.comp.dit.ie/btierney/BSI/Han%20Book%20Ch3%20DataExploration.pdf
     - cite:kotsiantis2006
 *** Data wrangling
+:PROPERTIES:
+:ID:       20b10d38-1d24-4a0e-b9b8-d6f2b1394efe
+:END:
 - https://github.com/ben519/DataWrangling
 - cite:pedsnet
 - cite:press2016
@@ -1035,12 +1084,21 @@ CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 - https://www.reddit.com/r/datascience/comments/fzweaf/my_giant_data_quality_checklist/
 - missing data imputation http://factominer.free.fr/missMDA/appendix_These_Audigier.pdf
 *** By data type
+:PROPERTIES:
+:ID:       5e1e3127-b16d-499d-8175-b93ceebc0756
+:END:
 - Text
   - http://labs.rd.ciencias.ulisboa.pt/book/
 - GIS
   - [[https://docs.qgis.org/3.16/en/docs/][QGIS documentation]]
 *** [[id:CFACF7AD-30FC-4200-92FE-3710B5DC5E9E][LINK TO Machine Learning]]
+:PROPERTIES:
+:ID:       eca4f279-86ee-40ea-a78b-3cddb00b6c67
+:END:
 *** Computable Knowledge
+:PROPERTIES:
+:ID:       29bf3b2d-20c0-4bf7-a06c-3a029b48e5d4
+:END:
   - Ontology
     - https://protege.stanford.edu/conference/2006/submissions/slides/OWLTutorial_Part1.pdf
     - Protege
@@ -1057,9 +1115,15 @@ CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
     - https://www.youtube.com/watch?v=8Nf2xf5akoM
     - https://www.ncbi.nlm.nih.gov/pubmed/27239556
 *** Data science communication
+:PROPERTIES:
+:ID:       40bbdcfd-f7c4-49a3-b7ee-d2b7f0bbf92a
+:END:
 - Apps - https://plot.ly/
 - https://www.reddit.com/r/datascience/comments/am2cep/guidelines_for_writing_data_analysis_reports/
 **** [[id:1DA3ABC0-79B0-4CED-B926-22B37840379D][LINK TO Data Visualization]]
+:PROPERTIES:
+:ID:       c9c6519c-3eee-4542-b72d-1ad34c465d13
+:END:
 *** <<<Data Visualization>>>
 :PROPERTIES:
 :ID:       1DA3ABC0-79B0-4CED-B926-22B37840379D
@@ -1168,7 +1232,13 @@ https://www.ncbi.nlm.nih.gov/pathogens/
 radar graphs for antibiogram
 
 *** [[id:7d5cda01-172e-49ee-8030-754402f3aa7d][LINK TO Data science in R]]
+:PROPERTIES:
+:ID:       532fe01c-7768-4e6d-b405-aea381eb0692
+:END:
 *** Knowledge representation
+:PROPERTIES:
+:ID:       d80ce5e7-e63b-4565-9343-a755c301380e
+:END:
 - https://www.reddit.com/r/statistics/comments/b5sg97/what_makes_a_good_data_dictionary/
 - Rules
   - 
@@ -1197,6 +1267,9 @@ radar graphs for antibiogram
         - Troponym- a particular way to do entry's referent, e.g. trim and slice are troponyms of cut
         - Coordinate term- terms that share a holonym, e.g. man and woman are coordinate terms for human 
 *** General reference
+:PROPERTIES:
+:ID:       08762066-018f-4d6f-bb42-03b37b526814
+:END:
 - https://www.reddit.com/r/datascience/comments/bo2p99/is_java_c_or_c_necessary/
 - http://www.datasciencecourse.org/lectures/
 - https://www.reddit.com/r/datascience/comments/c66buk/top_github_data_science_project/
@@ -1223,6 +1296,9 @@ radar graphs for antibiogram
 - http://www.datacarpentry.org/
 - http://courses.csail.mit.edu/18.337/2015/docs/50YearsDataScience.pdf
 *** Data sources, data sets
+:PROPERTIES:
+:ID:       9b13fa97-526c-41eb-abdc-3a2627c54c64
+:END:
 - https://www.reddit.com/r/datascience/comments/ceucnb/ibm_launches_the_data_asset_exchange_dax_an_an/
 - https://www.blog.google/technology/research/open-source-and-open-data/amp/
 - https://github.com/CSSEGISandData/COVID-19
@@ -3324,6 +3400,9 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 - POSIX
   - [[https://github.com/dylanaraps/pure-sh-bible][pure sh bible]]
 ***** Tools (software)
+:PROPERTIES:
+:ID:       7b10faa5-721d-48bb-aa15-26cd3d1143dd
+:END:
 PROPERTIES:
 :ID:       4a8bbace-0e0a-4eb2-92fd-03048d6f1ec5
 :END:
@@ -3448,6 +3527,9 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - X11
   - https://www.windowmaker.org/
 ****** GNU tools
+:PROPERTIES:
+:ID:       76c4836c-fe3f-4948-86dd-25d8df38d1af
+:END:
 - GNU tools
 - make
   - tutorial https://github.com/kyclark/make-tutorial
@@ -7650,6 +7732,9 @@ b=( "${a[@]}" )
 - https://unix.stackexchange.com/questions/359832/converting-csv-to-tsv
 - https://stackoverflow.com/questions/12522269/how-to-find-the-largest-file-in-a-directory-and-its-subdirectories
 ***** Bash YASnippets
+:PROPERTIES:
+:ID:       42e37db5-29e7-418f-a74d-e91ffc81167f
+:END:
 #+begin_src fundamental :tangle ~/.emacs.d/snippets/shell-mode/bash.print_array
 # -*- mode: snippet -*-
 # name: bash.print_array
