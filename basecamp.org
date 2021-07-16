@@ -5,11 +5,16 @@
 :LOGBOOK:
 CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 :END:  
+
+ess-remote to docker R
 ** Setups
 :PROPERTIES:
 :ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
 :END:
 *** Basecamp Docker
+:PROPERTIES:
+:ID:       c9327fad-4f38-4bbe-8b2e-58ad589fbdf6
+:END:
 - [[file:~/repos/basecamp/Dockerfile]]
 - build docker container
   #+begin_src bash :tangle no
@@ -6170,6 +6175,8 @@ CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
 - Processes and commands
+  - errors
+    - [[https://stackoverflow.com/questions/4254389/git-corrupt-loose-object/18238322#18238322][corrupt loose object]]
   - initializing
     - https://www.google.com/search?q=initialize+git+repo
     - git branch --set-upstream-to=origin/master master
