@@ -307,8 +307,8 @@ CLOCK: [2019-03-19 Tue 14:35]--[2019-03-19 Tue 16:45] =>  2:10
 :PROPERTIES:
 :ID:       26211e92-7ff9-4520-a9a7-cac04027e610
 :END:
-- https://cran.r-project.org/web/views/Econometrics.html
 - For basic statistics, see cite:mangiafico2005 [[http://rcompanion.org/rcompanion/e_01.html][R Companion to Biostats Handbook]]
+- https://cran.r-project.org/web/views/Econometrics.html
 - [[https://www.r-bloggers.com/bayesian-network-in-r-introduction/][Bayesian network in R: Introduction]]
   #+BEGIN_SRC R
 data(coronary)
@@ -1051,6 +1051,7 @@ CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
 CLOCK: [2021-06-04 Fri 08:50]--[2021-06-04 Fri 09:53] =>  1:03
 CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 :END:
+https://towardsdatascience.com/a-better-way-to-visualize-decision-trees-with-the-dtreeviz-library-758994cdf05e
 - https://www.freecodecamp.org/news/teach-yourself-data-analytics-in-30-days/
 *** Data science project management
 :PROPERTIES:
@@ -3637,6 +3638,7 @@ CLOCK: [2017-06-23 Fri 19:05]--[2017-06-23 Fri 19:35] =>  0:30
 CLOCK: [2018-06-27 Wed 11:59]--[2018-06-27 Wed 12:49] =>  0:50
 CLOCK: [2017-11-28 Tue 18:30]--[2017-11-28 Tue 19:30] =>  1:00
 :END:
+https://www.deeplearningbook.org/
 - Error-Correcting Output Codes
 - cite:ma2018
 https://web.stanford.edu/class/stats202/intro.html
@@ -4246,6 +4248,7 @@ str(train)
 :PROPERTIES:
 :ID:       cc10c6df-9fdb-410c-a62c-cc52e7ca0f55
 :END:
+- https://www.reddit.com/r/AskStatistics/comments/no2cwv/is_learning_structural_equation_modeling_methods/
 - https://royalsocietypublishing.org/doi/10.1098/rsos.150541
 - https://www.cscu.cornell.edu/news/Handouts/SEM_fit.pdf
 - note SEM is causal https://en.wikipedia.org/wiki/Causal_inference#:~:text=Causal%20inference%20is%20the%20process,when%20the%20cause%20is%20changed.
@@ -6874,6 +6877,7 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
+https://www.reddit.com/r/bioinformatics/comments/n4i9f4/how_to_learn_python_from_scratch_for/
 - Standards and best practices
   - [[https://www.python.org/dev/peps/pep-0008/][PEP 8]]
 - https://www.freecodecamp.org/news/exploratory-data-analysis-with-numpy-pandas-matplotlib-seaborn/
@@ -7257,6 +7261,8 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+https://mywiki.wooledge.org/BashPitfalls
+https://www.reddit.com/r/bash/comments/n65i3n/prompt_user_for_specific_key_abort_with_any_other/
 - -z string is True if string is null, e.g.     if [ -z "$1" ] || [[ $1 == -h ]] || [[ $1 == --help ]]; 
 - if [ "${file: -4}" == ".txt" ] https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
 - find 
