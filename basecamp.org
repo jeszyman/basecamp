@@ -6,7 +6,7 @@
 CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 :END:  
 
-ess-remote to docker R
+- ess-remote to docker R
 ** Setups
 :PROPERTIES:
 :ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
@@ -1527,6 +1527,7 @@ algorithm properties
 CLOCK: [2018-12-12 Wed 16:31]--[2018-12-12 Wed 16:32] =>  0:01
 CLOCK: [2018-12-12 Wed 15:47]--[2018-12-12 Wed 16:29] =>  0:42
 :END:
+- https://www.freecodecamp.org/news/learn-to-use-the-mysql-database/
 - https://bofh.org.uk/2019/02/25/baking-with-emacs/
 - https://github.com/schemacrawler/SchemaCrawler
 - https://blog.stefanproell.at/2016/01/11/create-an-er-diagram-of-an-existing-sqlite-database-or-manyoother-rdbms/
