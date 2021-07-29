@@ -5,7 +5,7 @@
 :LOGBOOK:
 CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 :END:  
-
+- batch effect https://evayiwenwang.github.io/Managing_batch_effects/detect.html
 - ess-remote to docker R
 ** Setups
 :PROPERTIES:
@@ -87,6 +87,8 @@ docker_interactive() {
 :PROPERTIES:
 :ID:       2913d46c-63aa-4950-af70-a296a0a7a744
 :END:
+https://www.reddit.com/r/emacs/comments/op4fcm/send_command_to_vterm_and_execute_it/
+https://blog.calebjay.com/posts/my-emacs-environment/#on-programming-in-emacs
 - https://jmonlong.github.io/Hippocamplus/emacs/
 **** Ideas
 :PROPERTIES:
@@ -227,6 +229,9 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
+https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
+https://adv-r.hadley.nz/
+https://bookdown.org/ndphillips/YaRrr/saving-plots-to-a-file-with-pdf-jpeg-and-png.html
 *** [[id:a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc][LINK TO R basecamp setup]]
 :PROPERTIES:
 :ID:       218ef9c0-0a15-4984-afcf-a0b4cd1394e7
@@ -513,6 +518,7 @@ library(ROCR)
 :PROPERTIES:
 :ID:       479569fe-229d-4d2f-ba08-b871d3ad64ac
 :END:
+- https://x-team.com/blog/programming-best-practices/
 - https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
 - ifelse stop functions
   - see [[id:afb6af15-e984-4150-9e95-d28368ebca2e][pull in R-immutable elements and perform data checks]]
@@ -610,6 +616,7 @@ df
 :PROPERTIES:
 :ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
 :END:
+https://r-graphics.org/recipe-facet-label-appearance
 https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
 - saving - use - better than ggsave: - https://rdrr.io/cran/cowplot/man/save_plot.html
 - https://www.reddit.com/r/rstats/comments/b4ol4z/unbin_data_to_make_histogram/
@@ -1051,12 +1058,20 @@ CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
 CLOCK: [2021-06-04 Fri 08:50]--[2021-06-04 Fri 09:53] =>  1:03
 CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 :END:
+https://www.classcentral.com/report/best-data-science-curriculum/
+https://www.r-bloggers.com/2021/06/10-tips-and-tricks-for-data-scientists-vol-9/amp/
+https://github.com/aaronwangy/Data-Science-Cheatsheet
+https://github.com/norvig/pytudes/blob/main/ipynb/risk.ipynb
+http://aifdb.org/argview/4
+https://argdown.org/sandbox/map
 https://towardsdatascience.com/a-better-way-to-visualize-decision-trees-with-the-dtreeviz-library-758994cdf05e
 - https://www.freecodecamp.org/news/teach-yourself-data-analytics-in-30-days/
 *** Data science project management
 :PROPERTIES:
 :ID:       0b4dfeac-fc55-47b1-956c-38fb19eba7ff
 :END:
+- http://pep.databio.org/en/latest/
+- https://www.reddit.com/r/datascience/comments/mrwzkq/what_is_the_best_structured_ds_project_you_have/
 - https://www.reddit.com/r/statistics/comments/b5sg97/what_makes_a_good_data_dictionary/
 - https://www.kdnuggets.com/2019/03/best-tips-agile-data-science-research.html
 - https://www.reddit.com/r/datascience/comments/brwlkx/data_science_production_process_bestpractices/
@@ -2842,6 +2857,7 @@ cite:yasini2012guideline
 :PROPERTIES:
 :ID:       10af5937-004b-46f8-818d-b81d30462164
 :END:
+- https://github.com/norvig/pytudes/blob/main/ipynb/risk.ipynb
 - https://github.com/alhassy/emacs.d/blob/master/README.org#what-does-literate-programming-look-like
 *** Hardware
 :PROPERTIES:
@@ -6466,6 +6482,7 @@ CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
 https://stackoverflow.com/questions/29480099/whats-the-difference-between-docker-compose-vs-dockerfile
+https://stackoverflow.com/questions/29480099/whats-the-difference-between-docker-compose-vs-dockerfile
 - https://stackoverflow.com/questions/16296753/can-you-run-gui-applications-in-a-docker-container/50356450#50356450
 - Dockerfile best practices ideas
   - include comment w/ build time
@@ -6878,6 +6895,8 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
+https://github.com/norvig/pytudes/blob/main/ipynb/risk.ipynb
+https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
 https://www.reddit.com/r/bioinformatics/comments/n4i9f4/how_to_learn_python_from_scratch_for/
 - Standards and best practices
   - [[https://www.python.org/dev/peps/pep-0008/][PEP 8]]
@@ -7246,7 +7265,7 @@ B
 (square2 10)
 #+END_SRC
 
-**** Bash 
+**** Bash and shell
 :PROPERTIES:
 :ID:       89576FD2-F863-4220-BAD7-D4E179AEA644
 :END:
@@ -7262,6 +7281,8 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+https://www.micahlerner.com/2021/07/14/unix-shell-programming-the-next-50-years.html
+https://blog.robertelder.org/intro-to-tail-command/
 https://mywiki.wooledge.org/BashPitfalls
 https://www.reddit.com/r/bash/comments/n65i3n/prompt_user_for_specific_key_abort_with_any_other/
 - -z string is True if string is null, e.g.     if [ -z "$1" ] || [[ $1 == -h ]] || [[ $1 == --help ]]; 
@@ -8209,6 +8230,7 @@ pandoc -S $test | xclip -selection clipboard
 :PROPERTIES:
 :ID:       3eb81250-e885-4941-a559-997381abc196
 :END:
+- https://dev.to/devdefinitive/33-github-projects-i-have-bookmarked-and-you-should-298o
 - https://www.reddit.com/r/datascience/comments/mlfy02/what_is_your_ds_stack_and_roast_mine/
 ** Ideas
 :PROPERTIES:
