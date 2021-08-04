@@ -5,8 +5,6 @@
 :LOGBOOK:
 CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 :END:  
-- batch effect https://evayiwenwang.github.io/Managing_batch_effects/detect.html
-- ess-remote to docker R
 ** Setups
 :PROPERTIES:
 :ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
@@ -87,6 +85,7 @@ docker_interactive() {
 :PROPERTIES:
 :ID:       2913d46c-63aa-4950-af70-a296a0a7a744
 :END:
+- ess-remote to docker R
 https://www.reddit.com/r/emacs/comments/op4fcm/send_command_to_vterm_and_execute_it/
 https://blog.calebjay.com/posts/my-emacs-environment/#on-programming-in-emacs
 - https://jmonlong.github.io/Hippocamplus/emacs/
@@ -147,6 +146,7 @@ packages = c(
 "readxl",
 "scales",
 "tidyverse",
+"UpSetR",
 "viridis"
 )
 #
@@ -616,6 +616,7 @@ df
 :PROPERTIES:
 :ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
 :END:
+- tikz as graphics device for R: https://cran.r-project.org/web/packages/tikzDevice/vignettes/tikzDevice.pdf
 https://r-graphics.org/recipe-facet-label-appearance
 https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
 - saving - use - better than ggsave: - https://rdrr.io/cran/cowplot/man/save_plot.html
@@ -1058,6 +1059,7 @@ CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
 CLOCK: [2021-06-04 Fri 08:50]--[2021-06-04 Fri 09:53] =>  1:03
 CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 :END:
+- batch effect https://evayiwenwang.github.io/Managing_batch_effects/detect.html
 https://www.classcentral.com/report/best-data-science-curriculum/
 https://www.r-bloggers.com/2021/06/10-tips-and-tricks-for-data-scientists-vol-9/amp/
 https://github.com/aaronwangy/Data-Science-Cheatsheet
@@ -1974,7 +1976,7 @@ CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 - https://www.google.com/search?q=linux+pdf+delete+page 
 - https://www.google.com/search?q=linux+convert+image+to+pdf
 - - https://askubuntu.com/questions/113544/how-can-i-reduce-the-file-size-of-a-scanned-pdf-file
-*** software
+*** Software
 :PROPERTIES:
 :ID:       9E19E626-9D6C-4296-BEDB-80033A846CF4
 :END:
@@ -2067,6 +2069,16 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :PROPERTIES:
 :ID:       23319fff-191b-4581-bf37-9fd716a347dc
 :END:
+**** Package managers
+***** Conda
+- Processes and commands
+  - https://www.google.com/search?q=conda+don't+start+in+base 
+- Standards and best practice
+- Documentation
+- Applications
+- Reference
+  - [[EA056C38-9DE6-47EE-A75B-0FCBAE62372B][YASnippets]]
+
 **** software mod                                                  :software:
 :PROPERTIES:
 :CREATED:  [2019-04-10 Wed 10:13]
@@ -4838,6 +4850,7 @@ https://www.freecodecamp.org/news/linux-server-course-system-configuration-and-o
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+https://ostechnix.com/how-to-backup-and-restore-linux-system-with-timeshift/
 - [ ] https://www.google.com/search?q=linux+sudo+pipe+password&oq=bash+pipe+sudo+pa&aqs=chrome.1.69i57j0i22i30l2.7394j0j4&sourceid=chrome&ie=UTF-8
 
 https://github.com/cheesecakeufo/komorebi#what-is-komorebi
@@ -7281,6 +7294,7 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+https://tldp.org/LDP/abs/html/
 https://www.micahlerner.com/2021/07/14/unix-shell-programming-the-next-50-years.html
 https://blog.robertelder.org/intro-to-tail-command/
 https://mywiki.wooledge.org/BashPitfalls
@@ -7777,6 +7791,19 @@ b=( "${a[@]}" )
 # key: bash.print_array
 # --
 printf '%s\n' "${${1:ARRAY_NAME}[@]}"
+$0
+#+end_src
+
+#+begin_src fundamental :tangle ~/.emacs.d/snippets/sh-mode/bash.array.from.find
+# -*- mode: snippet -*-
+# name: bash.array.from.find
+# key: bash.array.from.find
+# --
+${1:ARRAY NAME}=()
+while IFS=  read -r -d $'\0'; do
+    $1+=("$REPLY")
+done < <(find ${2:FIND DIR} -name ${3:FIND TERM} -print0)
+printf '%s\n' "\${$1[@]}"
 $0
 #+end_src
 

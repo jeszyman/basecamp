@@ -26,6 +26,7 @@ packages = c(
 "readxl",
 "scales",
 "tidyverse",
+"UpSetR",
 "viridis"
 )
 #
