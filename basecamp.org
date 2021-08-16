@@ -6,6 +6,9 @@
 CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 :END:  
 ** Processes
+:PROPERTIES:
+:ID:       2896cf35-9ccf-4533-b451-6b0f7a3bc91c
+:END:
 - 
 https://unix.stackexchange.com/questions/359832/converting-csv-to-tsv
 
@@ -312,6 +315,9 @@ CLOCK: [2019-03-19 Tue 14:35]--[2019-03-19 Tue 16:45] =>  2:10
 :END:
 - cite:lewis2010 http://proquest.safaribooksonline.com/9780763758080
 ***** Text
+:PROPERTIES:
+:ID:       94242006-2d2c-4615-8104-8613fd5df6d9
+:END:
 - https://www.google.com/search?q=R+lowercase+dplyr+stack
 ***** [[id:7d5cda01-172e-49ee-8030-754402f3aa7d][LINK TO Data science in R]]
 :PROPERTIES:
@@ -2085,7 +2091,13 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :ID:       23319fff-191b-4581-bf37-9fd716a347dc
 :END:
 **** Package managers
+:PROPERTIES:
+:ID:       89fadb82-99b8-4db8-aa5e-e6e1c0c707eb
+:END:
 ***** Conda
+:PROPERTIES:
+:ID:       b16d0202-8d35-472b-b538-87a7d6a6cef7
+:END:
 - Processes and commands
   - https://www.google.com/search?q=conda+don't+start+in+base 
 - Standards and best practice
@@ -6579,6 +6591,7 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
+add container cleanup
 https://stackoverflow.com/questions/29480099/whats-the-difference-between-docker-compose-vs-dockerfile
 https://stackoverflow.com/questions/29480099/whats-the-difference-between-docker-compose-vs-dockerfile
 - https://stackoverflow.com/questions/16296753/can-you-run-gui-applications-in-a-docker-container/50356450#50356450
@@ -7381,15 +7394,24 @@ CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
 ***** Processes 
+:PROPERTIES:
+:ID:       c3e424cd-7191-423e-815b-7e7fcb770100
+:END:
 :LOGBOOK:
 CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
 :END:
 ****** Setup
+:PROPERTIES:
+:ID:       12419776-9b0e-42e9-8392-8f17dc89a63f
+:END:
 - configuration management
   - https://en.wikipedia.org/wiki/Ansible_(software)
 - themes- https://github.com/ohmybash/oh-my-bash
 - https://www.reddit.com/r/commandline/comments/9md3pp/a_very_useful_bashrc_file/
 ****** Resource use control
+:PROPERTIES:
+:ID:       069254a6-95ec-48dd-a5ce-802687ec99eb
+:END:
   - https://linuxhint.com/limit_cpu_usage_process_linux/
   - https://stackoverflow.com/questions/4651234/how-to-determine-the-process-memory-limit-in-linux
   - https://unix.stackexchange.com/questions/52313/how-to-get-execution-time-of-a-script-effectively
@@ -7400,6 +7422,9 @@ CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
   - https://stackoverflow.com/questions/1455695/forking-multi-threaded-processes-bash
 
 ****** Variables
+:PROPERTIES:
+:ID:       f824de5e-ecce-4f4e-aa25-1daf675577a6
+:END:
 - variables
   - 1 & 2 https://stackoverflow.com/questions/10508843/what-is-dev-null-21
   - [[https://stackoverflow.com/questions/91368/checking-from-shell-script-if-a-directory-contains-files][use globbing in variables with shopt]]
@@ -7410,6 +7435,9 @@ CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
   - [[https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script][Meaning of exit 0, exit 1 and exit 2 in a bash script]]
   - https://stackoverflow.com/questions/2642585/read-a-variable-in-bash-with-a-default-value
 ******* Arrays
+:PROPERTIES:
+:ID:       9cbffcad-49c3-4936-9111-d2472d40276c
+:END:
   - [[https://stackoverflow.com/questions/18921350/shell-script-correct-way-to-declare-an-empty-array][declare array]]
   - populate
     - from list of variables
@@ -7442,12 +7470,21 @@ b=( "${a[@]}" )
 
 
 ****** Pattern matching
+:PROPERTIES:
+:ID:       ccff4529-a532-4111-9ac3-e8df91ec50fa
+:END:
 - pattern matching
   - if [ "${file: -4}" == ".txt" ] https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
 ****** Pipes
+:PROPERTIES:
+:ID:       2cb03148-64b0-4a63-985f-c26447342aaa
+:END:
 - pipe
   - https://www.google.com/search?q=pipe+store+output+as+variable 
 ****** User inputs
+:PROPERTIES:
+:ID:       17707f3f-aee6-4eab-9d79-de07c975a3d5
+:END:
 - https://www.reddit.com/r/programming/comments/aw0zko/bash_creating_tabcompletion_for_your_programs/
 
 - user input https://www.google.com/search?q=bash+prompt+user+input
@@ -7459,6 +7496,9 @@ b=( "${a[@]}" )
   - [[https://stackoverflow.com/questions/226703/how-do-i-prompt-for-yes-no-cancel-input-in-a-linux-shell-script][stack: How do I prompt for Yes/No/Cancel input in a Linux shell script?]]
 
 ****** Writing functions  
+:PROPERTIES:
+:ID:       e6966fff-7c43-4bb9-952e-66dfc6c11c43
+:END:
 - use type to see function definition
 - https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
 - https://www.shellhacks.com/print-usage-exit-if-arguments-not-provided/
@@ -7933,6 +7973,9 @@ pandoc -S $test | xclip -selection clipboard
 #+end_src
 
 ****** Linting and debugging
+:PROPERTIES:
+:ID:       df3acc6f-0a6c-4199-9061-474a80cff9b2
+:END:
   - http://www.skybert.net/emacs/bash-linting-in-emacs/
   - https://github.com/koalaman/shellcheck#in-your-editor
   - https://stackoverflow.com/questions/171924/how-do-i-syntax-check-a-bash-script-without-running-it#171932
@@ -7940,6 +7983,9 @@ pandoc -S $test | xclip -selection clipboard
   - http://www.skybert.net/emacs/bash-linting-in-emacs/
 - https://zwischenzugs.com/2018/10/09/learn-bash-debugging-techniques-the-hard-way/
 ****** Checkers
+:PROPERTIES:
+:ID:       5efce201-5375-42a8-a8d0-827a0325a7bf
+:END:
   - -z string is True if string is null, e.g.     if [ -z "$1" ] || [[ $1 == -h ]] || [[ $1 == --help ]];
     - variables
   #+name: 
@@ -7979,6 +8025,9 @@ if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; 
 - globbing
   - https://stackoverflow.com/questions/2937407/test-whether-a-glob-has-any-matches-in-bash?noredirect=1&lq=1
 ****** Outputs
+:PROPERTIES:
+:ID:       e9bddd31-2395-40cd-a993-44c56b17faef
+:END:
 - Error outputs and exits
   - traps
   - set -e
@@ -7992,6 +8041,9 @@ if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; 
 - logging
   - https://stackoverflow.com/questions/18278223/method-to-write-in-log-files-in-a-shell-script
 ***** General reference
+:PROPERTIES:
+:ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
+:END:
 - [[https://www.gnu.org/software/bash/manual/bash.html][documentation]] 
 - [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Advanced Bash-Scripting Guide]]
 - [[http://mywiki.wooledge.org/FullBashGuide][wooledge bash guide]]
@@ -8139,6 +8191,9 @@ if [[ $# -eq 0 ]] || [[ $1 == "h" ]] ; then
 - [[file:~/.emacs.d/snippets/sh-mode/]]
 - [[file:~/.emacs.d/snippets/sh-mode/write.bash]]
 ***** Ideas
+:PROPERTIES:
+:ID:       0ab13eb3-64dc-4696-888a-0caf1e7997dc
+:END:
 - check and set file permissions as best practice
 - ideas for function development protocol-
   - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
