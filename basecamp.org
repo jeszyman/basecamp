@@ -4900,6 +4900,7 @@ https://www.freecodecamp.org/news/linux-server-course-system-configuration-and-o
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+https://www.reddit.com/r/linux4noobs/comments/p4198y/i_recently_find_out_this_command_line_tool_called/
 - clipboard
   - https://askubuntu.com/questions/382767/how-to-pipe-dump-clipboard-contents-to-a-file  
 - https://stackoverflow.com/questions/12522269/how-to-find-the-largest-file-in-a-directory-and-its-subdirectories
@@ -7393,6 +7394,7 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+https://stackoverflow.com/questions/2500436/how-does-cat-eof-work-in-bash
 ***** Processes 
 :PROPERTIES:
 :ID:       c3e424cd-7191-423e-815b-7e7fcb770100
