@@ -245,6 +245,28 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
+#+BEGIN_SRC R
+source("~/Rscripts/setup.R")
+set.seed(314)
+pkl=1000 # There will be 1000 unique accession numbers (primary key length)
+time_start =  as.POSIXct('2018-10-01T01:00:00z', format = "%Y-%m-%dT%H:%M:%S")
+time_end = as.POSIXct('2018-11-01T01:00:00z', format = '%Y-%m-%dT%H:%M:%S')
+diff_minutes_max = difftime(time_end,time_start, units = "mins")
+diff_minutes_all = sample(1:diff_minutes_max, pkl, replace = T)
+result_folate = rnorm(200, 25, 12)
+result_MCV = rnorm(400, 88, 8) # A normal distribution around mean MCV
+result_WBC = rnorm(400, 7500, 3500)
+
+# vectors
+accession = sample(1:pkl, pkl, replace = F) # 1000 unique accession #s
+visit = sample(1:500, pkl, replace = T) # 500 patient visits
+patient = sample(1:350, pkl, replace=T) # 350 patients
+time_result = time_start + diff_minutes_all
+result = c(result_folate,result_MCV,result_WBC)
+test=c(rep.int("folate", 200), rep.int("MCV", 400), rep.int("WBC", 400))
+df=data.frame(accession,visit,patient,time_result,test,result)
+df
+      #+END_SRC
 https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
 https://adv-r.hadley.nz/
 https://bookdown.org/ndphillips/YaRrr/saving-plots-to-a-file-with-pdf-jpeg-and-png.html
@@ -1080,6 +1102,7 @@ CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
 CLOCK: [2021-06-04 Fri 08:50]--[2021-06-04 Fri 09:53] =>  1:03
 CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 :END:
+- cite:dorr2017
 - batch effect https://evayiwenwang.github.io/Managing_batch_effects/detect.html
 https://www.classcentral.com/report/best-data-science-curriculum/
 https://www.r-bloggers.com/2021/06/10-tips-and-tricks-for-data-scientists-vol-9/amp/
@@ -4497,22 +4520,33 @@ optimized lambda strikes balance of coeffienct bias and optimized likelihood
 :LOGBOOK:
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
+*** By application
 
-- text editors
+**** Images
+- capture screen to gif
+  - https://www.cockos.com/licecap/
+***** imagemagick
+#+begin_src bash
+for file in ~/Pre-PACE\ Images/*.pdf;
+do
+    base=$(basename -s .pdf "$file")
+    echo $base
+    convert -units PixelsPerInch "$file" -density 600 "${base}.tiff"
+done
+#+end_src
+
+- https://askubuntu.com/questions/573246/quick-way-to-calculate-dimension-in-inch-for-photos-in-ubuntu
+- https://askubuntu.com/questions/591733/rotate-images-from-terminal
+- https://unix.stackexchange.com/questions/406454/how-to-get-the-dpi-of-an-image-file-png
+**** Text editors
   - vim https://www.reddit.com/r/linux4noobs/comments/iy3mcc/vim_cheatsheet_for_noobs_with_corrections/
-- data storage and transfer
+**** Data storage and transfer
   - - globus
     - [[https://docs.globus.org/cli/][cli]]
       - [[https://docs.globus.org/cli/reference/][documentation]]
         - https://docs.globus.org/how-to/globus-connect-personal-linux/#globus-connect-personal-cli
-- capture screen to gif
-  - https://www.cockos.com/licecap/
-- https://wwjw.reddit.com/r/assholedesign/comments/bosgf4/comment/enk8k25/
-- [[id:FB8FF6B1-C6BD-4272-AC15-05BB15DF609B][Emacs]]
-- https://www.reddit.com/r/programming/comments/ag7vh4/detecting_agile_bullshit_from_the_us_department/
-- top-down planning, bottom-up delivery
 
-*** Specific software 
+*** Specific software packages by name 
 :PROPERTIES:
 :ID:       6dbf1097-a795-4397-bfee-97e4dc79bd07
 :END:
@@ -4543,7 +4577,7 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
     | Jump forward | CMD ALT RIGHT |
 - [[https://www.chromium.org/user-experience/keyboard-access][chromium keyboard shorcuts]]
 - https://youtube-dl.org/
-- https://github.com/eudaldgr/youtube-dl
+
 **** virtualbox
 :PROPERTIES:
 :ID:       147fb935-7526-497f-ab84-2b7903ea996e
@@ -4652,6 +4686,8 @@ CLOCK: [2019-03-04 Mon 14:59]--[2019-03-04 Mon 15:17] =>  0:18
 :PROPERTIES:
 :ID:       6a06bb32-1d72-4244-8b66-d888af715bea
 :END:
+- https://www.reddit.com/r/programming/comments/ag7vh4/detecting_agile_bullshit_from_the_us_department/
+
 - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
 - unit testing
   - https://docs.python.org/3/library/unittest.html
@@ -6930,6 +6966,8 @@ docker run --rm -p 6379:6379 <CONTAINER>
       - https://stackoverflow.com/questions/27679740/how-to-add-dockerfile-to-a-docker-registry-page
     - https://www.google.com/search?q=docker+container+retain+command+history
   - consider docker add to add scripts
+*** Ideas
+- - https://github.com/eudaldgr/youtube-dl
 ** Programming languages                                             :career:
 :PROPERTIES:
 :ID:       CBD1C9BA-44CB-4510-8ACD-F12CEF7E3402
@@ -7394,7 +7432,6 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
-https://stackoverflow.com/questions/2500436/how-does-cat-eof-work-in-bash
 ***** Processes 
 :PROPERTIES:
 :ID:       c3e424cd-7191-423e-815b-7e7fcb770100
@@ -7488,19 +7525,18 @@ b=( "${a[@]}" )
 :ID:       17707f3f-aee6-4eab-9d79-de07c975a3d5
 :END:
 - https://www.reddit.com/r/programming/comments/aw0zko/bash_creating_tabcompletion_for_your_programs/
-
-- user input https://www.google.com/search?q=bash+prompt+user+input
-  - examples
-    - [[id:c9327fad-4f38-4bbe-8b2e-58ad589fbdf6][Basecamp Docker]]
-  - https://www.reddit.com/r/bash/comments/n65i3n/prompt_user_for_specific_key_abort_with_any_other/
+- https://www.google.com/search?q=bash+read+default+input 
 - prompt for user input
-  - https://www.google.com/search?q=bash+prompt+user+input
   - [[https://stackoverflow.com/questions/226703/how-do-i-prompt-for-yes-no-cancel-input-in-a-linux-shell-script][stack: How do I prompt for Yes/No/Cancel input in a Linux shell script?]]
-
+  - https://www.google.com/search?q=bash+prompt+user+input
+    - examples
+      - [[id:c9327fad-4f38-4bbe-8b2e-58ad589fbdf6][Basecamp Docker]]
+    - https://www.reddit.com/r/bash/comments/n65i3n/prompt_user_for_specific_key_abort_with_any_other/
 ****** Writing functions  
 :PROPERTIES:
 :ID:       e6966fff-7c43-4bb9-952e-66dfc6c11c43
 :END:
+- https://stackoverflow.com/questions/2500436/how-does-cat-eof-work-in-bash
 - use type to see function definition
 - https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
 - https://www.shellhacks.com/print-usage-exit-if-arguments-not-provided/
