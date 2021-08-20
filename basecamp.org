@@ -12,11 +12,11 @@ CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 - 
 https://unix.stackexchange.com/questions/359832/converting-csv-to-tsv
 
-** Setups
+*** Setups
 :PROPERTIES:
 :ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
 :END:
-*** Basecamp Docker
+**** Basecamp Docker
 :PROPERTIES:
 :ID:       c9327fad-4f38-4bbe-8b2e-58ad589fbdf6
 :END:
@@ -88,7 +88,7 @@ docker_interactive() {
 }
 #+end_src
   
-*** My emacs IDEs
+**** My emacs IDEs
 :PROPERTIES:
 :ID:       2913d46c-63aa-4950-af70-a296a0a7a744
 :END:
@@ -97,7 +97,7 @@ docker_interactive() {
 https://www.reddit.com/r/emacs/comments/op4fcm/send_command_to_vterm_and_execute_it/
 https://blog.calebjay.com/posts/my-emacs-environment/#on-programming-in-emacs
 - https://jmonlong.github.io/Hippocamplus/emacs/
-**** Emacs shell IDE
+***** Emacs shell IDE
 :PROPERTIES:
 :ID:       07b8634c-70a6-4a99-90b5-0f5083ccaf04
 :END:
@@ -105,7 +105,7 @@ https://blog.calebjay.com/posts/my-emacs-environment/#on-programming-in-emacs
   - emacs
     - https://stackoverflow.com/questions/1008750/ide-emacs-mode-for-shell-scripting-in-bash-sh-etc
     - http://www.skybert.net/emacs/bash-linting-in-emacs/
-**** Ideas
+***** Ideas
 :PROPERTIES:
 :ID:       ea022e58-f02d-4f37-831f-59bc0fb9957f
 :END:
@@ -116,7 +116,7 @@ https://blog.calebjay.com/posts/my-emacs-environment/#on-programming-in-emacs
   - https://stat.ethz.ch/pipermail/ess-help/2015-July/010628.html
   - https://github.com/ffevotte/isend-mode.el
 
-*** All repo setup
+**** All repo setup
 :PROPERTIES:
 :ID:       c90aaf71-7311-48d8-98e8-221be4ebc290
 :END:
@@ -128,7 +128,7 @@ do
     mkdir -p $repo/"$dir"
 done
 #+end_src
-*** R basecamp setup
+**** R basecamp setup
 :PROPERTIES:
 :ID:       a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc
 :END:
@@ -7524,6 +7524,7 @@ b=( "${a[@]}" )
 :PROPERTIES:
 :ID:       17707f3f-aee6-4eab-9d79-de07c975a3d5
 :END:
+- https://www.google.com/search?q=bash+read+and+store+as+variable 
 - https://www.reddit.com/r/programming/comments/aw0zko/bash_creating_tabcompletion_for_your_programs/
 - https://www.google.com/search?q=bash+read+default+input 
 - prompt for user input
