@@ -5,13 +5,36 @@
 :LOGBOOK:
 CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 :END:  
+
+#+begin_src bash
+
+open(){
+    # Usage: check for parameters, return usage if empty
+    if [[ $# -eq 0 ]] || [[ $1 == "h" ]] ; then
+        printf "usage: open file\n 
+Opens files in programs based on file extention\n"
+        # Check extension and open         
+    elif [ "${1: -4}" == ".pdf" ] ;
+    then \okular "$1" &
+    elif [ "{1: -4}" == .xlsx ];
+    then \libreoffice "$1" & 
+    elif [ "${1: -4}" == ".docx" ];
+    then \libreoffice "$1" &                  
+    else
+        xdg-open "$1" 
+    fi
+}
+
+#+end_src
+
+https://superuser.com/questions/1337257/clients-cant-create-symlinks-on-samba-share
 ** Processes
 :PROPERTIES:
 :ID:       2896cf35-9ccf-4533-b451-6b0f7a3bc91c
 :END:
 - 
 https://unix.stackexchange.com/questions/359832/converting-csv-to-tsv
-
+- convert epub to pdf with calibre https://askubuntu.com/questions/299747/converting-epub-files-to-pdf-format
 *** Setups
 :PROPERTIES:
 :ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
@@ -222,6 +245,15 @@ primeKeyUnique = function(df,pk){
 
 - https://www.google.com/search?q=R+check+hostname 
 - https://www.google.com/search?q=R+where+to+store+packages 
+**** Basecamp bash setup
+#+name: basecamp_bash_setup_wrapper
+#+begin_src bash :noweb yes
+<<docker_interactive>>
+<<docker_check>>
+<<check_software_dependencies>>
+<<symlink-by-csv-script>>
+<<check_local_software>>        
+#+end_src
 ** R Statistical Computing                                           :career:
 :PROPERTIES:
 :ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
@@ -245,35 +277,26 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
-#+BEGIN_SRC R
-source("~/Rscripts/setup.R")
-set.seed(314)
-pkl=1000 # There will be 1000 unique accession numbers (primary key length)
-time_start =  as.POSIXct('2018-10-01T01:00:00z', format = "%Y-%m-%dT%H:%M:%S")
-time_end = as.POSIXct('2018-11-01T01:00:00z', format = '%Y-%m-%dT%H:%M:%S')
-diff_minutes_max = difftime(time_end,time_start, units = "mins")
-diff_minutes_all = sample(1:diff_minutes_max, pkl, replace = T)
-result_folate = rnorm(200, 25, 12)
-result_MCV = rnorm(400, 88, 8) # A normal distribution around mean MCV
-result_WBC = rnorm(400, 7500, 3500)
+*** Local YAS
+#+name: r.script
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/r.script
+# -*- mode: snippet -*-
+# key: r.script
+# expand-env: ((yas-indent-line 'fixed))
+# --
+#!/usr/bin/env Rscript
+#########1#########2#########3#########4#########5#########6#########7#########8
+#
+### ${1:SCRIPT NAME} ###
+#
 
-# vectors
-accession = sample(1:pkl, pkl, replace = F) # 1000 unique accession #s
-visit = sample(1:500, pkl, replace = T) # 500 patient visits
-patient = sample(1:350, pkl, replace=T) # 350 patients
-time_result = time_start + diff_minutes_all
-result = c(result_folate,result_MCV,result_WBC)
-test=c(rep.int("folate", 200), rep.int("MCV", 400), rep.int("WBC", 400))
-df=data.frame(accession,visit,patient,time_result,test,result)
-df
-      #+END_SRC
-https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
-https://adv-r.hadley.nz/
-https://bookdown.org/ndphillips/YaRrr/saving-plots-to-a-file-with-pdf-jpeg-and-png.html
-*** [[id:a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc][LINK TO R basecamp setup]]
-:PROPERTIES:
-:ID:       218ef9c0-0a15-4984-afcf-a0b4cd1394e7
-:END:
+# Notes
+
+# Functions
+
+# Commands                                                           
+#+end_src
+
 *** Processes and Applications
 :PROPERTIES:
 :ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
@@ -281,6 +304,26 @@ https://bookdown.org/ndphillips/YaRrr/saving-plots-to-a-file-with-pdf-jpeg-and-p
 :LOGBOOK:
 CLOCK: [2021-06-04 Fri 10:17]--[2021-06-04 Fri 10:25] =>  0:08
 :END:
+**** Import
+:PROPERTIES:
+:ID:       8fe67560-d881-4cc3-ad0f-fea419a81023
+:END:
+  - https://stackoverflow.com/questions/23678691/converting-a-text-file-into-a-vector-in-r
+    - https://www.google.com/search?q=R+import+file+as+vector
+**** Working with system variables
+- https://www.google.com/search?q=get+hostname+in+R  
+#+begin_src R
+as.character(Sys.info()["nodename"])
+#+end_src
+
+**** Regular expressions (REGEX) in R
+:PROPERTIES:
+:ID:       af6ebe3c-92f2-4b87-8292-d5deac52bd00
+:END:
+  - [[https://www.rdocumentation.org/packages/base/versions/3.5.1/topics/regex][documentation]]
+  - [[http://www.endmemo.com/program/R/gsub.php][Simplified syntax]]
+  - [[https://stackoverflow.com/questions/2973436/regex-lookahead-lookbehind-and-atomic-groups][Look around examples]]
+  - [[https://www.rdocumentation.org/packages/stringi/versions/1.1.6/topics/stringi-search-regex#l_details][Operators]]
 **** Data science in R
 :PROPERTIES:
 :ID:       7d5cda01-172e-49ee-8030-754402f3aa7d
@@ -289,6 +332,7 @@ CLOCK: [2021-06-04 Fri 10:17]--[2021-06-04 Fri 10:25] =>  0:08
 CLOCK: [2021-06-04 Fri 10:25]--[2021-06-04 Fri 10:58] =>  0:33
 CLOCK: [2019-03-19 Tue 14:35]--[2019-03-19 Tue 16:45] =>  2:10
 :END:
+- https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
 ***** Examples
 :PROPERTIES:
 :ID:       045d1771-be15-4a8d-b0ac-ef326d93a54b
@@ -317,41 +361,22 @@ CLOCK: [2019-03-19 Tue 14:35]--[2019-03-19 Tue 16:45] =>  2:10
 :END:
 
 
-**** import
-:PROPERTIES:
-:ID:       8fe67560-d881-4cc3-ad0f-fea419a81023
-:END:
-  - https://stackoverflow.com/questions/23678691/converting-a-text-file-into-a-vector-in-r
-    - https://www.google.com/search?q=R+import+file+as+vector
-**** Regular expressions (REGEX) in R
-:PROPERTIES:
-:ID:       af6ebe3c-92f2-4b87-8292-d5deac52bd00
-:END:
-  - [[https://www.rdocumentation.org/packages/base/versions/3.5.1/topics/regex][documentation]]
-  - [[http://www.endmemo.com/program/R/gsub.php][Simplified syntax]]
-  - [[https://stackoverflow.com/questions/2973436/regex-lookahead-lookbehind-and-atomic-groups][Look around examples]]
-  - [[https://www.rdocumentation.org/packages/stringi/versions/1.1.6/topics/stringi-search-regex#l_details][Operators]]
-**** By content area
-:PROPERTIES:
-:ID:       debfe01c-d2b4-46b8-9c40-b804c2c41082
-:END:
-- cite:lewis2010 http://proquest.safaribooksonline.com/9780763758080
-***** Text
+**** Text
 :PROPERTIES:
 :ID:       94242006-2d2c-4615-8104-8613fd5df6d9
 :END:
 - https://www.google.com/search?q=R+lowercase+dplyr+stack
-***** [[id:7d5cda01-172e-49ee-8030-754402f3aa7d][LINK TO Data science in R]]
+**** [[id:7d5cda01-172e-49ee-8030-754402f3aa7d][LINK TO Data science in R]]
 :PROPERTIES:
 :ID:       ee748c37-9714-4ca6-aa81-5241061b2a61
 :END:
-***** Math in R
+**** Math in R
 :PROPERTIES:
 :ID:       1cda08a5-5e3d-49bd-96aa-c262abada15d
 :END:
 - Rounding
   - https://www.rdocumentation.org/packages/base/versions/3.4.1/topics/Round
-****** Probability and Statistics with R
+***** Probability and Statistics with R
 :PROPERTIES:
 :ID:       26211e92-7ff9-4520-a9a7-cac04027e610
 :END:
@@ -379,12 +404,12 @@ coronary
   - https://cran.r-project.org/web/packages/cutpointr/vignettes/cutpointr.html
   - https://web.expasy.org/pROC/
  
-******* Inferential Testing
+****** Inferential Testing
 :PROPERTIES:
 :ID:       85A16229-6FDB-4CAA-B23E-3A3A08F96BD7
 :END:
 
-******** Statistical Test Template
+******* Statistical Test Template
 :PROPERTIES:
 :ID:       A4CA9F60-8E82-4655-B6F5-2780A4CD93C5
 :END:
@@ -393,17 +418,17 @@ coronary
  Equation: 
  Assumptions: 
 
-******** Testing Assumptions
+******* Testing Assumptions
 :PROPERTIES:
 :ID:       531DD201-BBB4-4C21-BDDE-02982DB43847
 :END:
 
-********* Normalcy
+******** Normalcy
 :PROPERTIES:
 :ID:       DF687DB7-128D-49E4-B83B-5D4E7F83DC52
 :END:
 
-********** Shapiro-Wilk
+********* Shapiro-Wilk
 :PROPERTIES:
 :ID:       76DD7F99-072F-49D7-A08C-7A77F48BCDAE
 :END:
@@ -412,27 +437,27 @@ coronary
 
  null-hypothesis of this test is that the population is normally distributed
 
-********** QQ plot
+********* QQ plot
 :PROPERTIES:
 :ID:       38C4C432-EFF6-45F8-8A2A-AC5F5E68015D
 :END:
 
-******** Significance Testing
+******* Significance Testing
 :PROPERTIES:
 :ID:       CE56656E-9272-488A-A94E-5FB8F84F6E52
 :END:
 
-********* Categorical by chi square
+******** Categorical by chi square
 :PROPERTIES:
 :ID:       2223CFCB-A07A-4BF8-93D8-3A5E377EA317
 :END:
 
-********* Independent, non-normal, 2-populations: Wilcoxon-Mann Whitney
+******** Independent, non-normal, 2-populations: Wilcoxon-Mann Whitney
 :PROPERTIES:
 :ID:       B1DEBDF9-D94A-40EB-BC3C-DDEB3006AAD2
 :END:
 
-********* Nonparametric, >2 populations: Kruskal-Wallis
+******** Nonparametric, >2 populations: Kruskal-Wallis
 :PROPERTIES:
 :ID:       5FEA38FE-3723-4ECF-8D9C-4A256163F55A
 :END:
@@ -441,21 +466,21 @@ coronary
  Equation: 
  Assumptions:  
 
-******** Regression Modeling
+******* Regression Modeling
 :PROPERTIES:
 :ID:       4C723421-9630-4CD9-B586-BDA73E809CE1
 :END:
 
 - [[file:~/Box%20Sync/library/Harrell,15%20Regression%20modeling%20stratgies.pdf][Harrell,15 Regression modeling stratgies]]
 
-****** R for Machine Learning
+***** R for Machine Learning
 :PROPERTIES:
 :ID:       05014193-8038-4108-bf9d-11c56c33a63c
 :END:
  - [[https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/#one][A Complete Tutorial on Tree Based Modeling from Scratch (in R & Python)]]
 
 
-****** General linear model glm()
+***** General linear model glm()
 :PROPERTIES:
 :ID:       3B10C6E7-5D13-4BE4-9807-F60FC53A513B
 :END:
@@ -561,6 +586,8 @@ library(ROCR)
 :PROPERTIES:
 :ID:       479569fe-229d-4d2f-ba08-b871d3ad64ac
 :END:
+- https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
+- https://adv-r.hadley.nz/
 - https://x-team.com/blog/programming-best-practices/
 - https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
 - ifelse stop functions
@@ -571,6 +598,28 @@ library(ROCR)
 :ID:       46253EF9-7B35-403F-BA1B-24F4FCA750D6
 :CREATED:  [2019-03-17 Sun 15:17]
 :END:
+#+BEGIN_SRC R
+source("~/Rscripts/setup.R")
+set.seed(314)
+pkl=1000 # There will be 1000 unique accession numbers (primary key length)
+time_start =  as.POSIXct('2018-10-01T01:00:00z', format = "%Y-%m-%dT%H:%M:%S")
+time_end = as.POSIXct('2018-11-01T01:00:00z', format = '%Y-%m-%dT%H:%M:%S')
+diff_minutes_max = difftime(time_end,time_start, units = "mins")
+diff_minutes_all = sample(1:diff_minutes_max, pkl, replace = T)
+result_folate = rnorm(200, 25, 12)
+result_MCV = rnorm(400, 88, 8) # A normal distribution around mean MCV
+result_WBC = rnorm(400, 7500, 3500)
+
+# vectors
+accession = sample(1:pkl, pkl, replace = F) # 1000 unique accession #s
+visit = sample(1:500, pkl, replace = T) # 500 patient visits
+patient = sample(1:350, pkl, replace=T) # 350 patients
+time_result = time_start + diff_minutes_all
+result = c(result_folate,result_MCV,result_WBC)
+test=c(rep.int("folate", 200), rep.int("MCV", 400), rep.int("WBC", 400))
+df=data.frame(accession,visit,patient,time_result,test,result)
+df
+      #+END_SRC
 - set seed for consistent generation of random numbers
   #+BEGIN_SRC R
 set.seed(314)
@@ -655,10 +704,11 @@ df=data.frame(accession,visit,patient,time_result,test,result)
 df
       #+END_SRC
 
-*** Visualizations in R including ggplot2
+**** Visualizations in R including ggplot2
 :PROPERTIES:
 :ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
 :END:
+- https://bookdown.org/ndphillips/YaRrr/saving-plots-to-a-file-with-pdf-jpeg-and-png.html
 - tikz as graphics device for R: https://cran.r-project.org/web/packages/tikzDevice/vignettes/tikzDevice.pdf
 https://r-graphics.org/recipe-facet-label-appearance
 https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
@@ -691,11 +741,16 @@ https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html
   - [[https://stackoverflow.com/questions/33594642/beautiful-pie-charts-with-r/33594843][pie charts]]
 http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/
 - [[https://www.youtube.com/watch?feature=youtu.be&v=rBp3eYHrsfo&app=desktop&t=0s][plotly interactive graphs]]
+**** [[id:a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc][LINK TO R basecamp setup]]
+:PROPERTIES:
+:ID:       218ef9c0-0a15-4984-afcf-a0b4cd1394e7
+:END:
 *** General reference
 :PROPERTIES:
 :CREATED:  [2021-06-04 Fri 10:12]
 :ID:       707e5032-ae3d-4f3e-86eb-46917bec88f8
 :END:
+- cite:lewis2010 http://proquest.safaribooksonline.com/9780763758080
 - https://www.r-bloggers.com/blogging-with-rmarkdown-knitr-and-jekyll/
 - https://adv-r.hadley.nz/
 **** R Training
@@ -2020,538 +2075,6 @@ CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 - https://www.google.com/search?q=linux+pdf+delete+page 
 - https://www.google.com/search?q=linux+convert+image+to+pdf
 - - https://askubuntu.com/questions/113544/how-can-i-reduce-the-file-size-of-a-scanned-pdf-file
-*** Software
-:PROPERTIES:
-:ID:       9E19E626-9D6C-4296-BEDB-80033A846CF4
-:END:
-:LOGBOOK:
-CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
-:END:
-- capture screen to gif
-  - https://www.cockos.com/licecap/
-- VLC
-  - https://webapps.stackexchange.com/questions/tagged/google-contacts?sort=votes&pageSize=15
-  - [[https://apple.stackexchange.com/questions/127386/how-do-i-vary-the-playback-speed-in-vlc-using-keyboard-shortcuts][VLC playback]]
-            |--------------+---------------|
-            | Faster       | CMD + =       |
-            | Slower       | CMD -         |
-            | Jump back    | CMD ALT LEFT  |
-            | Jump forward | CMD ALT RIGHT |
-- [[https://www.chromium.org/user-experience/keyboard-access][chromium keyboard shorcuts]]
-- VLC
-  - https://webapps.stackexchange.com/questions/tagged/google-contacts?sort=votes&pageSize=15
-  - [[https://apple.stackexchange.com/questions/127386/how-do-i-vary-the-playback-speed-in-vlc-using-keyboard-shortcuts][VLC playback]]
-    |--------------+---------------|
-    | Faster       | CMD + =       |
-    | Slower       | CMD -         |
-    | Jump back    | CMD ALT LEFT  |
-    | Jump forward | CMD ALT RIGHT |
-- [[https://github.com/tekezo/Karabiner/issues/354][karabiner system prompts]]
-- iTerm
-- https://superuser.com/questions/399594/color-scheme-not-applied-in-iterm2/1216638
-- [[https://stackoverflow.com/questions/196357/making-iterm-to-translate-meta-key-in-the-same-way-as-in-other-oses][remapping option as meta for terminal emacs]] - see answer 2  
-- Cisco AnyConect
-- [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
-- my profile at /opt/cisco/anyconnect/profile/test.xml
-- https://extensions.libreoffice.org/extensions
-- https://wwjw.reddit.com/r/assholedesign/comments/bosgf4/comment/enk8k25/
-- macos
-- trash http://hasseg.org/trash/
-- [[https://rclone.org/][rclone]]
-- 
-- GNU software
-- [[id:FB8FF6B1-C6BD-4272-AC15-05BB15DF609B][Emacs]]
-- tramp
-- [currently not working] to goodle drive- https://www.gnu.org/software/tramp/#Using-Google-Drive
-- iterm2
-- https://kevinjalbert.com/iterm2-mouseless-copy/
-- https://stackoverflow.com/questions/30055402/how-to-select-text-in-iterm-with-shiftarrow
-- offlineimap
-- https://medium.com/@kirang89/emacs-as-email-client-with-offlineimap-and-mu4e-on-os-x-3ba55adc78b6
-- https://github.com/sup-heliotrope/sup/wiki/Complete-gmail-configuration
-- http://www.offlineimap.org/doc/conf_examples.html
-- http://www.offlineimap.org/doc/FAQ.html#configuration-questions
-- https://gist.github.com/dabrahams/3030332
-- http://www.mdlerch.com/offlineimap-gmail-and-mutt-tutorial.html
-- http://jgoerzen.github.io/offlineimap/manual.html
-- https://github.com/mailpile/Mailpile/wiki/Configuring-Linux-to-download-your-email
-- http://blog.wrouesnel.com/articles/Migrating%20to%20Gmail/
-- [[http://rudolfochrist.github.io/blog/2015/03/21/offlineimap-with-ssl-files-on-osx/][Offlineimap with SSL files on OSX]] shows where cert is
-- mobile applications
-- [[https://www.reddit.com/r/IWantToLearn/comments/8o7uli/iwtl_how_to_design_and_create_mobile_apps_and/][Reddit: IWTL how to design and create mobile apps and games from scratch]]
-- software development
-- agile
-- https://www.reddit.com/r/programming/comments/ag7vh4/detecting_agile_bullshit_from_the_us_department/
-- Software development / deployment
-- top-down planning, bottom-up delivery
-- 
-- [[http://powazek.com/posts/1655][Programmers are Tiny Gods]]
-- applications
-- examples
-- https://krisbogdanov.com/personal-projects-before-first-internship/?fbclid=IwAR1hna-buWCrhA7pd2qRp-NkNXGEN0pUrUNoll8peSpOK6F3H-ceeevkcNE
-- google sheets
-- https://webapps.stackexchange.com/questions/31894/google-spreadsheet-timestamp/31942#31942
-- https://www.benlcollins.com/spreadsheets/google-sheets-query-sql/
-- https://softwarerecs.stackexchange.com/questions/3412/free-ocr-software-that-makes-a-pdf-searchable-with-searchable-text-at-the-right
-- https://softwarerecs.stackexchange.com/questions?sort=votes
-- https://www.benlcollins.com/spreadsheets/google-sheets-query-sql/
-- https://softwarerecs.stackexchange.com/questions?sort=votes
-- [[https://brew.sh/][Homebrew]]
-- [[https://docs.brew.sh/][documentation]]
-- commands
- | search for packages | brew search <TERM>  |
- | see active services | brew services list  |
- | install from cask   | brew cask <PACKAGE> |
- |                     |                     |
-- GPL-3 licensing 
-- Chrome
-  - https://www.google.com/search?q=chromium+remap+keybindings 
-- [[http://stackoverflow.com/questions/6250447/trigger-right-click][trigger right click chrome w/ java?]]
-- https://www.amazon.com/Hackers-Painters-Big-Ideas-Computer/dp/1449389554
-- [[https://ianskerrett.wordpress.com/2017/04/19/iot-developer-trends-2017-edition/][Who uses what- Eclipse survey]]
-**** [[id:16DB2FD8-1988-48E4-8D8D-E69398823A70][LINK TO Operating Systems]]
-:PROPERTIES:
-:ID:       23319fff-191b-4581-bf37-9fd716a347dc
-:END:
-**** Package managers
-:PROPERTIES:
-:ID:       89fadb82-99b8-4db8-aa5e-e6e1c0c707eb
-:END:
-***** Conda
-:PROPERTIES:
-:ID:       b16d0202-8d35-472b-b538-87a7d6a6cef7
-:END:
-- Processes and commands
-  - https://www.google.com/search?q=conda+don't+start+in+base 
-- Standards and best practice
-- Documentation
-- Applications
-- Reference
-  - [[EA056C38-9DE6-47EE-A75B-0FCBAE62372B][YASnippets]]
-
-**** software mod                                                  :software:
-:PROPERTIES:
-:CREATED:  [2019-04-10 Wed 10:13]
-:ID:       F89E691E-9FD7-40F6-927A-A0DD72C275C5
-:END:
-
-- if software, then stack and linkout to stack elements best resource reference structure? 
-- commands
-  |----------+---------|
-  | function | command |
-  |----------+---------|
-  | <35>     | <35>    |
-  |          |         |
-- documentation
-- applications
-**** inkscape
-:PROPERTIES:
-:CREATED:  [2020-10-04 Sun 10:05]
-:ID:       e68592b2-5e86-48c9-a2c2-5983e53d34f8
-:END:
-- arial and other std fonts  https://www.google.com/search?q=inkscape+arial https://askubuntu.com/questions/651441/how-to-install-arial-font-and-other-windows-fonts-in-ubuntu 
-- https://stackoverflow.com/questions/15710673/inkscape-too-slow-when-importing-r-plots
-- https://inkscape.org/forums/questions/line-spacing/
-**** okular
-:PROPERTIES:
-:ID:       a25ccd6d-8d0e-4eb2-aa40-9b973b75c623
-:END:
-- https://www.google.com/search?q=okular+open+in+new+windows
-- [[https://docs.kde.org/stable5/en/kdegraphics/okular//][documentation]]
-- https://docs.kde.org/trunk5/en/kdegraphics/okular/okular.pdf 
-- https://www.google.com/search?q=okular+remap+keyboard+shortcuts
-**** libreoffice 
-:PROPERTIES:
-:ID:       ec8355ce-7324-4ffd-ad3b-25c39edc7390
-:END:
-- https://www.google.com/search?q=libreoffice+escape+comment
-***** libreoffice impress
-:PROPERTIES:
-:ID:       9981156b-c7a5-4c38-bdd9-765621f5ff56
-:END:
-
-- https://www.google.com/search?q=libreoffice+snap+line
-- https://ask.libreoffice.org/en/question/10973/permanently-set-default-page-style/
-
-
-**** gimp
-:PROPERTIES:
-:ID:       1001a862-f3a7-4b07-8f2c-882f1e69398b
-:END:
-- commands
-  |----------+---------|
-  | function | command |
-  |----------+---------|
-  | <35>     | <35>    |
-  |          |         |
-- processes
-  - https://www.google.com/search?q=gimp+crop+image
-  - https://www.google.com/search?q=gimp+convert+to+black+and+white
-- standards and best practice
-- documentation
-- applications
-- reference
-  - [[file:~/.emacs.d/snippets/org-mode/software]]
-**** MediaWiki
-:PROPERTIES:
-:ID:       4F02B352-1A93-4CF4-A386-2788387A18C0
-:END:
-
-**** JSON JavaScript Object Notation
-:PROPERTIES:
-:ID:       9E10CCC0-BC92-4C96-BBF2-99B54E88143D
-:END:
-https://github.com/antonmedv/fx/blob/master/DOCS.md
-  - JSON
-    - https://www.w3schools.com/js/js_json_syntax.asp
-- When exchanging data between a browser and a server, the data can only be text.
-- JSON is text, and we can convert any JavaScript object into JSON, and send JSON to the server.
-- 
-
-**** Version Control
-:PROPERTIES:
-:ID:       A9EE8CE0-ED58-4127-8B57-B53AE680B441
-:END:
-
-https://github.com/simonthum/git-sync
-- Web-based
-  - GitHub
-    - Contributions
-      - https://guides.github.com/activities/forking/
-      - [[https://help.github.com/articles/fork-a-repo/][Forking]] allows for posting
-      - [[https://help.github.com/articles/cloning-a-repository/][Cloning]] allows for work on a project
-    - [[https://opensource.guide/][GitHub open source guide]]
-      - [[https://opensource.guide/how-to-contribute/#anatomy-of-an-open-source-project][Anatomy of an open source project]]
-        - People
-          - Author
-          - Owner
-          - Maintainers
-          - Contributors
-          - Community members
-        - Documentation
-          - License
-          - Readme- guidance for using the project
-          - Contributing
-          - Code of conduct
-        - Tools to organize discussion
-          - Issue tracker
-          - Pull requests
-          - Discussion forums
-          - Chat
-
-***** Git
-:PROPERTIES:
-:ID:       E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6
-:END:
-:LOGBOOK:
-CLOCK: [2018-08-10 Fri 16:03]--[2018-08-10 Fri 16:13] =>  0:10
-CLOCK: [2017-11-29 Wed 19:30]--[2017-11-29 Wed 19:51] =>  0:21
-CLOCK: [2017-11-29 Wed 19:05]--[2017-11-29 Wed 19:25] =>  0:20
-CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
-CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
-CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
-:END:
-- processes
-  - initializing
-    - https://www.google.com/search?q=initialize+git+repo
-    - git branch --set-upstream-to=origin/master master
-  - gitignore
-    - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
-    - https://labs.consol.de/development/git/2017/02/22/gitignore.html
-  - submodules
-    - add git submodule add <SUBMODULE>
-    - initialize git submodule update --recursive --init
-    - push and pull submodules
-      - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
-    - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
-    - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
-  - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
-  - [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]] 
-  - searching commits
-    - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
-  - reverting
-    - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
-    - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
-  - file comparisons
-    - https://doc.ubuntu-fr.org/meld
-  - removing files
-    - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
-    - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
-  - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
-- commands
-  | Action               | Command                                  |
-  |----------------------+------------------------------------------|
-  | <30>                 | <35>                                     |
-  | Create repo          | git init                                 |
-  | Ignore files         | touch .gitignore                         |
-  | Add (stage) file     | git add                                  |
-  | Add recursive        | git add --all                            |
-  | Remove (unstage)     | git reset                                |
-  | Last update          | git log --name-status HEAD^..HEAD        |
-  | To be commited       | git status                               |
-  | List untracked       | git ls-files --others --exclude-standard |
-  | List tracked         | git ls-tree -r master --name-only        |
-  | Stop tracking repo   | rm -rf .git/                             |
-  | View list of commits | git log                                  |
-  | View file changes    | git diff - HEAD --staged                 |
-  - Staging
-    - git add 'stages' a file- makes it ready to add to repo
-    - git reset unstages
-  - Branches
-    - git branch
-      - add and delete
-        - -d <BRANCH NAME>
-        - <BRANCH NAME> 
-    - git checkout <BRANCH> switch branches
-  - Pulls
-    - git merge- FIRST navigate to master, then git merge <BRANCH TO PULL>
-  - Changing within branch
-    - git commit- add changes WITHIN branch- full repo (not just a file) within branch
-    - git checkout -- undo last commit FOR A SPECIFIC FILE
-  - Reverting
-    - reverting a specific file
-      1. find the commit hash with =git log=
-      2. revert with =git checkout <COMMIT HASH> -- <FILE>=
-    - [[http://stackoverflow.com/questions/4114095/how-to-revert-git-repository-to-a-previous-commit][reverting to previous commit]]
-    - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: Is there a quick git command to see an old version of a file?]]
-  - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
-  - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
-  - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
-  - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
-  - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
-- best practices
-  - for git repos, use submodules to push common code up - https://git-scm.com/book/en/v2/Git-Tools-Submodules
-- Scripts
-  #+name:list-directories-under-git-vc
-  #+BEGIN_SRC sh :results silent
-  cd ~/
-  find . -type d -name '.git' > ~/all-git-repos.txt 
-  #+END_SRC
-- Documentation and general reference
-  - Commit
-  - [[https://git-scm.com/][git website]]
-    - [[https://git-scm.com/doc][documentation]]
-  - Basic concepts
-    - Repository
-    - Branching- the different versions of the repository
-      - Branches
-        - master
-        - feature- a new branch 
-      - Branching creates a snapshot of master
-    - Encorporating changes
-      - WITHIN a branch: Commit- changes to any branch, not necessarily master
-        - commits can have comments, but this is not necessary
-      - FROM ONE BRANCH TO ANOTHER: Pull request- to pull you changes INTO a branch 
-    - Distributed version control (no canonical, distributed version 'sync' via patch
-  - Educational Resources
-    - [[https://try.github.io/levels/1/challenges/1][Command line tutorial]]
-    - [[https://www.git-tower.com/learn/git/ebook/en/command-line/introduction#start][Tower: Learn Version Control with Git]]
-  - [[https://stackoverflow.com/questions/954560/how-does-git-handle-symbolic-links][How does Git handle symbolic links?]]
-- Git repository hosting services
-  - [[https://about.gitlab.com/][GitLab]]
-  - [[https://github.com/][GitHub]]
-    - https://www.reddit.com/r/programming/comments/7deyx8/introducing_security_alerts_on_github_with_your/
-    - [X] [2017-10-19 Thu] Have [[https://mail.google.com/mail/u/0/#inbox/15f3634fd86f200a][student dev pack!]]
-    - Primarily for using git with other people- the advantage is pull requests 
-    - Documentation
-    - [[https://help.github.com/articles/cloning-a-repository/][Cloning a repository]] via url: git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
-    - [[https://guides.github.com/][Guides]]
-      - [[https://guides.github.com/features/mastering-markdown/][Markdown]]
-  - https://guides.github.com/introduction/flow/
-  - GitHub
-    - https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push
-    - https://github.com/settings/keys
-    - [[https://education.github.com/?utm_source=newsletter&utm_medium=email&utm_campaign=student-survey-050818][github: educational tools]]
-    - [[https://guides.github.com/features/pages/][Getting Started with GitHub Pages]]
-    - [[https://education.github.com/pack?utm_source=announcement&utm_medium=email&utm_campaign=education-201806019][GitHub related tools]]
-    - [[https://github.com/trending/r?since=monthly][GitHub trending]]
-    - ideas
-      - https://stackoverflow.com/questions/11852982/can-i-arrange-repositories-into-folders-on-github/11859027#11859027
-    - https://github.com/features/actions
-    - https://lab.github.com/courses?utm_source=newsletter&utm_medium=email&utm_campaign=student-newsletter-120818
-- GUIs- https://www.sourcetreeapp.com/
-
-**** Graphviz                                                      :software:
-:PROPERTIES:
-:ID:       4BFFFC0C-CBFA-4E97-BB52-88A95D4A361B
-:CREATED:  [2019-08-23 Fri 07:56]
-:END:
-:LOGBOOK:
-CLOCK: [2018-12-08 Sat 16:05]--[2018-12-08 Sat 16:44] =>  0:39
-CLOCK: [2018-12-08 Sat 15:16]--[2018-12-08 Sat 15:25] =>  0:09
-CLOCK: [2017-11-10 Fri 11:40]--[2017-11-10 Fri 11:57] =>  0:17
-CLOCK: [2017-11-10 Fri 10:45]--[2017-11-10 Fri 11:31] =>  0:46
-:END:
-- commands
-  |----------+---------|
-  | function | command |
-  |----------+---------|
-  | <35>     | <35>    |
-  |          |         |
-- [[http://www.graphviz.org/documentation/][documentation]] and guides
-  - [[http://www.graphviz.org/doc/info/lang.html][The DOT Language]]
-  - [[http://www.tonyballantyne.com/graphs.html][Drawing Graphs using Dot and Graphviz]]
-  - attributes
-    - [[http://www.graphviz.org/doc/info/attrs.html#a:rankdir][Node, Edge and Graph Attributes]]
-    - [[https://hackage.haskell.org/package/graphviz-2999.19.0.0/docs/Data-GraphViz-Attributes.html][attributes and values from the haskell graphviz package]]
-- applications
-  [[file:/tmp/entity-relationship-diagram.pdf]]
-  #+BEGIN_SRC dot :dir ~/data/imgs/graphviz-examples :file /tmp/entity-relationship-diagram.pdf :cmdline -Tpdf
-// https://mamchenkov.net/wordpress/2015/08/20/graphviz-dot-erds-network-diagrams/
-digraph entityRelationshipDiagram { 
-    label = "MPNST Project Data Model"
-    labelloc = top;
-    rankdir=LR;
- //
-    node [shape=plaintext];
-    edge [dir=both];
-//
-    subjects [label=<
-            <table border="0" cellborder="1" cellspacing="0">
-                <tr><td bgcolor="lightblue">subjects</td></tr>
-                <tr><td PORT="a" align="left"><b>subject_id</b></td></tr>
-                <tr><td align="left">dob</td></tr>
-                <tr><td align="left">sex</td></tr>
-                <tr><td align="left">institution</td></tr>                
-                <tr><td align="left">current_dx</td></tr>                
-                <tr><td align="left">plexiform_dx_date</td></tr>                
-                <tr><td align="left">plexiform_dx_date_specificity</td></tr>                
-                <tr><td align="left">anf_dx_date</td></tr>                
-                <tr><td align="left">anf_dx_date_specificity</td></tr>                
-                <tr><td align="left">mpnst_dx_date</td></tr>                
-                <tr><td align="left">mpnst_dx_date_specificity</td></tr>                
-                <tr><td align="left">mpnst_grade</td></tr>                
-                <tr><td align="left">mpnst_stage</td></tr>                
-            </table>
-        >];
-//
-    specimens [label=<
-            <table border="0" cellborder="1" cellspacing="0" cellpadding="1">
-                <tr><td bgcolor="lightblue">specimens</td></tr>
-                <tr><td PORT="a" align="left"><b>specimen_id</b></td></tr>
-                <tr><td PORT="b" align="left">subject_id</td></tr>
-                <tr><td align="left">collection_date</td></tr>
-                <tr><td align="left">specimen_type</td></tr>
-            </table>
-        >];
-//
-//
-        libraries [label=<
-            <table border="0" cellborder="1" cellspacing="0">
-                <tr><td bgcolor="lightblue">libraries</td></tr>
-                <tr><td align="left"><b>library_id</b></td></tr>
-                <tr><td PORT="b" align="left">specimen_id</td></tr>
-                <tr><td align="left">library_type</td></tr>
-            </table>
-        >];
-//
-        treatments [label=<
-            <table border="0" cellborder="1" cellspacing="0">
-                <tr><td bgcolor="lightblue">treatments</td></tr>
-                <tr><td align="left"><b>treatment_id</b></td></tr>
-                <tr><td PORT="b" align="left">subject_id</td></tr>
-                <tr><td align="left"> treatment_class </td></tr>
-                <tr><td align="left"> treatment_subclass </td></tr>
-                <tr><td align="left"> treatment_date </td></tr>                
-                <tr><td align="left"> treatment_date_specificity </td></tr>                
-            </table>
-        >];
-//
-        diagnostics [label=<
-            <table border="0" cellborder="1" cellspacing="0">
-                <tr><td bgcolor="lightblue">diagnostics</td></tr>
-                <tr><td align="left"><b>dx_id</b></td></tr>
-                <tr><td PORT="b" align="left">subject_id</td></tr>
-                <tr><td align="left">dx_finding</td></tr>
-                <tr><td align="left">dx_class</td></tr>
-                <tr><td align="left">dx_subclass</td></tr>
-                <tr><td align="left">dx_date</td></tr>
-                <tr><td align="left">dx_date_specificity</td></tr>
-            </table>
-        >];
-//
-//
-subjects:a -> specimens:b [arrowhead=crow, arrowtail=none, dir=both]  
-subjects:a -> treatments:b [arrowhead=crow, arrowtail=none, dir=both]  
-subjects:a -> diagnostics:b [arrowhead=crow, arrowtail=none, dir=both]  
-specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]  
-}
-#+END_SRC
-  [[file:/tmp/dot-example.png]]
-  #+BEGIN_SRC dot :results replace :file /tmp/dot-example.png :cmdline -Tpng
-  digraph graphName{
-  // syntax
-  //  no . or - allowed, instead use CamelCase
-
-  // graph params
-  size ="6/6";
-  node [color=grey fontsize=12, shape=box, fontname=Helvetica];
-
-  // nodes
-  node1 [label="Node label"]
-  node2 [label="Second Node"]
-
-  // edges
-  node1 -> unlabeled_node
-  node1 -> node2 [label="Edge label"]
-  // wavy
-  node1 -> node3:w
-  } 
-  #+END_SRC
-- interfaces
-  - w/ other platforms
-    - org
-      - [[http://correl.phoenixinquis.net/2015/07/12/git-graphs.html][Drawing git graphs with graphviz and org mode]]
-      - Advanced- [[http://orgmode.org/worg/org-tutorials/org-dot-diagrams.html][Worg for dot]]
-      - graphviz in Org-mode
-        - [[file:~/.emacs.d/snippets/org-mode/code.dot][yas template]]
-        - dot header is #+BEGIN_SRC dot :file ./<FILE_NAME>.png :cmdline -Tpng
-        - Simple- [[http://tonyballantyne.com/graphs.html][Drawing Graphs using Dot and Graphviz]]
-    - Run through python
-      - e.g. http://scikit-learn.org/stable/modules/generated/sklearn.tree.export_graphviz.html
-  - http://viz-js.com/
-- output
-  - [[https://stackoverflow.com/questions/14784405/how-to-set-the-output-size-in-graphviz-for-the-dot-format][How to set the output size in GraphViz for the dot format?]]
-- processes
-  - assign attributes to group
-    - https://stackoverflow.com/questions/28853898/groups-of-nodes-with-the-same-attributes-in-graphviz-file
-  - make a legend
-- reference
-  - [[http://graphviz.it/#/gallery/states.gv][live editor]]
-  - [[https://stackoverflow.com/questions/14662092/does-the-dot-language-support-variables-aliases][stack: dot does not directly support aliases]]
-  - https://www.google.com/search?q=graphviz+database
-  - [[file:~/.emacs.d/snippets/org-mode/software]]
-- standards and best practice
-- Cisco AnyConect
-  - [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
-  - my profile at /opt/cisco/anyconnect/profile/test.xml
-**** Software                                                  :mod:software:
-:PROPERTIES:
-:ID:       D0927D88-0FA4-4D49-8486-721FC264DE50
-:END:
-https://github.blog/2019-08-08-github-actions-now-supports-ci-cd/?WT.mc_id=devto-blog-yolasors
-https://help.github.com/en/articles/about-project-boards
-- https://www.sciencedirect.com/science/article/pii/S0950584914001050
-- commands
-  |----------+---------|
-  | function | command |
-  |----------+---------|
-  | <35>     | <35>    |
-  |          |         |
-- processes
-- documentation
-- applications
-
-- box
-  - https://community.box.com/t5/Community/ct-p/English
-  - [[https://www.youtube.com/channel/UClVkSYJyS4XTpzukZn1zm7w][box youtube]]
-  - wustl box parameters
-    - 15 gb per file
-    - unlimited storage
-- software development
-  - cite:nowogrodzki2019
-- vimtutor
-
 *** Platforms
 :PROPERTIES:
 :ID:       CDC80E83-69E2-4A26-9E09-E09FA0475AE9
@@ -3450,9 +2973,14 @@ CLOCK: [2017-10-25 Wed 09:48]--[2017-10-25 Wed 10:23] =>  0:35
 CLOCK: [2017-10-12 Thu 13:37]--[2017-10-12 Thu 13:40] =>  0:03
 CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 :END:
-***** processes and commands
+- configuration management
+  - https://en.wikipedia.org/wiki/Ansible_(software)
+***** Processes and commands
 :PROPERTIES:
 :ID:       f6c816d4-6f1a-4954-bf90-ed90de4d0979
+:END:
+:LOGBOOK:
+CLOCK: [2021-08-25 Wed 08:33]--[2021-08-25 Wed 09:13] =>  0:40
 :END:
   | du -shc . | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]]                       |
   | l         | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\(' |
@@ -3467,6 +2995,8 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 
 - account management
   - https://www.google.com/search?q=unix+create+user 
+- Makefiles
+  - see make in [[id:76c4836c-fe3f-4948-86dd-25d8df38d1af][GNU and GNU tools]]
 ***** general
 :PROPERTIES:
 :ID:       b387cb19-73dd-4783-8e57-8da47837e129
@@ -3597,17 +3127,6 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
   - applications
   - reference
     - [[file:~/.emacs.d/snippets/org-mode/software]]
-- [[https://www.gnu.org/software/sed/][sed]]
-  - https://www.google.com/search?q=sed+replace+space+with+tab
-  - [[https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed][use shell variables]]
-  - [[https://stackoverflow.com/questions/5410757/how-to-delete-from-a-text-file-all-lines-that-contain-a-specific-string][delete lines with pattern]]
-  - [[https://unix.stackexchange.com/questions/99350/how-to-insert-text-before-the-first-line-of-a-file#:~:text=14%20Answers&text=Use%20sed%20's%20insert%20(%20i,text%20in%20the%20preceding%20line.&text=Also%20note%20that%20some%20non,effect%20as%20with%20GNU%20sed%20).&text=Echo%20is%20used%20to%20get%20the%20text.][insert before first line]]
-  - https://www.google.com/search?q=sed+remove+first+line 
-  - https://www.google.com/search?q=sed+remove+lines+containting+string
-  - [[https://www.youtube.com/watch?v=3cLbeYQ2Veg][youtube: sed commands in linux]]
-  - [[http://www.brunolinux.com/02-The_Terminal/Find_and%2520Replace_with_Sed.html][Find and replace with SED]]
-  - Then, using sed: sed -e '5,10d;12d' filename (deletes lines 5-10 and 12)
-  - https://www.google.com/search?q=sed+add+above+first+line 
 - to concat csvs- https://www.quora.com/How-do-you-combine-multiple-csv-files-into-a-single-file-using-the-command-line
 - unzip - https://askubuntu.com/questions/994731/how-to-skip-unzipping-a-file-that-already-exists
 - Unison
@@ -3622,11 +3141,16 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
   - applications
 - X11
   - https://www.windowmaker.org/
-****** GNU tools
+****** GNU and GNU tools
 :PROPERTIES:
 :ID:       76c4836c-fe3f-4948-86dd-25d8df38d1af
 :END:
+- gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
+- [[https://www.gnu.org/prep/standards/standards.html][GNU Coding Standards]]
+- diff
+  - https://stackoverflow.com/questions/4717250/extracting-unique-values-between-2-sets-files
 - echo
+  - https://www.google.com/search?q=gnu+echo+formatting+best+practices 
   - [[https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo][printf vs echo]]
   - https://www.google.com/search?q=bash+echo+tab 
 - find 
@@ -3639,10 +3163,9 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
   - tutorial https://github.com/kyclark/make-tutorial
 - printf
   - [[https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo][printf vs echo]]
-- grep
-  - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
-  - grep -r --unclude \*.R "as.Date" ~/
-  - [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
+- coreutils
+  - sort
+    - https://unix.stackexchange.com/questions/76049/what-is-the-difference-between-sort-u-and-sort-uniq
 - nohup
   - https://unix.stackexchange.com/questions/373461/open-less-scrolled-to-the-end
 - gnu parallel
@@ -3656,6 +3179,28 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
     - AND SET -O !!
   - download in background & resume broke  wget -bqc <PATH>
   - clobber = overwrite
+****** grep
+:PROPERTIES:
+:ID:       024b269b-27ca-492d-981f-d8f9083a38d2
+:END:
+- https://www.google.com/search?q=grep+phrase+with+space 
+- https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
+- grep -r --unclude \*.R "as.Date" ~/
+- [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
+****** [[https://www.gnu.org/software/sed/][sed]]
+:PROPERTIES:
+:ID:       69e65a70-878e-4f58-a1d1-14ca876a7c12
+:END:
+- https://www.google.com/search?q=sed+replace+space+with+tab
+- [[https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed][use shell variables]]
+- [[https://stackoverflow.com/questions/5410757/how-to-delete-from-a-text-file-all-lines-that-contain-a-specific-string][delete lines with pattern]]
+- [[https://unix.stackexchange.com/questions/99350/how-to-insert-text-before-the-first-line-of-a-file#:~:text=14%20Answers&text=Use%20sed%20's%20insert%20(%20i,text%20in%20the%20preceding%20line.&text=Also%20note%20that%20some%20non,effect%20as%20with%20GNU%20sed%20).&text=Echo%20is%20used%20to%20get%20the%20text.][insert before first line]]
+- https://www.google.com/search?q=sed+remove+first+line 
+- https://www.google.com/search?q=sed+remove+lines+containting+string
+- [[https://www.youtube.com/watch?v=3cLbeYQ2Veg][youtube: sed commands in linux]]
+- [[http://www.brunolinux.com/02-The_Terminal/Find_and%2520Replace_with_Sed.html][Find and replace with SED]]
+- Then, using sed: sed -e '5,10d;12d' filename (deletes lines 5-10 and 12)
+- https://www.google.com/search?q=sed+add+above+first+line 
 ****** ssh 
 :PROPERTIES:
 :ID:       054f0013-9355-4194-8fbd-646b54db2f70
@@ -4519,33 +4064,134 @@ optimized lambda strikes balance of coeffienct bias and optimized likelihood
 :END:
 :LOGBOOK:
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
+CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
-*** By application
-
-**** Images
+- https://superuser.com/questions/130260/how-to-update-google-chrome-in-ubuntu
 - capture screen to gif
   - https://www.cockos.com/licecap/
-***** imagemagick
-#+begin_src bash
-for file in ~/Pre-PACE\ Images/*.pdf;
-do
-    base=$(basename -s .pdf "$file")
-    echo $base
-    convert -units PixelsPerInch "$file" -density 600 "${base}.tiff"
-done
-#+end_src
+- VLC
+  - https://webapps.stackexchange.com/questions/tagged/google-contacts?sort=votes&pageSize=15
+  - [[https://apple.stackexchange.com/questions/127386/how-do-i-vary-the-playback-speed-in-vlc-using-keyboard-shortcuts][VLC playback]]
+            |--------------+---------------|
+            | Faster       | CMD + =       |
+            | Slower       | CMD -         |
+            | Jump back    | CMD ALT LEFT  |
+            | Jump forward | CMD ALT RIGHT |
+- [[https://www.chromium.org/user-experience/keyboard-access][chromium keyboard shorcuts]]
+- VLC
+  - https://webapps.stackexchange.com/questions/tagged/google-contacts?sort=votes&pageSize=15
+  - [[https://apple.stackexchange.com/questions/127386/how-do-i-vary-the-playback-speed-in-vlc-using-keyboard-shortcuts][VLC playback]]
+    |--------------+---------------|
+    | Faster       | CMD + =       |
+    | Slower       | CMD -         |
+    | Jump back    | CMD ALT LEFT  |
+    | Jump forward | CMD ALT RIGHT |
+- [[https://github.com/tekezo/Karabiner/issues/354][karabiner system prompts]]
+- iTerm
+- https://superuser.com/questions/399594/color-scheme-not-applied-in-iterm2/1216638
+- [[https://stackoverflow.com/questions/196357/making-iterm-to-translate-meta-key-in-the-same-way-as-in-other-oses][remapping option as meta for terminal emacs]] - see answer 2  
+- Cisco AnyConect
+- [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
+- my profile at /opt/cisco/anyconnect/profile/test.xml
+- https://extensions.libreoffice.org/extensions
+- https://wwjw.reddit.com/r/assholedesign/comments/bosgf4/comment/enk8k25/
+- macos
+- trash http://hasseg.org/trash/
+- [[https://rclone.org/][rclone]]
+- 
+- GNU software
+- [[id:FB8FF6B1-C6BD-4272-AC15-05BB15DF609B][Emacs]]
+- tramp
+- [currently not working] to goodle drive- https://www.gnu.org/software/tramp/#Using-Google-Drive
+- iterm2
+- https://kevinjalbert.com/iterm2-mouseless-copy/
+- https://stackoverflow.com/questions/30055402/how-to-select-text-in-iterm-with-shiftarrow
+- offlineimap
+- https://medium.com/@kirang89/emacs-as-email-client-with-offlineimap-and-mu4e-on-os-x-3ba55adc78b6
+- https://github.com/sup-heliotrope/sup/wiki/Complete-gmail-configuration
+- http://www.offlineimap.org/doc/conf_examples.html
+- http://www.offlineimap.org/doc/FAQ.html#configuration-questions
+- https://gist.github.com/dabrahams/3030332
+- http://www.mdlerch.com/offlineimap-gmail-and-mutt-tutorial.html
+- http://jgoerzen.github.io/offlineimap/manual.html
+- https://github.com/mailpile/Mailpile/wiki/Configuring-Linux-to-download-your-email
+- http://blog.wrouesnel.com/articles/Migrating%20to%20Gmail/
+- [[http://rudolfochrist.github.io/blog/2015/03/21/offlineimap-with-ssl-files-on-osx/][Offlineimap with SSL files on OSX]] shows where cert is
+- mobile applications
+- [[https://www.reddit.com/r/IWantToLearn/comments/8o7uli/iwtl_how_to_design_and_create_mobile_apps_and/][Reddit: IWTL how to design and create mobile apps and games from scratch]]
+- software development
+- agile
+- https://www.reddit.com/r/programming/comments/ag7vh4/detecting_agile_bullshit_from_the_us_department/
+- Software development / deployment
+- top-down planning, bottom-up delivery
+- 
+- [[http://powazek.com/posts/1655][Programmers are Tiny Gods]]
+- applications
+- examples
+- https://krisbogdanov.com/personal-projects-before-first-internship/?fbclid=IwAR1hna-buWCrhA7pd2qRp-NkNXGEN0pUrUNoll8peSpOK6F3H-ceeevkcNE
+- google sheets
+- https://webapps.stackexchange.com/questions/31894/google-spreadsheet-timestamp/31942#31942
+- https://www.benlcollins.com/spreadsheets/google-sheets-query-sql/
+- https://softwarerecs.stackexchange.com/questions/3412/free-ocr-software-that-makes-a-pdf-searchable-with-searchable-text-at-the-right
+- https://softwarerecs.stackexchange.com/questions?sort=votes
+- https://www.benlcollins.com/spreadsheets/google-sheets-query-sql/
+- https://softwarerecs.stackexchange.com/questions?sort=votes
+- [[https://brew.sh/][Homebrew]]
+- [[https://docs.brew.sh/][documentation]]
+- commands
+ | search for packages | brew search <TERM>  |
+ | see active services | brew services list  |
+ | install from cask   | brew cask <PACKAGE> |
+ |                     |                     |
+- GPL-3 licensing 
+- Chrome
+  - https://www.google.com/search?q=chromium+remap+keybindings 
+- [[http://stackoverflow.com/questions/6250447/trigger-right-click][trigger right click chrome w/ java?]]
+- https://www.amazon.com/Hackers-Painters-Big-Ideas-Computer/dp/1449389554
+- [[https://ianskerrett.wordpress.com/2017/04/19/iot-developer-trends-2017-edition/][Who uses what- Eclipse survey]]
+*** [[id:16DB2FD8-1988-48E4-8D8D-E69398823A70][LINK TO Operating Systems]]
+:PROPERTIES:
+:ID:       23319fff-191b-4581-bf37-9fd716a347dc
+:END:
+*** Package managers
+:PROPERTIES:
+:ID:       89fadb82-99b8-4db8-aa5e-e6e1c0c707eb
+:END:
+**** Conda
+:PROPERTIES:
+:ID:       b16d0202-8d35-472b-b538-87a7d6a6cef7
+:END:
+- Processes and commands
+  - https://www.google.com/search?q=conda+don't+start+in+base 
+- Standards and best practice
+- Documentation
+- Applications
+- Reference
+  - [[EA056C38-9DE6-47EE-A75B-0FCBAE62372B][YASnippets]]
 
-- https://askubuntu.com/questions/573246/quick-way-to-calculate-dimension-in-inch-for-photos-in-ubuntu
-- https://askubuntu.com/questions/591733/rotate-images-from-terminal
-- https://unix.stackexchange.com/questions/406454/how-to-get-the-dpi-of-an-image-file-png
-**** Text editors
-  - vim https://www.reddit.com/r/linux4noobs/comments/iy3mcc/vim_cheatsheet_for_noobs_with_corrections/
-**** Data storage and transfer
-  - - globus
-    - [[https://docs.globus.org/cli/][cli]]
-      - [[https://docs.globus.org/cli/reference/][documentation]]
-        - https://docs.globus.org/how-to/globus-connect-personal-linux/#globus-connect-personal-cli
+*** software mod                                                   :software:
+:PROPERTIES:
+:CREATED:  [2019-04-10 Wed 10:13]
+:ID:       F89E691E-9FD7-40F6-927A-A0DD72C275C5
+:END:
 
+- if software, then stack and linkout to stack elements best resource reference structure? 
+- commands
+  |----------+---------|
+  | function | command |
+  |----------+---------|
+  | <35>     | <35>    |
+  |          |         |
+- documentation
+- applications
+*** inkscape
+:PROPERTIES:
+:CREATED:  [2020-10-04 Sun 10:05]
+:ID:       e68592b2-5e86-48c9-a2c2-5983e53d34f8
+:END:
+- arial and other std fonts  https://www.google.com/search?q=inkscape+arial https://askubuntu.com/questions/651441/how-to-install-arial-font-and-other-windows-fonts-in-ubuntu 
+- https://stackoverflow.com/questions/15710673/inkscape-too-slow-when-importing-r-plots
+- https://inkscape.org/forums/questions/line-spacing/
 *** Specific software packages by name 
 :PROPERTIES:
 :ID:       6dbf1097-a795-4397-bfee-97e4dc79bd07
@@ -4610,11 +4256,14 @@ done
 :PROPERTIES:
 :ID:       569921c4-c8fe-4037-a2be-3c3f7844cd86
 :END:
-https://askubuntu.com/questions/962878/how-to-change-okulars-find-highlight-color#:~:text=To%20do%20so%20(Okular%20v1,%2D%3E%20And%20change%20default%20color.
+- https://www.google.com/search?q=okular+don't+open+fullscreen 
+- [[https://docs.kde.org/stable5/en/okular/okular/index.html][documentation]]
+- https://askubuntu.com/questions/962878/how-to-change-okulars-find-highlight-color#:~:text=To%20do%20so%20(Okular%20v1,%2D%3E%20And%20change%20default%20color.
 - https://www.google.com/search?q=okular+open+in+new+windows
 - [[https://docs.kde.org/stable5/en/kdegraphics/okular//][documentation]]
 - https://docs.kde.org/trunk5/en/kdegraphics/okular/okular.pdf 
 - https://www.google.com/search?q=okular+remap+keyboard+shortcuts
+- https://www.google.com/search?q=okular+startup+show+menu+bar  
 **** libreoffice 
 :PROPERTIES:
 :ID:       dc8d8b6a-8518-471c-8fec-c3515a4bc6d9
@@ -4681,6 +4330,439 @@ CLOCK: [2019-03-04 Mon 14:59]--[2019-03-04 Mon 15:17] =>  0:18
     - Allows custom file location at [[file:~/data/library/]]
 - Performance- manual entry lag
   - [[https://forums.zotero.org/discussion/16733/manual-citation-entry-clunky][No answers, but question asked]]
+
+*** libreoffice 
+:PROPERTIES:
+:ID:       ec8355ce-7324-4ffd-ad3b-25c39edc7390
+:END:
+- https://www.google.com/search?q=libreoffice+escape+comment
+**** libreoffice impress
+:PROPERTIES:
+:ID:       9981156b-c7a5-4c38-bdd9-765621f5ff56
+:END:
+
+- https://www.google.com/search?q=libreoffice+snap+line
+- https://ask.libreoffice.org/en/question/10973/permanently-set-default-page-style/
+
+
+*** gimp
+:PROPERTIES:
+:ID:       1001a862-f3a7-4b07-8f2c-882f1e69398b
+:END:
+- commands
+  |----------+---------|
+  | function | command |
+  |----------+---------|
+  | <35>     | <35>    |
+  |          |         |
+- processes
+  - https://www.google.com/search?q=gimp+crop+image
+  - https://www.google.com/search?q=gimp+convert+to+black+and+white
+- standards and best practice
+- documentation
+- applications
+- reference
+  - [[file:~/.emacs.d/snippets/org-mode/software]]
+*** MediaWiki
+:PROPERTIES:
+:ID:       4F02B352-1A93-4CF4-A386-2788387A18C0
+:END:
+
+*** JSON JavaScript Object Notation
+:PROPERTIES:
+:ID:       9E10CCC0-BC92-4C96-BBF2-99B54E88143D
+:END:
+https://github.com/antonmedv/fx/blob/master/DOCS.md
+  - JSON
+    - https://www.w3schools.com/js/js_json_syntax.asp
+- When exchanging data between a browser and a server, the data can only be text.
+- JSON is text, and we can convert any JavaScript object into JSON, and send JSON to the server.
+- 
+
+*** Version Control
+:PROPERTIES:
+:ID:       A9EE8CE0-ED58-4127-8B57-B53AE680B441
+:END:
+
+https://github.com/simonthum/git-sync
+- Web-based
+  - GitHub
+    - Contributions
+      - https://guides.github.com/activities/forking/
+      - [[https://help.github.com/articles/fork-a-repo/][Forking]] allows for posting
+      - [[https://help.github.com/articles/cloning-a-repository/][Cloning]] allows for work on a project
+    - [[https://opensource.guide/][GitHub open source guide]]
+      - [[https://opensource.guide/how-to-contribute/#anatomy-of-an-open-source-project][Anatomy of an open source project]]
+        - People
+          - Author
+          - Owner
+          - Maintainers
+          - Contributors
+          - Community members
+        - Documentation
+          - License
+          - Readme- guidance for using the project
+          - Contributing
+          - Code of conduct
+        - Tools to organize discussion
+          - Issue tracker
+          - Pull requests
+          - Discussion forums
+          - Chat
+
+**** Git
+:PROPERTIES:
+:ID:       E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6
+:END:
+:LOGBOOK:
+CLOCK: [2018-08-10 Fri 16:03]--[2018-08-10 Fri 16:13] =>  0:10
+CLOCK: [2017-11-29 Wed 19:30]--[2017-11-29 Wed 19:51] =>  0:21
+CLOCK: [2017-11-29 Wed 19:05]--[2017-11-29 Wed 19:25] =>  0:20
+CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
+CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
+CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
+:END:
+- processes
+  - initializing
+    - https://www.google.com/search?q=initialize+git+repo
+    - git branch --set-upstream-to=origin/master master
+  - gitignore
+    - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
+    - https://labs.consol.de/development/git/2017/02/22/gitignore.html
+  - submodules
+    - add git submodule add <SUBMODULE>
+    - initialize git submodule update --recursive --init
+    - push and pull submodules
+      - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
+    - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
+    - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
+  - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
+  - [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]] 
+  - searching commits
+    - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
+  - reverting
+    - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
+    - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
+  - file comparisons
+    - https://doc.ubuntu-fr.org/meld
+  - removing files
+    - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
+    - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
+  - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
+- commands
+  | Action               | Command                                  |
+  |----------------------+------------------------------------------|
+  | <30>                 | <35>                                     |
+  | Create repo          | git init                                 |
+  | Ignore files         | touch .gitignore                         |
+  | Add (stage) file     | git add                                  |
+  | Add recursive        | git add --all                            |
+  | Remove (unstage)     | git reset                                |
+  | Last update          | git log --name-status HEAD^..HEAD        |
+  | To be commited       | git status                               |
+  | List untracked       | git ls-files --others --exclude-standard |
+  | List tracked         | git ls-tree -r master --name-only        |
+  | Stop tracking repo   | rm -rf .git/                             |
+  | View list of commits | git log                                  |
+  | View file changes    | git diff - HEAD --staged                 |
+  - Staging
+    - git add 'stages' a file- makes it ready to add to repo
+    - git reset unstages
+  - Branches
+    - git branch
+      - add and delete
+        - -d <BRANCH NAME>
+        - <BRANCH NAME> 
+    - git checkout <BRANCH> switch branches
+  - Pulls
+    - git merge- FIRST navigate to master, then git merge <BRANCH TO PULL>
+  - Changing within branch
+    - git commit- add changes WITHIN branch- full repo (not just a file) within branch
+    - git checkout -- undo last commit FOR A SPECIFIC FILE
+  - Reverting
+    - reverting a specific file
+      1. find the commit hash with =git log=
+      2. revert with =git checkout <COMMIT HASH> -- <FILE>=
+    - [[http://stackoverflow.com/questions/4114095/how-to-revert-git-repository-to-a-previous-commit][reverting to previous commit]]
+    - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: Is there a quick git command to see an old version of a file?]]
+  - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
+  - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
+  - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
+  - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
+  - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
+- best practices
+  - for git repos, use submodules to push common code up - https://git-scm.com/book/en/v2/Git-Tools-Submodules
+- Scripts
+  #+name:list-directories-under-git-vc
+  #+BEGIN_SRC sh :results silent
+  cd ~/
+  find . -type d -name '.git' > ~/all-git-repos.txt 
+  #+END_SRC
+- Documentation and general reference
+  - Commit
+  - [[https://git-scm.com/][git website]]
+    - [[https://git-scm.com/doc][documentation]]
+  - Basic concepts
+    - Repository
+    - Branching- the different versions of the repository
+      - Branches
+        - master
+        - feature- a new branch 
+      - Branching creates a snapshot of master
+    - Encorporating changes
+      - WITHIN a branch: Commit- changes to any branch, not necessarily master
+        - commits can have comments, but this is not necessary
+      - FROM ONE BRANCH TO ANOTHER: Pull request- to pull you changes INTO a branch 
+    - Distributed version control (no canonical, distributed version 'sync' via patch
+  - Educational Resources
+    - [[https://try.github.io/levels/1/challenges/1][Command line tutorial]]
+    - [[https://www.git-tower.com/learn/git/ebook/en/command-line/introduction#start][Tower: Learn Version Control with Git]]
+  - [[https://stackoverflow.com/questions/954560/how-does-git-handle-symbolic-links][How does Git handle symbolic links?]]
+- Git repository hosting services
+  - [[https://about.gitlab.com/][GitLab]]
+  - [[https://github.com/][GitHub]]
+    - https://www.reddit.com/r/programming/comments/7deyx8/introducing_security_alerts_on_github_with_your/
+    - [X] [2017-10-19 Thu] Have [[https://mail.google.com/mail/u/0/#inbox/15f3634fd86f200a][student dev pack!]]
+    - Primarily for using git with other people- the advantage is pull requests 
+    - Documentation
+    - [[https://help.github.com/articles/cloning-a-repository/][Cloning a repository]] via url: git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
+    - [[https://guides.github.com/][Guides]]
+      - [[https://guides.github.com/features/mastering-markdown/][Markdown]]
+  - https://guides.github.com/introduction/flow/
+  - GitHub
+    - https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push
+    - https://github.com/settings/keys
+    - [[https://education.github.com/?utm_source=newsletter&utm_medium=email&utm_campaign=student-survey-050818][github: educational tools]]
+    - [[https://guides.github.com/features/pages/][Getting Started with GitHub Pages]]
+    - [[https://education.github.com/pack?utm_source=announcement&utm_medium=email&utm_campaign=education-201806019][GitHub related tools]]
+    - [[https://github.com/trending/r?since=monthly][GitHub trending]]
+    - ideas
+      - https://stackoverflow.com/questions/11852982/can-i-arrange-repositories-into-folders-on-github/11859027#11859027
+    - https://github.com/features/actions
+    - https://lab.github.com/courses?utm_source=newsletter&utm_medium=email&utm_campaign=student-newsletter-120818
+- GUIs- https://www.sourcetreeapp.com/
+
+*** Graphviz                                                       :software:
+:PROPERTIES:
+:ID:       4BFFFC0C-CBFA-4E97-BB52-88A95D4A361B
+:CREATED:  [2019-08-23 Fri 07:56]
+:END:
+:LOGBOOK:
+CLOCK: [2018-12-08 Sat 16:05]--[2018-12-08 Sat 16:44] =>  0:39
+CLOCK: [2018-12-08 Sat 15:16]--[2018-12-08 Sat 15:25] =>  0:09
+CLOCK: [2017-11-10 Fri 11:40]--[2017-11-10 Fri 11:57] =>  0:17
+CLOCK: [2017-11-10 Fri 10:45]--[2017-11-10 Fri 11:31] =>  0:46
+:END:
+- commands
+  |----------+---------|
+  | function | command |
+  |----------+---------|
+  | <35>     | <35>    |
+  |          |         |
+- [[http://www.graphviz.org/documentation/][documentation]] and guides
+  - [[http://www.graphviz.org/doc/info/lang.html][The DOT Language]]
+  - [[http://www.tonyballantyne.com/graphs.html][Drawing Graphs using Dot and Graphviz]]
+  - attributes
+    - [[http://www.graphviz.org/doc/info/attrs.html#a:rankdir][Node, Edge and Graph Attributes]]
+    - [[https://hackage.haskell.org/package/graphviz-2999.19.0.0/docs/Data-GraphViz-Attributes.html][attributes and values from the haskell graphviz package]]
+- applications
+  [[file:/tmp/entity-relationship-diagram.pdf]]
+  #+BEGIN_SRC dot :dir ~/data/imgs/graphviz-examples :file /tmp/entity-relationship-diagram.pdf :cmdline -Tpdf
+// https://mamchenkov.net/wordpress/2015/08/20/graphviz-dot-erds-network-diagrams/
+digraph entityRelationshipDiagram { 
+    label = "MPNST Project Data Model"
+    labelloc = top;
+    rankdir=LR;
+ //
+    node [shape=plaintext];
+    edge [dir=both];
+//
+    subjects [label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightblue">subjects</td></tr>
+                <tr><td PORT="a" align="left"><b>subject_id</b></td></tr>
+                <tr><td align="left">dob</td></tr>
+                <tr><td align="left">sex</td></tr>
+                <tr><td align="left">institution</td></tr>                
+                <tr><td align="left">current_dx</td></tr>                
+                <tr><td align="left">plexiform_dx_date</td></tr>                
+                <tr><td align="left">plexiform_dx_date_specificity</td></tr>                
+                <tr><td align="left">anf_dx_date</td></tr>                
+                <tr><td align="left">anf_dx_date_specificity</td></tr>                
+                <tr><td align="left">mpnst_dx_date</td></tr>                
+                <tr><td align="left">mpnst_dx_date_specificity</td></tr>                
+                <tr><td align="left">mpnst_grade</td></tr>                
+                <tr><td align="left">mpnst_stage</td></tr>                
+            </table>
+        >];
+//
+    specimens [label=<
+            <table border="0" cellborder="1" cellspacing="0" cellpadding="1">
+                <tr><td bgcolor="lightblue">specimens</td></tr>
+                <tr><td PORT="a" align="left"><b>specimen_id</b></td></tr>
+                <tr><td PORT="b" align="left">subject_id</td></tr>
+                <tr><td align="left">collection_date</td></tr>
+                <tr><td align="left">specimen_type</td></tr>
+            </table>
+        >];
+//
+//
+        libraries [label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightblue">libraries</td></tr>
+                <tr><td align="left"><b>library_id</b></td></tr>
+                <tr><td PORT="b" align="left">specimen_id</td></tr>
+                <tr><td align="left">library_type</td></tr>
+            </table>
+        >];
+//
+        treatments [label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightblue">treatments</td></tr>
+                <tr><td align="left"><b>treatment_id</b></td></tr>
+                <tr><td PORT="b" align="left">subject_id</td></tr>
+                <tr><td align="left"> treatment_class </td></tr>
+                <tr><td align="left"> treatment_subclass </td></tr>
+                <tr><td align="left"> treatment_date </td></tr>                
+                <tr><td align="left"> treatment_date_specificity </td></tr>                
+            </table>
+        >];
+//
+        diagnostics [label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightblue">diagnostics</td></tr>
+                <tr><td align="left"><b>dx_id</b></td></tr>
+                <tr><td PORT="b" align="left">subject_id</td></tr>
+                <tr><td align="left">dx_finding</td></tr>
+                <tr><td align="left">dx_class</td></tr>
+                <tr><td align="left">dx_subclass</td></tr>
+                <tr><td align="left">dx_date</td></tr>
+                <tr><td align="left">dx_date_specificity</td></tr>
+            </table>
+        >];
+//
+//
+subjects:a -> specimens:b [arrowhead=crow, arrowtail=none, dir=both]  
+subjects:a -> treatments:b [arrowhead=crow, arrowtail=none, dir=both]  
+subjects:a -> diagnostics:b [arrowhead=crow, arrowtail=none, dir=both]  
+specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]  
+}
+#+END_SRC
+  [[file:/tmp/dot-example.png]]
+  #+BEGIN_SRC dot :results replace :file /tmp/dot-example.png :cmdline -Tpng
+  digraph graphName{
+  // syntax
+  //  no . or - allowed, instead use CamelCase
+
+  // graph params
+  size ="6/6";
+  node [color=grey fontsize=12, shape=box, fontname=Helvetica];
+
+  // nodes
+  node1 [label="Node label"]
+  node2 [label="Second Node"]
+
+  // edges
+  node1 -> unlabeled_node
+  node1 -> node2 [label="Edge label"]
+  // wavy
+  node1 -> node3:w
+  } 
+  #+END_SRC
+- interfaces
+  - w/ other platforms
+    - org
+      - [[http://correl.phoenixinquis.net/2015/07/12/git-graphs.html][Drawing git graphs with graphviz and org mode]]
+      - Advanced- [[http://orgmode.org/worg/org-tutorials/org-dot-diagrams.html][Worg for dot]]
+      - graphviz in Org-mode
+        - [[file:~/.emacs.d/snippets/org-mode/code.dot][yas template]]
+        - dot header is #+BEGIN_SRC dot :file ./<FILE_NAME>.png :cmdline -Tpng
+        - Simple- [[http://tonyballantyne.com/graphs.html][Drawing Graphs using Dot and Graphviz]]
+    - Run through python
+      - e.g. http://scikit-learn.org/stable/modules/generated/sklearn.tree.export_graphviz.html
+  - http://viz-js.com/
+- output
+  - [[https://stackoverflow.com/questions/14784405/how-to-set-the-output-size-in-graphviz-for-the-dot-format][How to set the output size in GraphViz for the dot format?]]
+- processes
+  - assign attributes to group
+    - https://stackoverflow.com/questions/28853898/groups-of-nodes-with-the-same-attributes-in-graphviz-file
+  - make a legend
+- reference
+  - [[http://graphviz.it/#/gallery/states.gv][live editor]]
+  - [[https://stackoverflow.com/questions/14662092/does-the-dot-language-support-variables-aliases][stack: dot does not directly support aliases]]
+  - https://www.google.com/search?q=graphviz+database
+  - [[file:~/.emacs.d/snippets/org-mode/software]]
+- standards and best practice
+- Cisco AnyConect
+  - [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
+  - my profile at /opt/cisco/anyconnect/profile/test.xml
+*** Software                                                   :mod:software:
+:PROPERTIES:
+:ID:       D0927D88-0FA4-4D49-8486-721FC264DE50
+:END:
+https://github.blog/2019-08-08-github-actions-now-supports-ci-cd/?WT.mc_id=devto-blog-yolasors
+https://help.github.com/en/articles/about-project-boards
+- https://www.sciencedirect.com/science/article/pii/S0950584914001050
+- commands
+  |----------+---------|
+  | function | command |
+  |----------+---------|
+  | <35>     | <35>    |
+  |          |         |
+- processes
+- documentation
+- applications
+
+- box
+  - https://community.box.com/t5/Community/ct-p/English
+  - [[https://www.youtube.com/channel/UClVkSYJyS4XTpzukZn1zm7w][box youtube]]
+  - wustl box parameters
+    - 15 gb per file
+    - unlimited storage
+- software development
+  - cite:nowogrodzki2019
+- vimtutor
+
+*** By application
+:PROPERTIES:
+:ID:       c18758a1-5db9-4ffe-8cc5-91c172a47331
+:END:
+
+**** Images
+:PROPERTIES:
+:ID:       57027e14-5ca6-4fdd-a50c-dcb98f81da39
+:END:
+- capture screen to gif
+  - https://www.cockos.com/licecap/
+***** imagemagick
+:PROPERTIES:
+:ID:       9b764756-e8af-4ef8-91c3-5e52bbc6ee33
+:END:
+#+begin_src bash
+for file in ~/Pre-PACE\ Images/*.pdf;
+do
+    base=$(basename -s .pdf "$file")
+    echo $base
+    convert -units PixelsPerInch "$file" -density 600 "${base}.tiff"
+done
+#+end_src
+
+- https://askubuntu.com/questions/573246/quick-way-to-calculate-dimension-in-inch-for-photos-in-ubuntu
+- https://askubuntu.com/questions/591733/rotate-images-from-terminal
+- https://unix.stackexchange.com/questions/406454/how-to-get-the-dpi-of-an-image-file-png
+**** Text editors
+:PROPERTIES:
+:ID:       e5de88cc-837e-45cb-b68d-e529a92a35d5
+:END:
+  - vim https://www.reddit.com/r/linux4noobs/comments/iy3mcc/vim_cheatsheet_for_noobs_with_corrections/
+**** Data storage and transfer
+:PROPERTIES:
+:ID:       40a77a9b-24f3-44a3-97bf-fbf64d4e43e7
+:END:
+  - - globus
+    - [[https://docs.globus.org/cli/][cli]]
+      - [[https://docs.globus.org/cli/reference/][documentation]]
+        - https://docs.globus.org/how-to/globus-connect-personal-linux/#globus-connect-personal-cli
 
 *** Software development
 :PROPERTIES:
@@ -4887,6 +4969,7 @@ CLOCK: [2019-05-29 Wed 14:47]--[2019-05-29 Wed 15:05] =>  0:18
 :CREATED:  [2019-08-15 Thu 16:17]
 :END:
 :LOGBOOK:
+CLOCK: [2021-08-20 Fri 11:06]--[2021-08-20 Fri 11:09] =>  0:03
 CLOCK: [2020-12-15 Tue 06:51]--[2020-12-15 Tue 07:08] =>  0:17
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 CLOCK: [2020-06-25 Thu 07:47]--[2020-06-25 Thu 08:13] =>  0:26
@@ -4908,94 +4991,11 @@ CLOCK: [2017-10-25 Wed 09:48]--[2017-10-25 Wed 10:23] =>  0:35
 CLOCK: [2017-10-12 Thu 13:37]--[2017-10-12 Thu 13:40] =>  0:03
 CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 :END:
-https://docs.monadical.com/s/system-monitoring-tools
-https://github.com/autokey/autokey
-https://www.freecodecamp.org/news/linux-server-course-system-configuration-and-operation/
+- https://docs.monadical.com/s/system-monitoring-tools
+- https://github.com/autokey/autokey
+- https://www.freecodecamp.org/news/linux-server-course-system-configuration-and-operation/
 - https://stackoverflow.com/questions/49598797/remove-pdf-annotations-via-command-line
-- [[https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux][optical character recognition in linux]]
-- i3
-  - https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
-- for dir sizes, use ncdu
-- system restore
-  - https://github.com/teejee2008/timeshift
-- applications
-  - sysadmin
-    - https://unix.stackexchange.com/questions/87908/how-do-you-empty-the-buffers-and-cache-on-a-linux-system
-    - https://unix.stackexchange.com/questions/53542/how-to-determine-the-filesystem-of-an-unmounted-device
-    - https://unix.stackexchange.com/questions/18925/how-to-mount-a-device-in-linux
-  - tui
-    - https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
-  - ocr
-    - https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
-- https://blog.robertelder.org/commandline
-***** Linux                                                        :software:career:
-:PROPERTIES:
-:CREATED:  [2020-01-09 Thu 15:46]
-:ID:       cd560390-aa1e-4c9e-8317-08610e5de42a
-:END:
-:LOGBOOK:
-CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
-:END:
-https://www.reddit.com/r/linux4noobs/comments/p4198y/i_recently_find_out_this_command_line_tool_called/
-- clipboard
-  - https://askubuntu.com/questions/382767/how-to-pipe-dump-clipboard-contents-to-a-file  
-- https://stackoverflow.com/questions/12522269/how-to-find-the-largest-file-in-a-directory-and-its-subdirectories
 
-- install
-  - configure, make, install
-    - https://www.tldp.org/HOWTO/Software-Building-HOWTO-3.html
-    - https://superuser.com/questions/360178/what-does-make-install-do
-    - often Makefile will install to created ./bin/ sub-directory 
-  - https://stackoverflow.com/questions/10961439/why-always-configure-make-make-install-as-3-separate-steps
-- users and groups
-  | function                  | command                   |
-  |---------------------------+---------------------------|
-  | list users                |                           |
-  | list groups               |                           |
-  | list group members        | getent group <GROUPNAME>  |
-  | add user                  | useradd <USERNAME>        |
-  | set password              | passwd <USERNAME>         |
-  | add group                 | groupadd <GROUPNAME>      |
-  | add user to group         | usermod -g <GROUP> <USER> |
-  | change user primary group |                           |
-  - find disk usage https://unix.stackexchange.com/questions/67806/how-to-recursively-find-the-amount-stored-in-directory
-    - https://unix.stackexchange.com/questions/314394/my-hard-disk-is-full-how-can-i-determine-whats-taking-up-space
-
-- Common UNIX command line operations table
-    - [[http://www.cyberciti.biz/faq/tar-extract-linux/][Tarball extraction]]
-    - [[https://www.howtogeek.com/howto/ubuntu/split-a-text-file-in-half-or-any-percentage-on-ubuntu-linux/][Split a text file in half (or any percentage) on Ubuntu Linux]]
-- Search
-    - Recursively search subdirectories
-      - [[https://askubuntu.com/questions/307876/how-to-search-for-files-recursively-into-subdirectories][How to Search for Files Recursively into Subdirectories]]
-      - [[https://stackoverflow.com/questions/1987926/how-do-i-grep-recursively][Recursively search subdirectories with grep -r "<SEARCH>" .]]
-    - Search for file: find . -name <pattern> -print
-      - https://kb.iu.edu/d/admm            
-- users and groups
-    | function                  | command                   |
-    |---------------------------+---------------------------|
-    | list users                |                           |
-    | list groups               |                           |
-    | list group members        | getent group <GROUPNAME>  |
-    | add user                  | useradd <USERNAME>        |
-    | set password              | passwd <USERNAME>         |
-    | add group                 | groupadd <GROUPNAME>      |
-    | add user to group         | usermod -g <GROUP> <USER> |
-    | change user primary group |                           |
-- https://ostechnix.com/how-to-backup-and-restore-linux-system-with-timeshift/
-- [ ] https://www.google.com/search?q=linux+sudo+pipe+password&oq=bash+pipe+sudo+pa&aqs=chrome.1.69i57j0i22i30l2.7394j0j4&sourceid=chrome&ie=UTF-8
-
-https://github.com/cheesecakeufo/komorebi#what-is-komorebi
-- find / -xdev -type f -size +1G 2>&1 | grep -v "Permission denied"
-- https://github.com/teejee2008/timeshift
-- https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
-- gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
-- https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
-- [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
-- find large files sudo du -a /home | sort -n -r | head -n 10
-- https://linustechtips.com/main/
-- https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
-- for dir sizes, use ncdu
-https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
 ***** Processes
 :PROPERTIES:
 :ID:       0f7af99f-aee7-4572-97cb-2ab0a6adcfbd
@@ -5039,7 +5039,7 @@ https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-
 :PROPERTIES:
 :ID:       0aed9c3f-c216-40e8-a80d-7bc54443ef5c
 :END:
-  - https://www.kernel.org/doc/html/latest/admin-guide/index.html
+  
   - general education- https://www.reddit.com/r/linux4noobs/comments/fntvl7/between_linux_essentials_linux_and_lpic1_which/
   - https://refspecs.linuxfoundation.org/
 ***** interfaces
@@ -5527,96 +5527,7 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
   - show battery life
 
 
-***** GNU
-:PROPERTIES:
-:ID:       e2e4606f-de26-4247-8577-1e1a708e0a5a
-:END:
-  - gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
-***** X Window System 
-:PROPERTIES:
-:ID:       bc5ab32a-387d-400a-b72c-ac29d743493f
-:END:
-- https://unix.stackexchange.com/questions/227876/how-to-set-custom-resolution-using-xrandr-when-the-resolution-is-not-available-i
-***** documentation and general education
-:PROPERTIES:
-:ID:       ec0fbb20-4909-4ab7-8ba2-c48836743d01
-:END:
-- [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
-- https://linustechtips.com/main/
-- https://www.kernel.org/doc/html/latest/admin-guide/index.html
-- general education- https://www.reddit.com/r/linux4noobs/comments/fntvl7/between_linux_essentials_linux_and_lpic1_which/
-- https://refspecs.linuxfoundation.org/
-***** interfaces
-:PROPERTIES:
-:ID:       1696cc89-66bc-454c-8659-95f354b79d82
-:END:
-- https://github.com/tbodt/ish/projects/7
-- https://github.com/Airblader/i3
-***** variables
-:PROPERTIES:
-:ID:       d16cef2b-b679-48db-958c-2105b06478ba
-:END:
-  - PATH
-    - https://unix.stackexchange.com/questions/26047/how-to-correctly-add-a-path-to-path
-      - note on config files where environmental variables can be set: 
-        - ~/.bashrc is config for interactive bash
-        - ~/.profile / ~/.bash_profile- see https://askubuntu.com/questions/298532/why-wont-environment-variables-added-to-profile-show-up-in-screen
-    - [[https://unix.stackexchange.com/questions/3809/how-can-i-make-a-program-executable-from-everywhere][How can I make a program executable from everywhere]]
-  - Permissions
-    - [[https://www.csun.edu/~csunitr/guides/unixpermissions.html][user permissions]]
-    - common chmods
-      - 600- owner read/write only
-      - 660- owner plus group read/write
-      - 664 everyone read / write
-      - see [[https://mail.google.com/mail/u/0/#search/hiseq3000/15628d36aa827e42][this email]] from Paul at GTAC 
-      - [[http://stackoverflow.com/questions/3740152/how-to-set-chmod-for-a-folder-and-all-of-its-subfolders-and-files-in-linux-ubunt][How do I set chmod for a folder and all of its subfolders and files in Linux Ubuntu Terminal? {closed}]]
-  - Symbolic links
-    - [[https://stackoverflow.com/questions/16017500/how-to-see-full-symlink-path][see path with readlink -f]]
-    - [[https://stackoverflow.com/questions/1727280/is-there-a-way-to-edit-a-symlink-without-deleting-it-first][stack: create and edit symlinks]]- ln -s /location/to/link linkname
-    - @ files are symlinks?https://unix.stackexchange.com/questions/191717/what-does-the-symbol-mean-on-filenames
-***** tools
-:PROPERTIES:
-:ID:       6057b49e-f8d4-42fb-8fec-5a80a802dd92
-:END:
-- tail - https://blog.robertelder.org/intro-to-tail-command/
-- ifconfig
-  - [[file:/usr/share/man/man8/ifconfig.8.gz]] 
-- gnu parallel
-  - https://www.msi.umn.edu/support/faq/how-can-i-use-gnu-parallel-run-lot-commands-parallel
-  - https://www.biostars.org/p/63816/
-  - https://www.biostars.org/p/216905/
-  - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
-****** trash-cli
-:PROPERTIES:
-:ID:       fe8ca086-cd69-4f40-a96d-3e99678c400e
-:END:
-- https://www.google.com/search?q=trash-cli+linux 
-#+begin_src bash 
-#
-# Install
-cd /opt
-sudo git clone https://github.com/andreafrancia/trash-cli.git
-cd trash-cli
-sudo python setup.py install
-#
-#
-#+end_src
-***** commands
-:PROPERTIES:
-:ID:       6cf0206e-fe85-44bb-a84b-b6c63c3adf6c
-:END:
-  |----------------------+-------------------------------------|
-  | function             | command                             |
-  |----------------------+-------------------------------------|
-  | mount partition      | udisksctl mount -b /dev/<PARTITION> |
-  |                      |                                     |
-  | unzip .bz2           | tar --bzip2 -xvf <FILE>             |
-  | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]]                               |
-  | see systemd services | systemctl list-units --type=service |
-  | see ubuntu version   | lsb_release -a                      |
-- https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
-- find large files sudo du -a /home | sort -n -r | head -n 10
-***** Ubuntu                                                       :software:
+****** Ubuntu                                                      :software:
 :PROPERTIES:
 :ID:       c28ef36f-5b5c-4789-90da-270e56fc4898
 :CREATED:  [2019-06-20 Thu 10:34]
@@ -5812,7 +5723,7 @@ https://askubuntu.com/questions/283559/how-can-i-run-disk-utility-in-terminal-vi
     - [[http://ubuntuforums.org/showthread.php?t=1880394][these updates]]
     - install chromium
 - [[http://www.pcmag.com/article2/0,2817,2488836,00.asp][hardware?]]
-****** macbook ubuntu build
+******* macbook ubuntu build
 :PROPERTIES:
 :ID:       34C28D0E-A905-4700-A20E-557E79BC7DDC
 :CREATED:  [2019-05-28 Tue 19:53]
@@ -5918,7 +5829,7 @@ https://www.reddit.com/r/linux4noobs/comments/h9d5v4/how_to_improve_increase_the
      - [  [[https://pmbio.org/module-01-setup/0001/02/01/AWS_Intro/#setting-up-an-apache-web-server][apache web service access to data]]
      - [  cleanup emacs init
 
-****** Server build
+******* Server build
 :PROPERTIES:
 :ID:       BCD2D984-7185-47C0-9ECB-B1F40314595C
 :END:
@@ -5933,7 +5844,7 @@ https://www.reddit.com/r/linux4noobs/comments/h9d5v4/how_to_improve_increase_the
   - https://askubuntu.com/questions/308897/convert-ubuntu-physical-machine-to-virtual-machine
   - https://askubuntu.com/questions/32499/migrate-from-a-virtual-machine-vm-to-a-physical-system?rq=1
 
-******* Work build
+******** Work build
 :PROPERTIES:
 :ID:       6C960771-38BB-4A48-95ED-576D79547489
 :END:
@@ -6006,12 +5917,12 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
     - see https://www.thegeekstuff.com/2008/11/3-steps-to-perform-ssh-login-without-password-using-ssh-keygen-ssh-copy-id
     - also alias to work-linux [[file:~/.bash_profile]]
 
-******** update
+********* update
 :PROPERTIES:
 :ID:       66803E55-A70F-4D49-A4D6-31520A3617DC
 :END:
 
-******** Connections
+********* Connections
 :PROPERTIES:
 :ID:       449D6647-FF79-48FE-8649-DD2DEF23FB93
 :CREATED:  [2019-03-17 Sun 15:46]
@@ -6022,7 +5933,7 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
     - https://www.makeuseof.com/tag/ubuntu-remote-desktop-builtin-vnc-compatible-dead-easy/
   - [ ] wine windows
 
-****** ideas
+******* ideas
 :PROPERTIES:
 :ID:       cada664d-a4ad-4727-ab23-ef5deed68e15
 :END:
@@ -6056,7 +5967,7 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
     - https://unix.stackexchange.com/questions/91863/terminal-copy-from-cli-without-using-mouse
   - https://www.reddit.com/r/commandline/comments/ceo8lt/ideas_for_good_use_of_the_caps_lock_key/
 - http://n-o-d-e.net/post/141489192021/how-to-create-a-handheld-linux-terminal-v2
-******* USB build
+******** USB build
 :PROPERTIES:
 :ID:       D367D5DD-4E6E-43EC-A1FF-F3F14B24D2D9
 :END:
@@ -6072,6 +5983,91 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
   - show battery life
 
 
+
+***** X Window System 
+:PROPERTIES:
+:ID:       bc5ab32a-387d-400a-b72c-ac29d743493f
+:END:
+- https://unix.stackexchange.com/questions/227876/how-to-set-custom-resolution-using-xrandr-when-the-resolution-is-not-available-i
+***** documentation and general education
+:PROPERTIES:
+:ID:       ec0fbb20-4909-4ab7-8ba2-c48836743d01
+:END:
+- [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
+- https://linustechtips.com/main/
+- https://www.kernel.org/doc/html/latest/admin-guide/index.html
+- general education- https://www.reddit.com/r/linux4noobs/comments/fntvl7/between_linux_essentials_linux_and_lpic1_which/
+- https://refspecs.linuxfoundation.org/
+***** interfaces
+:PROPERTIES:
+:ID:       1696cc89-66bc-454c-8659-95f354b79d82
+:END:
+- https://github.com/tbodt/ish/projects/7
+- https://github.com/Airblader/i3
+***** variables
+:PROPERTIES:
+:ID:       d16cef2b-b679-48db-958c-2105b06478ba
+:END:
+  - PATH
+    - https://unix.stackexchange.com/questions/26047/how-to-correctly-add-a-path-to-path
+      - note on config files where environmental variables can be set: 
+        - ~/.bashrc is config for interactive bash
+        - ~/.profile / ~/.bash_profile- see https://askubuntu.com/questions/298532/why-wont-environment-variables-added-to-profile-show-up-in-screen
+    - [[https://unix.stackexchange.com/questions/3809/how-can-i-make-a-program-executable-from-everywhere][How can I make a program executable from everywhere]]
+  - Permissions
+    - [[https://www.csun.edu/~csunitr/guides/unixpermissions.html][user permissions]]
+    - common chmods
+      - 600- owner read/write only
+      - 660- owner plus group read/write
+      - 664 everyone read / write
+      - see [[https://mail.google.com/mail/u/0/#search/hiseq3000/15628d36aa827e42][this email]] from Paul at GTAC 
+      - [[http://stackoverflow.com/questions/3740152/how-to-set-chmod-for-a-folder-and-all-of-its-subfolders-and-files-in-linux-ubunt][How do I set chmod for a folder and all of its subfolders and files in Linux Ubuntu Terminal? {closed}]]
+  - Symbolic links
+    - [[https://stackoverflow.com/questions/16017500/how-to-see-full-symlink-path][see path with readlink -f]]
+    - [[https://stackoverflow.com/questions/1727280/is-there-a-way-to-edit-a-symlink-without-deleting-it-first][stack: create and edit symlinks]]- ln -s /location/to/link linkname
+    - @ files are symlinks?https://unix.stackexchange.com/questions/191717/what-does-the-symbol-mean-on-filenames
+***** tools
+:PROPERTIES:
+:ID:       6057b49e-f8d4-42fb-8fec-5a80a802dd92
+:END:
+- tail - https://blog.robertelder.org/intro-to-tail-command/
+- ifconfig
+  - [[file:/usr/share/man/man8/ifconfig.8.gz]] 
+- gnu parallel
+  - https://www.msi.umn.edu/support/faq/how-can-i-use-gnu-parallel-run-lot-commands-parallel
+  - https://www.biostars.org/p/63816/
+  - https://www.biostars.org/p/216905/
+  - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
+****** trash-cli
+:PROPERTIES:
+:ID:       fe8ca086-cd69-4f40-a96d-3e99678c400e
+:END:
+- https://www.google.com/search?q=trash-cli+linux 
+#+begin_src bash 
+#
+# Install
+cd /opt
+sudo git clone https://github.com/andreafrancia/trash-cli.git
+cd trash-cli
+sudo python setup.py install
+#
+#
+#+end_src
+***** commands
+:PROPERTIES:
+:ID:       6cf0206e-fe85-44bb-a84b-b6c63c3adf6c
+:END:
+  |----------------------+-------------------------------------|
+  | function             | command                             |
+  |----------------------+-------------------------------------|
+  | mount partition      | udisksctl mount -b /dev/<PARTITION> |
+  |                      |                                     |
+  | unzip .bz2           | tar --bzip2 -xvf <FILE>             |
+  | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]]                               |
+  | see systemd services | systemctl list-units --type=service |
+  | see ubuntu version   | lsb_release -a                      |
+- https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
+- find large files sudo du -a /home | sort -n -r | head -n 10
 ***** ideas
 :PROPERTIES:
 :ID:       51710d48-bcbb-4709-bd5e-9774546bbbda
@@ -6085,34 +6081,6 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
 :END:
 - account management
   - https://www.google.com/search?q=unix+create+user 
-***** general
-:PROPERTIES:
-:ID:       234aa816-28c7-4a09-bdc0-0116322d0b9c
-:END:
-- https://www.reddit.com/r/commandline/comments/ka6izh/open_book_study_group_for_the_linux_command_line/
-
-- guides, tutorials, cheatsheets 
-  - http://www.ee.surrey.ac.uk/Teaching/Unix/
-  - [[http://linuxcommand.org/][LinuxCommand.org]]
-  - [[http://korflab.ucdavis.edu/Unix_and_Perl/current.html][UC Davis Unix and Perl for biologists]]
-  - http://www.chm.bris.ac.uk/compres/unix/index.html
-  - http://www.commandlinefu.com/commands/browse
-  - [[http://catb.org/jargon/html/U/Unix.html][Unix name origin]]
-  - [[https://sanctum.geek.nz/arabesque/unix-as-ide-introduction/][Unix as IDE: Introduction]] 
-  - [[http://cecs.wright.edu/~p/mateti/Courses/333/Top/index.html][Wright State CEG 333: Introduction to Unix]]
-  - [[http://www.commandlinefu.com/commands/browse/sort-by-votes][commandlinefu]]
-  - [[https://unix.stackexchange.com/questions/12762/how-do-i-temporarily-bypass-an-alias-in-tcsh][How do I temporarily bypass an alias in tcsh?]]
-  - [[https://unix.stackexchange.com/][stack: unix]]
-  - [[https://en.wikibooks.org/wiki/Guide_to_Unix][wikibooks: unix]]
-  - http://www.thegeekstuff.com/
-  - https://sneak.berlin/20191011/stupid-unix-tricks/
-- standards and best practices
-  - POSIX
-  - naming conventions- [[https://unix.stackexchange.com/questions/49008/for-filenames-are-underscores-or-dashes-more-common-in-unix-file-names][stack: For filenames, are underscores or dashes more common in Unix file names? {closed}]]
-- file structure
-  - https://unix.stackexchange.com/questions/4186/what-is-usr-local-bin
-- POSIX
-  - [[https://github.com/dylanaraps/pure-sh-bible][pure sh bible]]
 ***** UNIX tools
 :PROPERTIES:
 :ID:       ca6d1cc3-2489-4616-8125-3ed27a3c3740
@@ -6254,14 +6222,89 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
   - applications
 - X11
   - https://www.windowmaker.org/
-***** ideas
+***** Linux                                                        :software:career:
 :PROPERTIES:
-:ID:       1ddc60ab-106c-4c31-835e-c36e54427b13
+:CREATED:  [2020-01-09 Thu 15:46]
+:ID:       cd560390-aa1e-4c9e-8317-08610e5de42a
 :END:
-- idea for citrix script- - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
-- ideas- check disk space https://www.cyberciti.biz/tips/shell-script-to-watch-the-disk-space.html
-- GNU - [[https://www.gnu.org/help/help.html][Helping GNU]]
-- [[https://www.reddit.com/r/commandline/comments/7d5fwa/jobson_automatically_turn_commandline/][reddit: automatically turn command-line applications into webapps]]
+:LOGBOOK:
+CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
+:END:
+- [[https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux][optical character recognition in linux]]
+- i3
+  - https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
+- for dir sizes, use ncdu
+- system restore
+  - https://github.com/teejee2008/timeshift
+- sysadmin
+    - https://unix.stackexchange.com/questions/87908/how-do-you-empty-the-buffers-and-cache-on-a-linux-system
+    - https://unix.stackexchange.com/questions/53542/how-to-determine-the-filesystem-of-an-unmounted-device
+    - https://unix.stackexchange.com/questions/18925/how-to-mount-a-device-in-linux
+- ocr
+    - https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
+- https://www.kernel.org/doc/html/latest/admin-guide/index.html
+- https://www.reddit.com/r/linux4noobs/comments/p4198y/i_recently_find_out_this_command_line_tool_called/
+- clipboard
+  - https://askubuntu.com/questions/382767/how-to-pipe-dump-clipboard-contents-to-a-file  
+- https://stackoverflow.com/questions/12522269/how-to-find-the-largest-file-in-a-directory-and-its-subdirectories
+
+- install
+  - configure, make, install
+    - https://www.tldp.org/HOWTO/Software-Building-HOWTO-3.html
+    - https://superuser.com/questions/360178/what-does-make-install-do
+    - often Makefile will install to created ./bin/ sub-directory 
+  - https://stackoverflow.com/questions/10961439/why-always-configure-make-make-install-as-3-separate-steps
+- users and groups
+  | function                  | command                   |
+  |---------------------------+---------------------------|
+  | list users                |                           |
+  | list groups               |                           |
+  | list group members        | getent group <GROUPNAME>  |
+  | add user                  | useradd <USERNAME>        |
+  | set password              | passwd <USERNAME>         |
+  | add group                 | groupadd <GROUPNAME>      |
+  | add user to group         | usermod -g <GROUP> <USER> |
+  | change user primary group |                           |
+  - find disk usage https://unix.stackexchange.com/questions/67806/how-to-recursively-find-the-amount-stored-in-directory
+    - https://unix.stackexchange.com/questions/314394/my-hard-disk-is-full-how-can-i-determine-whats-taking-up-space
+
+- Common UNIX command line operations table
+    - [[http://www.cyberciti.biz/faq/tar-extract-linux/][Tarball extraction]]
+    - [[https://www.howtogeek.com/howto/ubuntu/split-a-text-file-in-half-or-any-percentage-on-ubuntu-linux/][Split a text file in half (or any percentage) on Ubuntu Linux]]
+- Search
+    - Recursively search subdirectories
+      - [[https://askubuntu.com/questions/307876/how-to-search-for-files-recursively-into-subdirectories][How to Search for Files Recursively into Subdirectories]]
+      - [[https://stackoverflow.com/questions/1987926/how-do-i-grep-recursively][Recursively search subdirectories with grep -r "<SEARCH>" .]]
+    - Search for file: find . -name <pattern> -print
+      - https://kb.iu.edu/d/admm            
+- users and groups
+    | function                  | command                   |
+    |---------------------------+---------------------------|
+    | list users                |                           |
+    | list groups               |                           |
+    | list group members        | getent group <GROUPNAME>  |
+    | add user                  | useradd <USERNAME>        |
+    | set password              | passwd <USERNAME>         |
+    | add group                 | groupadd <GROUPNAME>      |
+    | add user to group         | usermod -g <GROUP> <USER> |
+    | change user primary group |                           |
+- https://ostechnix.com/how-to-backup-and-restore-linux-system-with-timeshift/
+- [ ] https://www.google.com/search?q=linux+sudo+pipe+password&oq=bash+pipe+sudo+pa&aqs=chrome.1.69i57j0i22i30l2.7394j0j4&sourceid=chrome&ie=UTF-8
+
+https://github.com/cheesecakeufo/komorebi#what-is-komorebi
+- find / -xdev -type f -size +1G 2>&1 | grep -v "Permission denied"
+- https://github.com/teejee2008/timeshift
+- https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
+- gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
+- https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
+- [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
+- find large files sudo du -a /home | sort -n -r | head -n 10
+- https://linustechtips.com/main/
+- https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
+- for dir sizes, use ncdu
+https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
+- tui
+    - https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
 ***** MacOS
 :PROPERTIES:
 :ID:       80A0FABE-EB39-4BFC-8478-8044E6D84761
@@ -6295,6 +6338,42 @@ http://www.mitchchn.me/2014/os-x-terminal/
     - [[http://zmjones.com/mac-setup/][setting up osx for data analysis]]
     - [[http://osxdaily.com/2009/02/25/show-hidden-files-in-os-x/][hidden files]]
 
+***** General reference
+:PROPERTIES:
+:ID:       234aa816-28c7-4a09-bdc0-0116322d0b9c
+:END:
+- https://www.reddit.com/r/commandline/comments/ka6izh/open_book_study_group_for_the_linux_command_line/
+- https://blog.robertelder.org/commandline
+- guides, tutorials, cheatsheets 
+  - http://www.ee.surrey.ac.uk/Teaching/Unix/
+  - [[http://linuxcommand.org/][LinuxCommand.org]]
+  - [[http://korflab.ucdavis.edu/Unix_and_Perl/current.html][UC Davis Unix and Perl for biologists]]
+  - http://www.chm.bris.ac.uk/compres/unix/index.html
+  - http://www.commandlinefu.com/commands/browse
+  - [[http://catb.org/jargon/html/U/Unix.html][Unix name origin]]
+  - [[https://sanctum.geek.nz/arabesque/unix-as-ide-introduction/][Unix as IDE: Introduction]] 
+  - [[http://cecs.wright.edu/~p/mateti/Courses/333/Top/index.html][Wright State CEG 333: Introduction to Unix]]
+  - [[http://www.commandlinefu.com/commands/browse/sort-by-votes][commandlinefu]]
+  - [[https://unix.stackexchange.com/questions/12762/how-do-i-temporarily-bypass-an-alias-in-tcsh][How do I temporarily bypass an alias in tcsh?]]
+  - [[https://unix.stackexchange.com/][stack: unix]]
+  - [[https://en.wikibooks.org/wiki/Guide_to_Unix][wikibooks: unix]]
+  - http://www.thegeekstuff.com/
+  - https://sneak.berlin/20191011/stupid-unix-tricks/
+- standards and best practices
+  - POSIX
+  - naming conventions- [[https://unix.stackexchange.com/questions/49008/for-filenames-are-underscores-or-dashes-more-common-in-unix-file-names][stack: For filenames, are underscores or dashes more common in Unix file names? {closed}]]
+- file structure
+  - https://unix.stackexchange.com/questions/4186/what-is-usr-local-bin
+- POSIX
+  - [[https://github.com/dylanaraps/pure-sh-bible][pure sh bible]]
+***** Ideas
+:PROPERTIES:
+:ID:       1ddc60ab-106c-4c31-835e-c36e54427b13
+:END:
+- idea for citrix script- - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
+- ideas- check disk space https://www.cyberciti.biz/tips/shell-script-to-watch-the-disk-space.html
+- GNU - [[https://www.gnu.org/help/help.html][Helping GNU]]
+- [[https://www.reddit.com/r/commandline/comments/7d5fwa/jobson_automatically_turn_commandline/][reddit: automatically turn command-line applications into webapps]]
 
 *** Version Control
 :PROPERTIES:
@@ -6614,6 +6693,7 @@ https://help.github.com/en/articles/about-project-boards
 :CREATED:  [2019-07-07 Sun 09:05]
 :END:
 :LOGBOOK:
+CLOCK: [2021-08-26 Thu 07:11]--[2021-08-26 Thu 07:31] =>  0:20
 CLOCK: [2020-10-29 Thu 12:01]--[2020-10-29 Thu 12:48] =>  0:47
 CLOCK: [2019-11-30 Sat 18:42]--[2019-11-30 Sat 18:49] =>  0:07
 CLOCK: [2019-06-27 Thu 08:31]--[2019-06-27 Thu 08:45] =>  0:14
@@ -6628,83 +6708,7 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
-add container cleanup
-https://stackoverflow.com/questions/29480099/whats-the-difference-between-docker-compose-vs-dockerfile
-https://stackoverflow.com/questions/29480099/whats-the-difference-between-docker-compose-vs-dockerfile
-- https://stackoverflow.com/questions/16296753/can-you-run-gui-applications-in-a-docker-container/50356450#50356450
-- Dockerfile best practices ideas
-  - include comment w/ build time
-- https://www.freecodecamp.org/news/the-docker-handbook/
-- Interactive docker initialization
-  #+name: 
-  #+begin_src bash :session *shell2* :tangle no
-echo test 
-#+end_src
-  #+name: interactive_docker_initalization
-  #+begin_src bash :session *shell2* :tangle no
-docker_interactive(){
-    # Check for parameters, if empty then return usage
-    if [ -z "$1" ] || [[ $1 == -h ]] || [[ $1 == --help ]]; then
-        printf "\n docker_interactive
-	\n Launches an interactive container with server-specific settings
-	\n
-        \n Last update December 17, 2020
-              \n \$2 = VARIABLE 2
-              \n "
-    elif
-    else
-    fi
-}
-	
-
-# Interactive docker initialization
-
-docker_interactive() {
-    repo="USER INPUT"
-    read -p "repo name: " repo
-    if [ -z "$repo" ] || [[ $repo == -h ]] || [[ $repo == --help ]]; then
-    case $HOSTNAME in
-        (radonc-cancerbio) docker run -it \
-                                  -v /mnt/:/mnt/ \
-                                  -v /home/:/home/ \
-                            -u $(id -u ${USER}) \
-                            jeszyman/$repo \
-                            /bin/bash;;
-        (jeszyman-*) docker run -it \
-                            -v /home/:/home/ \
-                            -u $(id -u ${USER}) \
-                            jeszyman/$repo \
-                            /bin/bash;;
-        (acl*) docker run -it \
-                      -v /drive3/:/drive3/ \
-                      -v /duo4/:/duo4/ \
-                      -v /home/:/home/ \
-                      -u $(id -u ${USER}) \
-                      jeszyman/$repo \
-                      /bin/bash;;
-        (ACL*) docker run -it \
-                      -v /home/:/home/ \
-                      -v /duo4/:/duo4/ \
-                      -u $(id -u ${USER}):$(id -g ${USER}) \
-                      -h=${HOSTNAME} \
-                      jeszyman/$repo \
-                      /bin/bash;;
-        (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$repo"')' /bin/bash;;
-    esac
-}
-#
-
-#+end_src
-  #+name: 
-  #+begin_src bash :tangle no
-cd ~/repos/basecamp
-docker build . --file Dockerfile --tag jeszyman/basecamp
-docker push jeszyman/basecamp
-cd 
-docker run jeszyman/test
-#+end_src
-- user repos (like mine are / not : for FROM build command!!!
-- docker-related bash functions
+**** Docker-related bash functions
   - build command examples
     #+name: docker_build
     #+begin_src bash :tangle no
@@ -6805,59 +6809,141 @@ docker build . --file Dockerfile --tag jeszyman/test
 ##
 
 #+end_src
-  - ## identifies server in docker containers
-     server_ask() {
-      echo -n "Choose your server: "
-      read SERVER
-      SERVER="${SERVER:=chaudhuri-roche}"
-- run dockers w/ uname https://github.com/JAremko/docker-emacs
+
+- Interactive docker initialization
+  #+name: 
+  #+begin_src bash :session *shell2* :tangle no
+echo test 
+#+end_src
+  #+name: interactive_docker_initalization
+  #+begin_src bash :session *shell2* :tangle no
+docker_interactive(){
+    # Check for parameters, if empty then return usage
+    if [ -z "$1" ] || [[ $1 == -h ]] || [[ $1 == --help ]]; then
+        printf "\n docker_interactive
+	\n Launches an interactive container with server-specific settings
+	\n
+        \n Last update December 17, 2020
+              \n \$2 = VARIABLE 2
+              \n "
+    elif
+    else
+    fi
+}
+	
+
+# Interactive docker initialization
+
+docker_interactive() {
+    repo="USER INPUT"
+    read -p "repo name: " repo
+    if [ -z "$repo" ] || [[ $repo == -h ]] || [[ $repo == --help ]]; then
+    case $HOSTNAME in
+        (radonc-cancerbio) docker run -it \
+                                  -v /mnt/:/mnt/ \
+                                  -v /home/:/home/ \
+                            -u $(id -u ${USER}) \
+                            jeszyman/$repo \
+                            /bin/bash;;
+        (jeszyman-*) docker run -it \
+                            -v /home/:/home/ \
+                            -u $(id -u ${USER}) \
+                            jeszyman/$repo \
+                            /bin/bash;;
+        (acl*) docker run -it \
+                      -v /drive3/:/drive3/ \
+                      -v /duo4/:/duo4/ \
+                      -v /home/:/home/ \
+                      -u $(id -u ${USER}) \
+                      jeszyman/$repo \
+                      /bin/bash;;
+        (ACL*) docker run -it \
+                      -v /home/:/home/ \
+                      -v /duo4/:/duo4/ \
+                      -u $(id -u ${USER}):$(id -g ${USER}) \
+                      -h=${HOSTNAME} \
+                      jeszyman/$repo \
+                      /bin/bash;;
+        (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$repo"')' /bin/bash;;
+    esac
+}
+#
+
+#+end_src
+  #+name: 
+  #+begin_src bash :tangle no
+cd ~/repos/basecamp
+docker build . --file Dockerfile --tag jeszyman/basecamp
+docker push jeszyman/basecamp
+cd 
+docker run jeszyman/test
+#+end_src
+**** [[id:14a1f321-73c7-4dbb-be33-f7377ae38cdd][LINK TO Research Infrastructure Services (RIS)]]
+**** Processes
+- https://stackoverflow.com/questions/16296753/can-you-run-gui-applications-in-a-docker-container/50356450#50356450
+- setup chown https://stackoverflow.com/questions/26500270/understanding-user-file-ownership-in-docker-how-to-avoid-changing-permissions-o
+- install
+  - [[https://docs.docker.com/install/linux/docker-ce/ubuntu/#prerequisites][install community edition through ubuntu]], https://docs.docker.com/install/linux/linux-postinstall/
+- build image
+  - user repos (like mine are / not : for FROM build command!!!
+  - create Dockerfile
+  - [[https://docs.docker.com/engine/reference/builder/#parser-directives][Dockerfile reference]]
+  - [[https://docs.docker.com/develop/develop-images/dockerfile_best-practices/][Dockerfile best practices]]
+    - [[https://hub.docker.com/search/?q=&type=image&image_filter=official][official images]]
+  - [[file:~/data/Dockerfiles/]]
+  - recommended dockerfiles
+    - [[https://hub.docker.com/_/golang/]]
+    - https://hub.docker.com/_/ruby/
+    - https://hub.docker.com/_/perl/
+    - https://hub.docker.com/_/hylang/
+  - pull code into build from github https://stackoverflow.com/questions/52155128/how-write-dockerfile-to-properly-pull-code-from-my-github
+  - https://stackoverflow.com/questions/39518377/docker-build-unable-to-fetch-archives
+- push built image to Docker Hub
+  - docker login 
+  - docker tag <IMAGE ID> jeszyman/<IMAGE NAME>
+  - docker push jeszyman/<IMAGE NAME>
+  - reference https://ropenscilabs.github.io/r-docker-tutorial/04-Dockerhub.html
+  - connect to host 
+    - https://dev.to/bufferings/access-host-from-a-docker-container-4099
+    - https://medium.com/@mccode/understanding-how-uid-and-gid-work-in-docker-containers-c37a01d01cf
+- run
+  - publish port to host- these are accessible with [[id:2e3a156d-3cdf-4995-9b61-b6a6a6f3a32c][tramp docker function]] 
+    #+begin_src bash :tangle no
+docker run --rm -p 6379:6379 <CONTAINER> 
+#+end_src
+    - p can also assign a local ip, e.g. docker run -p 127.0.0.2:42222:22 <CONTAINER> 
+  - as current user
+    - declare user q/ -u <USER NAME>
+    - https://www.google.com/search?q=docker+run+set+home+directory
+  - w/ symlinks - mount both locations
+    - https://www.google.com/search?q=docker+run+volume+symbolic+links
+  - https://www.google.com/search?q=docker+run+mount+home+directory
+  - in timezone with a wget     tzdata command in the dockerfile, then docker run -e "TZ=America/Chicago" -it jeszyman/dev
+  - https://confluence.ris.wustl.edu/display/RSUM/Docker+Wrapper+Environment+Variables
+- remove https://docs.docker.com/config/pruning/
+- Host management
+  - https://www.google.com/search?q=docker+cleanup
+**** Platform
+- interfaces
+  - https://github.com/JAremko/docker-emacs
+  - https://github.com/Silex/docker.el
 - emacs ess docker ssh
   - https://github.com/emacs-ess/ESS/issues/928
   - https://gtown-ds.netlify.app/2017/08/16/docker-emacs/
-- [ ] setup chown https://stackoverflow.com/questions/26500270/understanding-user-file-ownership-in-docker-how-to-avoid-changing-permissions-o
-- https://www.google.com/search?q=docker+cleanup
-- documentation examples - https://docs.docker.com/engine/reference/run/#env-environment-variables
-- [[id:14a1f321-73c7-4dbb-be33-f7377ae38cdd][Research Infrastructure Services (RIS)]]
-- processes
-  - install
-    - [[https://docs.docker.com/install/linux/docker-ce/ubuntu/#prerequisites][install community edition through ubuntu]], https://docs.docker.com/install/linux/linux-postinstall/
-  - build image
-    - create Dockerfile
-      - [[https://docs.docker.com/engine/reference/builder/#parser-directives][Dockerfile reference]]
-      - [[https://docs.docker.com/develop/develop-images/dockerfile_best-practices/][Dockerfile best practices]]
-        - [[https://hub.docker.com/search/?q=&type=image&image_filter=official][official images]]
-      - [[file:~/data/Dockerfiles/]]
-      - recommended dockerfiles
-        - [[https://hub.docker.com/_/golang/]]
-        - https://hub.docker.com/_/ruby/
-        - https://hub.docker.com/_/perl/
-        - https://hub.docker.com/_/hylang/
-    - pull code into build from github https://stackoverflow.com/questions/52155128/how-write-dockerfile-to-properly-pull-code-from-my-github
-    - https://stackoverflow.com/questions/39518377/docker-build-unable-to-fetch-archives
-  - push built image to Docker Hub
-    - docker login 
-    - docker tag <IMAGE ID> jeszyman/<IMAGE NAME>
-    - docker push jeszyman/<IMAGE NAME>
-    - reference https://ropenscilabs.github.io/r-docker-tutorial/04-Dockerhub.html
-    - connect to host 
-      - https://dev.to/bufferings/access-host-from-a-docker-container-4099
-      - https://medium.com/@mccode/understanding-how-uid-and-gid-work-in-docker-containers-c37a01d01cf
-  - run
-    - publish port to host- these are accessible with [[id:2e3a156d-3cdf-4995-9b61-b6a6a6f3a32c][tramp docker function]] 
-      #+begin_src bash :tangle no
-docker run --rm -p 6379:6379 <CONTAINER> 
-#+end_src
-      - p can also assign a local ip, e.g. docker run -p 127.0.0.2:42222:22 <CONTAINER> 
-    - as current user
-      - declare user q/ -u <USER NAME>
-      - https://www.google.com/search?q=docker+run+set+home+directory
-    - w/ symlinks - mount both locations
-      - https://www.google.com/search?q=docker+run+volume+symbolic+links
-    - https://www.google.com/search?q=docker+run+mount+home+directory
-    - in timezone with a wget     tzdata command in the dockerfile, then docker run -e "TZ=America/Chicago" -it jeszyman/dev
-    - https://confluence.ris.wustl.edu/display/RSUM/Docker+Wrapper+Environment+Variables
-  - remove https://docs.docker.com/config/pruning/
-- commands
+**** [[https://docs.docker.com/][documentation]]
+  - https://docs.docker.com/engine/faq/
+  - https://docs.docker.com/get-started/
+    - https://docs.docker.com/get-started/#images-and-containers
+  - https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+  - [[https://docs.docker.com/docker-for-mac/][Get started with Docker for Mac]]
+  - [[https://docs.docker.com/storage/][storage]]
+    - probably best not to use persistant data in containers / images
+    - https://www.google.com/search?q=how+to+save+data+in+docker+image
+      - https://docs.docker.com/storage/
+  - [[https://docs.docker.com/get-started/][Get started]]
+  - https://www.reddit.com/r/docker/comments/8s8n3o/heres_a_bunch_of_docker_best_practices_that_i/
+  - https://tecadmin.net/tutorial/docker/docker-tutorials/
+***** commands
   |-----------------------------+-----------------------------------|
   | function                    | command                           |
   |-----------------------------+-----------------------------------|
@@ -6892,89 +6978,127 @@ docker run --rm -p 6379:6379 <CONTAINER>
         - --name specifies image name
         - --rm removes container on exit
         - -ti: pseudodotty terminal
-- interfaces
-  - https://github.com/JAremko/docker-emacs
-  - https://github.com/Silex/docker.el
-- [[https://docs.docker.com/][documentation]]
-  - https://docs.docker.com/engine/faq/
-  - https://docs.docker.com/get-started/
-    - https://docs.docker.com/get-started/#images-and-containers
-  - https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
-  - [[https://docs.docker.com/docker-for-mac/][Get started with Docker for Mac]]
-  - [[https://docs.docker.com/storage/][storage]]
-    - probably best not to use persistant data in containers / images
-    - https://www.google.com/search?q=how+to+save+data+in+docker+image
-      - https://docs.docker.com/storage/
-  - [[https://docs.docker.com/get-started/][Get started]]
-  - https://www.reddit.com/r/docker/comments/8s8n3o/heres_a_bunch_of_docker_best_practices_that_i/
-  - https://tecadmin.net/tutorial/docker/docker-tutorials/
-- applications
-  - Docker on [[file:~/Box%20Sync/org/career.org::*McDonnell%20Genome%20Institute%20(MGI)][MGI Cluster]] 
-- reference
-  - cite:boettiger2015 
-  - [[https://stackoverflow.com/questions/23735149/what-is-the-difference-between-a-docker-image-and-a-container][stack: difference b/w image and container]]
-  - [[https://hub.docker.com/?ref=login][Docker Hub]]
-  - Components
-    - docker- is a service daemon
-    - Dockerfile: defines image. Docker builds Docker image from Dockerfile
-    - image: executable package with everything to run a piece of software
-      - runs on any machine with Docker installed
-      - prebuilt environments that tell container what to do
-    - container: instance of an image, i.e. what image becomes in memory when executed. actually running and doing stuff
-    - [[https://hub.docker.com/][docker hub]]
-    - dockstore: links docker images with descriptors in common workflow language and/or wdl
-      - https://www.youtube.com/watch?v=sInP-ByF9xU
-      - https://dockstore.org/
-  - Docker does actually use a VM on windows and mac to generate a linux kernal https://benmarwick.github.io/UW-eScience-docker-for-reproducible-research/#7
-  - Container projects
-    - Rocker
-      - http://dirk.eddelbuettel.com/blog/2014/10/23/
-      - 
-  - [[http://training.play-with-docker.com/alacart/][Docker classroom]]
-    - [[http://training.play-with-docker.com/helloworld/][Hello World]]
-  - https://github.com/LinuxAtDuke/Intro-To-Docker
-  - https://www.google.com/search?q=where+are+docker+images+stored
-  - [[https://dev.to/softchris/5-part-docker-series-beginner-to-master-3m1b][5 part Docker series, beginner to master]]
-  - [[https://stackoverflow.com/questions/49503061/prompting-for-username-password-with-git-clone-from-dockerfile-run-step][Prompting for username/password with git clone from Dockerfile run step]]
-  - https://medium.com/@tonistiigi/build-secrets-and-ssh-forwarding-in-docker-18-09-ae8161d066
-  - https://linuxacademy.com/blog/docker/6-years-of-docker-hands-on-docker-training/
-  - https://pyvideo.org/pycon-us-2013/the-future-of-linux-containers.html
-  - my images
-    - jeszyman/dev, local, push to secure docker hub 
-  - [[file:~/data/Dockerfiles/][my Dockerfiles]]
-  - docker compose
-    - https://www.semanticscholar.org/paper/Using-Docker-Compose-for-the-Simple-Deployment-of-List/632c38a859b851b20c3988c773368991151fec33/figure/2
-    - https://www.biorxiv.org/content/biorxiv/early/2017/12/26/239947.full.pdf
-    - https://www.biostars.org/p/139326/
-    - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6042832/
-  - https://www.balena.io/blog/our-dockerfile-tips-tricks/
-  - compose
-    - https://www.reddit.com/r/docker/comments/cwe2bt/a_handy_dockercompose_commands_and_examples/
+**** Local YAS
+:LOGBOOK:
+CLOCK: [2021-08-26 Thu 07:31]--[2021-08-26 Thu 08:01] =>  0:30
+:END:
+#+name: launch.docker.interactive
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/launch.docker.interactive
+# -*- mode: snippet -*-
+# key: launch.docker.interactive
+# expand-env: ((yas-indent-line 'fixed))
+# --
+,#+begin_src bash :tangle ./src/launch_$2.sh
+#!/bin/bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+#
+### Launch interactive settion for ${1:ACCOUNT}/${2:CONTAINER} ###
+#
+                
+# Setup
+set -euxo pipefail
+
+# Commands
+##
+## If already in a docker environment, then exit
+if [ -f /.dockerenv ]; then
+ echo "shell already in docker, exiting"
+ exit 1
+fi
+
+##
+## Run
+docker run \
+       --env HOME=\${HOME} \
+       --hostname \${HOSTNAME} \
+       --interactive \
+       --tty \
+       --volume /home/:/home/ \
+       --volume /tmp/:/tmp/ \
+       --volume /mnt/:/mnt/ \
+       --user $(id -u \${USER}) \
+       $1/$2 \
+       /bin/bash
+,#+end_src       
+#+END_SRC
+
+
+
+**** General reference
+- https://www.freecodecamp.org/news/the-docker-handbook/
+- https://stackoverflow.com/questions/29480099/whats-the-difference-between-docker-compose-vs-dockerfile
+- cite:boettiger2015 
+- [[https://stackoverflow.com/questions/23735149/what-is-the-difference-between-a-docker-image-and-a-container][stack: difference b/w image and container]]
+- [[https://hub.docker.com/?ref=login][Docker Hub]]
+- Components
+  - docker- is a service daemon
+  - Dockerfile: defines image. Docker builds Docker image from Dockerfile
+  - image: executable package with everything to run a piece of software
+    - runs on any machine with Docker installed
+    - prebuilt environments that tell container what to do
+  - container: instance of an image, i.e. what image becomes in memory when executed. actually running and doing stuff
+  - [[https://hub.docker.com/][docker hub]]
+  - dockstore: links docker images with descriptors in common workflow language and/or wdl
+    - https://www.youtube.com/watch?v=sInP-ByF9xU
+    - https://dockstore.org/
+- Docker does actually use a VM on windows and mac to generate a linux kernal https://benmarwick.github.io/UW-eScience-docker-for-reproducible-research/#7
+- Container projects
+  - Rocker
+    - http://dirk.eddelbuettel.com/blog/2014/10/23/
+    - 
+- [[http://training.play-with-docker.com/alacart/][Docker classroom]]
+  - [[http://training.play-with-docker.com/helloworld/][Hello World]]
+- https://github.com/LinuxAtDuke/Intro-To-Docker
+- https://www.google.com/search?q=where+are+docker+images+stored
+- [[https://dev.to/softchris/5-part-docker-series-beginner-to-master-3m1b][5 part Docker series, beginner to master]]
+- [[https://stackoverflow.com/questions/49503061/prompting-for-username-password-with-git-clone-from-dockerfile-run-step][Prompting for username/password with git clone from Dockerfile run step]]
+- https://medium.com/@tonistiigi/build-secrets-and-ssh-forwarding-in-docker-18-09-ae8161d066
+- https://linuxacademy.com/blog/docker/6-years-of-docker-hands-on-docker-training/
+- https://pyvideo.org/pycon-us-2013/the-future-of-linux-containers.html
+- my images
+  - jeszyman/dev, local, push to secure docker hub 
+- [[file:~/data/Dockerfiles/][my Dockerfiles]]
+- docker compose
+  - https://www.semanticscholar.org/paper/Using-Docker-Compose-for-the-Simple-Deployment-of-List/632c38a859b851b20c3988c773368991151fec33/figure/2
+  - https://www.biorxiv.org/content/biorxiv/early/2017/12/26/239947.full.pdf
+  - https://www.biostars.org/p/139326/
+  - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6042832/
+- https://www.balena.io/blog/our-dockerfile-tips-tricks/
+- compose
+  - https://www.reddit.com/r/docker/comments/cwe2bt/a_handy_dockercompose_commands_and_examples/
+- Docker on [[file:~/Box%20Sync/org/career.org::*McDonnell%20Genome%20Institute%20(MGI)][MGI Cluster]] 
+**** Ideas
+- add multiple R versions
+  - https://support.rstudio.com/hc/en-us/articles/215488098-Installing-multiple-versions-of-R
+  - https://stackoverflow.com/questions/24019503/installing-multiple-versions-of-r
+  - https://cran.r-project.org/bin/linux/ubuntu/
+  - https://unix.stackexchange.com/questions/538915/installing-updating-r-3-6-on-ubuntu-18-04
+- https://stackoverflow.com/questions/54412054/can-you-convert-build-a-docker-image-into-a-full-os-image
+- https://duckduckgo.com/?q=docker+container+daemon&t=canonical&ia=web
 - ideas
-  - add multiple R versions
-    - https://support.rstudio.com/hc/en-us/articles/215488098-Installing-multiple-versions-of-R
-    - https://stackoverflow.com/questions/24019503/installing-multiple-versions-of-r
-    - https://cran.r-project.org/bin/linux/ubuntu/
-    - https://unix.stackexchange.com/questions/538915/installing-updating-r-3-6-on-ubuntu-18-04
-  - https://stackoverflow.com/questions/54412054/can-you-convert-build-a-docker-image-into-a-full-os-image
-  - https://duckduckgo.com/?q=docker+container+daemon&t=canonical&ia=web
-  - ideas
-    - how to run over wusm vpn?
-      - this d/n work https://medium.com/@faithfulanere/solved-docker-build-could-not-resolve-archive-ubuntu-com-apt-get-fails-to-install-anything-9ea4dfdcdcf2
-    - auto builds and dockerfile in repo
-      - https://docs.docker.com/docker-hub/builds/
-      - https://stackoverflow.com/questions/27679740/how-to-add-dockerfile-to-a-docker-registry-page
-    - https://www.google.com/search?q=docker+container+retain+command+history
-  - consider docker add to add scripts
+  - how to run over wusm vpn?
+    - this d/n work https://medium.com/@faithfulanere/solved-docker-build-could-not-resolve-archive-ubuntu-com-apt-get-fails-to-install-anything-9ea4dfdcdcf2
+  - auto builds and dockerfile in repo
+    - https://docs.docker.com/docker-hub/builds/
+    - https://stackoverflow.com/questions/27679740/how-to-add-dockerfile-to-a-docker-registry-page
+  - https://www.google.com/search?q=docker+container+retain+command+history
+- consider docker add to add scripts
+- dockerize emacs gui https://github.com/JAremko/docker-emacs
+- Dockerfile best practices ideas
+  - include comment w/ build time  
 *** Ideas
+:PROPERTIES:
+:ID:       9df4eaea-272d-414e-a2b2-589025889290
+:END:
 - - https://github.com/eudaldgr/youtube-dl
-** Programming languages                                             :career:
+** Computer programming and programming languages                    :career:
 :PROPERTIES:
 :ID:       CBD1C9BA-44CB-4510-8ACD-F12CEF7E3402
 :END:
 :LOGBOOK:
 CLOCK: [2019-02-06 Wed 16:12]--[2019-02-06 Wed 17:05] =>  0:53
 :END:
+- [[https://www.gnu.org/prep/standards/standards.html][GNU Coding Standards]]
 - https://x-team.com/blog/programming-best-practices/
 *** General reference
 :PROPERTIES:
@@ -7020,7 +7144,7 @@ CLOCK: [2019-02-06 Wed 16:12]--[2019-02-06 Wed 17:05] =>  0:53
   - AutoHotKey
     - [[https://autohotkey.com/docs/AutoHotkey.htm][Documentation]]
     - [[https://autohotkey.com/boards/viewtopic.php?t=9806][AutoHotKey-like resources on UNIX-based]]
-**** [[R]]
+**** [[id:F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD][LINK TO R Statistical Computing]]
 :PROPERTIES:
 :ID:       1672D6B1-BCB8-428C-8AF1-013BC82A91AC
 :END:
@@ -7045,6 +7169,7 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
+https://mostateparks.com/park/onondaga-cave-state-park
 https://github.com/norvig/pytudes/blob/main/ipynb/risk.ipynb
 https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
 https://www.reddit.com/r/bioinformatics/comments/n4i9f4/how_to_learn_python_from_scratch_for/
@@ -7287,6 +7412,7 @@ CLOCK: [2019-02-19 Tue 11:04]--[2019-02-19 Tue 11:25] =>  0:21
 :PROPERTIES:
 :ID:       BF9D824A-02EF-4580-97A1-B887299AD461
 :END:
+- https://www.google.com/search?q=lisp+for+loop 
 - https://www.murilopereira.com/a-rabbit-hole-full-of-lisp/
 https://www.emacswiki.org/emacs/ElispCookbook
 #+name: block-1
@@ -7439,14 +7565,27 @@ CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :LOGBOOK:
 CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
 :END:
+- https://www.google.com/search?q=bash+check+if+on+vpn 
+****** Open files based on type
+#+name: open_choose
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/open_choose
+# -*- mode: snippet -*-
+# key: open_choose
+# expand-env: ((yas-indent-line 'fixed))
+# --
+,#+begin_src bash
+
+,#+end_src
+#+END_SRC
+
 ****** Setup
 :PROPERTIES:
 :ID:       12419776-9b0e-42e9-8392-8f17dc89a63f
 :END:
-- configuration management
-  - https://en.wikipedia.org/wiki/Ansible_(software)
+- bashrc
+  - https://www.google.com/search?q=alias+function+bashrc 
+  - https://www.reddit.com/r/commandline/comments/9md3pp/a_very_useful_bashrc_file/
 - themes- https://github.com/ohmybash/oh-my-bash
-- https://www.reddit.com/r/commandline/comments/9md3pp/a_very_useful_bashrc_file/
 ****** Resource use control
 :PROPERTIES:
 :ID:       069254a6-95ec-48dd-a5ce-802687ec99eb
@@ -7477,29 +7616,29 @@ CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
 :PROPERTIES:
 :ID:       9cbffcad-49c3-4936-9111-d2472d40276c
 :END:
-  - [[https://stackoverflow.com/questions/18921350/shell-script-correct-way-to-declare-an-empty-array][declare array]]
-  - populate
-    - from list of variables
+- [[https://stackoverflow.com/questions/18921350/shell-script-correct-way-to-declare-an-empty-array][declare]]
+- populate
+  - from list of variables
+  - pass each line of file
+    - https://riptutorial.com/bash/example/19457/read-lines-of-a-file-into-an-array
+  - pass cat output
+    - https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
+  - https://www.google.com/search?q=pass+cat+output+to+array+variable
+  - command output https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
+  - pass to array 
+    - find https://stackoverflow.com/questions/23356779/how-can-i-store-the-find-command-results-as-an-array-in-bash/54561526#54561526
     - pass each line of file
       - https://riptutorial.com/bash/example/19457/read-lines-of-a-file-into-an-array
     - pass cat output
       - https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
     - https://www.google.com/search?q=pass+cat+output+to+array+variable
     - command output https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
-    - pass to array 
-      - find https://stackoverflow.com/questions/23356779/how-can-i-store-the-find-command-results-as-an-array-in-bash/54561526#54561526
-      - pass each line of file
-        - https://riptutorial.com/bash/example/19457/read-lines-of-a-file-into-an-array
-      - pass cat output
-        - https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
-      - https://www.google.com/search?q=pass+cat+output+to+array+variable
-      - command output https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
-  - make associative array
-    - https://www.google.com/search?q=bash+make+associative+array 
-  - access all values "${array[@]}"
-  - [[https://unix.stackexchange.com/questions/125632/printing-an-array-to-a-file-with-each-element-of-the-array-in-a-new-line-in-bash][print array with line breaks]]
-  - https://www.google.com/search?q=bash+create+array 
-  - https://www.google.com/search?q=bash+pass+array+to+for+loop 
+- make associative array
+  - https://www.google.com/search?q=bash+make+associative+array 
+- access all values "${array[@]}"
+- [[https://unix.stackexchange.com/questions/125632/printing-an-array-to-a-file-with-each-element-of-the-array-in-a-new-line-in-bash][print array with line breaks]]
+- https://www.google.com/search?q=bash+create+array 
+- https://www.google.com/search?q=bash+pass+array+to+for+loop 
 #+begin_src bash :tangle no
 # Assign variable which holds array to another name
 a=('a' 'b' 'c')
@@ -7512,8 +7651,7 @@ b=( "${a[@]}" )
 :PROPERTIES:
 :ID:       ccff4529-a532-4111-9ac3-e8df91ec50fa
 :END:
-- pattern matching
-  - if [ "${file: -4}" == ".txt" ] https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
+- if [ "${file: -4}" == ".txt" ] https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
 ****** Pipes
 :PROPERTIES:
 :ID:       2cb03148-64b0-4a63-985f-c26447342aaa
@@ -7533,6 +7671,13 @@ b=( "${a[@]}" )
     - examples
       - [[id:c9327fad-4f38-4bbe-8b2e-58ad589fbdf6][Basecamp Docker]]
     - https://www.reddit.com/r/bash/comments/n65i3n/prompt_user_for_specific_key_abort_with_any_other/
+****** Writing scripts
+:PROPERTIES:
+:ID:       f54ac1df-f52d-42ee-a339-6557e7293a59
+:END:
+- best practices
+  - include shebang
+    - https://unix.stackexchange.com/questions/50425/shell-scripts-are-still-working-without-sha-bang-line
 ****** Writing functions  
 :PROPERTIES:
 :ID:       e6966fff-7c43-4bb9-952e-66dfc6c11c43
@@ -7623,6 +7768,7 @@ else
     echo "Setup completed successfully"
 fi
 
+#+name: docker_check
 #+begin_src bash :tangle ./src/functions.sh
 # Check for docker environment
 docker_check() {
@@ -8025,19 +8171,20 @@ pandoc -S $test | xclip -selection clipboard
 :PROPERTIES:
 :ID:       5efce201-5375-42a8-a8d0-827a0325a7bf
 :END:
-  - -z string is True if string is null, e.g.     if [ -z "$1" ] || [[ $1 == -h ]] || [[ $1 == --help ]];
-    - variables
-  #+name: 
-  #+begin_src bash :tangle no
-# Check if variable is set
-if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; fi
-#+end_src
-  - https://www.google.com/search?q=bash+variable+file+name+with+spaces 
-  - [[https://unix.stackexchange.com/questions/322817/how-to-find-the-file-where-a-bash-function-is-defined][check were function is called from]]
-  - [[https://askubuntu.com/questions/102093/how-to-see-the-command-attached-to-a-bash-alias][check where alias goes w/ type]]
+- if exists
   - [[https://stackoverflow.com/questions/592620/how-can-i-check-if-a-program-exists-from-a-bash-script][check if program exists]]
   - [[https://stackoverflow.com/questions/59838/how-can-i-check-if-a-directory-exists-in-a-bash-shell-script][check if dir exists]]
-  - https://theterminallife.com/check-if-file-exists-and-is-not-empty/
+- -z string is True if string is null, e.g.     if [ -z "$1" ] || [[ $1 == -h ]] || [[ $1 == --help ]];
+  - variables
+    #+name: 
+    #+begin_src bash :tangle no
+  # Check if variable is set
+  if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; fi
+  #+end_src
+- https://www.google.com/search?q=bash+variable+file+name+with+spaces 
+- [[https://unix.stackexchange.com/questions/322817/how-to-find-the-file-where-a-bash-function-is-defined][check were function is called from]]
+- [[https://askubuntu.com/questions/102093/how-to-see-the-command-attached-to-a-bash-alias][check where alias goes w/ type]]
+- https://theterminallife.com/check-if-file-exists-and-is-not-empty/
 - links
   - https://stackoverflow.com/questions/5767062/how-to-check-if-a-symlink-exists
 - file and directory metadata
@@ -8079,10 +8226,13 @@ if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; 
     - https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
 - logging
   - https://stackoverflow.com/questions/18278223/method-to-write-in-log-files-in-a-shell-script
+***** [[id:BDC42DA2-A632-4FB7-A586-E100B2A045DC][LINK TO UNIX-based operating systems]]
+***** [[id:76c4836c-fe3f-4948-86dd-25d8df38d1af][LINK TO GNU tools]]
 ***** General reference
 :PROPERTIES:
 :ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
 :END:
+- [[https://google.github.io/styleguide/shellguide.html][Google shell style guide]]
 - [[https://www.gnu.org/software/bash/manual/bash.html][documentation]] 
 - [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Advanced Bash-Scripting Guide]]
 - [[http://mywiki.wooledge.org/FullBashGuide][wooledge bash guide]]
@@ -8161,11 +8311,12 @@ if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; 
 - https://mywiki.wooledge.org/BashPitfalls
 - [[https://tldp.org/LDP/abs/html/][Advanced bash scripting guide]]
 - cite:greenberg2021
-***** Bash YASnippets
+***** Local YAS
 :PROPERTIES:
 :ID:       42e37db5-29e7-418f-a74d-e91ffc81167f
 :END:
-#+begin_src fundamental :tangle ~/.emacs.d/snippets/shell-mode/bash.print_array
+- print_array
+  #+begin_src fundamental :tangle ~/.emacs.d/snippets/shell-mode/bash.print_array
 # -*- mode: snippet -*-
 # name: bash.print_array
 # key: bash.print_array
@@ -8173,8 +8324,8 @@ if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; 
 printf '%s\n' "${${1:ARRAY_NAME}[@]}"
 $0
 #+end_src
-
-#+begin_src fundamental :tangle ~/.emacs.d/snippets/sh-mode/bash.array.from.find
+- bash.array.from.find
+  #+begin_src fundamental :tangle ~/.emacs.d/snippets/sh-mode/bash.array.from.find
 # -*- mode: snippet -*-
 # name: bash.array.from.find
 # key: bash.array.from.find
@@ -8186,31 +8337,48 @@ done < <(find ${2:FIND DIR} -name ${3:FIND TERM} -print0)
 printf '%s\n' "\${$1[@]}"
 $0
 #+end_src
-
-#+begin_src fundamental :tangle ~/.emacs.d/snippets/sh-mode/bash.script
+- bash.script
+  #+begin_src fundamental :tangle ~/.emacs.d/snippets/fundamental-mode/bash.script
 # -*- mode: snippet -*-
-# name: bash.script
 # key: bash.script
 # --
 #!/bin/bash
-set -euxo pipefail
-#+end_src
+#########1#########2#########3#########4#########5#########6#########7#########8
+#
+### ${1:SCRIPT NAME} ###
+#
 
-#+begin_src fundamental :tangle ~/.emacs.d/snippets/sh-mode/bash.function
+# Notes
+                
+# Setup
+set -euxo pipefail
+
+# Functions
+
+# Commands    
+#+end_src
+- bash.function
+  #+name: bash.function
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.function
 # -*- mode: snippet -*-
-# name: bash.function
 # key: bash.function
+# expand-env: ((yas-indent-line 'fixed))
 # --
 ${1:function_name}(){
-  # consider usage statement (bash.usage) 
-  if      
+    # Check for parameters, return usage if empty
+    if [[ $# -eq 0 ]] || [[ $1 == "h" ]] ; then
+    printf "\n usage: $1 $3 $4
+           \n ${2: FUNCTION PURPOSE}
+           \n \$1 = ${3: VAR 1}: ${5: VAR 1 DESCRIPTOR}
+           \n \$2 = ${4: VAR 2}: ${6: VAR 2 DESCRIPTOR}
+           \n $0"
   elif
   else
   fi
 }
 #+end_src
-
-#+begin_src fundamental :tangle ~/.emacs.d/snippets/sh-mode/bash.usage
+- bash.usage
+  #+begin_src fundamental :tangle ~/.emacs.d/snippets/fundamental-mode/bash.usage
 # -*- mode: snippet -*-
 # name: bash.usage
 # key: bash.usage
@@ -8224,9 +8392,6 @@ if [[ $# -eq 0 ]] || [[ $1 == "h" ]] ; then
            \n $0"
 
 #+end_src
-
-
-
 - [[file:~/.emacs.d/snippets/sh-mode/]]
 - [[file:~/.emacs.d/snippets/sh-mode/write.bash]]
 ***** Ideas

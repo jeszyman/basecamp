@@ -53,3 +53,8 @@ select=dplyr::select
 filter=dplyr::filter
 group_by=dplyr::group_by
 summarise=dplyr::summarise
+
+#########1#########2#########3#########4#########5#########6#########7#########8
+# Set variables
+select=dplyr::select
+filter=dplyr::filter
