@@ -3284,6 +3284,7 @@ CLOCK: [2017-06-23 Fri 19:05]--[2017-06-23 Fri 19:35] =>  0:30
 CLOCK: [2018-06-27 Wed 11:59]--[2018-06-27 Wed 12:49] =>  0:50
 CLOCK: [2017-11-28 Tue 18:30]--[2017-11-28 Tue 19:30] =>  1:00
 :END:
+- https://www.nature.com/articles/s41598-018-24783-4#Sec6
 https://www.statlearning.com/
 https://www.deeplearningbook.org/
 - Error-Correcting Output Codes
@@ -8369,8 +8370,8 @@ ${1:function_name}(){
     if [[ $# -eq 0 ]] || [[ $1 == "h" ]] ; then
     printf "\n usage: $1 $3 $4
            \n ${2: FUNCTION PURPOSE}
-           \n \$1 = ${3: VAR 1}: ${5: VAR 1 DESCRIPTOR}
-           \n \$2 = ${4: VAR 2}: ${6: VAR 2 DESCRIPTOR}
+           \n 1 = ${3: VAR 1}: ${5: VAR 1 DESCRIPTOR}
+           \n 2 = ${4: VAR 2}: ${6: VAR 2 DESCRIPTOR}
            \n $0"
   elif
   else
