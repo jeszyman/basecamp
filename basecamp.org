@@ -277,6 +277,8 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
+https://little-books-of-r.readthedocs.io/en/latest/
+https://stackoverflow.com/questions/44066117/convert-data-frame-to-reference-class-object-in-r
 *** Local YAS
 #+name: r.script
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/r.script
@@ -708,6 +710,10 @@ df
 :PROPERTIES:
 :ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
 :END:
+http://rich-iannone.github.io/DiagrammeR/docs.html
+
+- https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html
+- [[https://gist.github.com/Rekyt/a7846af7c4c5fb5a48ea][ggplots over multiple pdf pages]]
 - https://bookdown.org/ndphillips/YaRrr/saving-plots-to-a-file-with-pdf-jpeg-and-png.html
 - tikz as graphics device for R: https://cran.r-project.org/web/packages/tikzDevice/vignettes/tikzDevice.pdf
 https://r-graphics.org/recipe-facet-label-appearance
@@ -1007,7 +1013,6 @@ rsconnect::setAccountInfo(name='jeszyman', token='7D5593D7025B8BECC9FFBBD2D9AA4D
 #+END_SRC
 
 #+RESULTS:
-
 **** tidyverse
 :PROPERTIES:
 :CREATED:  [2019-03-19 Tue 14:06]
@@ -1054,6 +1059,11 @@ CLOCK: [2020-07-29 Wed 11:00]--[2020-07-29 Wed 11:20] =>  0:20
 - applications
 - reference
   - [[file:~/.emacs.d/snippets/org-mode/software]]
+***** dplyr
+:PROPERTIES:
+:CREATED:  [2021-09-13 Mon 09:31]
+:END:
+- https://www.google.com/search?q=dplyr+rename+columns 
 **** bioconductor
 :PROPERTIES:
 :ID:       ac5c9fbe-7ce7-4092-989b-e63884fdd9df
@@ -1590,7 +1600,25 @@ algorithm properties
 :PROPERTIES:
 :ID:       A4A0EABF-3161-47AA-BDA4-E75DCB509201
 :END:
-
+- https://github.com/schemacrawler/SchemaCrawler
+- [[https://stackoverflow.com/questions/22673352/colorize-table-name-in-graphviz-entity-relationship-diagram][entity - relationship diagrams with graphviz]]
+- Relational Database Management System (RDBMS)
+  - postgreSQL
+    - on work linux
+      - create db- sudo -u postgres -i https://stackoverflow.com/questions/11919391/postgresql-error-fatal-role-username-does-not-exist, 
+    - [[https://www.postgresql.org/docs/9.1/index.html][documentation]]
+    - [ ] get on command line q/ psql
+    - pgadmin
+      - ctrl-e runs querys!
+      - [[https://www.pgadmin.org/docs/pgadmin3/1.22/index.html][pgAdmin III documentation]]
+    - PostGreSQL with Python
+      - psycopg2
+      - juypter
+      - https://wiki.postgresql.org/wiki/Psycopg2_Tutorial
+  - [ ] create db https://stackoverflow.com/questions/8200917/postgresql-create-a-new-db-through-pgadmin-ui
+  - also dbi, montedb, msosql, mysql, sql mode...
+  - https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-sql.html
+- [[https://stackoverflow.com/questions/369266/how-to-document-a-database][stack: how to document a database]]
 - hadoop
   - https://www.google.com/search?q=mapreduce&oq=mapreduce&aqs=chrome..69i57j0l5.1682j0j7&sourceid=chrome&ie=UTF-8
 - Metadata
@@ -1640,15 +1668,45 @@ algorithm properties
 :ID:       5B25B211-1888-49DB-8857-A05137D1FF92
 :END:
 :LOGBOOK:
+CLOCK: [2021-09-13 Mon 14:51]--[2021-09-13 Mon 16:02] =>  1:11
 CLOCK: [2018-12-12 Wed 16:31]--[2018-12-12 Wed 16:32] =>  0:01
 CLOCK: [2018-12-12 Wed 15:47]--[2018-12-12 Wed 16:29] =>  0:42
 :END:
-- https://www.freecodecamp.org/news/learn-to-use-the-mysql-database/
-- https://bofh.org.uk/2019/02/25/baking-with-emacs/
-- https://github.com/schemacrawler/SchemaCrawler
-- https://blog.stefanproell.at/2016/01/11/create-an-er-diagram-of-an-existing-sqlite-database-or-manyoother-rdbms/
+***** Sqlite in org-mode
+- Processes
+  - Import
+    - From org-table
+      #+begin_src sqlite :db /tmp/test :var orgtable=materials :colnames yes :results replace
+  drop table if exists materials;
+  create table materials(material_id character, location_id charcter);
+  .mode csv materials
+  .import $orgtable materials
+  SELECT material_id, COUNT(*) c FROM materials GROUP BY material_id HAVING c > 1;
+  #+end_src
+    - From File
+      #+begin_src sqlite :db /tmp/test :results replace
+drop table if exists materials;
+.mode csv 
+.import /home/jeszyman/repos/org/data/materials.csv materials
+#+end_src
+
+#+RESULTS[39608d0f26d4059cdc3b7b1b5de837c25aed6539]:
+
+  - Write to csv
+  - Merge
+  - Find duplicates
+    #+begin_src sqlite :db /tmp/test :results replace
+SELECT material_id from materials
+SELECT DataId, COUNT(*) c FROM DataTab GROUP BY DataId HAVING c > 1;
+#+end_src
+  - Write to table
+***** Processes
+- https://stackoverflow.com/questions/1777257/how-do-you-create-a-yes-no-boolean-field-in-sql-server
+- https://www.google.com/search?q=sql+field+with+long+text+string 
+
+***** Platforms and interfaces
 - http://www.eliacom.com/mysql-gui-index.php
-- [[https://stackoverflow.com/questions/22673352/colorize-table-name-in-graphviz-entity-relationship-diagram][entity - relationship diagrams with graphviz]]
+- http://www.sequelpro.com/
 - mysql
   - commands
     | admin login test | mysqladmin -u root -p version |
@@ -1659,32 +1717,15 @@ CLOCK: [2018-12-12 Wed 15:47]--[2018-12-12 Wed 16:29] =>  0:42
   - temp password is K%2SwkF3VsiF
   - reset with https://stackoverflow.com/questions/4359131/brew-install-mysql-on-mac-os/33924648#33924648
   - [[https://stackoverflow.com/questions/15450091/for-a-newbie-error-2002-hy000-cant-connect-to-local-mysql-server-through-so][ERROR 2002]]
-- applications
-  - http://www.sequelpro.com/
-- Relational Database Management System (RDBMS)
-  - postgreSQL
-    - on work linux
-      - create db- sudo -u postgres -i https://stackoverflow.com/questions/11919391/postgresql-error-fatal-role-username-does-not-exist, 
-    - [[https://www.postgresql.org/docs/9.1/index.html][documentation]]
-    - [ ] get on command line q/ psql
-    - pgadmin
-      - ctrl-e runs querys!
-      - [[https://www.pgadmin.org/docs/pgadmin3/1.22/index.html][pgAdmin III documentation]]
-    - PostGreSQL with Python
-      - psycopg2
-      - juypter
-      - https://wiki.postgresql.org/wiki/Psycopg2_Tutorial
-  - [ ] create db https://stackoverflow.com/questions/8200917/postgresql-create-a-new-db-through-pgadmin-ui
-  - also dbi, montedb, msosql, mysql, sql mode...
-  - https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-sql.html
-- [[https://stackoverflow.com/questions/369266/how-to-document-a-database][stack: how to document a database]]
+***** General reference
+- https://www.freecodecamp.org/news/learn-to-use-the-mysql-database/
+- https://bofh.org.uk/2019/02/25/baking-with-emacs/
 - guides
   - http://www.sqlstyle.guide/
 - tutorials
   - https://www.dataquest.io/blog/sql-intermediate/
 - resume postgres tutorial on worklinux https://www.postgresql.org/docs/9.1/tutorial-populate.html
-
-***** DONE Udmey SQL Bootcamp                                        :career:
+****** DONE Udmey SQL Bootcamp                                       :career:
 CLOSED: [2017-06-23 Fri 18:56]
 :PROPERTIES:
 :ID:       9DCE5192-210C-42BF-B94C-C85C80C72A5D
@@ -2090,6 +2131,7 @@ CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 :PROPERTIES:
 :ID:       3A02CE83-279F-4D28-A56E-A8AF1094B77B
 :END:
+https://old.reddit.com/r/webdev/comments/pjfs7r/any_cheap_hosts/
 https://docs.aws.amazon.com/efs/latest/ug/wt2-apache-web-server.html#wt2-apache-web-server-one-ec2-host
 
 https://www.freecodecamp.org/news/react-and-googlesheets/
@@ -3038,34 +3080,6 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - ifconfig
   - [[file:/usr/share/man/man8/ifconfig.8.gz]] 
 - https://github.com/denisidoro/navi
-- awk
-  - [[https://stackoverflow.com/questions/47091464/print-for-loop-input-filename-on-piped-awk-output][file name as variable]]
-  - commands
-    |----------------------+-----------------|
-    | function             | command         |
-    |----------------------+-----------------|
-    | <35>                 | <35>            |
-    | set delimiter        | -F<DELIM>       |
-    | set output delimiter | OFS = "<DELIM>" |
-    |                      |                 |
-  - processes
-    - https://www.google.com/search?q=awk+pass+variable 
-    - [[https://stackoverflow.com/questions/19149731/use-awk-to-find-average-of-a-column][find average]]
-    - https://www.google.com/search?q=awk+print+except+first
-    - sorting
-      - [[https://stackoverflow.com/questions/17048188/how-to-use-awk-sort-by-column-3][sort column]]
-      - [[https://stackoverflow.com/questions/5917576/sort-a-text-file-by-line-length-including-spaces][by line length]]
-    - variables
-      - [[https://stackoverflow.com/questions/19075671/how-do-i-use-shell-variables-in-an-awk-script][external from shell]]
-      - https://www.linuxnix.com/awk-scripting-learn-awk-built-in-variables-with-examples/
-    - [[https://stackoverflow.com/questions/17001849/awk-partly-string-match-if-column-word-partly-matches][stack: awk partly string match (if column/word partly matches)]]
-  - standards and best practice
-  - documentation
-    - [[http://www.tutorialspoint.com/awk/awk_basic_examples.htm][AWK - Basic Examples]] 
-  - applications
-    - [[http://reasoniamhere.com/2013/09/16/awk-gtf-how-to-analyze-a-transcriptome-like-a-pro-part-1/][AWK GTF! How to Analyze a Transcriptome Like a Pro]]
-  - reference
-    - [[file:~/.emacs.d/snippets/org-mode/software]]
 - cron
   - commands
     | function                          | command                                   |
@@ -3179,6 +3193,36 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
     - AND SET -O !!
   - download in background & resume broke  wget -bqc <PATH>
   - clobber = overwrite
+****** gawk
+- awk
+- [[https://stackoverflow.com/questions/47091464/print-for-loop-input-filename-on-piped-awk-output][file name as variable]]
+- commands
+  |----------------------+-----------------|
+  | function             | command         |
+  |----------------------+-----------------|
+  | <35>                 | <35>            |
+  | set delimiter        | -F<DELIM>       |
+  | set output delimiter | OFS = "<DELIM>" |
+  |                      |                 |
+- processes
+  - https://www.google.com/search?q=awk+filter+greater+than 
+  - https://www.google.com/search?q=awk+pass+variable 
+  - [[https://stackoverflow.com/questions/19149731/use-awk-to-find-average-of-a-column][find average]]
+  - https://www.google.com/search?q=awk+print+except+first
+  - sorting
+    - [[https://stackoverflow.com/questions/17048188/how-to-use-awk-sort-by-column-3][sort column]]
+    - [[https://stackoverflow.com/questions/5917576/sort-a-text-file-by-line-length-including-spaces][by line length]]
+  - variables
+    - [[https://stackoverflow.com/questions/19075671/how-do-i-use-shell-variables-in-an-awk-script][external from shell]]
+    - https://www.linuxnix.com/awk-scripting-learn-awk-built-in-variables-with-examples/
+  - [[https://stackoverflow.com/questions/17001849/awk-partly-string-match-if-column-word-partly-matches][stack: awk partly string match (if column/word partly matches)]]
+- standards and best practice
+- documentation
+  - [[http://www.tutorialspoint.com/awk/awk_basic_examples.htm][AWK - Basic Examples]] 
+- applications
+  - [[http://reasoniamhere.com/2013/09/16/awk-gtf-how-to-analyze-a-transcriptome-like-a-pro-part-1/][AWK GTF! How to Analyze a Transcriptome Like a Pro]]
+- reference
+  - [[file:~/.emacs.d/snippets/org-mode/software]]
 ****** grep
 :PROPERTIES:
 :ID:       024b269b-27ca-492d-981f-d8f9083a38d2
@@ -3284,6 +3328,10 @@ CLOCK: [2017-06-23 Fri 19:05]--[2017-06-23 Fri 19:35] =>  0:30
 CLOCK: [2018-06-27 Wed 11:59]--[2018-06-27 Wed 12:49] =>  0:50
 CLOCK: [2017-11-28 Tue 18:30]--[2017-11-28 Tue 19:30] =>  1:00
 :END:
+https://www.3blue1brown.com/
+- https://meta.stackoverflow.com/questions/404799/lets-gift-wrap-our-good-machine-learning-theory-questions-for-cross-validated?noredirect=1#comment822113_404799
+- https://www.google.com/search?q=machine+learning+train+validate+test+split+sizes 
+- https://distill.pub/
 - https://www.nature.com/articles/s41598-018-24783-4#Sec6
 https://www.statlearning.com/
 https://www.deeplearningbook.org/
@@ -3606,13 +3654,15 @@ CLOCK: [2017-06-30 Fri 08:02]--[2017-06-30 Fri 08:10] =>  0:08
     - http://sebastianraschka.com/Articles/2014_about_feature_scaling.html
     - [[https://machinelearningmastery.com/normalize-standardize-time-series-data-python/][How to Normalize and Standardize Time Series Data in 
 Validation
-  - <<<Out-of-bag>>> error estimate (<<<OOB>>>)
-    - For random forest, 
-  - Conventional validation by subsetting data
-    - Training
-    - Test
-  - Confusion matrix
-    - https://en.wikipedia.org/wiki/Confusion_matrix
+- <<<Out-of-bag>>> error estimate (<<<OOB>>>)
+  - For random forest, 
+- Conventional validation by subsetting data
+  - Training
+  - Test
+- Confusion matrix
+  - https://en.wikipedia.org/wiki/Confusion_matrix
+- Validation approaches
+  - Validation set (e.g. randomly split dataset in two)
   - Cross-validation- generalizes to new, smaller datasets 
     - http://www.milanor.net/blog/cross-validation-for-predictive-analytics-using-r/
     - K-fold
@@ -3620,9 +3670,6 @@ Validation
       - Error rates over rounds 
     - LOO
     - Repeat random sub-sampling 
-  - see  chapter 5
-  - Validation approaches
-    - Validation set (e.g. randomly split dataset in two)
 *** machine learning methods
 :PROPERTIES:
 :ID:       40A2D1C9-E730-43E8-9726-DEECB3EE1641
@@ -4424,6 +4471,7 @@ CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
 - processes
+  - https://stackoverflow.com/questions/33330771/git-lfs-this-exceeds-githubs-file-size-limit-of-100-00-mb
   - initializing
     - https://www.google.com/search?q=initialize+git+repo
     - git branch --set-upstream-to=origin/master master
@@ -6027,7 +6075,7 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
     - [[https://stackoverflow.com/questions/16017500/how-to-see-full-symlink-path][see path with readlink -f]]
     - [[https://stackoverflow.com/questions/1727280/is-there-a-way-to-edit-a-symlink-without-deleting-it-first][stack: create and edit symlinks]]- ln -s /location/to/link linkname
     - @ files are symlinks?https://unix.stackexchange.com/questions/191717/what-does-the-symbol-mean-on-filenames
-***** tools
+***** Tools
 :PROPERTIES:
 :ID:       6057b49e-f8d4-42fb-8fec-5a80a802dd92
 :END:
@@ -6159,8 +6207,6 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - grep 
   - https://www.thegeekstuff.com/2011/10/grep-or-and-not-operators/
   - https://unix.stackexchange.com/questions/37313/how-do-i-grep-for-multiple-patterns-with-pattern-having-a-pipe-character/37316
-- gunzip / gzip
-  - https://www.google.com/search?q=gunzip+keep+source 
 - head and tail
   - to trim file header lines
     - e.g.: tail -n +2 file.txt > file.stdout
@@ -6223,6 +6269,8 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
   - applications
 - X11
   - https://www.windowmaker.org/
+****** gunzip / gzip
+- https://www.google.com/search?q=gunzip+keep+source 
 ***** Linux                                                        :software:career:
 :PROPERTIES:
 :CREATED:  [2020-01-09 Thu 15:46]
@@ -6231,6 +6279,9 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+- Processes
+  - https://unix.stackexchange.com/questions/1519/how-do-i-delete-a-file-whose-name-begins-with-hyphen-a-k-a-dash-or-minus
+  - https://www.google.com/search?q=linux+see+largest+files+in+all+subdirectories 
 - [[https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux][optical character recognition in linux]]
 - i3
   - https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
@@ -6238,11 +6289,11 @@ CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 - system restore
   - https://github.com/teejee2008/timeshift
 - sysadmin
-    - https://unix.stackexchange.com/questions/87908/how-do-you-empty-the-buffers-and-cache-on-a-linux-system
-    - https://unix.stackexchange.com/questions/53542/how-to-determine-the-filesystem-of-an-unmounted-device
-    - https://unix.stackexchange.com/questions/18925/how-to-mount-a-device-in-linux
+  - https://unix.stackexchange.com/questions/87908/how-do-you-empty-the-buffers-and-cache-on-a-linux-system
+  - https://unix.stackexchange.com/questions/53542/how-to-determine-the-filesystem-of-an-unmounted-device
+  - https://unix.stackexchange.com/questions/18925/how-to-mount-a-device-in-linux
 - ocr
-    - https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
+  - https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
 - https://www.kernel.org/doc/html/latest/admin-guide/index.html
 - https://www.reddit.com/r/linux4noobs/comments/p4198y/i_recently_find_out_this_command_line_tool_called/
 - clipboard
@@ -6270,14 +6321,14 @@ CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
     - https://unix.stackexchange.com/questions/314394/my-hard-disk-is-full-how-can-i-determine-whats-taking-up-space
 
 - Common UNIX command line operations table
-    - [[http://www.cyberciti.biz/faq/tar-extract-linux/][Tarball extraction]]
-    - [[https://www.howtogeek.com/howto/ubuntu/split-a-text-file-in-half-or-any-percentage-on-ubuntu-linux/][Split a text file in half (or any percentage) on Ubuntu Linux]]
+  - [[http://www.cyberciti.biz/faq/tar-extract-linux/][Tarball extraction]]
+  - [[https://www.howtogeek.com/howto/ubuntu/split-a-text-file-in-half-or-any-percentage-on-ubuntu-linux/][Split a text file in half (or any percentage) on Ubuntu Linux]]
 - Search
-    - Recursively search subdirectories
-      - [[https://askubuntu.com/questions/307876/how-to-search-for-files-recursively-into-subdirectories][How to Search for Files Recursively into Subdirectories]]
-      - [[https://stackoverflow.com/questions/1987926/how-do-i-grep-recursively][Recursively search subdirectories with grep -r "<SEARCH>" .]]
-    - Search for file: find . -name <pattern> -print
-      - https://kb.iu.edu/d/admm            
+  - Recursively search subdirectories
+    - [[https://askubuntu.com/questions/307876/how-to-search-for-files-recursively-into-subdirectories][How to Search for Files Recursively into Subdirectories]]
+    - [[https://stackoverflow.com/questions/1987926/how-do-i-grep-recursively][Recursively search subdirectories with grep -r "<SEARCH>" .]]
+  - Search for file: find . -name <pattern> -print
+    - https://kb.iu.edu/d/admm            
 - users and groups
     | function                  | command                   |
     |---------------------------+---------------------------|
@@ -6887,7 +6938,6 @@ docker run jeszyman/test
   - [[https://docs.docker.com/install/linux/docker-ce/ubuntu/#prerequisites][install community edition through ubuntu]], https://docs.docker.com/install/linux/linux-postinstall/
 - build image
   - user repos (like mine are / not : for FROM build command!!!
-  - create Dockerfile
   - [[https://docs.docker.com/engine/reference/builder/#parser-directives][Dockerfile reference]]
   - [[https://docs.docker.com/develop/develop-images/dockerfile_best-practices/][Dockerfile best practices]]
     - [[https://hub.docker.com/search/?q=&type=image&image_filter=official][official images]]
@@ -7099,6 +7149,8 @@ docker run \
 :LOGBOOK:
 CLOCK: [2019-02-06 Wed 16:12]--[2019-02-06 Wed 17:05] =>  0:53
 :END:
+- object oriented
+  - http://fredhutchio.github.io/intro-bioinformatics/06-python-oop.html#/now-lets-add-some-functionality
 - [[https://www.gnu.org/prep/standards/standards.html][GNU Coding Standards]]
 - https://x-team.com/blog/programming-best-practices/
 *** General reference
@@ -7170,6 +7222,7 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
+https://mail.google.com/mail/u/0/#inbox/FMfcgzGljlpbmJWmVflTGmjkrfTgvCXr
 https://mostateparks.com/park/onondaga-cave-state-park
 https://github.com/norvig/pytudes/blob/main/ipynb/risk.ipynb
 https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
