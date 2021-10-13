@@ -175,62 +175,6 @@ primeKeyUnique = function(df,pk){
 :PROPERTIES:
 :ID:       c9327fad-4f38-4bbe-8b2e-58ad589fbdf6
 :END:
-- run docker interactively 
-  #+name: docker_interactive
-  #+begin_src bash :tangle ./src/functions.sh
-docker_interactive() {
-    if [ -f /.dockerenv ]; then
-        echo "shell already in docker, exiting"
-        exit 1
-    else
-        account="USER INPUT"
-        container="USER INPUT"
-        read -p "docker account name: " account
-        account="${account:=jeszyman}"
-        read -p "container name: " container
-        container="${container:=biotools}"
-        case $HOSTNAME in
-            (radonc-cancerbio) docker run -it \
-                                      --env HOME=${HOME} \
-                                      --hostname ${HOSTNAME} \
-                                      --user $(id -u ${USER}) \
-                                      --volume /home/:/home/ \
-                                      --volume /mnt/:/mnt/ \
-                                      --volume /tmp/:/tmp/ \
-                                      $account/$container \
-                                      /bin/bash;;
-            (acl*) docker run -it \
-                          --env HOME=${HOME} \
-                          --hostname ${HOSTNAME} \
-                          -v /drive3/:/drive3/ \
-                          -v /duo4/:/duo4/ \
-                          -v /home/:/home/ \
-                          -v /tmp/:/tmp/ \
-                          -u $(id -u ${USER}) \
-                          $account/$container \
-                          /bin/bash;;
-            (ACL*) docker run -it \
-                          --env HOME=${HOME} \
-                          --hostname ${HOSTNAME} \
-                          -v /home/:/home/ \
-                          -v /duo4/:/duo4/ \
-                          -u $(id -u ${USER}):$(id -g ${USER}) \
-                          $account/$container \
-                          /bin/bash;;
-            (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker($account/'"$container"')' /bin/bash;;
-            (*) docker run -it \
-                       --env HOME=/home/${USER} \
-                       --hostname ${HOSTNAME} \
-                       --user $(id -u ${USER}) \
-                       --volume /home/:/home/ \
-                       --volume /mnt/:/mnt/ \
-                       --volume /tmp/:/tmp/ \
-                       $account/$container \
-                       /bin/bash;;
-        esac
-    fi
-}
-#+end_src
 ***** Write Dockerfile
 #+begin_src fundamental :tangle ./docker/basecamp_Dockerfile
 FROM ubuntu:bionic
@@ -305,6 +249,11 @@ RUN apt-get install -qq --no-install-recommends emacs-snapshot
 
 #+end_src
 #+begin_src fundamental :tangle ./docker/basecamp_Dockerfile
+RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
+    libcurl4-openssl-dev
+
+RUN apt-get install -qq --no-install-recommends r-base r-base-dev
+    
 # R CRAN Installs
 RUN R -e "install.packages(c('caret', \
                              'circularize', \
@@ -328,7 +277,6 @@ RUN R -e "install.packages(c('caret', \
                              'tidyverse', \
                              'UpSetR', \
                              'viridis'), \
-                             dependencies=TRUE, \
                              repos='http://cran.rstudio.com/')"
 
 #+end_src
@@ -342,6 +290,70 @@ repo=basecamp
 cd "$buildDIR"
 docker build . --file Dockerfile --tag "${user}/${repo}"
 docker push "${user}/${repo}"
+
+
+#########1#########2#########3#########4#########5#########6#########7#########8
+
+cd ~/repos/basecamp/docker
+ls
+docker build . --file basecamp_Dockerfile --tag jeszyman/basecamp
+docker push jeszyman/basecamp
+#+end_src
+***** run docker interactively 
+  #+name: docker_interactive
+  #+begin_src bash :tangle ./src/functions.sh
+docker_interactive() {
+    if [ -f /.dockerenv ]; then
+        echo "shell already in docker, exiting"
+        exit 1
+    else
+        account="USER INPUT"
+        container="USER INPUT"
+        read -p "docker account name: " account
+        account="${account:=jeszyman}"
+        read -p "container name: " container
+        container="${container:=biotools}"
+        case $HOSTNAME in
+            (radonc-cancerbio) docker run -it \
+                                      --env HOME=${HOME} \
+                                      --hostname ${HOSTNAME} \
+                                      --user $(id -u ${USER}) \
+                                      --volume /home/:/home/ \
+                                      --volume /mnt/:/mnt/ \
+                                      --volume /tmp/:/tmp/ \
+                                      $account/$container \
+                                      /bin/bash;;
+            (acl*) docker run -it \
+                          --env HOME=${HOME} \
+                          --hostname ${HOSTNAME} \
+                          -v /drive3/:/drive3/ \
+                          -v /duo4/:/duo4/ \
+                          -v /home/:/home/ \
+                          -v /tmp/:/tmp/ \
+                          -u $(id -u ${USER}) \
+                          $account/$container \
+                          /bin/bash;;
+            (ACL*) docker run -it \
+                          --env HOME=${HOME} \
+                          --hostname ${HOSTNAME} \
+                          -v /home/:/home/ \
+                          -v /duo4/:/duo4/ \
+                          -u $(id -u ${USER}):$(id -g ${USER}) \
+                          $account/$container \
+                          /bin/bash;;
+            (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker($account/'"$container"')' /bin/bash;;
+            (*) docker run -it \
+                       --env HOME=/home/${USER} \
+                       --hostname ${HOSTNAME} \
+                       --user $(id -u ${USER}) \
+                       --volume /home/:/home/ \
+                       --volume /mnt/:/mnt/ \
+                       --volume /tmp/:/tmp/ \
+                       $account/$container \
+                       /bin/bash;;
+        esac
+    fi
+}
 #+end_src
 ***** Reference
   - [[file:~/repos/basecamp/Dockerfile]]

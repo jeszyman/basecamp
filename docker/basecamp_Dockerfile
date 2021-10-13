@@ -67,6 +67,11 @@ RUN apt-get install -qq --no-install-recommends emacs-snapshot
 #    texlive-full
 #
 
+RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
+    libcurl4-openssl-dev
+
+RUN apt-get install -qq --no-install-recommends r-base r-base-dev
+    
 # R CRAN Installs
 RUN R -e "install.packages(c('caret', \
                              'circularize', \
@@ -90,5 +95,4 @@ RUN R -e "install.packages(c('caret', \
                              'tidyverse', \
                              'UpSetR', \
                              'viridis'), \
-                             dependencies=TRUE, \
                              repos='http://cran.rstudio.com/')"
