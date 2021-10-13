@@ -67,9 +67,10 @@ RUN apt-get install -qq --no-install-recommends emacs-snapshot
 #    texlive-full
 #
 
-RUN apt-get install -yq --no-install-recommends --allow-unauthenticated --fix-missing \
-    libcurl4-openssl-dev
-
+RUN apt-get update -qq \
+	&& apt-get install -t unstable -y --no-install-recommends \
+        libcurl4-openssl-dev
+                
 RUN apt-get install -qq --no-install-recommends r-base r-base-dev
     
 # R CRAN Installs
