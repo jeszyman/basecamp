@@ -251,7 +251,8 @@ RUN apt-get install -qq --no-install-recommends emacs-snapshot
 #+begin_src fundamental :tangle ./docker/basecamp_Dockerfile
 RUN apt-get update -qq \
 	&& apt-get install -qq --no-install-recommends \
-        libcurl4-openssl-dev
+        libcurl4-openssl-dev \
+        libssl-dev
                 
 RUN apt-get install -qq --no-install-recommends r-base r-base-dev
     
