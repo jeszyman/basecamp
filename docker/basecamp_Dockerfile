@@ -68,7 +68,7 @@ RUN apt-get install -qq --no-install-recommends emacs-snapshot
 #
 
 RUN apt-get update -qq \
-	&& apt-get install -t unstable -y --no-install-recommends \
+	&& apt-get install -qq --no-install-recommends \
         libcurl4-openssl-dev
                 
 RUN apt-get install -qq --no-install-recommends r-base r-base-dev
