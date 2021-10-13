@@ -87,11 +87,8 @@ RUN R -e "install.packages(c('caret', \
                              'naniar', \
                              'pheatmap', \
                              'RColorBrewer', \
-                             'scales', \
                              'tidyverse', \
                              'UpSetR', \
                              'viridis'), \
                              dependencies=TRUE, \
                              repos='http://cran.rstudio.com/')"
-
-

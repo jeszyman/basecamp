@@ -5,112 +5,23 @@
 :LOGBOOK:
 CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 :END:  
-
+** Setup
 #+begin_src bash
-
-open(){
-    # Usage: check for parameters, return usage if empty
-    if [[ $# -eq 0 ]] || [[ $1 == "h" ]] ; then
-        printf "usage: open file\n 
-Opens files in programs based on file extention\n"
-        # Check extension and open         
-    elif [ "${1: -4}" == ".pdf" ] ;
-    then \okular "$1" &
-    elif [ "{1: -4}" == .xlsx ];
-    then \libreoffice "$1" & 
-    elif [ "${1: -4}" == ".docx" ];
-    then \libreoffice "$1" &                  
-    else
-        xdg-open "$1" 
-    fi
-}
-
+repo="/home/jeszyman/repos/basecamp"
+mkdir -p "${repo}/docker"
 #+end_src
-
-https://superuser.com/questions/1337257/clients-cant-create-symlinks-on-samba-share
 ** Processes
 :PROPERTIES:
 :ID:       2896cf35-9ccf-4533-b451-6b0f7a3bc91c
 :END:
-- 
-https://unix.stackexchange.com/questions/359832/converting-csv-to-tsv
+*** Miscellaneous
+- - The secret to using DDG is to pre-fix your query (!g for Google, !b for Bing and there are tons of other ones too) when DDG doesn't come up with something useful. This way you can use DDG kind of as the Swiss army knife of search engines.
+- https://unix.stackexchange.com/questions/359832/converting-csv-to-tsv
 - convert epub to pdf with calibre https://askubuntu.com/questions/299747/converting-epub-files-to-pdf-format
 *** Setups
 :PROPERTIES:
 :ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
 :END:
-**** Basecamp Docker
-:PROPERTIES:
-:ID:       c9327fad-4f38-4bbe-8b2e-58ad589fbdf6
-:END:
-- [[file:~/repos/basecamp/Dockerfile]]
-- build docker container
-  #+begin_src bash :tangle no
-buildDIR=~/repos/basecamp
-user=jeszyman
-repo=basecamp
-#########1#########2#########3#########4#########5#########6#########7#########8
-cd "$buildDIR"
-docker build . --file Dockerfile --tag "$user"/"$repo"
-docker push "$user"/"$repo"
-#+end_src
-- run docker interactively 
-  #+name: docker_interactive
-  #+begin_src bash :tangle ./src/functions.sh
-docker_interactive() {
-    if [ -f /.dockerenv ]; then
-        echo "shell already in docker, exiting"
-        exit 1
-    else
-        account="USER INPUT"
-        container="USER INPUT"
-        read -p "docker account name: " account
-        account="${account:=jeszyman}"
-        read -p "container name: " container
-        container="${container:=biotools}"
-        case $HOSTNAME in
-            (radonc-cancerbio) docker run -it \
-                                      --env HOME=${HOME} \
-                                      --hostname ${HOSTNAME} \
-                                      --user $(id -u ${USER}) \
-                                      --volume /home/:/home/ \
-                                      --volume /mnt/:/mnt/ \
-                                      --volume /tmp/:/tmp/ \
-                                      $account/$container \
-                                      /bin/bash;;
-            (acl*) docker run -it \
-                          --env HOME=${HOME} \
-                          --hostname ${HOSTNAME} \
-                          -v /drive3/:/drive3/ \
-                          -v /duo4/:/duo4/ \
-                          -v /home/:/home/ \
-                          -v /tmp/:/tmp/ \
-                          -u $(id -u ${USER}) \
-                          $account/$container \
-                          /bin/bash;;
-            (ACL*) docker run -it \
-                          --env HOME=${HOME} \
-                          --hostname ${HOSTNAME} \
-                          -v /home/:/home/ \
-                          -v /duo4/:/duo4/ \
-                          -u $(id -u ${USER}):$(id -g ${USER}) \
-                          $account/$container \
-                          /bin/bash;;
-            (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker($account/'"$container"')' /bin/bash;;
-            (*) docker run -it \
-                       --env HOME=/home/${USER} \
-                       --hostname ${HOSTNAME} \
-                       --user $(id -u ${USER}) \
-                       --volume /home/:/home/ \
-                       --volume /mnt/:/mnt/ \
-                       --volume /tmp/:/tmp/ \
-                       $account/$container \
-                       /bin/bash;;
-        esac
-    fi
-}
-#+end_src
-  
 **** My emacs IDEs
 :PROPERTIES:
 :ID:       2913d46c-63aa-4950-af70-a296a0a7a744
@@ -244,8 +155,14 @@ primeKeyUnique = function(df,pk){
 
 
 - https://www.google.com/search?q=R+check+hostname 
-- https://www.google.com/search?q=R+where+to+store+packages 
+- https://www.google.com/search?q=R+where+to+store+packages
+
+
+
 **** Basecamp bash setup
+:PROPERTIES:
+:ID:       426130a8-cc03-49a7-a35d-6a5db4b485c3
+:END:
 #+name: basecamp_bash_setup_wrapper
 #+begin_src bash :noweb yes
 <<docker_interactive>>
@@ -254,6 +171,180 @@ primeKeyUnique = function(df,pk){
 <<symlink-by-csv-script>>
 <<check_local_software>>        
 #+end_src
+**** Basecamp Docker
+:PROPERTIES:
+:ID:       c9327fad-4f38-4bbe-8b2e-58ad589fbdf6
+:END:
+- run docker interactively 
+  #+name: docker_interactive
+  #+begin_src bash :tangle ./src/functions.sh
+docker_interactive() {
+    if [ -f /.dockerenv ]; then
+        echo "shell already in docker, exiting"
+        exit 1
+    else
+        account="USER INPUT"
+        container="USER INPUT"
+        read -p "docker account name: " account
+        account="${account:=jeszyman}"
+        read -p "container name: " container
+        container="${container:=biotools}"
+        case $HOSTNAME in
+            (radonc-cancerbio) docker run -it \
+                                      --env HOME=${HOME} \
+                                      --hostname ${HOSTNAME} \
+                                      --user $(id -u ${USER}) \
+                                      --volume /home/:/home/ \
+                                      --volume /mnt/:/mnt/ \
+                                      --volume /tmp/:/tmp/ \
+                                      $account/$container \
+                                      /bin/bash;;
+            (acl*) docker run -it \
+                          --env HOME=${HOME} \
+                          --hostname ${HOSTNAME} \
+                          -v /drive3/:/drive3/ \
+                          -v /duo4/:/duo4/ \
+                          -v /home/:/home/ \
+                          -v /tmp/:/tmp/ \
+                          -u $(id -u ${USER}) \
+                          $account/$container \
+                          /bin/bash;;
+            (ACL*) docker run -it \
+                          --env HOME=${HOME} \
+                          --hostname ${HOSTNAME} \
+                          -v /home/:/home/ \
+                          -v /duo4/:/duo4/ \
+                          -u $(id -u ${USER}):$(id -g ${USER}) \
+                          $account/$container \
+                          /bin/bash;;
+            (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker($account/'"$container"')' /bin/bash;;
+            (*) docker run -it \
+                       --env HOME=/home/${USER} \
+                       --hostname ${HOSTNAME} \
+                       --user $(id -u ${USER}) \
+                       --volume /home/:/home/ \
+                       --volume /mnt/:/mnt/ \
+                       --volume /tmp/:/tmp/ \
+                       $account/$container \
+                       /bin/bash;;
+        esac
+    fi
+}
+#+end_src
+***** Write Dockerfile
+#+begin_src fundamental :tangle ./docker/basecamp_Dockerfile
+FROM ubuntu:bionic
+
+#
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=America/Chicago
+
+#
+RUN apt-get update --fix-missing -yq
+#
+RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
+    build-essential \
+    bzip2 \
+    cifs.utils \
+    cmake \
+    dirmngr \
+    gcc \
+    git \
+    gnupg \
+    libfftw3-dev \
+    locales \
+    nano \
+    parallel \
+    software-properties-common \
+    wget
+
+#
+RUN apt-get autoremove -y && \
+    apt-get autoclean -y && \
+    apt-get clean
+#
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen
+ENV LANG en_US.UTF-8  
+ENV LANGUAGE en_US:en  
+ENV LC_ALL en_US.UTF-8    
+
+#
+RUN cd /tmp && wget --no-check-certificate https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh
+RUN bash /tmp/Miniconda3-4.3.21-Linux-x86_64.sh -b -p /opt/miniconda
+ENV PATH="/opt/miniconda/bin:${PATH}"
+
+#########1#########2#########3#########4#########5#########6#########7#########8
+#
+# R install 
+# import the signing key (by Michael Rutter) for these repo
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+# add the R 4.0 repo from CRAN -- adjust 'focal' to 'groovy' or 'bionic' as needed
+RUN add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
+#
+RUN apt-get install -qq --no-install-recommends r-base r-base-dev
+
+ENV PATH="/usr/bin:${PATH}"
+RUN echo 'local({r <- getOption("repos"); r["CRAN"] <- "http://cran.r-project.org"; options(repos=r)})' > ~/.Rprofile
+RUN R -e "install.packages('devtools')"
+RUN Rscript -e 'install.packages(c("tidyverse", "git2r", "stringr", "devtools", "optparse", "plyr"), repos = c(CRAN="http://cran.rstudio.com"))'
+
+#
+## Emacs Snapshot
+RUN apt-get install -qq --no-install-recommends software-properties-common
+RUN add-apt-repository ppa:ubuntu-elisp/ppa
+RUN apt-get update
+RUN apt-get install -qq --no-install-recommends emacs-snapshot
+#
+# Above built 2020-12-10
+# Dev 
+# Ideas
+#    texlive-full
+#
+
+
+#+end_src
+#+begin_src fundamental :tangle ./docker/basecamp_Dockerfile
+# R CRAN Installs
+RUN R -e "install.packages(c('caret', \
+                             'circularize', \
+                             'cowplot', \
+                             'cutpointr', \
+                             'data.table', \
+                             'FSA', \
+                             'ggplot2', \
+                             'ggpval', \
+                             'ggpubr', \
+                             'ggsci', \
+                             'ggvenn', \
+                             'ggrepel', \
+                             'grid', \
+                             'gridExtra', \
+                             'Hmisc', \
+                             'kableExtra', \
+                             'naniar', \
+                             'pheatmap', \
+                             'RColorBrewer', \
+                             'tidyverse', \
+                             'UpSetR', \
+                             'viridis'), \
+                             dependencies=TRUE, \
+                             repos='http://cran.rstudio.com/')"
+
+#+end_src
+
+***** Build docker container
+#+begin_src bash :tangle no
+buildDIR=~/repos/basecamp
+user=jeszyman
+repo=basecamp
+#########1#########2#########3#########4#########5#########6#########7#########8
+cd "$buildDIR"
+docker build . --file Dockerfile --tag "${user}/${repo}"
+docker push "${user}/${repo}"
+#+end_src
+***** Reference
+  - [[file:~/repos/basecamp/Dockerfile]]
 ** R Statistical Computing                                           :career:
 :PROPERTIES:
 :ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
@@ -277,9 +368,13 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
+https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply
 https://little-books-of-r.readthedocs.io/en/latest/
 https://stackoverflow.com/questions/44066117/convert-data-frame-to-reference-class-object-in-r
 *** Local YAS
+:PROPERTIES:
+:ID:       d013547e-3e14-4510-948a-4b24de6a2e62
+:END:
 #+name: r.script
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/r.script
 # -*- mode: snippet -*-
@@ -299,6 +394,18 @@ https://stackoverflow.com/questions/44066117/convert-data-frame-to-reference-cla
 # Commands                                                           
 #+end_src
 
+#+name: r.function
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/r.function
+# -*- mode: snippet -*-
+# key: r.function
+# expand-env: ((yas-indent-line 'fixed))
+# --
+${1:FUNCTION NAME} = function(${2:VARIABLE LIST}){
+  # ${3:DESCRIPTION}
+  $0
+}
+#+end_src
+
 *** Processes and Applications
 :PROPERTIES:
 :ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
@@ -313,6 +420,9 @@ CLOCK: [2021-06-04 Fri 10:17]--[2021-06-04 Fri 10:25] =>  0:08
   - https://stackoverflow.com/questions/23678691/converting-a-text-file-into-a-vector-in-r
     - https://www.google.com/search?q=R+import+file+as+vector
 **** Working with system variables
+:PROPERTIES:
+:ID:       e83e96d2-1942-4913-ba3f-a9351fa99b42
+:END:
 - https://www.google.com/search?q=get+hostname+in+R  
 #+begin_src R
 as.character(Sys.info()["nodename"])
@@ -710,6 +820,7 @@ df
 :PROPERTIES:
 :ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
 :END:
+https://cran.r-project.org/web/packages/ggfun/vignettes/ggfun.html
 http://rich-iannone.github.io/DiagrammeR/docs.html
 
 - https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html
@@ -849,6 +960,7 @@ myft
 :PROPERTIES:
 :ID:       419ba6f0-4977-4eed-9d25-93a45933ad56
 :END:
+- https://stackoverflow.com/questions/6324568/function-commenting-conventions-in-r
 - Rscript format best practices
   - Differentiate working and testing sections 
 - Style guides
@@ -864,6 +976,9 @@ myft
     - after comma
   - variable_names_with_underscore 
 - R style guides
+  - https://www.r-bloggers.com/2018/09/r-code-best-practices/
+  - https://swcarpentry.github.io/r-novice-inflammation/06-best-practices-R/
+  - https://style.tidyverse.org/index.html
   - http://adv-r.had.co.nz/Style.html
   - https://journal.r-project.org/archive/2012/RJ-2012-018/RJ-2012-018.pdf
   - https://www.r-bloggers.com/consistent-naming-conventions-in-r/
@@ -1021,6 +1136,7 @@ rsconnect::setAccountInfo(name='jeszyman', token='7D5593D7025B8BECC9FFBBD2D9AA4D
 :LOGBOOK:
 CLOCK: [2020-07-29 Wed 11:00]--[2020-07-29 Wed 11:20] =>  0:20
 :END:
+- https://magrittr.tidyverse.org/reference/tee.html
 - https://b-rodrigues.github.io/modern_R/
 - https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
 - processes
@@ -1062,6 +1178,7 @@ CLOCK: [2020-07-29 Wed 11:00]--[2020-07-29 Wed 11:20] =>  0:20
 ***** dplyr
 :PROPERTIES:
 :CREATED:  [2021-09-13 Mon 09:31]
+:ID:       7881202e-7d7a-4bb5-99b8-a0327ce14020
 :END:
 - https://www.google.com/search?q=dplyr+rename+columns 
 **** bioconductor
@@ -1673,16 +1790,19 @@ CLOCK: [2018-12-12 Wed 16:31]--[2018-12-12 Wed 16:32] =>  0:01
 CLOCK: [2018-12-12 Wed 15:47]--[2018-12-12 Wed 16:29] =>  0:42
 :END:
 ***** Sqlite in org-mode
+:PROPERTIES:
+:ID:       4cc925c0-28b0-4234-9f97-3e18dd52a871
+:END:
 - Processes
   - Import
     - From org-table
-      #+begin_src sqlite :db /tmp/test :var orgtable=materials :colnames yes :results replace
+      ;;#+begin_src sqlite :db /tmp/test :var orgtable=materials :colnames yes :results replace
   drop table if exists materials;
   create table materials(material_id character, location_id charcter);
   .mode csv materials
   .import $orgtable materials
   SELECT material_id, COUNT(*) c FROM materials GROUP BY material_id HAVING c > 1;
-  #+end_src
+  ;;#+end_src
     - From File
       #+begin_src sqlite :db /tmp/test :results replace
 drop table if exists materials;
@@ -1701,10 +1821,16 @@ SELECT DataId, COUNT(*) c FROM DataTab GROUP BY DataId HAVING c > 1;
 #+end_src
   - Write to table
 ***** Processes
+:PROPERTIES:
+:ID:       8e173015-aa21-4844-ab0b-90fbf7153e49
+:END:
 - https://stackoverflow.com/questions/1777257/how-do-you-create-a-yes-no-boolean-field-in-sql-server
 - https://www.google.com/search?q=sql+field+with+long+text+string 
 
 ***** Platforms and interfaces
+:PROPERTIES:
+:ID:       04487e7f-7cb0-4e29-8911-9f0c40540ccf
+:END:
 - http://www.eliacom.com/mysql-gui-index.php
 - http://www.sequelpro.com/
 - mysql
@@ -1718,6 +1844,9 @@ SELECT DataId, COUNT(*) c FROM DataTab GROUP BY DataId HAVING c > 1;
   - reset with https://stackoverflow.com/questions/4359131/brew-install-mysql-on-mac-os/33924648#33924648
   - [[https://stackoverflow.com/questions/15450091/for-a-newbie-error-2002-hy000-cant-connect-to-local-mysql-server-through-so][ERROR 2002]]
 ***** General reference
+:PROPERTIES:
+:ID:       4a93af22-b67c-4c3b-964b-dd8279bd50e2
+:END:
 - https://www.freecodecamp.org/news/learn-to-use-the-mysql-database/
 - https://bofh.org.uk/2019/02/25/baking-with-emacs/
 - guides
@@ -2719,7 +2848,7 @@ CLOCK: [2017-04-18 Tue 11:17]--[2017-04-18 Tue 11:28] =>  0:11
 :ID:       CB567192-D35F-4202-87D9-3E05A48E826F
 :END:
 
-#+BEGIN_SRC python :eval query :results output
+#+BEGIN_SRC python 
 # Ask for the number and store it in userNumber
 userNumber = raw_input('Give me an integer number: ')
 
@@ -2741,7 +2870,7 @@ print 'The square of your number is: ' + str(userNumber)
 
 #+RESULTS:
 
-#+BEGIN_SRC emacs-lisp :eval query
+#+BEGIN_SRC emacs-lisp
 (+ 3 4)
 
 ; printing
@@ -3127,6 +3256,8 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - [[- https://www.xpdfreader.com/pdftotext-man.html][pdftotext]]
 - pigz
   - https://zlib.net/pigz/
+- samba share
+  - - https://superuser.com/questions/1337257/clients-cant-create-symlinks-on-samba-share
 - rsync
   - [[https://rsync.samba.org/]]
   - commands
@@ -3173,8 +3304,6 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
   - https://www.google.com/search?q=bash+find+and+delete 
   - https://www.google.com/search?q=bash+find+by+date
     - https://stackoverflow.com/questions/158044/how-to-use-find-to-search-for-files-created-on-a-specific-date  
-- make
-  - tutorial https://github.com/kyclark/make-tutorial
 - printf
   - [[https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo][printf vs echo]]
 - coreutils
@@ -3183,6 +3312,7 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - nohup
   - https://unix.stackexchange.com/questions/373461/open-less-scrolled-to-the-end
 - gnu parallel
+  - https://stackoverflow.com/questions/36042951/feed-gnu-parallel-with-an-array
   - https://www.msi.umn.edu/support/faq/how-can-i-use-gnu-parallel-run-lot-commands-parallel
   - https://www.biostars.org/p/63816/
   - https://www.biostars.org/p/216905/
@@ -3193,7 +3323,13 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
     - AND SET -O !!
   - download in background & resume broke  wget -bqc <PATH>
   - clobber = overwrite
+****** make
+- tutorial https://github.com/kyclark/make-tutorial
+- http://blog.byronjsmith.com/makefile-shortcuts.html  
 ****** gawk
+:PROPERTIES:
+:ID:       ec6a8328-2003-48ce-b8d0-fd11252d75cd
+:END:
 - awk
 - [[https://stackoverflow.com/questions/47091464/print-for-loop-input-filename-on-piped-awk-output][file name as variable]]
 - commands
@@ -3328,6 +3464,7 @@ CLOCK: [2017-06-23 Fri 19:05]--[2017-06-23 Fri 19:35] =>  0:30
 CLOCK: [2018-06-27 Wed 11:59]--[2018-06-27 Wed 12:49] =>  0:50
 CLOCK: [2017-11-28 Tue 18:30]--[2017-11-28 Tue 19:30] =>  1:00
 :END:
+https://www.reddit.com/r/datascience/comments/ps1ysk/1st_attempt_algorithm_selection_flowchart/
 https://www.3blue1brown.com/
 - https://meta.stackoverflow.com/questions/404799/lets-gift-wrap-our-good-machine-learning-theory-questions-for-cross-validated?noredirect=1#comment822113_404799
 - https://www.google.com/search?q=machine+learning+train+validate+test+split+sizes 
@@ -4114,6 +4251,7 @@ optimized lambda strikes balance of coeffienct bias and optimized likelihood
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
+- https://unix.stackexchange.com/questions/28803/how-can-i-reduce-a-videos-size-with-ffmpeg/491918
 - https://superuser.com/questions/130260/how-to-update-google-chrome-in-ubuntu
 - capture screen to gif
   - https://www.cockos.com/licecap/
@@ -4492,6 +4630,9 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
   - reverting
     - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
     - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
+  - hooks
+    - file size limit hook
+      
   - file comparisons
     - https://doc.ubuntu-fr.org/meld
   - removing files
@@ -6270,6 +6411,10 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - X11
   - https://www.windowmaker.org/
 ****** gunzip / gzip
+:PROPERTIES:
+:ID:       ac06809f-10b9-4b79-98f6-7ed6fb5f9232
+:END:
+- https://www.google.com/search?q=gzip+force 
 - https://www.google.com/search?q=gunzip+keep+source 
 ***** Linux                                                        :software:career:
 :PROPERTIES:
@@ -6761,6 +6906,9 @@ CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
 **** Docker-related bash functions
+:PROPERTIES:
+:ID:       ecdf5e8f-88ce-4760-b48b-c75d4887b48a
+:END:
   - build command examples
     #+name: docker_build
     #+begin_src bash :tangle no
@@ -6931,7 +7079,13 @@ cd
 docker run jeszyman/test
 #+end_src
 **** [[id:14a1f321-73c7-4dbb-be33-f7377ae38cdd][LINK TO Research Infrastructure Services (RIS)]]
+:PROPERTIES:
+:ID:       7f8dbd62-2a75-424f-93c4-320216d8f556
+:END:
 **** Processes
+:PROPERTIES:
+:ID:       e209c427-c926-4a90-bbfe-38ee396db4be
+:END:
 - https://stackoverflow.com/questions/16296753/can-you-run-gui-applications-in-a-docker-container/50356450#50356450
 - setup chown https://stackoverflow.com/questions/26500270/understanding-user-file-ownership-in-docker-how-to-avoid-changing-permissions-o
 - install
@@ -6975,6 +7129,9 @@ docker run --rm -p 6379:6379 <CONTAINER>
 - Host management
   - https://www.google.com/search?q=docker+cleanup
 **** Platform
+:PROPERTIES:
+:ID:       c2748bca-6dd1-458c-b58c-4e1b00324cb8
+:END:
 - interfaces
   - https://github.com/JAremko/docker-emacs
   - https://github.com/Silex/docker.el
@@ -6982,6 +7139,9 @@ docker run --rm -p 6379:6379 <CONTAINER>
   - https://github.com/emacs-ess/ESS/issues/928
   - https://gtown-ds.netlify.app/2017/08/16/docker-emacs/
 **** [[https://docs.docker.com/][documentation]]
+:PROPERTIES:
+:ID:       f7b90ca1-9031-44f0-9fe5-f93be64601f2
+:END:
   - https://docs.docker.com/engine/faq/
   - https://docs.docker.com/get-started/
     - https://docs.docker.com/get-started/#images-and-containers
@@ -6995,6 +7155,9 @@ docker run --rm -p 6379:6379 <CONTAINER>
   - https://www.reddit.com/r/docker/comments/8s8n3o/heres_a_bunch_of_docker_best_practices_that_i/
   - https://tecadmin.net/tutorial/docker/docker-tutorials/
 ***** commands
+:PROPERTIES:
+:ID:       64925e52-24af-40e9-b5bd-50596c658ca0
+:END:
   |-----------------------------+-----------------------------------|
   | function                    | command                           |
   |-----------------------------+-----------------------------------|
@@ -7030,6 +7193,9 @@ docker run --rm -p 6379:6379 <CONTAINER>
         - --rm removes container on exit
         - -ti: pseudodotty terminal
 **** Local YAS
+:PROPERTIES:
+:ID:       b477cbfd-b5fe-4297-9429-584de1f21144
+:END:
 :LOGBOOK:
 CLOCK: [2021-08-26 Thu 07:31]--[2021-08-26 Thu 08:01] =>  0:30
 :END:
@@ -7076,6 +7242,9 @@ docker run \
 
 
 **** General reference
+:PROPERTIES:
+:ID:       69c4be02-d479-4228-8040-eaaef924436e
+:END:
 - https://www.freecodecamp.org/news/the-docker-handbook/
 - https://stackoverflow.com/questions/29480099/whats-the-difference-between-docker-compose-vs-dockerfile
 - cite:boettiger2015 
@@ -7119,6 +7288,9 @@ docker run \
   - https://www.reddit.com/r/docker/comments/cwe2bt/a_handy_dockercompose_commands_and_examples/
 - Docker on [[file:~/Box%20Sync/org/career.org::*McDonnell%20Genome%20Institute%20(MGI)][MGI Cluster]] 
 **** Ideas
+:PROPERTIES:
+:ID:       0b80b89d-120f-41ae-9564-457c4da7b3d7
+:END:
 - add multiple R versions
   - https://support.rstudio.com/hc/en-us/articles/215488098-Installing-multiple-versions-of-R
   - https://stackoverflow.com/questions/24019503/installing-multiple-versions-of-r
@@ -7222,6 +7394,8 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
+https://www.freecodecamp.org/news/how-to-automate-things-using-python/
+https://www.freecodecamp.org/news/django-for-everybody-learn-the-popular-python-framework-from-dr-chuck/
 https://mail.google.com/mail/u/0/#inbox/FMfcgzGljlpbmJWmVflTGmjkrfTgvCXr
 https://mostateparks.com/park/onondaga-cave-state-park
 https://github.com/norvig/pytudes/blob/main/ipynb/risk.ipynb
@@ -7621,6 +7795,9 @@ CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
 :END:
 - https://www.google.com/search?q=bash+check+if+on+vpn 
 ****** Open files based on type
+:PROPERTIES:
+:ID:       53e79bac-0644-464e-a28b-cd582cadaa5c
+:END:
 #+name: open_choose
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/open_choose
 # -*- mode: snippet -*-
@@ -8281,7 +8458,13 @@ pandoc -S $test | xclip -selection clipboard
 - logging
   - https://stackoverflow.com/questions/18278223/method-to-write-in-log-files-in-a-shell-script
 ***** [[id:BDC42DA2-A632-4FB7-A586-E100B2A045DC][LINK TO UNIX-based operating systems]]
+:PROPERTIES:
+:ID:       2278bc16-9d3e-4170-9bca-a532461040c7
+:END:
 ***** [[id:76c4836c-fe3f-4948-86dd-25d8df38d1af][LINK TO GNU tools]]
+:PROPERTIES:
+:ID:       c8f1896c-b330-4a6e-bec7-2b7a55a46987
+:END:
 ***** General reference
 :PROPERTIES:
 :ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
