@@ -94,7 +94,13 @@ RUN R -e "install.packages(c('caret', \
                              'naniar', \
                              'pheatmap', \
                              'RColorBrewer', \
-                             'tidyverse', \
                              'UpSetR', \
                              'viridis'), \
                              repos='http://cran.rstudio.com/')"
+
+RUN apt-get update -qq \
+	&& apt-get install -qq --no-install-recommends \
+        libxml2-dev
+
+                  
+RUN R -e "install.packages('tidyverse',repos='http://cran.rstudio.com/')"
