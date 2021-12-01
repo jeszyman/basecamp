@@ -404,6 +404,10 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
+http://r4ds.had.co.nz/
+https://beep-boopr.github.io/ubcBIOL548L/articles/group-03_Using-cowplot-multi-panel.html
+- https://stackoverflow.com/questions/20934103/if-file-exists-in-folder-read-it-else-skip-the-processing-part
+
 https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply
 https://little-books-of-r.readthedocs.io/en/latest/
 https://stackoverflow.com/questions/44066117/convert-data-frame-to-reference-class-object-in-r
@@ -1322,6 +1326,7 @@ CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
 CLOCK: [2021-06-04 Fri 08:50]--[2021-06-04 Fri 09:53] =>  1:03
 CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 :END:
+- https://www.dataquest.io/
 https://www.reddit.com/r/datascience/comments/qore0i/what_is_something_you_took_the_time_to_learn_that/
 - https://www.storytellingwithdata.com/
 - https://www.reddit.com/r/datascience/comments/q9xejd/csv_alternative_with_type_information/
@@ -3314,6 +3319,11 @@ CLOCK: [2019-02-06 Wed 16:12]--[2019-02-06 Wed 17:05] =>  0:53
   - http://fredhutchio.github.io/intro-bioinformatics/06-python-oop.html#/now-lets-add-some-functionality
 - [[https://www.gnu.org/prep/standards/standards.html][GNU Coding Standards]]
 - https://x-team.com/blog/programming-best-practices/
+**** Document markup langugaes
+***** YAML
+:PROPERTIES:
+:ID:       2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5
+:END:
 **** General reference
 :PROPERTIES:
 :ID:       48dfc684-aa60-4222-8641-d1646b3451be
@@ -3383,22 +3393,6 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
-- https://www.freecodecamp.org/news/how-to-automate-things-using-python/
-- https://www.freecodecamp.org/news/django-for-everybody-learn-the-popular-python-framework-from-dr-chuck/
-- https://mail.google.com/mail/u/0/#inbox/FMfcgzGljlpbmJWmVflTGmjkrfTgvCXr
-- https://mostateparks.com/park/onondaga-cave-state-park
-- https://github.com/norvig/pytudes/blob/main/ipynb/risk.ipynb
-- https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
-- https://www.reddit.com/r/bioinformatics/comments/n4i9f4/how_to_learn_python_from_scratch_for/
-- Standards and best practices
-  - [[https://www.python.org/dev/peps/pep-0008/][PEP 8]]
-- https://www.freecodecamp.org/news/exploratory-data-analysis-with-numpy-pandas-matplotlib-seaborn/
-- https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
-- https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
-- https://www.dataquest.io/
-- https://www.freecodecamp.org/news/the-python-handbook/
-- https://stackoverflow.blog/2021/02/23/level-up-mastering-statistics-with-python-part-2/?cb=1&_ga=2.59352485.940265309.1614263567-766544545.1565628865
-- https://www.youtube.com/watch?v=GPVsHOlRBBI&ab_channel=freeCodeCamp.org
 ****** Local YAS
 #+name: code.py
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.py
@@ -3410,15 +3404,142 @@ CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 $0            
 ,#+end_src            
 #+end_src
-
-#+begin_src python
-            
-#+end_src
-
 ****** Processes
-- install package
+- Get variable type https://www.google.com/search?q=python+get+variable+type type()
+- Probability and statistics 
+  - https://stackoverflow.blog/2021/02/23/level-up-mastering-statistics-with-python-part-2/?cb=1&_ga=2.59352485.940265309.1614263567-766544545.1565628865
+- Install package
   - https://www.google.com/search?q=python+install+pandas 
-****** interfaces, platforms, and IDEs
+****** Packages
+:PROPERTIES:
+:ID:       7facb855-05a8-4cc5-b61e-cc3112251524
+:END:
+- https://seaborn.pydata.org/generated/seaborn.barplot.html#seaborn.barplot
+- https://www.reddit.com/r/datascience/comments/itzylb/the_numpy_paper_is_out_nature_open_access_paper/
+- https://www.selenium.dev/
+- https://www.reddit.com/r/datascience/comments/f6xk72/for_any_python_pandas_users_out_there_heres_a/
+- packages
+- package management
+  - pip
+  - conda
+    - - https://stackoverflow.com/questions/51526503/why-does-base-appear-in-my-anaconda-command-prompt
+    - "Conda is a packaging tool and installer that aims to do more than what pip does; handle library dependencies outside of the Python packages as well as the Python packages themselves. Conda also creates a virtual environment, like virtualenv does" https://stackoverflow.com/questions/20994716/what-is-the-difference-between-pip-and-conda
+    - https://www.google.com/search?q=python+conda
+- [[id:BFB941F1-990D-4328-9609-CF480DCF945B][NLTK]]
+- matplotlib
+  - https://github.com/io99/Resources
+- Package installation and management
+  - pip
+    - [[https://pip.pypa.io/en/stable/][Documentation]]
+    - pip freeze to see installed packages
+- scikit for machine learning
+  - http://scikit-learn.org/stable/index.html
+  - https://www.kdnuggets.com/2019/02/introduction-scikit-learn-gold-standard-python-machine-learning.html
+- sciPy
+  - numPy
+    - [[https://docs.scipy.org/doc/numpy-1.12.0/index.html][Manual]]
+  - pandas
+    - for dashborads https://github.com/JosPolfliet/pandas-profiling
+- BioPython
+  - https://github.com/peterjc/biopython_workshop
+  - http://pythonforbiologists.com/index.php/introduction-to-python-for-biologists/
+  - http://biopython.org/wiki/Main_Page
+  - http://biopython.org/wiki/SeqIO 
+- [[https://github.com/pandas-dev/pandas/blob/master/doc/cheatsheet/Pandas_Cheat_Sheet.pdf][github: pandas cheatsheet]]
+- installing packages/modules
+  - pip install is preferred
+- [[http://biopython.org/DIST/docs/tutorial/Tutorial.html][Biopython Tutorial]]
+- [[http://www.androidxu.com/2017/04/python-pandas-tutorial-with-example.html][Beginners Pandas Getting Started]]
+- https://github.com/JosPolfliet/pandas-profiling
+- [[http://conference.scipy.org/proceedings/scipy2015/allen_downey.html][scipy2015 conference]]
+- [[file:~/Box%20Sync/comp_bio/Huber,14%20Orchestrating%20high%20throughput%20genomic%20analysis%20with%20bioconductor.pdf][Huber,14 Orchestrating high throughput genomic analysis with bioconductor]]
+- Get list of installed packages with pip freeze
+- [[https://pypi.org/][Python Package Index]]
+- https://github.com/mstamy2/PyPDF2
+******* pandas
+- Reference
+- Processes
+  - https://www.google.com/search?q=pandas+filter+column 
+  - https://www.google.com/search?q=pandas+import+csv 
+  - https://www.google.com/search?q=pandas+column+to+list 
+- https://towardsdatascience.com/how-to-learn-pandas-108905ab4955
+- [[https://github.com/pandas-profiling/pandas-profiling][pandas-profiling]]
+******* [[http://www.nltk.org][NLTK]]
+:PROPERTIES:
+:CREATED:  [2019-02-19 Tue 11:02]
+:ID:       BFB941F1-990D-4328-9609-CF480DCF945B
+:END:
+
+******** [[http://www.nltk.org/book/][NLTK Book]]
+:PROPERTIES:
+:CREATED:  [2019-02-19 Tue 11:03]
+:ID:       CCF2B40B-47EE-4D26-9FC3-E1A0EC6F1974
+:END:
+:LOGBOOK:
+CLOCK: [2019-02-19 Tue 11:31]--[2019-02-19 Tue 12:00] =>  1:33
+CLOCK: [2019-02-19 Tue 11:04]--[2019-02-19 Tue 11:25] =>  0:21
+:END:
+1. Preface
+  - 
+3. Language Processing and Python
+4. Accessing Text Corpora and Lexical Resources
+5. Processing Raw Text
+6. Writing Structured Programs
+7. Categorizing and Tagging Words (minor fixes still required)
+8. Learning to Classify Text
+9. Extracting Information from Text
+10. Analyzing Sentence Structure
+11. Building Feature Based Grammars
+12. Analyzing the Meaning of Sentences (minor fixes still required)
+13. Managing Linguistic Data (minor fixes still required)
+14. Afterword: Facing the Language Challenge
+
+****** Reference
+- https://www.freecodecamp.org/news/how-to-automate-things-using-python/
+- Examples
+  - Python notebook projects
+    - https://github.com/norvig/pytudes/blob/main/ipynb/risk.ipynb
+- https://www.reddit.com/r/bioinformatics/comments/n4i9f4/how_to_learn_python_from_scratch_for/
+- Standards and best practices
+  - [[https://www.python.org/dev/peps/pep-0008/][PEP 8]]
+- https://www.freecodecamp.org/news/the-python-handbook/
+- [[https://www.youtube.com/watch?v=GPVsHOlRBBI&ab_channel=freeCodeCamp.org][free code camp data analysis]]
+******* tutorials, courses, learning resources, best practices
+:PROPERTIES:
+:ID:       f6377a77-334d-4084-82df-9c50bd605af9
+:END:
+- https://www.freecodecamp.org/news/django-for-everybody-learn-the-popular-python-framework-from-dr-chuck/
+
+- https://www.freecodecamp.org/news/exploratory-data-analysis-with-numpy-pandas-matplotlib-seaborn/
+
+- https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/
+- [[https://www.edx.org/course/statistics-and-probability-in-data-science-using-python][edX stats with python]]
+- Learning resources
+  - [[https://www.reddit.com/r/datascience/comments/7u4c05/python_tools_that_everyone_should_know_about/][reddit: data science python tools that everyone should know about]]
+  - Python books
+    - cite:urban2016murachs
+    - [[http://openbookproject.net/thinkcs/python/english3e/][How to think like a computer scientist]]
+  - courses
+    - [[http://bafflednerd.com/category/learn-analytics/][Baffled Nerd: Online python courses]]
+    - [[https://www.udemy.com/the-python-mega-course/learn/v4/overview][Udemy python megacourse]]
+  - [[https://www.datacamp.com/courses/network-analysis-in-python-part-1?utm_source=adwords_ppc&utm_campaignid=898687156&utm_adgroupid=48303643819&utm_device=c&utm_keyword=&utm_matchtype=b&utm_network=g&utm_adpostion=1t1&utm_creative=229335520231&utm_targetid=dsa-377762271983&utm_loc_interest_ms=&utm_loc_physical_ms=9060420&gclid=Cj0KCQiAl8rQBRDrARIsAEW_To9A6evIhhajnoTZrssSRA70JFF7i5pPvlMXV-ixMnrpXZQgRSuKAX0aAvp9EALw_wcB][DataCamp Network Analysis in Python (Part 1)]]
+  - https://www.coursera.org/learn/python
+  - http://www.pythonlearn.com/
+- Rougier 
+  - [[https://www.labri.fr/perso/nrougier/from-python-to-numpy/][book- from python to numpy]] and associated [[https://github.com/rougier/from-python-to-numpy][github]]
+  - [[http://www.labri.fr/perso/nrougier/teaching/matplotlib/matplotlib.html][matplotlib tutorial]]
+- cite:sweigart2015
+- [[https://www.python.org/dev/peps/pep-0008/][PEP 8 -- Style Guide for Python Code]]
+- https://wiki.python.org/moin/BeginnersGuide/Programmers
+- [[https://github.com/JulianGaal/python-cheat-sheet][github: python cheatsheet]]
+- https://google.github.io/styleguide/pyguide.html
+- https://realpython.com/podcasts/rpp/8/
+- https://www.tutorialspoint.com/python/python_command_line_arguments.htm
+- https://www.simple-is-better.org/template/pyratemp.html
+- https://drive.google.com/drive/folders/0ByIrJAE4KMTtaGhRcXkxNHhmY2M
+- https://www.simple-is-better.org/template/pyratemp.html
+- https://en.m.wikipedia.org/wiki/Zen_of_Python
+****** Interfaces, platforms, and IDEs
 :PROPERTIES:
 :ID:       7db4987d-0daa-4d58-8660-37fbe566d8be
 :END:
@@ -3469,36 +3590,6 @@ $0
   - https://github.com/lambdalisue/jupyter-vim-binding
 - visual studio- https://code.visualstudio.com/docs/python/python-tutorial
 ******* [[id:79cc7fdf-5e4b-4d3a-ace2-60cae707f81b][LINK TO elpy]]
-****** tutorials, courses, learning resources, best practices
-:PROPERTIES:
-:ID:       f6377a77-334d-4084-82df-9c50bd605af9
-:END:
-- [[https://www.edx.org/course/statistics-and-probability-in-data-science-using-python][edX stats with python]]
-- Learning resources
-  - [[https://www.reddit.com/r/datascience/comments/7u4c05/python_tools_that_everyone_should_know_about/][reddit: data science python tools that everyone should know about]]
-  - Python books
-    - cite:urban2016murachs
-    - [[http://openbookproject.net/thinkcs/python/english3e/][How to think like a computer scientist]]
-  - courses
-    - [[http://bafflednerd.com/category/learn-analytics/][Baffled Nerd: Online python courses]]
-    - [[https://www.udemy.com/the-python-mega-course/learn/v4/overview][Udemy python megacourse]]
-  - [[https://www.datacamp.com/courses/network-analysis-in-python-part-1?utm_source=adwords_ppc&utm_campaignid=898687156&utm_adgroupid=48303643819&utm_device=c&utm_keyword=&utm_matchtype=b&utm_network=g&utm_adpostion=1t1&utm_creative=229335520231&utm_targetid=dsa-377762271983&utm_loc_interest_ms=&utm_loc_physical_ms=9060420&gclid=Cj0KCQiAl8rQBRDrARIsAEW_To9A6evIhhajnoTZrssSRA70JFF7i5pPvlMXV-ixMnrpXZQgRSuKAX0aAvp9EALw_wcB][DataCamp Network Analysis in Python (Part 1)]]
-  - https://www.coursera.org/learn/python
-  - http://www.pythonlearn.com/
-- Rougier 
-  - [[https://www.labri.fr/perso/nrougier/from-python-to-numpy/][book- from python to numpy]] and associated [[https://github.com/rougier/from-python-to-numpy][github]]
-  - [[http://www.labri.fr/perso/nrougier/teaching/matplotlib/matplotlib.html][matplotlib tutorial]]
-- cite:sweigart2015
-- [[https://www.python.org/dev/peps/pep-0008/][PEP 8 -- Style Guide for Python Code]]
-- https://wiki.python.org/moin/BeginnersGuide/Programmers
-- [[https://github.com/JulianGaal/python-cheat-sheet][github: python cheatsheet]]
-- https://google.github.io/styleguide/pyguide.html
-- https://realpython.com/podcasts/rpp/8/
-- https://www.tutorialspoint.com/python/python_command_line_arguments.htm
-- https://www.simple-is-better.org/template/pyratemp.html
-- https://drive.google.com/drive/folders/0ByIrJAE4KMTtaGhRcXkxNHhmY2M
-- https://www.simple-is-better.org/template/pyratemp.html
-- https://en.m.wikipedia.org/wiki/Zen_of_Python
 ****** applications
 :PROPERTIES:
 :ID:       25602177-b0aa-4c5a-8a54-c74a872b7ef5
@@ -3562,87 +3653,6 @@ rx_dict = {
 :END:
   - functions
     - https://www.datacamp.com/community/tutorials/functions-python-tutorial
-****** packages
-:PROPERTIES:
-:ID:       7facb855-05a8-4cc5-b61e-cc3112251524
-:END:
-- https://seaborn.pydata.org/generated/seaborn.barplot.html#seaborn.barplot
-- https://www.reddit.com/r/datascience/comments/itzylb/the_numpy_paper_is_out_nature_open_access_paper/
-- https://www.selenium.dev/
-- pandas
-  - 
-- https://www.reddit.com/r/datascience/comments/f6xk72/for_any_python_pandas_users_out_there_heres_a/
-- packages
-  - package management
-    - pip
-    - conda
-      - - https://stackoverflow.com/questions/51526503/why-does-base-appear-in-my-anaconda-command-prompt
-      - "Conda is a packaging tool and installer that aims to do more than what pip does; handle library dependencies outside of the Python packages as well as the Python packages themselves. Conda also creates a virtual environment, like virtualenv does" https://stackoverflow.com/questions/20994716/what-is-the-difference-between-pip-and-conda
-      - https://www.google.com/search?q=python+conda
-  - [[id:BFB941F1-990D-4328-9609-CF480DCF945B][NLTK]]
-  - matplotlib
-    - https://github.com/io99/Resources
-  - Package installation and management
-    - pip
-      - [[https://pip.pypa.io/en/stable/][Documentation]]
-      - pip freeze to see installed packages
-  - scikit for machine learning
-    - http://scikit-learn.org/stable/index.html
-    - https://www.kdnuggets.com/2019/02/introduction-scikit-learn-gold-standard-python-machine-learning.html
-  - sciPy
-    - numPy
-      - [[https://docs.scipy.org/doc/numpy-1.12.0/index.html][Manual]]
-    - pandas
-      - for dashborads https://github.com/JosPolfliet/pandas-profiling
-  - BioPython
-    - https://github.com/peterjc/biopython_workshop
-    - http://pythonforbiologists.com/index.php/introduction-to-python-for-biologists/
-    - http://biopython.org/wiki/Main_Page
-    - http://biopython.org/wiki/SeqIO 
-  - [[https://github.com/pandas-dev/pandas/blob/master/doc/cheatsheet/Pandas_Cheat_Sheet.pdf][github: pandas cheatsheet]]
-  - installing packages/modules
-    - pip install is preferred
-  - [[http://biopython.org/DIST/docs/tutorial/Tutorial.html][Biopython Tutorial]]
-  - [[http://www.androidxu.com/2017/04/python-pandas-tutorial-with-example.html][Beginners Pandas Getting Started]]
-  - https://github.com/JosPolfliet/pandas-profiling
-  - [[http://conference.scipy.org/proceedings/scipy2015/allen_downey.html][scipy2015 conference]]
-  - [[file:~/Box%20Sync/comp_bio/Huber,14%20Orchestrating%20high%20throughput%20genomic%20analysis%20with%20bioconductor.pdf][Huber,14 Orchestrating high throughput genomic analysis with bioconductor]]
-  - Get list of installed packages with pip freeze
-  - pandas
-    - https://towardsdatascience.com/how-to-learn-pandas-108905ab4955
-    - [[https://github.com/pandas-profiling/pandas-profiling][pandas-profiling]]
-  - [[https://pypi.org/][Python Package Index]]
-  - https://github.com/mstamy2/PyPDF2
-******* [[http://www.nltk.org][NLTK]]
-:PROPERTIES:
-:CREATED:  [2019-02-19 Tue 11:02]
-:ID:       BFB941F1-990D-4328-9609-CF480DCF945B
-:END:
-
-******** [[http://www.nltk.org/book/][NLTK Book]]
-:PROPERTIES:
-:CREATED:  [2019-02-19 Tue 11:03]
-:ID:       CCF2B40B-47EE-4D26-9FC3-E1A0EC6F1974
-:END:
-:LOGBOOK:
-CLOCK: [2019-02-19 Tue 11:31]--[2019-02-19 Tue 12:00] =>  1:33
-CLOCK: [2019-02-19 Tue 11:04]--[2019-02-19 Tue 11:25] =>  0:21
-:END:
-1. Preface
-  - 
-3. Language Processing and Python
-4. Accessing Text Corpora and Lexical Resources
-5. Processing Raw Text
-6. Writing Structured Programs
-7. Categorizing and Tagging Words (minor fixes still required)
-8. Learning to Classify Text
-9. Extracting Information from Text
-10. Analyzing Sentence Structure
-11. Building Feature Based Grammars
-12. Analyzing the Meaning of Sentences (minor fixes still required)
-13. Managing Linguistic Data (minor fixes still required)
-14. Afterword: Facing the Language Challenge
-
 ***** Lisp
 :PROPERTIES:
 :ID:       BF9D824A-02EF-4580-97A1-B887299AD461
@@ -3899,6 +3909,7 @@ b=( "${a[@]}" )
 :PROPERTIES:
 :ID:       17707f3f-aee6-4eab-9d79-de07c975a3d5
 :END:
+- https://stackoverflow.com/questions/30712126/how-to-simulate-two-consecutive-enter-key-presses-for-a-command-in-a-bash-script?noredirect=1&lq=1
 - https://www.google.com/search?q=bash+read+and+store+as+variable 
 - https://www.reddit.com/r/programming/comments/aw0zko/bash_creating_tabcompletion_for_your_programs/
 - https://www.google.com/search?q=bash+read+default+input 
@@ -5005,7 +5016,7 @@ CLOCK: [2017-04-18 Tue 11:17]--[2017-04-18 Tue 11:28] =>  0:11
 
  [[file:~/Box%20Sync/statistical_computing/Scanbot%20Sep%2024,%202016%2015.36.pdf][a workthrough]]
 
- http://r4ds.had.co.nz/
+ 
 
  https://learnr.wordpress.com/2009/03/17/ggplot2-barplots/
 
@@ -5709,7 +5720,25 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :PROPERTIES:
 :ID:       b16d0202-8d35-472b-b538-87a7d6a6cef7
 :END:
-- Processes and commands
+- Processes 
+  - Conda/mamba/mambaforge install
+    #+begin_src bash
+cd ~/
+wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
+
+sudo bash Mambaforge-Linux-x86_64.sh
+
+echo -e "\n"
+
+yes
+
+/opt/mambaforge
+
+yes
+
+#########1#########2#########3#########4#########5#########6#########7#########8
+            
+#+end_src
   - Miniconda install
     #+begin_src bash
 cd /tmp
@@ -5736,6 +5765,9 @@ sudo chgrp -R condagroup /opt/miniconda3
 sudo chmod 770 -R /opt/miniconda3
 #+end_src    
   - Add channel
+  - Install package
+    - $ conda install --name <conda_env_name> -c <channel_name> <package_name>
+    - https://www.google.com/search?q=conda+add+package 
   - Create environment
     #+begin_src bash
 conda create -n test
@@ -5788,18 +5820,31 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
+#+begin_src bash 
+docker run -it --rm \
+       -v /tmp/.X11-unix:/tmp/.X11-unix \
+       -v $HOME:$HOME
+       -e DISPLAY=$DISPLAY \
+       jeszyman/test
+#+end_src
 https://pythonspeed.com/docker/
 ****** Processes
 :PROPERTIES:
 :ID:       e209c427-c926-4a90-bbfe-38ee396db4be
 :END:
+- sysadmin
+  - setup chown https://stackoverflow.com/questions/26500270/understanding-user-file-ownership-in-docker-how-to-avoid-changing-permissions-o
+  - install
+    - [[https://docs.docker.com/install/linux/docker-ce/ubuntu/#prerequisites][install community edition through ubuntu]], https://docs.docker.com/install/linux/linux-postinstall/
+  - regulate disk usage
+    - images in /var/lib/docker/overlay2
+    - docker system prune -a 
+- create singularity containers https://stackoverflow.com/questions/60314664/how-to-build-singularity-container-from-dockerfile
+- https://stackoverflow.com/questions/38118791/can-t-delete-docker-image-with-dependent-child-images/50650745
 - https://stackoverflow.com/questions/16296753/can-you-run-gui-applications-in-a-docker-container/50356450#50356450
-- setup chown https://stackoverflow.com/questions/26500270/understanding-user-file-ownership-in-docker-how-to-avoid-changing-permissions-o
 - write dockerfiles
   - https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008316#sec021
   - https://hub.docker.com/r/rocker/r-devel/dockerfile
-- install
-  - [[https://docs.docker.com/install/linux/docker-ce/ubuntu/#prerequisites][install community edition through ubuntu]], https://docs.docker.com/install/linux/linux-postinstall/
 - build image
   - user repos (like mine are / not : for FROM build command!!!
   - [[https://docs.docker.com/engine/reference/builder/#parser-directives][Dockerfile reference]]
@@ -6237,13 +6282,12 @@ docker run \
 ***** github
   - - https://help.github.com/en/articles/about-project-boards
 ***** Google chrome
+- https://superuser.com/questions/324266/google-chrome-mac-set-keyboard-focus-from-address-bar-back-to-page?rq=1
 - [[https://www.google.com/search?client=ubuntu&hs=w80&sxsrf=ALeKk02nCefgbT-UzhMVn2emvtD5Hw-xbA%3A1608387013058&ei=xQneX7P-AtOD9PwPgImv6AY&q=chrome+view+excel+file+in+browser&oq=chrome+view+excel+file+in+browser&gs_lcp=CgZwc3ktYWIQAzIFCAAQzQIyBQgAEM0CMgUIABDNAjIFCAAQzQI6BAgAEEc6AggAOgYIABAHEB46BggAEAUQHjoGCAAQCBAeOggIABAIEAcQHjoECCEQClCS5g5Y75MPYKKWD2gBcAJ4AIABzgGIAZ8MkgEGMTUuMC4xmAEAoAEBqgEHZ3dzLXdpesgBCMABAQ&sclient=psy-ab&ved=0ahUKEwjz9MvEnNrtAhXTAZ0JHYDEC20Q4dUDCA0&uact=5][chrome view excel file in browser]]
 - [[https://www.chromium.org/user-experience/keyboard-access][chromium keyboard shorcuts]]
 - https://superuser.com/questions/130260/how-to-update-google-chrome-in-ubuntu
 - [[http://stackoverflow.com/questions/6250447/trigger-right-click][trigger right click chrome w/ java?]]
 - https://www.google.com/search?q=chromium+remap+keybindings 
-- chromium 
-  - [[http://stackoverflow.com/questions/6250447/trigger-right-click][trigger right click chrome w/ java?]]
 ***** Google sheets
 - https://webapps.stackexchange.com/questions/31894/google-spreadsheet-timestamp/31942#31942
 - https://www.benlcollins.com/spreadsheets/google-sheets-query-sql/
@@ -6515,13 +6559,64 @@ CLOCK: [2021-11-09 Tue 13:19]--[2021-11-09 Tue 13:49] =>  0:30
 :END:
 - orgzly event reminders occur at time of event https://github.com/orgzly/orgzly-android/issues/664
 ***** [[https://rclone.org/][rclone]]
-***** [[https://rclone.org/][rclone]]
 ***** Reference
 - https://youtube-dl.org/
 ***** singularity
 :PROPERTIES:
 :CREATED:  [2021-11-17 Wed 11:34]
 :END:
+- Processes
+  - Install
+    - https://sylabs.io/guides/3.0/user-guide/installation.html
+    #+begin_src bash
+#https://github.com/apptainer/singularity/issues/5242
+sudo apt-get remove -y libseccomp-dev
+
+export PATH=/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/texlive/2019/bin/x86_64-linux:/home/jeszyman/repos/basecamp/bin:/home/jeszyman/bin/shell:/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/texlive/2019/bin/x86_64-linux:/home/jeszyman/repos/basecamp/bin:/home/jeszyman/bin/shell:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/home/jeszyman/go/bin:/home/jeszyman/go/bin:/home/jeszyman/go/bin
+
+# https://sylabs.io/guides/3.0/user-guide/installation.html
+# Install dependencies via apt
+sudo apt-get update && sudo apt-get install -y \
+    build-essential \
+    libssl-dev \
+    uuid-dev \
+    libgpgme11-dev \
+    squashfs-tools \
+    libseccomp-dev \
+    pkg-config            
+
+# Install Go
+export VERSION=1.11 OS=linux ARCH=amd64 && \
+    wget https://dl.google.com/go/go$VERSION.$OS-$ARCH.tar.gz && \
+    sudo tar -C /usr/local -xzvf go$VERSION.$OS-$ARCH.tar.gz && \
+    rm go$VERSION.$OS-$ARCH.tar.gz
+
+# Setup Go environment
+echo 'export GOPATH=${HOME}/go' >> ~/.bashrc && \
+    echo 'export PATH=/usr/local/go/bin:${PATH}:${GOPATH}/bin' >> ~/.bashrc && \
+    source ~/.bashrc
+
+go get -u github.com/golang/dep/cmd/dep
+
+go get -d github.com/sylabs/singularity
+
+export VERSION=v3.0.3 # or another tag or branch if you like && \
+    cd $GOPATH/src/github.com/sylabs/singularity && \
+    git fetch && \
+    git checkout $VERSION # omit this command to install the latest bleeding edge code from master
+
+./mconfig && \
+    make -C ./builddir && \
+    sudo make -C ./builddir install
+
+
+
+which pkg-config
+
+echo $PATH
+#+end_src  
+  - https://search.brave.com/search?q=make+singularity+container+from+docker&source=desktop
+    - https://stackoverflow.com/questions/60314664/how-to-build-singularity-container-from-dockerfile
 #+begin_src bash
 sudo apt-get remove singularity-container
 
@@ -6585,6 +6680,103 @@ which singularity
 :LOGBOOK:
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
+https://github.com/snakemake/snakemake/issues/971
+****** Local YAS
+- Insert snakemake org-mode tree
+  #+name: insert.smk
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/insert.smk
+# -*- mode: snippet -*-
+# key: insert.smk
+# expand-env: ((yas-indent-line 'none))
+# --
+`(make-string (+ 1 (org-current-level)) ?*)` Snakefile
+:PROPERTIES:
+:header-args:python: :tangle ./workflow/${1:SMK NAME}.smk
+:END:              
+`(make-string (+ 2 (org-current-level)) ?*)` Preamble
+,#+begin_src python
+            
+,#+end_src              
+`(make-string (+ 2 (org-current-level)) ?*)` All rule
+,#+begin_src python
+            
+,#+end_src                            
+`(make-string (+ 2 (org-current-level)) ?*)` ${2:RULE 1}
+,#+begin_src python
+            
+,#+end_src
+`(make-string (+ 2 (org-current-level)) ?*)` Run commands
+,#+begin_src bash
+conda activate snakemake
+
+snakemake \
+  --cores $threads \
+  --printshellcmds \
+  --snakefile workflow/$1
+,#+end_src                      
+#+end_src
+- Insert snakemake rule org-mode headline
+  #+name: insert.snake.rule
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/insert.snake.rule
+# -*- mode: snippet -*-
+# key: insert.snake.rule
+# expand-env: ((yas-indent-line 'none))
+# --
+`(make-string (org-current-level) ?*)` ${1: RULE NAME}
+,#+begin_src python
+rule ${1:$(string-replace " " "_" (downcase yas-text))}:
+    input:
+    output:
+    shell:
+        """
+        """
+,#+end_src     
+#+end_src
+
+****** Processes 
+- Install and setup
+  - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
+    #+begin_src bash
+conda activate base
+conda install -n base -c conda-forge mamba
+y
+mamba create -c conda-forge -c bioconda -n snakemake snakemake
+y
+conda activate snakemake
+snakemake --help
+#+end_src
+  - via miniconda
+    - [[https://docs.anaconda.com/anaconda/install/multi-user/][install multi-user miniconda]]
+  - 
+  - add singularity
+    - 
+- Write
+  - workaround for using snakemake vars in shell script https://stackoverflow.com/a/49533645/6106936
+  - Configuration files
+    - [[id:2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5][YAML document markup language]]
+    - Using config variables
+      - https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
+- Run
+  #+begin_src bash
+snakemake --lint
+
+#+end_src
+- docker - https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html?highlight=docker#running-jobs-in-containers
+- R package management in snakemake rules
+  - https://github.com/lachlandeer/snakemake-econ-r  
+****** Reference
+- Standards and best practice
+  - https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html#snakefiles-best-practices
+- Wildcards
+  - https://edwards.flinders.edu.au/wildcards-in-snakemake/
+- https://endrebak.gitbooks.io/the-snakemake-book/content/
+- https://academic.oup.com/bioinformatics/article/28/19/2520/290322
+- https://www.biostars.org/p/9469533/
+- https://stackoverflow.com/questions/64949149/is-it-possible-to-add-a-conditional-statement-in-snakemakes-rule-all
+- https://stackoverflow.com/questions/54400171/how-to-use-list-in-snakemake-tabular-configuration-for-describing-of-sequencing
+- https://github.com/ngs-docs/2020-ggg-201b-rnaseq/blob/latest/rnaseq-workflow.Rmd
+- https://angus.readthedocs.io/en/2019/snakemake_for_automation.html
+- https://pages.charlesreid1.com/how-do-i-snakemake/converting/
 - http://ivory.idyll.org/blog/2020-snakemake-hacks-collections-files.html
 - http://origin.research.jetbrains.org/files/material/5ec245b4e907c.pdf
 - https://f1000research.com/articles/10-33/v2
@@ -6595,90 +6787,69 @@ CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 - https://lachlandeer.github.io/snakemake-econ-r-tutorial/initial-steps-with-snakemake.html
 - for repos, git ignore the singularity build 
 - https://github.com/EnvGen/snakemake-workflows
-- https://reproducibility.sschmeier.com/index.html
-- https://snakemake.readthedocs.io/en/stable/executor_tutorial/google_lifesciences.html
-- Processes 
-  - Install and setup
-    - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
-      #+begin_src bash
-conda activate base
-mamba create -c conda-forge -c bioconda -n snakemake snakemake
-y
 
-conda activate snakemake
+******* Examples
+- https://www.biostars.org/p/406385/
+- https://github.com/chrishah/samtools-docker/blob/master/Dockerfile
+- https://github.com/lachlandeer/snakemake-econ-r
+******* [[https://snakemake.readthedocs.io/en/stable/index.html][Documentation]]
+- 
+- [[Snakemake Tutorial][Snakemake Tutorial]]
+******* Tutorials and guides
+- https://reproducibility.sschmeier.com/index.html
+- a tutorial
+  #+begin_src bash
+source ~/repos/biotools/src/functions.sh
+docker_interactive
+biotools
+
+#
+mkdir -p /tmp/snakemake-tutorial
+cd /tmp/snakemake-tutorial
+#
+wget https://github.com/snakemake/snakemake-tutorial-data/archive/v5.24.1.tar.gz
+#
+tar --wildcards -xf v5.24.1.tar.gz --strip 1 "*/data" "*/environment.yaml"
+ls
+
+#
 snakemake --help
 
+snakemake -np mapped_reads/A.bam
 #+end_src
-    - via miniconda
-      - [[https://docs.anaconda.com/anaconda/install/multi-user/][install multi-user miniconda]] 
-    - add singularity
-      - 
-  - Run
-    #+begin_src bash
-snakemake --lint
+- another tutorial
+  #+begin_src bash
+sudo apt-get install singularity-container
 
+cd ~/snakemake-tutorial/
+
+conda activate snakemake-tutorial
+
+
+snakemake -p --cores 2 sorted_reads/{A,B}.bam
+#    --dry-run \
+
+snakemake --dag calls/all.vcf | dot -Tsvg > dag.svg
+
+expand("sorted_reads/{sample}.bam", sample=SAMPLES)
+
+snakemake -p --cores 2 plots/quals.svg
+
+snakemake --cores 2 -p --dag | dot -Tsvg > dag.svg
+
+snakemake --cores 20 --forceall --summary
+
+snakemake --cores 20 --forceall
+
+conda install pygraphviz
+
+snakemake --report report.html
+
+open report.html
+
+snakemake --cores 20 --forceall
 #+end_src
-
-  - docker - https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html?highlight=docker#running-jobs-in-containers
-- Reference
-  - [[EA056C38-9DE6-47EE-A75B-0FCBAE62372B][YASnippets]]
-  - local tutorials
-    - a tutorial
-      #+begin_src bash
-    source ~/repos/biotools/src/functions.sh
-    docker_interactive
-    biotools
-
-    #
-    mkdir -p /tmp/snakemake-tutorial
-    cd /tmp/snakemake-tutorial
-    #
-    wget https://github.com/snakemake/snakemake-tutorial-data/archive/v5.24.1.tar.gz
-    #
-    tar --wildcards -xf v5.24.1.tar.gz --strip 1 "*/data" "*/environment.yaml"
-    ls
-
-    #
-    snakemake --help
-
-    snakemake -np mapped_reads/A.bam
-    #+end_src
-    - another tutorial
-      #+begin_src bash
-    sudo apt-get install singularity-container
-
-    cd ~/snakemake-tutorial/
-
-    conda activate snakemake-tutorial
-
-
-    snakemake -p --cores 2 sorted_reads/{A,B}.bam
-    #    --dry-run \
-
-    snakemake --dag calls/all.vcf | dot -Tsvg > dag.svg
-
-    expand("sorted_reads/{sample}.bam", sample=SAMPLES)
-
-    snakemake -p --cores 2 plots/quals.svg
-
-    snakemake --cores 2 -p --dag | dot -Tsvg > dag.svg
-
-    snakemake --cores 20 --forceall --summary
-
-    snakemake --cores 20 --forceall
-
-    conda install pygraphviz
-
-    snakemake --report report.html
-
-    open report.html
-
-    snakemake --cores 20 --forceall
-    #+end_src
-  - [[https://snakemake.readthedocs.io/en/stable/index.html][documentation]]
-    - [[Snakemake Tutorial][Snakemake Tutorial]]
-  - Standards and best practice
-    - https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html#snakefiles-best-practices    
+- https://snakemake.readthedocs.io/en/stable/executor_tutorial/google_lifesciences.html
 ***** tramp
   - [currently not working] to goodle drive- - https://www.gnu.org/software/tramp/#Using-Google-Drive
 ***** trash http://hasseg.org/trash/
@@ -7641,6 +7812,9 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+https://www.reddit.com/r/linux4noobs/comments/qwp95g/most_noobs_would_benefit_from_reading_the_linux/
+- https://www.how2shout.com/how-to/how-to-install-ubuntu-linux-on-android-without-root.html
+- https://wiki.archlinux.org/title/Xdg-utils
 - Processes
   - https://unix.stackexchange.com/questions/1519/how-do-i-delete-a-file-whose-name-begins-with-hyphen-a-k-a-dash-or-minus
   - https://www.google.com/search?q=linux+see+largest+files+in+all+subdirectories 
@@ -8728,6 +8902,9 @@ http://www.mitchchn.me/2014/os-x-terminal/
 :ID:       9df4eaea-272d-414e-a2b2-589025889290
 :END:
 - - https://github.com/eudaldgr/youtube-dl
+- yaml cannot do variable placeholders- https://stackoverflow.com/questions/41620674/use-placeholders-in-yaml/41620747#41620747
+  - some workarounds https://stackoverflow.com/questions/2063616/how-to-reference-a-yaml-setting-from-elsewhere-in-the-same-yaml-file
+- https://yaml.org/spec/1.2.2/  
 ** Reference
 :PROPERTIES:
 :ID:       3eb81250-e885-4941-a559-997381abc196
