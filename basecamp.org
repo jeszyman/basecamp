@@ -185,51 +185,76 @@ primeKeyUnique = function(df,pk){
 :PROPERTIES:
 :ID:       79e01a67-5ba1-4257-8353-8c5cf1ac8c4a
 :END:
-#+begin_src fundamental :tangle ./docker/basecamp_Dockerfile
+#+begin_src bash :tangle ./docker/basecamp_Dockerfile
+#########1#########2#########3#########4#########5#########6#########7#########8
+
+#######################################################
+#######################################################
+###   Dockerfile to build a basecamp docker image   ###
+#######################################################
+#######################################################
+
+#############
+### Notes ###
+#############
+#
+# After build, the image will be pushed to the dockerhub as
+# jeszyman/basecamp
+# (https://hub.docker.com/repository/docker/jeszyman/basecamp)
+#
+# See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+
 FROM ubuntu:bionic
 
-#
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Chicago
-
-#
-RUN apt-get update --fix-missing -yq
-#
-RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
-    build-essential \
-    bzip2 \
-    cifs.utils \
-    cmake \
-    dirmngr \
-    gcc \
-    git \
-    gnupg \
-    libfftw3-dev \
-    locales \
-    nano \
-    parallel \
-    software-properties-common \
-    wget
-
-#
-RUN apt-get autoremove -y && \
-    apt-get autoclean -y && \
-    apt-get clean
-#
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
     locale-gen
 ENV LANG en_US.UTF-8  
 ENV LANGUAGE en_US:en  
 ENV LC_ALL en_US.UTF-8    
 
-#
+###########
+### APT ###
+###########
+
+RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
+    build-essential \
+    bzip2 \
+    cifs.utils \
+    cmake \
+    dirmngr \
+    emacs \
+    gcc \
+    git \
+    gnupg \
+    libcurl4-openssl-dev \
+    libfftw3-dev \
+    libgsl-dev \
+    libxmu-dev \
+    locales \
+    nano \
+    parallel \
+    screen \
+    software-properties-common \
+    wget
+
+RUN apt-get autoremove -y && \
+    apt-get autoclean -y && \
+    apt-get clean
+
+#################
+### Miniconda ###
+#################
+
 RUN cd /tmp && wget --no-check-certificate https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh
 RUN bash /tmp/Miniconda3-4.3.21-Linux-x86_64.sh -b -p /opt/miniconda
 ENV PATH="/opt/miniconda/bin:${PATH}"
 
-#########1#########2#########3#########4#########5#########6#########7#########8
-#
-# R install 
+#############################
+### R 4 and CRAN Packages ###
+#############################
+
 # import the signing key (by Michael Rutter) for these repo
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
 # add the R 4.0 repo from CRAN -- adjust 'focal' to 'groovy' or 'bionic' as needed
@@ -239,22 +264,17 @@ RUN apt-get install -qq --no-install-recommends r-base r-base-dev
 
 ENV PATH="/usr/bin:${PATH}"
 RUN echo 'local({r <- getOption("repos"); r["CRAN"] <- "http://cran.r-project.org"; options(repos=r)})' > ~/.Rprofile
-RUN R -e "install.packages('devtools')"
-RUN Rscript -e 'install.packages(c("tidyverse", "git2r", "stringr", "devtools", "optparse", "plyr"), repos = c(CRAN="http://cran.rstudio.com"))'
 
-#
-## Emacs Snapshot
-RUN apt-get install -qq --no-install-recommends software-properties-common
-RUN add-apt-repository ppa:ubuntu-elisp/ppa
-RUN apt-get update
-RUN apt-get install -qq --no-install-recommends emacs-snapshot
-#
-# Above built 2020-12-10
-# Dev 
-# Ideas
-#    texlive-full
-#
+RUN Rscript -e 'install.packages(c("devtools", \
+                                   "git2r", \
+                                   "optparse", \
+                                   "plyr", \
+                                   "stringr", \
+                                   "tidyverse"), repos = c(CRAN="http://cran.rstudio.com"))'
 
+####################################
+### NON-Package manager installs ###
+####################################
 
 #+end_src
 #+begin_src fundamental :tangle ./docker/basecamp_Dockerfile
@@ -295,6 +315,12 @@ RUN apt-get update -qq \
                  
 RUN R -e "install.packages('tidyverse',repos='http://cran.rstudio.com/')"
 #+end_src
+- Ideas
+  ## Emacs Snapshot
+RUN apt-get install -qq --no-install-recommends software-properties-common
+RUN add-apt-repository ppa:ubuntu-elisp/ppa
+RUN apt-get update
+RUN apt-get install -qq --no-install-recommends emacs-snapshot
 
 ***** Build docker container
 :PROPERTIES:
@@ -860,10 +886,10 @@ df
 :PROPERTIES:
 :ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
 :END:
-https://patchwork.data-imaginist.com/articles/guides/assembly.html
-https://cran.r-project.org/web/packages/ggfun/vignettes/ggfun.html
-http://rich-iannone.github.io/DiagrammeR/docs.html
-
+- [[https://gist.github.com/Rekyt/a7846af7c4c5fb5a48ea][ggplots over multiple pdf pages]]
+- https://patchwork.data-imaginist.com/articles/guides/assembly.html
+- https://cran.r-project.org/web/packages/ggfun/vignettes/ggfun.html
+- http://rich-iannone.github.io/DiagrammeR/docs.html
 - https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html
 - [[https://gist.github.com/Rekyt/a7846af7c4c5fb5a48ea][ggplots over multiple pdf pages]]
 - https://bookdown.org/ndphillips/YaRrr/saving-plots-to-a-file-with-pdf-jpeg-and-png.html
@@ -3312,6 +3338,7 @@ https://mmistakes.github.io/jekyll-theme-basically-basic/recipes/chocolate-chip-
 :LOGBOOK:
 CLOCK: [2019-02-06 Wed 16:12]--[2019-02-06 Wed 17:05] =>  0:53
 :END:
+https://www.freecodecamp.org/news/rust-in-replit/
 - https://www.reddit.com/r/bioinformatics/comments/qpuhn5/which_programming_languages_should_i_learn/hjx3ocg/
 - https://krisbogdanov.com/personal-projects-before-first-internship/?fbclid=IwAR1hna-buWCrhA7pd2qRp-NkNXGEN0pUrUNoll8peSpOK6F3H-ceeevkcNE
 
@@ -3810,6 +3837,12 @@ CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :LOGBOOK:
 CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
 :END:
+- https://www.google.com/search?q=linux+sudo+pipe+password&oq=bash+pipe+sudo+pa&aqs=chrome.1.69i57j0i22i30l2.7394j0j4&sourceid=chrome&ie=UTF-8
+- tui
+  - https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
+- https://www.google.com/search?q=bash+pass+ENTER+to+script 
+******* Sysadmin
+- see [[id:25e57644-f710-41ba-8bf4-d6ee9cc2c9c6][Linux sysadmin]]
 ******* Setup
 :PROPERTIES:
 :ID:       12419776-9b0e-42e9-8392-8f17dc89a63f
@@ -5569,6 +5602,12 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :PROPERTIES:
 :ID:       5b075f74-e2cf-4d2f-a8f7-db7c64080f47
 :END:
+- install
+  - configure, make, install
+    - https://www.tldp.org/HOWTO/Software-Building-HOWTO-3.html
+    - https://superuser.com/questions/360178/what-does-make-install-do
+    - often Makefile will install to created ./bin/ sub-directory 
+  - https://stackoverflow.com/questions/10961439/why-always-configure-make-make-install-as-3-separate-steps
 - tutorial https://github.com/kyclark/make-tutorial
 - http://blog.byronjsmith.com/makefile-shortcuts.html
 ****** gawk
@@ -5709,13 +5748,6 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 ***** Cisco AnyConect
   - [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
   - my profile at /opt/cisco/anyconnect/profile/test.xml
-
-
-***** Cisco AnyConect
-  - [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
-
-
-
 ***** Conda and Miniconda
 :PROPERTIES:
 :ID:       b16d0202-8d35-472b-b538-87a7d6a6cef7
@@ -5728,8 +5760,9 @@ wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforg
 
 sudo bash Mambaforge-Linux-x86_64.sh
 
-echo -e "\n"
 
+echo -e "\n"
+echo -e "\n"
 yes
 
 /opt/mambaforge
@@ -5790,15 +5823,12 @@ mamba create -c conda-forge -c bioconda -n snakemake snakemake
 mamba install pandas --name snakemake
 y
 #+end_src
-  - https://www.google.com/search?q=conda+don't+start+in+base 
+  - [[https://stackoverflow.com/questions/54429210/how-do-i-prevent-conda-from-activating-the-base-environment-by-default][Prevent default start in conda base]]
 - Standards and best practice
 - Documentation
 - Applications
 - Reference
   - [[EA056C38-9DE6-47EE-A75B-0FCBAE62372B][YASnippets]]
-
-
-
 ***** Docker                                                       :software:
 :PROPERTIES:
 :ID:       D2FAA88D-70CC-4450-BBB3-8A446CB43AF3
@@ -5820,25 +5850,11 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
-#+begin_src bash 
-docker run -it --rm \
-       -v /tmp/.X11-unix:/tmp/.X11-unix \
-       -v $HOME:$HOME
-       -e DISPLAY=$DISPLAY \
-       jeszyman/test
-#+end_src
-https://pythonspeed.com/docker/
+****** Local transclusion
 ****** Processes
 :PROPERTIES:
 :ID:       e209c427-c926-4a90-bbfe-38ee396db4be
 :END:
-- sysadmin
-  - setup chown https://stackoverflow.com/questions/26500270/understanding-user-file-ownership-in-docker-how-to-avoid-changing-permissions-o
-  - install
-    - [[https://docs.docker.com/install/linux/docker-ce/ubuntu/#prerequisites][install community edition through ubuntu]], https://docs.docker.com/install/linux/linux-postinstall/
-  - regulate disk usage
-    - images in /var/lib/docker/overlay2
-    - docker system prune -a 
 - create singularity containers https://stackoverflow.com/questions/60314664/how-to-build-singularity-container-from-dockerfile
 - https://stackoverflow.com/questions/38118791/can-t-delete-docker-image-with-dependent-child-images/50650745
 - https://stackoverflow.com/questions/16296753/can-you-run-gui-applications-in-a-docker-container/50356450#50356450
@@ -5880,6 +5896,14 @@ docker run --rm -p 6379:6379 <CONTAINER>
   - https://www.google.com/search?q=docker+run+mount+home+directory
   - in timezone with a wget     tzdata command in the dockerfile, then docker run -e "TZ=America/Chicago" -it jeszyman/dev
   - https://confluence.ris.wustl.edu/display/RSUM/Docker+Wrapper+Environment+Variables
+- run with display
+******* Sysadmin
+- install
+  - [[https://docs.docker.com/install/linux/docker-ce/ubuntu/#prerequisites][install community edition through ubuntu]] https://docs.docker.com/install/linux/linux-postinstall/
+- setup chown https://stackoverflow.com/questions/26500270/understanding-user-file-ownership-in-docker-how-to-avoid-changing-permissions-o
+- regulate disk usage
+  - images in /var/lib/docker/overlay2
+  - docker system prune -a 
 - Host management
   - https://www.google.com/search?q=docker+cleanup
   - remove https://docs.docker.com/config/pruning/
@@ -6177,6 +6201,7 @@ docker run \
 :PROPERTIES:
 :ID:       69c4be02-d479-4228-8040-eaaef924436e
 :END:
+- https://pythonspeed.com/docker/
 - https://www.freecodecamp.org/news/the-docker-handbook/
 - https://stackoverflow.com/questions/29480099/whats-the-difference-between-docker-compose-vs-dockerfile
 - cite:boettiger2015 
@@ -6281,6 +6306,9 @@ docker run \
   - [[file:~/.emacs.d/snippets/org-mode/software]]
 ***** github
   - - https://help.github.com/en/articles/about-project-boards
+***** gnome-terminal
+- gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
+
 ***** Google chrome
 - https://superuser.com/questions/324266/google-chrome-mac-set-keyboard-focus-from-address-bar-back-to-page?rq=1
 - [[https://www.google.com/search?client=ubuntu&hs=w80&sxsrf=ALeKk02nCefgbT-UzhMVn2emvtD5Hw-xbA%3A1608387013058&ei=xQneX7P-AtOD9PwPgImv6AY&q=chrome+view+excel+file+in+browser&oq=chrome+view+excel+file+in+browser&gs_lcp=CgZwc3ktYWIQAzIFCAAQzQIyBQgAEM0CMgUIABDNAjIFCAAQzQI6BAgAEEc6AggAOgYIABAHEB46BggAEAUQHjoGCAAQCBAeOggIABAIEAcQHjoECCEQClCS5g5Y75MPYKKWD2gBcAJ4AIABzgGIAZ8MkgEGMTUuMC4xmAEAoAEBqgEHZ3dzLXdpesgBCMABAQ&sclient=psy-ab&ved=0ahUKEwjz9MvEnNrtAhXTAZ0JHYDEC20Q4dUDCA0&uact=5][chrome view excel file in browser]]
@@ -6450,6 +6478,8 @@ specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]
 - Cisco AnyConect
   - [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
   - my profile at /opt/cisco/anyconnect/profile/test.xml
+***** i3
+- https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
 ***** inkscape
 :PROPERTIES:
 :CREATED:  [2020-10-04 Sun 10:05]
@@ -6545,6 +6575,7 @@ CLOCK: [2021-11-09 Tue 13:19]--[2021-11-09 Tue 13:49] =>  0:30
 :PROPERTIES:
 :ID:       569921c4-c8fe-4037-a2be-3c3f7844cd86
 :END:
+- https://www.google.com/search?q=okular+find+highlight+color 
 - https://www.google.com/search?q=okular+don't+open+fullscreen 
 - [[https://docs.kde.org/stable5/en/okular/okular/index.html][documentation]]
 - https://askubuntu.com/questions/962878/how-to-change-okulars-find-highlight-color#:~:text=To%20do%20so%20(Okular%20v1,%2D%3E%20And%20change%20default%20color.
@@ -6558,7 +6589,28 @@ CLOCK: [2021-11-09 Tue 13:19]--[2021-11-09 Tue 13:49] =>  0:30
 :ID:       a5717be7-afe9-4db2-8b4d-b797c7631466
 :END:
 - orgzly event reminders occur at time of event https://github.com/orgzly/orgzly-android/issues/664
-***** [[https://rclone.org/][rclone]]
+***** rclone
+:PROPERTIES:
+:ID:       be76a873-d2fe-447f-a43c-b84c52a8e77b
+:END:
+- [[https://rclone.org/][rclone]]
+#+begin_src bash
+rclone config 
+n
+mpnst
+6
+
+<ENTER>
+<ENTER> 
+
+n
+n
+
+y
+y
+q
+#+end_src
+
 ***** Reference
 - https://youtube-dl.org/
 ***** singularity
@@ -6569,11 +6621,16 @@ CLOCK: [2021-11-09 Tue 13:19]--[2021-11-09 Tue 13:49] =>  0:30
   - Install
     - https://sylabs.io/guides/3.0/user-guide/installation.html
     #+begin_src bash
-#https://github.com/apptainer/singularity/issues/5242
-sudo apt-get remove -y libseccomp-dev
+# which pkg-config
 
-export PATH=/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/texlive/2019/bin/x86_64-linux:/home/jeszyman/repos/basecamp/bin:/home/jeszyman/bin/shell:/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/texlive/2019/bin/x86_64-linux:/home/jeszyman/repos/basecamp/bin:/home/jeszyman/bin/shell:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/home/jeszyman/go/bin:/home/jeszyman/go/bin:/home/jeszyman/go/bin
+# echo $PATH
 
+# #https://github.com/apptainer/singularity/issues/5242
+# sudo apt-get remove -y libseccomp-dev
+
+# export PATH=/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/texlive/2019/bin/x86_64-linux:/home/jeszyman/repos/basecamp/bin:/home/jeszyman/bin/shell:/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/texlive/2019/bin/x86_64-linux:/home/jeszyman/repos/basecamp/bin:/home/jeszyman/bin/shell:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/home/jeszyman/go/bin:/home/jeszyman/go/bin:/home/jeszyman/go/bin
+
+#########1#########2#########3#########4#########5#########6#########7#########8
 # https://sylabs.io/guides/3.0/user-guide/installation.html
 # Install dependencies via apt
 sudo apt-get update && sudo apt-get install -y \
@@ -6609,15 +6666,11 @@ export VERSION=v3.0.3 # or another tag or branch if you like && \
     make -C ./builddir && \
     sudo make -C ./builddir install
 
-
-
-which pkg-config
-
-echo $PATH
+which singularity
 #+end_src  
   - https://search.brave.com/search?q=make+singularity+container+from+docker&source=desktop
     - https://stackoverflow.com/questions/60314664/how-to-build-singularity-container-from-dockerfile
-#+begin_src bash
+  #+begin_src bash
 sudo apt-get remove singularity-container
 
 y
@@ -6680,7 +6733,41 @@ which singularity
 :LOGBOOK:
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
-https://github.com/snakemake/snakemake/issues/971
+****** Processes 
+- Install and setup
+  - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
+    #+begin_src bash
+conda init bash 
+/bin/bash
+conda activate base
+conda install -n base -c conda-forge mamba
+y
+mamba create -c conda-forge -c bioconda -n snakemake snakemake
+y
+conda activate snakemake
+snakemake --help
+#+end_src
+  - via miniconda
+    - [[https://docs.anaconda.com/anaconda/install/multi-user/][install multi-user miniconda]]
+  - add singularity
+    - 
+- Write
+  - https://stackoverflow.com/questions/69483414/unspecified-syntax-error-in-snakemake-rule
+  - test workflow output- https://stackoverflow.com/questions/50198628/snakemake-confusion-on-how-to-access-config-files-properly
+  - workaround for using snakemake vars in shell script https://stackoverflow.com/a/49533645/6106936
+  - https://github.com/snakemake/snakemake/issues/971
+  - Configuration files
+    - [[id:2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5][YAML document markup language]]
+    - Using config variables
+      - https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
+- Run
+  #+begin_src bash
+snakemake --lint
+
+#+end_src
+- docker - https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html?highlight=docker#running-jobs-in-containers
+- R package management in snakemake rules
+  - https://github.com/lachlandeer/snakemake-econ-r  
 ****** Local YAS
 - Insert snakemake org-mode tree
   #+name: insert.smk
@@ -6691,18 +6778,18 @@ https://github.com/snakemake/snakemake/issues/971
 # --
 `(make-string (+ 1 (org-current-level)) ?*)` Snakefile
 :PROPERTIES:
-:header-args:python: :tangle ./workflow/${1:SMK NAME}.smk
+:header-args:snakemake: :tangle ./workflow/${1:SMK NAME}.smk
 :END:              
 `(make-string (+ 2 (org-current-level)) ?*)` Preamble
-,#+begin_src python
+,#+begin_src snakemake
             
 ,#+end_src              
 `(make-string (+ 2 (org-current-level)) ?*)` All rule
-,#+begin_src python
+,#+begin_src snakemake
             
 ,#+end_src                            
 `(make-string (+ 2 (org-current-level)) ?*)` ${2:RULE 1}
-,#+begin_src python
+,#+begin_src snakemake
             
 ,#+end_src
 `(make-string (+ 2 (org-current-level)) ?*)` Run commands
@@ -6716,14 +6803,14 @@ snakemake \
 ,#+end_src                      
 #+end_src
 - Insert snakemake rule org-mode headline
-  #+name: insert.snake.rule
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/insert.snake.rule
+  #+name: snake.rule
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/snake.rule
 # -*- mode: snippet -*-
-# key: insert.snake.rule
+# key: snake.rule
 # expand-env: ((yas-indent-line 'none))
 # --
 `(make-string (org-current-level) ?*)` ${1: RULE NAME}
-,#+begin_src python
+,#+begin_src snakemake
 rule ${1:$(string-replace " " "_" (downcase yas-text))}:
     input:
     output:
@@ -6733,37 +6820,6 @@ rule ${1:$(string-replace " " "_" (downcase yas-text))}:
 ,#+end_src     
 #+end_src
 
-****** Processes 
-- Install and setup
-  - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
-    #+begin_src bash
-conda activate base
-conda install -n base -c conda-forge mamba
-y
-mamba create -c conda-forge -c bioconda -n snakemake snakemake
-y
-conda activate snakemake
-snakemake --help
-#+end_src
-  - via miniconda
-    - [[https://docs.anaconda.com/anaconda/install/multi-user/][install multi-user miniconda]]
-  - 
-  - add singularity
-    - 
-- Write
-  - workaround for using snakemake vars in shell script https://stackoverflow.com/a/49533645/6106936
-  - Configuration files
-    - [[id:2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5][YAML document markup language]]
-    - Using config variables
-      - https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
-- Run
-  #+begin_src bash
-snakemake --lint
-
-#+end_src
-- docker - https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html?highlight=docker#running-jobs-in-containers
-- R package management in snakemake rules
-  - https://github.com/lachlandeer/snakemake-econ-r  
 ****** Reference
 - Standards and best practice
   - https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html#snakefiles-best-practices
@@ -6850,6 +6906,9 @@ open report.html
 snakemake --cores 20 --forceall
 #+end_src
 - https://snakemake.readthedocs.io/en/stable/executor_tutorial/google_lifesciences.html
+***** Timeshift
+- https://ostechnix.com/how-to-backup-and-restore-linux-system-with-timeshift/
+- https://github.com/teejee2008/timeshift
 ***** tramp
   - [currently not working] to goodle drive- - https://www.gnu.org/software/tramp/#Using-Google-Drive
 ***** trash http://hasseg.org/trash/
@@ -7812,58 +7871,30 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
-https://www.reddit.com/r/linux4noobs/comments/qwp95g/most_noobs_would_benefit_from_reading_the_linux/
-- https://www.how2shout.com/how-to/how-to-install-ubuntu-linux-on-android-without-root.html
-- https://wiki.archlinux.org/title/Xdg-utils
-- Processes
-  - https://unix.stackexchange.com/questions/1519/how-do-i-delete-a-file-whose-name-begins-with-hyphen-a-k-a-dash-or-minus
-  - https://www.google.com/search?q=linux+see+largest+files+in+all+subdirectories 
-  - system restore
-    - https://github.com/teejee2008/timeshift
-  - sysadmin
-    - https://unix.stackexchange.com/questions/87908/how-do-you-empty-the-buffers-and-cache-on-a-linux-system
-    - https://unix.stackexchange.com/questions/53542/how-to-determine-the-filesystem-of-an-unmounted-device
-    - https://unix.stackexchange.com/questions/18925/how-to-mount-a-device-in-linux
-  - ocr
-    - https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
-    - [[https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux][optical character recognition in linux]]
-- Applications
-  - i3
-    - https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
-  - for dir sizes, use ncdu
-- https://www.kernel.org/doc/html/latest/admin-guide/index.html
-- https://www.reddit.com/r/linux4noobs/comments/p4198y/i_recently_find_out_this_command_line_tool_called/
+******** Processes
 - clipboard
   - https://askubuntu.com/questions/382767/how-to-pipe-dump-clipboard-contents-to-a-file  
+- https://www.google.com/search?q=linux+add+to+path 
+- https://unix.stackexchange.com/questions/1519/how-do-i-delete-a-file-whose-name-begins-with-hyphen-a-k-a-dash-or-minus
+- https://www.google.com/search?q=linux+see+largest+files+in+all+subdirectories 
+- application interactions, xdg
+  - https://wiki.archlinux.org/title/Xdg-utils
+- ocr
+  - https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
+  - [[https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux][optical character recognition in linux]]
+********* File system navigation
 - https://stackoverflow.com/questions/12522269/how-to-find-the-largest-file-in-a-directory-and-its-subdirectories
-- install
-  - configure, make, install
-    - https://www.tldp.org/HOWTO/Software-Building-HOWTO-3.html
-    - https://superuser.com/questions/360178/what-does-make-install-do
-    - often Makefile will install to created ./bin/ sub-directory 
-  - https://stackoverflow.com/questions/10961439/why-always-configure-make-make-install-as-3-separate-steps
-- users and groups
-  | function                  | command                   |
-  |---------------------------+---------------------------|
-  | list users                |                           |
-  | list groups               |                           |
-  | list group members        | getent group <GROUPNAME>  |
-  | add user                  | useradd <USERNAME>        |
-  | set password              | passwd <USERNAME>         |
-  | add group                 | groupadd <GROUPNAME>      |
-  | add user to group         | usermod -g <GROUP> <USER> |
-  | change user primary group |                           |
-  - find disk usage https://unix.stackexchange.com/questions/67806/how-to-recursively-find-the-amount-stored-in-directory
-    - https://unix.stackexchange.com/questions/314394/my-hard-disk-is-full-how-can-i-determine-whats-taking-up-space
-- Common UNIX command line operations table
-  - [[http://www.cyberciti.biz/faq/tar-extract-linux/][Tarball extraction]]
-  - [[https://www.howtogeek.com/howto/ubuntu/split-a-text-file-in-half-or-any-percentage-on-ubuntu-linux/][Split a text file in half (or any percentage) on Ubuntu Linux]]
+- find / -xdev -type f -size +1G 2>&1 | grep -v "Permission denied"
+- find large files sudo du -a /home | sort -n -r | head -n 10  
 - Search
   - Recursively search subdirectories
     - [[https://askubuntu.com/questions/307876/how-to-search-for-files-recursively-into-subdirectories][How to Search for Files Recursively into Subdirectories]]
     - [[https://stackoverflow.com/questions/1987926/how-do-i-grep-recursively][Recursively search subdirectories with grep -r "<SEARCH>" .]]
-  - Search for file: find . -name <pattern> -print
-    - https://kb.iu.edu/d/admm            
+********* Sysadmin
+:PROPERTIES:
+:ID:       25e57644-f710-41ba-8bf4-d6ee9cc2c9c6
+:END:
+- https://www.how2shout.com/how-to/how-to-install-ubuntu-linux-on-android-without-root.html
 - users and groups
     | function                  | command                   |
     |---------------------------+---------------------------|
@@ -7875,23 +7906,13 @@ https://www.reddit.com/r/linux4noobs/comments/qwp95g/most_noobs_would_benefit_fr
     | add group                 | groupadd <GROUPNAME>      |
     | add user to group         | usermod -g <GROUP> <USER> |
     | change user primary group |                           |
-- https://ostechnix.com/how-to-backup-and-restore-linux-system-with-timeshift/
-- [ ] https://www.google.com/search?q=linux+sudo+pipe+password&oq=bash+pipe+sudo+pa&aqs=chrome.1.69i57j0i22i30l2.7394j0j4&sourceid=chrome&ie=UTF-8
-
-https://github.com/cheesecakeufo/komorebi#what-is-komorebi
-- find / -xdev -type f -size +1G 2>&1 | grep -v "Permission denied"
-- https://github.com/teejee2008/timeshift
-- https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
-- gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
-- https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
-- [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
-- find large files sudo du -a /home | sort -n -r | head -n 10
-- https://linustechtips.com/main/
-- https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
 - for dir sizes, use ncdu
-https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
-- tui
-    - https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
+- https://www.techrepublic.com/article/how-to-create-users-and-groups-in-linux-from-the-command-line/
+- https://unix.stackexchange.com/questions/87908/how-do-you-empty-the-buffers-and-cache-on-a-linux-system
+- https://unix.stackexchange.com/questions/53542/how-to-determine-the-filesystem-of-an-unmounted-device
+- https://unix.stackexchange.com/questions/18925/how-to-mount-a-device-in-linux
+- system restore
+  - https://github.com/teejee2008/timeshift    
 ******** Ubuntu                                                    :software:
 :PROPERTIES:
 :ID:       c28ef36f-5b5c-4789-90da-270e56fc4898
@@ -8797,6 +8818,14 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
 
 
 
+******** Reference
+- https://www.reddit.com/r/linux4noobs/comments/qwp95g/most_noobs_would_benefit_from_reading_the_linux/
+- https://www.kernel.org/doc/html/latest/admin-guide/index.html
+- https://www.reddit.com/r/linux4noobs/comments/p4198y/i_recently_find_out_this_command_line_tool_called/
+- https://github.com/cheesecakeufo/komorebi#what-is-komorebi
+- https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
+- [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
+- https://linustechtips.com/main/
 ******* MacOS
 :PROPERTIES:
 :ID:       80A0FABE-EB39-4BFC-8478-8044E6D84761
