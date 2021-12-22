@@ -181,7 +181,7 @@ primeKeyUnique = function(df,pk){
 :PROPERTIES:
 :ID:       c9327fad-4f38-4bbe-8b2e-58ad589fbdf6
 :END:
-***** Write Dockerfile
+***** Write [[file:docker/basecamp_Dockerfile][basecamp Dockerfile]]
 :PROPERTIES:
 :ID:       79e01a67-5ba1-4257-8353-8c5cf1ac8c4a
 :END:
@@ -442,6 +442,17 @@ https://stackoverflow.com/questions/44066117/convert-data-frame-to-reference-cla
 :PROPERTIES:
 :ID:       d013547e-3e14-4510-948a-4b24de6a2e62
 :END:
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.r
+# -*- mode: snippet -*-
+# key: code.r
+# expand-env: ((yas-indent-line 'none))
+# --
+,#+begin_src R
+$0
+,#+end_src
+#+end_src
+
+
 #+name: r.script
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/r.script
 # -*- mode: snippet -*-
@@ -3001,6 +3012,7 @@ CLOCK: [2017-10-18 Wed 09:12]--[2017-10-18 Wed 09:53] =>  0:41
 CLOCK: [2017-08-16 Wed 19:13]--[2017-08-16 Wed 19:15] =>  0:02
 CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 :END:
+- https://www.freecodecamp.org/news/svg-tutorial-learn-to-code-images/
 - https://cellencooper.medium.com/how-to-change-ok-google-to-a-different-phrase-bd6ca322398#:~:text=After%20launching%20the%20app%2C%20tap,to%20call%20your%20Google%20Assistant.
 - https://codeutopia.net/blog/2015/03/01/unit-testing-tdd-and-bdd/
 - https://askubuntu.com/questions/2799/how-to-merge-several-pdf-files
@@ -3347,11 +3359,6 @@ https://www.freecodecamp.org/news/rust-in-replit/
   - http://fredhutchio.github.io/intro-bioinformatics/06-python-oop.html#/now-lets-add-some-functionality
 - [[https://www.gnu.org/prep/standards/standards.html][GNU Coding Standards]]
 - https://x-team.com/blog/programming-best-practices/
-**** Document markup langugaes
-***** YAML
-:PROPERTIES:
-:ID:       2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5
-:END:
 **** General reference
 :PROPERTIES:
 :ID:       48dfc684-aa60-4222-8641-d1646b3451be
@@ -3376,26 +3383,30 @@ https://www.freecodecamp.org/news/rust-in-replit/
     - 
   - procedure-oriented- sequence of actions is more important to data
     - 'top down'
-**** languages
+**** Languages
 :PROPERTIES:
 :ID:       b9145567-7654-45d7-abb9-4418d3f12b90
 :END:
-- C++
-  - https://www.freecodecamp.org/news/learn-object-oriented-programming-oop-in-c-full-video-course/
-  - http://www.seqan.de/
-  - https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/
+
+  
+***** [[https://en.wikipedia.org/wiki/MUMPS][MUMPS]]
+  - https://en.wikipedia.org/wiki/GT.M
+***** AppScript
+  - https://developers.google.com/apps-script/articles/helpdesk_tutorial
+
+***** Reference
 - [[https://github.com/mohd-akram/languages][Language graph using cytoscape]]
-- Other languages
-  - [[http://proquest.safaribooksonline.com/9780124052123][Matlab by example]]
-  - [[https://en.wikipedia.org/wiki/MUMPS][MUMPS]]
-    - https://en.wikipedia.org/wiki/GT.M
-  - AppScript
-    - https://developers.google.com/apps-script/articles/helpdesk_tutorial
+***** Matlab
+- [[http://proquest.safaribooksonline.com/9780124052123][Matlab by example]]
 - [[https://www.mathworks.com/mwaccount/?status=success][matlab washu license]]
-- Scripting languages
+***** Scripting languages
   - AutoHotKey
     - [[https://autohotkey.com/docs/AutoHotkey.htm][Documentation]]
     - [[https://autohotkey.com/boards/viewtopic.php?t=9806][AutoHotKey-like resources on UNIX-based]]
+***** C++
+  - https://www.freecodecamp.org/news/learn-object-oriented-programming-oop-in-c-full-video-course/
+  - http://www.seqan.de/
+  - https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/
 ***** [[id:F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD][LINK TO R Statistical Computing]]
 :PROPERTIES:
 :ID:       1672D6B1-BCB8-428C-8AF1-013BC82A91AC
@@ -4453,6 +4464,8 @@ pandoc -S $test | xclip -selection clipboard
 :PROPERTIES:
 :ID:       5efce201-5375-42a8-a8d0-827a0325a7bf
 :END:
+- if readable
+  - https://www.google.com/search?q=bash+check+if+file+is+readable 
 - https://www.google.com/search?q=bash+check+if+on+vpn 
 - if exists
   - [[https://stackoverflow.com/questions/592620/how-can-i-check-if-a-program-exists-from-a-bash-script][check if program exists]]
@@ -4715,6 +4728,11 @@ if [[ $# -eq 0 ]] || [[ $1 == "h" ]] ; then
   - check and set file permissions as best practice
   - ideas for function development protocol-
     - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
+***** Document markup langugaes
+****** YAML
+:PROPERTIES:
+:ID:       2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5
+:END:
 **** JSON JavaScript Object Notation
 :PROPERTIES:
 :ID:       9E10CCC0-BC92-4C96-BBF2-99B54E88143D
@@ -4891,6 +4909,9 @@ cite:yasini2012guideline
 :END:
 - https://github.com/norvig/pytudes/blob/main/ipynb/risk.ipynb
 - https://github.com/alhassy/emacs.d/blob/master/README.org#what-does-literate-programming-look-like
+
+
+
 *** Hardware
 :PROPERTIES:
 :ID:       5186083B-28F0-47B1-9CED-E8F8C4181C1C
@@ -6306,7 +6327,15 @@ docker run \
 - reference
   - [[file:~/.emacs.d/snippets/org-mode/software]]
 ***** github
-  - - https://help.github.com/en/articles/about-project-boards
+:PROPERTIES:
+:ID:       e1bbc57a-0660-4ccf-a7e7-9870b3afbff7
+:END:
+  - https://stackoverflow.com/questions/33330771/git-lfs-this-exceeds-githubs-file-size-limit-of-100-00-mb
+- [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
+- [[id:E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6][Git]]
+- Processes
+  - https://www.google.com/search?q=github+new+repository 
+- https://help.github.com/en/articles/about-project-boards
 ***** gnome-terminal
 - gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
 
@@ -6734,6 +6763,16 @@ which singularity
 :LOGBOOK:
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
+`(make-string (+ 2 (org-current-level)) ?*)` Run commands
+,#+begin_src bash
+conda activate snakemake
+
+snakemake \
+  --cores $threads \
+  --printshellcmds \
+  --snakefile workflow/$1
+,#+end_src                      
+
 ****** Processes 
 - Install and setup
   - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
@@ -6777,31 +6816,23 @@ snakemake --lint
 # key: insert.smk
 # expand-env: ((yas-indent-line 'none))
 # --
-`(make-string (+ 1 (org-current-level)) ?*)` Snakefile
+`(make-string (+ 1 (org-current-level)) ?*)` ${1:SNAKEFILE HEADER TITLE} :smk: 
 :PROPERTIES:
-:header-args:snakemake: :tangle ./workflow/${1:SMK NAME}.smk
+:header-args:snakemake: :tangle ./workflow/${2:SMK NAME}.smk
 :END:              
-`(make-string (+ 2 (org-current-level)) ?*)` Preamble
+`(make-string (+ 2 (org-current-level)) ?*)` Smk preamble
 ,#+begin_src snakemake
             
 ,#+end_src              
-`(make-string (+ 2 (org-current-level)) ?*)` All rule
+`(make-string (+ 2 (org-current-level)) ?*)` Smk rules
+`(make-string (+ 3 (org-current-level)) ?*)` All rule
 ,#+begin_src snakemake
             
 ,#+end_src                            
-`(make-string (+ 2 (org-current-level)) ?*)` ${2:RULE 1}
+`(make-string (+ 3 (org-current-level)) ?*)` ${3:RULE 1}
 ,#+begin_src snakemake
             
 ,#+end_src
-`(make-string (+ 2 (org-current-level)) ?*)` Run commands
-,#+begin_src bash
-conda activate snakemake
-
-snakemake \
-  --cores $threads \
-  --printshellcmds \
-  --snakefile workflow/$1
-,#+end_src                      
 #+end_src
 - Insert snakemake rule org-mode headline
   #+name: snake.rule
@@ -7020,215 +7051,7 @@ https://github.com/simonthum/git-sync
 :ID:       E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6
 :END:
 :LOGBOOK:
-CLOCK: [2018-08-10 Fri 16:03]--[2018-08-10 Fri 16:13] =>  0:10
-CLOCK: [2017-11-29 Wed 19:30]--[2017-11-29 Wed 19:51] =>  0:21
-CLOCK: [2017-11-29 Wed 19:05]--[2017-11-29 Wed 19:25] =>  0:20
-CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
-CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
-CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
-:END:
-- https://github.com/UW-Madison-DataScience
-- processes 
-  - https://www.google.com/search?q=git+see+which+files+are+not+added 
-  - https://stackoverflow.com/questions/33330771/git-lfs-this-exceeds-githubs-file-size-limit-of-100-00-mb
-  - initializing
-    - https://www.google.com/search?q=initialize+git+repo
-    - git branch --set-upstream-to=origin/master master
-  - gitignore
-    - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
-    - https://labs.consol.de/development/git/2017/02/22/gitignore.html
-  - submodules
-    - add git submodule add <SUBMODULE>
-    - initialize git submodule update --recursive --init
-    - push and pull submodules
-      - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
-    - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
-    - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
-  - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
-  - [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]] 
-  - searching commits
-    - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
-  - reverting
-    - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
-    - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
-  - hooks
-    - file size limit hook      
-  - file comparisons
-    - https://doc.ubuntu-fr.org/meld
-  - removing files
-    - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
-    - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
-  - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
-- commands
-  | Action               | Command                                  |
-  |----------------------+------------------------------------------|
-  | <30>                 | <35>                                     |
-  | Create repo          | git init                                 |
-  | Ignore files         | touch .gitignore                         |
-  | Add (stage) file     | git add                                  |
-  | Add recursive        | git add --all                            |
-  | Remove (unstage)     | git reset                                |
-  | Last update          | git log --name-status HEAD^..HEAD        |
-  | To be commited       | git status                               |
-  | List untracked       | git ls-files --others --exclude-standard |
-  | List tracked         | git ls-tree -r master --name-only        |
-  | Stop tracking repo   | rm -rf .git/                             |
-  | View list of commits | git log                                  |
-  | View file changes    | git diff - HEAD --staged                 |
-  - Staging
-    - git add 'stages' a file- makes it ready to add to repo
-    - git reset unstages
-  - Branches
-    - git branch
-      - add and delete
-        - -d <BRANCH NAME>
-        - <BRANCH NAME> 
-    - git checkout <BRANCH> switch branches
-  - Pulls
-    - git merge- FIRST navigate to master, then git merge <BRANCH TO PULL>
-  - Changing within branch
-    - git commit- add changes WITHIN branch- full repo (not just a file) within branch
-    - git checkout -- undo last commit FOR A SPECIFIC FILE
-  - Reverting
-    - reverting a specific file
-      1. find the commit hash with =git log=
-      2. revert with =git checkout <COMMIT HASH> -- <FILE>=
-    - [[http://stackoverflow.com/questions/4114095/how-to-revert-git-repository-to-a-previous-commit][reverting to previous commit]]
-    - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: Is there a quick git command to see an old version of a file?]]
-  - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
-  - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
-  - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
-  - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
-  - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
-- best practices
-  - for git repos, use submodules to push common code up - https://git-scm.com/book/en/v2/Git-Tools-Submodules
-- Scripts
-  #+name:list-directories-under-git-vc
-  #+BEGIN_SRC sh :results silent
-  cd ~/
-  find . -type d -name '.git' > ~/all-git-repos.txt 
-  #+END_SRC
-- Documentation and general reference
-  - Commit
-  - [[https://git-scm.com/][git website]]
-    - [[https://git-scm.com/doc][documentation]]
-  - Basic concepts
-    - Repository
-    - Branching- the different versions of the repository
-      - Branches
-        - master
-        - feature- a new branch 
-      - Branching creates a snapshot of master
-    - Encorporating changes
-      - WITHIN a branch: Commit- changes to any branch, not necessarily master
-        - commits can have comments, but this is not necessary
-      - FROM ONE BRANCH TO ANOTHER: Pull request- to pull you changes INTO a branch 
-    - Distributed version control (no canonical, distributed version 'sync' via patch
-  - Educational Resources
-    - [[https://try.github.io/levels/1/challenges/1][Command line tutorial]]
-    - [[https://www.git-tower.com/learn/git/ebook/en/command-line/introduction#start][Tower: Learn Version Control with Git]]
-  - [[https://stackoverflow.com/questions/954560/how-does-git-handle-symbolic-links][How does Git handle symbolic links?]]
-- Git repository hosting services
-  - [[https://about.gitlab.com/][GitLab]]
-  - [[https://github.com/][GitHub]]
-    - https://www.reddit.com/r/programming/comments/7deyx8/introducing_security_alerts_on_github_with_your/
-    - [X] [2017-10-19 Thu] Have [[https://mail.google.com/mail/u/0/#inbox/15f3634fd86f200a][student dev pack!]]
-    - Primarily for using git with other people- the advantage is pull requests 
-    - Documentation
-    - [[https://help.github.com/articles/cloning-a-repository/][Cloning a repository]] via url: git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
-    - [[https://guides.github.com/][Guides]]
-      - [[https://guides.github.com/features/mastering-markdown/][Markdown]]
-  - https://guides.github.com/introduction/flow/
-  - GitHub
-    - https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push
-    - https://github.com/settings/keys
-    - [[https://education.github.com/?utm_source=newsletter&utm_medium=email&utm_campaign=student-survey-050818][github: educational tools]]
-    - [[https://guides.github.com/features/pages/][Getting Started with GitHub Pages]]
-    - [[https://education.github.com/pack?utm_source=announcement&utm_medium=email&utm_campaign=education-201806019][GitHub related tools]]
-    - [[https://github.com/trending/r?since=monthly][GitHub trending]]
-    - ideas
-      - https://stackoverflow.com/questions/11852982/can-i-arrange-repositories-into-folders-on-github/11859027#11859027
-    - https://github.com/features/actions
-    - https://lab.github.com/courses?utm_source=newsletter&utm_medium=email&utm_campaign=student-newsletter-120818
-- GUIs- https://www.sourcetreeapp.com/
-
-***** By application
-:PROPERTIES:
-:ID:       c18758a1-5db9-4ffe-8cc5-91c172a47331
-:END:
-
-****** Images
-:PROPERTIES:
-:ID:       57027e14-5ca6-4fdd-a50c-dcb98f81da39
-:END:
-- capture screen to gif
-  - https://www.cockos.com/licecap/
-******* imagemagick
-:PROPERTIES:
-:ID:       9b764756-e8af-4ef8-91c3-5e52bbc6ee33
-:END:
-#+begin_src bash
-for file in ~/Pre-PACE\ Images/*.pdf;
-do
-    base=$(basename -s .pdf "$file")
-    echo $base
-    convert -units PixelsPerInch "$file" -density 600 "${base}.tiff"
-done
-#+end_src
-
-- https://askubuntu.com/questions/573246/quick-way-to-calculate-dimension-in-inch-for-photos-in-ubuntu
-- https://askubuntu.com/questions/591733/rotate-images-from-terminal
-- https://unix.stackexchange.com/questions/406454/how-to-get-the-dpi-of-an-image-file-png
-****** Text editors
-:PROPERTIES:
-:ID:       e5de88cc-837e-45cb-b68d-e529a92a35d5
-:END:
-  - vim https://www.reddit.com/r/linux4noobs/comments/iy3mcc/vim_cheatsheet_for_noobs_with_corrections/
-****** Data storage and transfer
-:PROPERTIES:
-:ID:       40a77a9b-24f3-44a3-97bf-fbf64d4e43e7
-:END:
-  - - globus
-    - [[https://docs.globus.org/cli/][cli]]
-      - [[https://docs.globus.org/cli/reference/][documentation]]
-        - https://docs.globus.org/how-to/globus-connect-personal-linux/#globus-connect-personal-cli
-
-***** Version Control
-:PROPERTIES:
-:ID:       A9EE8CE0-ED58-4127-8B57-B53AE680B441
-:END:
-
-https://github.com/simonthum/git-sync
-- Web-based
-  - GitHub
-    - Contributions
-      - https://guides.github.com/activities/forking/
-      - [[https://help.github.com/articles/fork-a-repo/][Forking]] allows for posting
-      - [[https://help.github.com/articles/cloning-a-repository/][Cloning]] allows for work on a project
-    - [[https://opensource.guide/][GitHub open source guide]]
-      - [[https://opensource.guide/how-to-contribute/#anatomy-of-an-open-source-project][Anatomy of an open source project]]
-        - People
-          - Author
-          - Owner
-          - Maintainers
-          - Contributors
-          - Community members
-        - Documentation
-          - License
-          - Readme- guidance for using the project
-          - Contributing
-          - Code of conduct
-        - Tools to organize discussion
-          - Issue tracker
-          - Pull requests
-          - Discussion forums
-          - Chat
-
-****** Git
-:PROPERTIES:
-:ID:       E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6
-:END:
-:LOGBOOK:
+CLOCK: [2021-12-21 Tue 09:59]--[2021-12-21 Tue 10:29] =>  0:30
 CLOCK: [2018-08-10 Fri 16:03]--[2018-08-10 Fri 16:13] =>  0:10
 CLOCK: [2017-11-29 Wed 19:30]--[2017-11-29 Wed 19:51] =>  0:21
 CLOCK: [2017-11-29 Wed 19:05]--[2017-11-29 Wed 19:25] =>  0:20
@@ -7237,18 +7060,12 @@ CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
 - Processes and commands
-  - Branches
-    - git branch
-      - add and delete
-        - -d <BRANCH NAME>
-        - <BRANCH NAME> 
-    - git checkout <BRANCH> switch branches
-  - Changing within branch
-    - git commit- add changes WITHIN branch- full repo (not just a file) within branch
-    - git checkout -- undo last commit FOR A SPECIFIC FILE
-  - clone
+  - Clone
     - https://www.google.com/search?q=git+clone+github+stack 
-  - commands
+  - Initializing
+    - https://www.google.com/search?q=initialize+git+repo
+    - git branch --set-upstream-to=origin/master master
+  - Commands
     | Action               | Command                                  |
     |----------------------+------------------------------------------|
     | <30>                 | <35>                                     |
@@ -7264,7 +7081,11 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
     | Stop tracking repo   | rm -rf .git/                             |
     | View list of commits | git log                                  |
     | View file changes    | git diff - HEAD --staged                 |
-  - config
+  - Commit
+    - Changing within branch
+      - git commit- add changes WITHIN branch- full repo (not just a file) within branch
+      - git checkout -- undo last commit FOR A SPECIFIC FILE
+  - Configuration
     - hooks
       - beautiful file size limit pre-commit hook
         - https://stackoverflow.com/questions/39576257/how-to-limit-file-size-on-commit
@@ -7276,14 +7097,67 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
         - commit
       - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
       - https://labs.consol.de/development/git/2017/02/22/gitignore.html
-  - errors
+  - Errors
     - [[https://stackoverflow.com/questions/4254389/git-corrupt-loose-object/18238322#18238322][corrupt loose object]]
   - file comparisons
     - https://doc.ubuntu-fr.org/meld
   - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
-  - initializing
-    - https://www.google.com/search?q=initialize+git+repo
-    - git branch --set-upstream-to=origin/master master
+  - Processes 
+    - Initializing
+      - https://www.google.com/search?q=initialize+git+repo
+      - git branch --set-upstream-to=origin/master master
+    - gitignore
+      - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
+      - https://labs.consol.de/development/git/2017/02/22/gitignore.html
+    - Staging (Add)
+      - git add 'stages' a file- makes it ready to add to repo
+      - git reset unstages
+      - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
+    - Commit
+      - https://www.google.com/search?q=git+see+which+files+are+not+added 
+      - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
+      - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
+      - File comparisons
+        - https://doc.ubuntu-fr.org/meld
+      - git checkout -- undo last commit FOR A SPECIFIC FILE
+    - Pulls
+      - git merge- FIRST navigate to master, then git merge <BRANCH TO PULL>
+    - Viewing
+      - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
+    - Submodules
+      - add git submodule add <SUBMODULE>
+      - initialize git submodule update --recursive --init
+      - push and pull submodules
+        - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
+      - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
+      - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
+      - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
+    - [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]] 
+    - Searching commits
+      - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
+    - Reverting
+      - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
+      - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
+    - Hooks
+      - file size limit hook      
+    - Branches
+      - git branch
+        - add and delete
+          - -d <BRANCH NAME>
+          - <BRANCH NAME> 
+      - git checkout <BRANCH> switch branches
+    - Reverting
+      - reverting a specific file
+        1. find the commit hash with =git log=
+        2. revert with =git checkout <COMMIT HASH> -- <FILE>=
+      - [[http://stackoverflow.com/questions/4114095/how-to-revert-git-repository-to-a-previous-commit][reverting to previous commit]]
+      - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: Is there a quick git command to see an old version of a file?]]
+    - Removing files
+      - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
+      - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
+    - Remove repository
+      - https://www.google.com/search?q=git+remove+repository 
+      - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
   - Pulls
     - git merge- FIRST navigate to master, then git merge <BRANCH TO PULL>
   - [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]] 
@@ -7291,15 +7165,15 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
     - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
     - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
   - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
-  - reverting
-    - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
-    - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
   - Reverting
     - reverting a specific file
       1. find the commit hash with =git log=
       2. revert with =git checkout <COMMIT HASH> -- <FILE>=
     - [[http://stackoverflow.com/questions/4114095/how-to-revert-git-repository-to-a-previous-commit][reverting to previous commit]]
     - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: Is there a quick git command to see an old version of a file?]]
+    - reverting
+      - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
+      - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
   - searching within commits
     - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
   - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
@@ -7309,11 +7183,8 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
   - Staging
     - git add 'stages' a file- makes it ready to add to repo
     - git reset unstages
-  - submodule commands
-    - # git submodule foreach --recursive git checkout master
-    - # git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
-    - # git submodule foreach --recursive git pull
-    - # git submodule foreach --recursive git push
+  - Hooks
+    - https://stackoverflow.com/questions/2050450/git-hooks-management
   - submodules
     - add git submodule add <SUBMODULE>
     - initialize git submodule update --recursive --init
@@ -7368,9 +7239,127 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
       - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
     - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
     - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
+    - submodule commands
+      - # git submodule foreach --recursive git checkout master
+      - # git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
+      - # git submodule foreach --recursive git pull
+      - # git submodule foreach --recursive git push
   - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
   - [[https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git][undo]]    
   - view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
+  - Branch
+    - git branch
+      - add and delete
+        - -d <BRANCH NAME>
+        - <BRANCH NAME> 
+    - git checkout <BRANCH> switch branches
+- Best practices
+  - for git repos, use submodules to push common code up - https://git-scm.com/book/en/v2/Git-Tools-Submodules
+- Scripts
+  - Pre-commit file size check hook
+    #+name: git_size_check_hook
+    #+begin_src bash :noweb yes
+#!/bin/sh
+#########1#########2#########3#########4#########5#########6#########7#########8
+#
+# This script is imported from github.com/jeszyman/basecamp
+# See block git_size_check_hook in
+#  https://github.com/jeszyman/basecamp/blob/master/basecamp.org
+
+hard_limit=$(git config hooks.filesizehardlimit)
+soft_limit=$(git config hooks.filesizesoftlimit)
+: ${hard_limit:=10000000}
+: ${soft_limit:=500000}
+
+list_new_or_modified_files()
+{
+    git diff --staged --name-status|sed -e '/^D/ d; /^D/! s/.\s\+//'
+}
+
+unmunge()
+{
+    local result="${1#\"}"
+    result="${result%\"}"
+    env echo -e "$result"
+}
+
+check_file_size()
+{
+    n=0
+    while read -r munged_filename
+    do
+        f="$(unmunge "$munged_filename")"
+        h=$(git ls-files -s "$f"|cut -d' ' -f 2)
+        s=$(git cat-file -s "$h")
+        if [ "$s" -gt $hard_limit ]
+        then
+            env echo -E 1>&2 "ERROR: hard size limit ($hard_limit) exceeded: $munged_filename ($s)"
+            n=$((n+1))
+        elif [ "$s" -gt $soft_limit ]
+        then
+            env echo -E 1>&2 "WARNING: soft size limit ($soft_limit) exceeded: $munged_filename ($s)"
+        fi
+    done
+
+    [ $n -eq 0 ]
+}
+
+list_new_or_modified_files | check_file_size            
+#+end_src
+    #+name: git_size_check_hook_wrapper
+    #+begin_src org :noweb yes
+<<git_size_check_hook>>            
+#+end_src
+  - list-directories-under-git-vc
+    #+BEGIN_SRC sh :results silent
+cd ~/
+find . -type d -name '.git' > ~/all-git-repos.txt 
+#+END_SRC
+- Git repository hosting services
+  - [[https://about.gitlab.com/][GitLab]]
+  - [[https://github.com/][GitHub]]
+    - https://www.reddit.com/r/programming/comments/7deyx8/introducing_security_alerts_on_github_with_your/
+    - [X] [2017-10-19 Thu] Have [[https://mail.google.com/mail/u/0/#inbox/15f3634fd86f200a][student dev pack!]]
+    - Primarily for using git with other people- the advantage is pull requests 
+    - Documentation
+    - [[https://help.github.com/articles/cloning-a-repository/][Cloning a repository]] via url: git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
+    - [[https://guides.github.com/][Guides]]
+      - [[https://guides.github.com/features/mastering-markdown/][Markdown]]
+  - https://guides.github.com/introduction/flow/
+  - GitHub
+    - https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push
+    - https://github.com/settings/keys
+    - [[https://education.github.com/?utm_source=newsletter&utm_medium=email&utm_campaign=student-survey-050818][github: educational tools]]
+    - [[https://guides.github.com/features/pages/][Getting Started with GitHub Pages]]
+    - [[https://education.github.com/pack?utm_source=announcement&utm_medium=email&utm_campaign=education-201806019][GitHub related tools]]
+    - [[https://github.com/trending/r?since=monthly][GitHub trending]]
+    - ideas
+      - https://stackoverflow.com/questions/11852982/can-i-arrange-repositories-into-folders-on-github/11859027#11859027
+    - https://github.com/features/actions
+    - https://lab.github.com/courses?utm_source=newsletter&utm_medium=email&utm_campaign=student-newsletter-120818
+- [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]]
+- Documentation and general reference
+  - [[https://git-scm.com/][git website]]
+    - [[https://git-scm.com/doc][documentation]]
+  - Basic concepts
+    - Repository
+    - Branching- the different versions of the repository
+      - Branches
+        - master
+        - feature- a new branch 
+      - Branching creates a snapshot of master
+    - Encorporating changes
+      - WITHIN a branch: Commit- changes to any branch, not necessarily master
+        - commits can have comments, but this is not necessary
+      - FROM ONE BRANCH TO ANOTHER: Pull request- to pull you changes INTO a branch 
+    - Distributed version control (no canonical, distributed version 'sync' via patch
+  - Educational Resources
+    - [[https://try.github.io/levels/1/challenges/1][Command line tutorial]]
+    - [[https://www.git-tower.com/learn/git/ebook/en/command-line/introduction#start][Tower: Learn Version Control with Git]]
+  - [[https://stackoverflow.com/questions/954560/how-does-git-handle-symbolic-links][How does Git handle symbolic links?]]
+  - Reference
+    - https://github.com/UW-Madison-DataScience
+    - GUIs- https://www.sourcetreeapp.com/
 - Best practices
   - for git repos, use submodules to push common code up - https://git-scm.com/book/en/v2/Git-Tools-Submodules
 - Scripts
@@ -7468,6 +7457,78 @@ done
     - https://github.com/features/actions
     - https://lab.github.com/courses?utm_source=newsletter&utm_medium=email&utm_campaign=student-newsletter-120818
 - GUIs- https://www.sourcetreeapp.com/
+***** By application
+:PROPERTIES:
+:ID:       c18758a1-5db9-4ffe-8cc5-91c172a47331
+:END:
+
+****** Images
+:PROPERTIES:
+:ID:       57027e14-5ca6-4fdd-a50c-dcb98f81da39
+:END:
+- capture screen to gif
+  - https://www.cockos.com/licecap/
+******* imagemagick
+:PROPERTIES:
+:ID:       9b764756-e8af-4ef8-91c3-5e52bbc6ee33
+:END:
+#+begin_src bash
+for file in ~/Pre-PACE\ Images/*.pdf;
+do
+    base=$(basename -s .pdf "$file")
+    echo $base
+    convert -units PixelsPerInch "$file" -density 600 "${base}.tiff"
+done
+#+end_src
+
+- https://askubuntu.com/questions/573246/quick-way-to-calculate-dimension-in-inch-for-photos-in-ubuntu
+- https://askubuntu.com/questions/591733/rotate-images-from-terminal
+- https://unix.stackexchange.com/questions/406454/how-to-get-the-dpi-of-an-image-file-png
+****** Text editors
+:PROPERTIES:
+:ID:       e5de88cc-837e-45cb-b68d-e529a92a35d5
+:END:
+  - vim https://www.reddit.com/r/linux4noobs/comments/iy3mcc/vim_cheatsheet_for_noobs_with_corrections/
+****** Data storage and transfer
+:PROPERTIES:
+:ID:       40a77a9b-24f3-44a3-97bf-fbf64d4e43e7
+:END:
+  - - globus
+    - [[https://docs.globus.org/cli/][cli]]
+      - [[https://docs.globus.org/cli/reference/][documentation]]
+        - https://docs.globus.org/how-to/globus-connect-personal-linux/#globus-connect-personal-cli
+
+***** Version Control
+:PROPERTIES:
+:ID:       A9EE8CE0-ED58-4127-8B57-B53AE680B441
+:END:
+
+https://github.com/simonthum/git-sync
+- Web-based
+  - GitHub
+    - Contributions
+      - https://guides.github.com/activities/forking/
+      - [[https://help.github.com/articles/fork-a-repo/][Forking]] allows for posting
+      - [[https://help.github.com/articles/cloning-a-repository/][Cloning]] allows for work on a project
+    - [[https://opensource.guide/][GitHub open source guide]]
+      - [[https://opensource.guide/how-to-contribute/#anatomy-of-an-open-source-project][Anatomy of an open source project]]
+        - People
+          - Author
+          - Owner
+          - Maintainers
+          - Contributors
+          - Community members
+        - Documentation
+          - License
+          - Readme- guidance for using the project
+          - Contributing
+          - Code of conduct
+        - Tools to organize discussion
+          - Issue tracker
+          - Pull requests
+          - Discussion forums
+          - Chat
+
 ***** Operating Systems
 :PROPERTIES:
 :ID:       16DB2FD8-1988-48E4-8D8D-E69398823A70
