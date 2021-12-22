@@ -186,6 +186,7 @@ primeKeyUnique = function(df,pk){
 :ID:       79e01a67-5ba1-4257-8353-8c5cf1ac8c4a
 :END:
 #+begin_src bash :tangle ./docker/basecamp_Dockerfile
+FROM ubuntu:bionic
 #########1#########2#########3#########4#########5#########6#########7#########8
 
 #######################################################
@@ -204,12 +205,8 @@ primeKeyUnique = function(df,pk){
 #
 # See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
 
-FROM ubuntu:bionic
-
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Chicago
-RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
-    locale-gen
 ENV LANG en_US.UTF-8  
 ENV LANGUAGE en_US:en  
 ENV LC_ALL en_US.UTF-8    
@@ -217,6 +214,8 @@ ENV LC_ALL en_US.UTF-8
 ###########
 ### APT ###
 ###########
+
+RUN apt-get update
 
 RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
     build-essential \
@@ -321,6 +320,8 @@ RUN apt-get install -qq --no-install-recommends software-properties-common
 RUN add-apt-repository ppa:ubuntu-elisp/ppa
 RUN apt-get update
 RUN apt-get install -qq --no-install-recommends emacs-snapshot
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen
 
 ***** Build docker container
 :PROPERTIES:
