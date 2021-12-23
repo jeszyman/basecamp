@@ -6837,8 +6837,8 @@ rule ${1:$(string-replace " " "_" (downcase yas-text))}:
         """
         """
 ,#+end_src
-- [[file:./workflows/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh][Base script]]
-  ,#+begin_src :tangle ./workflows/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
+- [[file:./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh][Base script]]
+  ,#+begin_src :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
 # Snakemake variables
 # Function
 # Run command
