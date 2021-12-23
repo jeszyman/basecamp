@@ -6763,16 +6763,6 @@ which singularity
 :LOGBOOK:
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
-`(make-string (+ 2 (org-current-level)) ?*)` Run commands
-,#+begin_src bash
-conda activate snakemake
-
-snakemake \
-  --cores $threads \
-  --printshellcmds \
-  --snakefile workflow/$1
-,#+end_src                      
-
 ****** Processes 
 - Install and setup
   - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
@@ -6809,50 +6799,63 @@ snakemake --lint
 - R package management in snakemake rules
   - https://github.com/lachlandeer/snakemake-econ-r  
 ****** Local YAS
-- Insert snakemake org-mode tree
-  #+name: insert.smk
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/insert.smk
+- Insert snakemake file org-mode tree
+  #+name: smk
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk
 # -*- mode: snippet -*-
-# key: insert.smk
+# key: smk
 # expand-env: ((yas-indent-line 'none))
 # --
-`(make-string (+ 1 (org-current-level)) ?*)` ${1:SNAKEFILE HEADER TITLE} :smk: 
+`(make-string (org-current-level) ?*)` ${1: SNAKEMAKE PROCESS DESCRIPTIVE HEADER TITLE}:smk:
 :PROPERTIES:
-:header-args:snakemake: :tangle ./workflow/${2:SMK NAME}.smk
+:header-args:snakemake: :tangle ./workflow/${2: SNAKEFILE NAME}.smk
 :END:              
-`(make-string (+ 2 (org-current-level)) ?*)` Smk preamble
+`(make-string (+ 1 (org-current-level)) ?*)` Smk preamble
 ,#+begin_src snakemake
             
 ,#+end_src              
-`(make-string (+ 2 (org-current-level)) ?*)` Smk rules
-`(make-string (+ 3 (org-current-level)) ?*)` All rule
+`(make-string (+ 1 (org-current-level)) ?*)` Smk rules
+`(make-string (+ 2 (org-current-level)) ?*)` All rule
 ,#+begin_src snakemake
             
 ,#+end_src                            
-`(make-string (+ 3 (org-current-level)) ?*)` ${3:RULE 1}
-,#+begin_src snakemake
-            
-,#+end_src
+- add rules with smk.rule
 #+end_src
 - Insert snakemake rule org-mode headline
-  #+name: snake.rule
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/snake.rule
+  #+name: smk.rule
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule
 # -*- mode: snippet -*-
-# key: snake.rule
+# key: smk.rule
 # expand-env: ((yas-indent-line 'none))
 # --
-`(make-string (org-current-level) ?*)` ${1: RULE NAME}
-,#+begin_src snakemake
+`(make-string (org-current-level) ?*)` ${1: RULE NAME}:smk_rule:
+- Snakemake
+  ,#+begin_src snakemake
 rule ${1:$(string-replace " " "_" (downcase yas-text))}:
     input:
     output:
     shell:
         """
         """
-,#+end_src     
+,#+end_src
+- [[file:./workflows/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh][Base script]]
+  ,#+begin_src :tangle ./workflows/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
+# Snakemake variables
+# Function
+# Run command
+,#+end_src
 #+end_src
-
 ****** Reference
+- ideas
+  `(make-string (+ 2 (org-current-level)) ?*)` Run commands
+  ,#+begin_src bash
+  conda activate snakemake
+
+  snakemake \
+    --cores $threads \
+    --printshellcmds \
+    --snakefile workflow/$1
+  ,#+end_src                        
 - Standards and best practice
   - https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html#snakefiles-best-practices
 - Wildcards
