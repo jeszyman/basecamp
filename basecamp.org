@@ -3151,6 +3151,7 @@ CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 :PROPERTIES:
 :ID:       3A02CE83-279F-4D28-A56E-A8AF1094B77B
 :END:
+https://www.reddit.com/r/webdev/comments/r98r95/been_working_for_2_years_on_plasmic_a_visual/
 https://www.freecodecamp.org/news/creating-apis-with-python-free-19-hour-course/
 https://old.reddit.com/r/webdev/comments/pjfs7r/any_cheap_hosts/
 https://docs.aws.amazon.com/efs/latest/ug/wt2-apache-web-server.html#wt2-apache-web-server-one-ec2-host
@@ -6838,8 +6839,8 @@ rule ${1:$(string-replace " " "_" (downcase yas-text))}:
         """
         """
 ,#+end_src
-- [[file:./workflows/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh][Base script]]
-  ,#+begin_src :tangle ./workflows/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
+- [[file:./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh][Base script]]
+  ,#+begin_src :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
 # Snakemake variables
 # Function
 # Run command
