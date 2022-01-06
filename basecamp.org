@@ -6836,7 +6836,7 @@ snakemake --help
 - docker - https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html?highlight=docker#running-jobs-in-containers
 - R package management in snakemake rules
   - https://github.com/lachlandeer/snakemake-econ-r  
-****** Local YAS
+****** Local YAS (prefix smk.)
 - Insert snakemake file org-mode tree
   #+name: smk
   #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk
@@ -6859,6 +6859,35 @@ snakemake --help
 ,#+end_src                            
 - add rules with smk.rule
 #+end_src
+- Make R rule
+  #+name: smk.rule.r
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.r
+# -*- mode: snippet -*-
+# key: smk.rule.r
+# expand-env: ((yas-indent-line 'none))
+# --
+`(make-string (org-current-level) ?*)` ${1: RULE NAME}:smk_rule:
+- Snakemake
+  ,#+begin_src snakemake
+rule ${1:$(string-replace " " "_" (downcase yas-text))}:
+    input:
+    output:
+    script:
+        "scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R"
+,#+end_src
+- [[file:./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R][Base script]]
+  ,#+begin_src R :noweb yes :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R
+<<r_snakemake_preamble>>
+
+#########1#########2#########3#########4#########5#########6#########7#########8
+# Snakemake variables
+snakemake@input[[1]]
+snakemake@ouput[[1]]        
+# Function
+# Run command
+,#+end_src
+#+end_src
+
 - Insert snakemake rule org-mode headline
   #+name: smk.rule
   #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule
