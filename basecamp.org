@@ -7248,8 +7248,11 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
     - reverting
       - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
       - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
-  - searching within commits
-    - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
+  - Searching
+    - searching for deleted files https://www.google.com/search?q=git+search+deleted+files
+      - https://stackoverflow.com/questions/7203515/how-to-find-a-deleted-file-in-the-project-commit-history
+    - searching within commits
+      - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
   - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
   - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
   - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
