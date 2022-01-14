@@ -897,6 +897,9 @@ df
 :PROPERTIES:
 :ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
 :END:
+- multiple plots https://aosmith.rbind.io/2019/05/13/small-multiples-plot/
+- https://stackoverflow.com/questions/39694490/highlighting-individual-axis-labels-in-bold-using-ggplot2
+- https://stackoverflow.com/questions/30470293/how-to-underline-text-in-a-plot-title-or-label-ggplot2
 - [[https://gist.github.com/Rekyt/a7846af7c4c5fb5a48ea][ggplots over multiple pdf pages]]
 - https://patchwork.data-imaginist.com/articles/guides/assembly.html
 - https://cran.r-project.org/web/packages/ggfun/vignettes/ggfun.html
@@ -4734,8 +4737,6 @@ if [[ $# -eq 0 ]] || [[ $1 == "h" ]] ; then
 :PROPERTIES:
 :ID:       2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5
 :END:
-- Processes
-  - https://www.google.com/search?q=yaml+make+value+from+other+values 
 **** JSON JavaScript Object Notation
 :PROPERTIES:
 :ID:       9E10CCC0-BC92-4C96-BBF2-99B54E88143D
@@ -6804,7 +6805,6 @@ which singularity
 :LOGBOOK:
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
-- Can't run expand input for inputs into an R script
 ****** Processes 
 - Install and setup
   - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
@@ -6824,7 +6824,6 @@ snakemake --help
   - add singularity
     - 
 - Write
-  - can do multiple config files- see https://stackoverflow.com/questions/62696099/snakemake-multiple-config-files
   - https://stackoverflow.com/questions/69483414/unspecified-syntax-error-in-snakemake-rule
   - test workflow output- https://stackoverflow.com/questions/50198628/snakemake-confusion-on-how-to-access-config-files-properly
   - workaround for using snakemake vars in shell script https://stackoverflow.com/a/49533645/6106936
@@ -6863,18 +6862,9 @@ snakemake --help
 ,#+end_src                            
 - add rules with smk.rule
 #+end_src
-- Make Rule
-  #+name: smk.rule
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule
-# -*- mode: snippet -*-
-# key: smk.rule
-# expand-env: ((yas-indent-line 'none))
-# --
-smk.rule.${1:$$(yas-choose-value '("bash" "r"))}
-#+end_src
-  - R rule
-    #+name: smk.rule.r
-    #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.r
+- Make R rule
+  #+name: smk.rule.r
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.r
 # -*- mode: snippet -*-
 # key: smk.rule.r
 # expand-env: ((yas-indent-line 'none))
@@ -6900,11 +6890,12 @@ snakemake@ouput[[1]]
 # Run command
 ,#+end_src
 #+end_src
-  - Bash rule
-    #+name: smk.rule.bash
-    #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.bash
+
+- Insert snakemake rule org-mode headline
+  #+name: smk.rule
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule
 # -*- mode: snippet -*-
-# key: smk.rule.bash
+# key: smk.rule
 # expand-env: ((yas-indent-line 'none))
 # --
 `(make-string (org-current-level) ?*)` ${1: RULE NAME}:smk_rule:
@@ -6915,17 +6906,15 @@ rule ${1:$(string-replace " " "_" (downcase yas-text))}:
     output:
     shell:
         """
-        "scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh"
         """
 ,#+end_src
 - [[file:./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh][Base script]]
   ,#+begin_src :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
-# Snakemake variables
 # Function
+# Snakemake variables
 # Run command
 ,#+end_src
 #+end_src
-
 ****** Reference
 - #+PROPERTY: header-args:bash :tangle-mode (identity #o777)
 - ideas
@@ -7024,7 +7013,6 @@ snakemake --cores 20 --forceall
 #+end_src
 - https://snakemake.readthedocs.io/en/stable/executor_tutorial/google_lifesciences.html
 ****** Ideas
-- parse yaml for shell https://mikefarah.gitbook.io/yq/
 - email notices
 - lock emacs buffer regions with successful run
 ***** Timeshift
@@ -7263,11 +7251,8 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
     - reverting
       - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
       - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
-  - Searching
-    - searching for deleted files https://www.google.com/search?q=git+search+deleted+files
-      - https://stackoverflow.com/questions/7203515/how-to-find-a-deleted-file-in-the-project-commit-history
-    - searching within commits
-      - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
+  - searching within commits
+    - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
   - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
   - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
   - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
