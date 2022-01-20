@@ -6804,6 +6804,7 @@ which singularity
 :LOGBOOK:
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
+- http://smithlabresearch.org/manuals/preseqmanual.pdf
 - Can't run expand input for inputs into an R script
 ****** Processes 
 - Install and setup
