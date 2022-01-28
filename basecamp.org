@@ -3672,6 +3672,8 @@ rx_dict = {
 :PROPERTIES:
 :ID:       BF9D824A-02EF-4580-97A1-B887299AD461
 :END:
+- https://lgmoneda.github.io/2017/03/15/elisp-summary.html
+- https://learnxinyminutes.com/docs/elisp/
 - https://www.google.com/search?q=lisp+for+loop 
 - https://www.murilopereira.com/a-rabbit-hole-full-of-lisp/
 https://www.emacswiki.org/emacs/ElispCookbook
@@ -6784,9 +6786,9 @@ which singularity
 :LOGBOOK:
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
-https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
-- http://smithlabresearch.org/manuals/preseqmanual.pdf
-- Can't run expand input for inputs into an R script
+#! /usr/bin/env Rscript
+https://swcarpentry.github.io/r-novice-inflammation/05-cmdline/index.html
+https://lachlandeer.github.io/snakemake-econ-r-tutorial/logging-output-and-errors.html
 ****** Processes 
 - Install and setup
   - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
@@ -6806,7 +6808,6 @@ snakemake --help
   - add singularity
     - 
 - Write
-  - can do multiple config files- see https://stackoverflow.com/questions/62696099/snakemake-multiple-config-files
   - https://stackoverflow.com/questions/69483414/unspecified-syntax-error-in-snakemake-rule
   - test workflow output- https://stackoverflow.com/questions/50198628/snakemake-confusion-on-how-to-access-config-files-properly
   - workaround for using snakemake vars in shell script https://stackoverflow.com/a/49533645/6106936
@@ -6815,6 +6816,7 @@ snakemake --help
     - [[id:2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5][YAML document markup language]]
     - Using config variables
       - https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
+    - can do multiple config files- see https://stackoverflow.com/questions/62696099/snakemake-multiple-config-files
 - Run
   --lint
   --rulegraph
@@ -6830,7 +6832,7 @@ snakemake --help
 # key: smk
 # expand-env: ((yas-indent-line 'none))
 # --
-`(make-string (org-current-level) ?*)` ${1: SNAKEMAKE PROCESS DESCRIPTIVE HEADER TITLE}:smk:
+`(make-string (org-current-level) ?*)` [[file:./workflow/$2.smk][${1: SNAKEMAKE PROCESS DESCRIPTIVE HEADER TITLE}]]:smk:
 :PROPERTIES:
 :header-args:snakemake: :tangle ./workflow/${2: SNAKEFILE NAME}.smk
 :END:              
@@ -6841,9 +6843,15 @@ snakemake --help
 `(make-string (+ 1 (org-current-level)) ?*)` Smk rules
 `(make-string (+ 2 (org-current-level)) ?*)` All rule
 ,#+begin_src snakemake
-            
+rule all:
+    input:
+                    
 ,#+end_src                            
 - add rules with smk.rule
+`(make-string (+ 1 (org-current-level)) ?*)` Ideas
+:PROPERTIES:
+:header-args:snakemake: :tangle no
+:END:  
 #+end_src
 - Make Rule
   #+name: smk.rule
@@ -6866,20 +6874,26 @@ smk.rule.${1:$$(yas-choose-value '("bash" "r"))}
   ,#+begin_src snakemake
 rule ${1:$(string-replace " " "_" (downcase yas-text))}:
     input:
+    params:
+        script = config["repo"] + "workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R"
     output:
-    script:
+    log:
+        config["data_dir"] + "/logs/${1:$(string-replace " " "_" (downcase yas-text))}.log"
+    shell:
+        """
+        Rscript {params.script} \
+        >& {log}
+        """
         "scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R"
 ,#+end_src
 - [[file:./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R][Base script]]
   ,#+begin_src R :noweb yes :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R
-<<r_snakemake_preamble>>
-
 #########1#########2#########3#########4#########5#########6#########7#########8
-# Snakemake variables
-snakemake@input[[1]]
-snakemake@ouput[[1]]        
-# Function
-# Run command
+
+###
+###   ${2: SCRIPT TITLE}   ###                
+###
+        
 ,#+end_src
 #+end_src
   - Bash rule
@@ -6901,7 +6915,7 @@ rule ${1:$(string-replace " " "_" (downcase yas-text))}:
         """
 ,#+end_src
 - [[file:./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh][Base script]]
-  ,#+begin_src :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
+  ,#+begin_src bash :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
 # Snakemake variables
 # Function
 # Run command
@@ -6909,6 +6923,7 @@ rule ${1:$(string-replace " " "_" (downcase yas-text))}:
 #+end_src
 
 ****** Reference
+- https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
 - #+PROPERTY: header-args:bash :tangle-mode (identity #o777)
 - ideas
   `(make-string (+ 2 (org-current-level)) ?*)` Run commands
