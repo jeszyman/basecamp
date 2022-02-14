@@ -3303,7 +3303,7 @@ https://www.codecademy.com/courses/web-beginner-en-HZA3b/0/1?curriculum_id=50579
 :PROPERTIES:
 :ID:       1B7FE5C7-8E08-499B-A742-D916138193EF
 :END:
-
+- https://www.freecodecamp.org/news/how-to-create-and-implement-a-design-system-with-css/
   - https://css-tricks.com/building-a-jekyll-site-part-3-of-3/
   - [[https://www.youtube.com/watch?v=yfoY53QXEnI][Traversy CSS Crash Course For Absolute Beginners]]
 
@@ -6808,9 +6808,6 @@ which singularity
 :LOGBOOK:
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
-
-- https://swcarpentry.github.io/r-novice-inflammation/05-cmdline/index.html
-- https://lachlandeer.github.io/snakemake-econ-r-tutorial/logging-output-and-errors.html
 ****** Processes 
 - Install and setup
   - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
@@ -6837,6 +6834,7 @@ snakemake --help
 - R package management in snakemake rules
   - https://github.com/lachlandeer/snakemake-econ-r  
 ******* Writing snakefiles
+- https://lachlandeer.github.io/snakemake-econ-r-tutorial/logging-output-and-errors.html
 - https://stackoverflow.com/questions/69483414/unspecified-syntax-error-in-snakemake-rule
 - test workflow output- https://stackoverflow.com/questions/50198628/snakemake-confusion-on-how-to-access-config-files-properly
 - workaround for using snakemake vars in shell script https://stackoverflow.com/a/49533645/6106936
@@ -6876,42 +6874,42 @@ rule all:
 :header-args:snakemake: :tangle no
 :END:  
 #+end_src
-- Make Rule
-  #+name: smk.rule
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule
+******* Make Rule
+#+name: smk.rule
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule
 # -*- mode: snippet -*-
 # key: smk.rule
 # expand-env: ((yas-indent-line 'none))
 # --
 smk.rule.${1:$$(yas-choose-value '("bash" "r"))}
 #+end_src
-  - R rule
-    #+name: smk.rule.r
-    #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.r
+******* R rule
+#+name: smk.rule.r
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.r
 # -*- mode: snippet -*-
 # key: smk.rule.r
 # expand-env: ((yas-indent-line 'none))
 # --
 `(make-string (org-current-level) ?*)` ${1: RULE NAME}:smk_rule:
 - Snakemake
-  ,#+begin_src snakemake
+,#+begin_src snakemake
 rule ${1:$(string-replace " " "_" (downcase yas-text))}:
-    input:
-    params:
-        script = config["repo"] + "/workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R"
-    output:
-    log:
-        config["data_dir"] + "/logs/${1:$(string-replace " " "_" (downcase yas-text))}.log"
-    shell:
-        """
-        Rscript {params.script} \
-        >& {log}
-        """
+input:
+params:
+    script = config["repo"] + "/workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R"
+output:
+log:
+    config["data_dir"] + "/logs/${1:$(string-replace " " "_" (downcase yas-text))}.log"
+shell:
+    """
+    Rscript {params.script} \
+    >& {log}
+    """
 ,#+end_src
 - [[file:./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R][Base script]]
-  ,#+begin_src R :noweb yes :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R
+,#+begin_src R :noweb yes :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R
+#!/usr/bin/env Rscript
 #########1#########2#########3#########4#########5#########6#########7#########8
-
 ###
 ###   ${2: SCRIPT TITLE}   ###                
 ###
@@ -6920,33 +6918,37 @@ args = commandArgs(trailingOnly = TRUE)
 = args[1]                
 ,#+end_src
 #+end_src
-  - Bash rule
-    #+name: smk.rule.bash
-    #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.bash
+******* Bash rule
+#+name: smk.rule.bash
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.bash
 # -*- mode: snippet -*-
 # key: smk.rule.bash
 # expand-env: ((yas-indent-line 'none))
 # --
 `(make-string (org-current-level) ?*)` ${1: RULE NAME}:smk_rule:
 - Snakemake
-  ,#+begin_src snakemake
+,#+begin_src snakemake
 rule ${1:$(string-replace " " "_" (downcase yas-text))}:
-    input:
-    output:
-    shell:
-        """
-        scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
-        """
+input:
+output:
+shell:
+    """
+    scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
+    """
 ,#+end_src
 - [[file:./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh][Base script]]
-  ,#+begin_src bash :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
-# Snakemake variables
-# Function
-# Run command
+,#+begin_src bash :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
+#!/usr/bin/env bash
+#########1#########2#########3#########4#########5#########6#########7#########8               
+###
+###   ${2: SCRIPT TITLE}   ###                
+###
+
 ,#+end_src
 #+end_src
 
 ****** Reference
+- https://swcarpentry.github.io/r-novice-inflammation/05-cmdline/index.html
 - https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
 - #+PROPERTY: header-args:bash :tangle-mode (identity #o777)
 - ideas
@@ -7282,7 +7284,6 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 - Staging
   - git add 'stages' a file- makes it ready to add to repo
   - git reset unstages
-
 - Hooks
   - https://stackoverflow.com/questions/2050450/git-hooks-management
 - [[https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git][undo]]    
