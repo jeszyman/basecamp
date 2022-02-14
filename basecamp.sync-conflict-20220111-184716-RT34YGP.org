@@ -186,7 +186,6 @@ primeKeyUnique = function(df,pk){
 :ID:       79e01a67-5ba1-4257-8353-8c5cf1ac8c4a
 :END:
 #+begin_src bash :tangle ./docker/basecamp_Dockerfile
-FROM ubuntu:bionic
 #########1#########2#########3#########4#########5#########6#########7#########8
 
 #######################################################
@@ -205,8 +204,12 @@ FROM ubuntu:bionic
 #
 # See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
 
+FROM ubuntu:bionic
+
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Chicago
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen
 ENV LANG en_US.UTF-8  
 ENV LANGUAGE en_US:en  
 ENV LC_ALL en_US.UTF-8    
@@ -214,8 +217,6 @@ ENV LC_ALL en_US.UTF-8
 ###########
 ### APT ###
 ###########
-
-RUN apt-get update
 
 RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
     build-essential \
@@ -320,8 +321,6 @@ RUN apt-get install -qq --no-install-recommends software-properties-common
 RUN add-apt-repository ppa:ubuntu-elisp/ppa
 RUN apt-get update
 RUN apt-get install -qq --no-install-recommends emacs-snapshot
-RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
-    locale-gen
 
 ***** Build docker container
 :PROPERTIES:
@@ -431,7 +430,6 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
-command line parsing argparse
 http://r4ds.had.co.nz/
 https://beep-boopr.github.io/ubcBIOL548L/articles/group-03_Using-cowplot-multi-panel.html
 - https://stackoverflow.com/questions/20934103/if-file-exists-in-folder-read-it-else-skip-the-processing-part
@@ -523,8 +521,6 @@ as.character(Sys.info()["nodename"])
 CLOCK: [2021-06-04 Fri 10:25]--[2021-06-04 Fri 10:58] =>  0:33
 CLOCK: [2019-03-19 Tue 14:35]--[2019-03-19 Tue 16:45] =>  2:10
 :END:
-- [[id:39F11977-BE11-47CF-98B1-14CE6D9B97C4][Information Science / Data Science]]
-- https://www.r-bloggers.com/2021/06/10-tips-and-tricks-for-data-scientists-vol-9/amp/
 - https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
 ***** Examples
 :PROPERTIES:
@@ -901,6 +897,9 @@ df
 :PROPERTIES:
 :ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
 :END:
+- multiple plots https://aosmith.rbind.io/2019/05/13/small-multiples-plot/
+- https://stackoverflow.com/questions/39694490/highlighting-individual-axis-labels-in-bold-using-ggplot2
+- https://stackoverflow.com/questions/30470293/how-to-underline-text-in-a-plot-title-or-label-ggplot2
 - [[https://gist.github.com/Rekyt/a7846af7c4c5fb5a48ea][ggplots over multiple pdf pages]]
 - https://patchwork.data-imaginist.com/articles/guides/assembly.html
 - https://cran.r-project.org/web/packages/ggfun/vignettes/ggfun.html
@@ -1364,57 +1363,42 @@ CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
 :ID:       39F11977-BE11-47CF-98B1-14CE6D9B97C4
 :END:
 :LOGBOOK:
-CLOCK: [2022-01-24 Mon 07:30]--[2022-01-24 Mon 08:05] =>  0:35
 CLOCK: [2021-06-04 Fri 08:50]--[2021-06-04 Fri 09:53] =>  1:03
 CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 :END:
-https://www.scnsoft.com/blog/guide-to-data-quality-management
+- https://www.dataquest.io/
+https://www.reddit.com/r/datascience/comments/qore0i/what_is_something_you_took_the_time_to_learn_that/
+- https://www.storytellingwithdata.com/
+- https://www.reddit.com/r/datascience/comments/q9xejd/csv_alternative_with_type_information/
+- cite:dorr2017
+- https://github.com/UW-Madison-DataScience
+- batch effect https://evayiwenwang.github.io/Managing_batch_effects/detect.html
+https://www.classcentral.com/report/best-data-science-curriculum/
+https://www.r-bloggers.com/2021/06/10-tips-and-tricks-for-data-scientists-vol-9/amp/
+https://github.com/aaronwangy/Data-Science-Cheatsheet
+https://github.com/norvig/pytudes/blob/main/ipynb/risk.ipynb
+http://aifdb.org/argview/4
+https://argdown.org/sandbox/map
+https://towardsdatascience.com/a-better-way-to-visualize-decision-trees-with-the-dtreeviz-library-758994cdf05e
+- https://www.freecodecamp.org/news/teach-yourself-data-analytics-in-30-days/
 *** Data science project management
 :PROPERTIES:
 :ID:       0b4dfeac-fc55-47b1-956c-38fb19eba7ff
 :END:
-:LOGBOOK:
-CLOCK: [2022-01-24 Mon 08:05]--[2022-01-24 Mon 08:33] =>  0:28
-:END:
-- cite:sarkar2014 Chapter 2
-  - Integration
-    - Transformation 
-    - Understanding source data
-      - Identify the purpose of each table
-      - Understand constraints and checks
-    - Data model- a subset of the union of diverse data
-    - Logical and physical integration
-      - In physical, data is constructed in the global model instead of referred to   
-  - Metadata
-    - Ontology is metadata with technical and descriptive components 
-    - Technical
-      - Constraints and rules in syntax of interpreted language
-      - 
-      - Source documentation
-        - Columns of each table
-        - Inter-table relationships
-        - Enumerations (permissible values)
-- Project structures and management packages
-  - http://pep.databio.org/en/latest/
-  - https://github.com/dslp/dslp
-    - https://github.com/dslp/dslp-repo-template
-  - https://docs.microsoft.com/en-us/azure/architecture/data-science-process/overview
-  - https://kedro.readthedocs.io/en/stable/
-  - https://github.com/ploomber/ploomber
-  - https://drivendata.github.io/cookiecutter-data-science/#directory-structure
-- Management packages
-- General reference
-  - https://www.reddit.com/r/datascience/comments/fzweaf/my_giant_data_quality_checklist/  
-  - https://www.reddit.com/r/datascience/comments/mrwzkq/what_is_the_best_structured_ds_project_you_have/
-  - https://www.reddit.com/r/datascience/comments/brwlkx/data_science_production_process_bestpractices/
-  - http://www.thinkingondata.com/5-papers-about-data-science-project-management/
-  - https://www.reddit.com/r/datascience/comments/mrwzkq/what_is_the_best_structured_ds_project_you_have/
-  - data derivation graph https://harvardforest.fas.harvard.edu/blog/cooking-laptop#:~:text=A%20DDG%2C%20or%20Data%20Derivation,pink%20and%20purple%20data%20nodes.
-- Data dictionary
-  - [[id:10075da5-5535-4426-95d0-c0c53a2d1aae][Data dictionary mod]]
-  - https://www.reddit.com/r/statistics/comments/b5sg97/what_makes_a_good_data_dictionary/
-  - cite:pedsnet    
-- [[id:d4c65ebf-8abd-4876-8b79-08ae9fcc50c2][Software engineering]]
+- http://pep.databio.org/en/latest/
+- https://www.reddit.com/r/datascience/comments/mrwzkq/what_is_the_best_structured_ds_project_you_have/
+- https://www.reddit.com/r/statistics/comments/b5sg97/what_makes_a_good_data_dictionary/
+- https://www.kdnuggets.com/2019/03/best-tips-agile-data-science-research.html
+- https://www.reddit.com/r/datascience/comments/brwlkx/data_science_production_process_bestpractices/
+- http://www.thinkingondata.com/5-papers-about-data-science-project-management/
+- https://www.reddit.com/r/datascience/comments/fzweaf/my_giant_data_quality_checklist/
+- cite:pedsnet
+- https://drivendata.github.io/cookiecutter-data-science/#directory-structure
+- https://github.com/dslp/dslp-repo-template
+- https://www.reddit.com/r/datascience/comments/mrwzkq/what_is_the_best_structured_ds_project_you_have/
+- https://drivendata.github.io/cookiecutter-data-science/#directory-structure
+- https://github.com/dslp/dslp-repo-template
+- data derivation graph https://harvardforest.fas.harvard.edu/blog/cooking-laptop#:~:text=A%20DDG%2C%20or%20Data%20Derivation,pink%20and%20purple%20data%20nodes.
 - Examples
   - cite:waagmeester2020
   - https://www.reddit.com/r/datascience/comments/8haezl/python_google_sheets_api_tableau_public_full/
@@ -1424,25 +1408,404 @@ CLOCK: [2022-01-24 Mon 08:05]--[2022-01-24 Mon 08:33] =>  0:28
     - https://www.cdc.gov/globalhealth/healthprotection/fetp/training_modules/10/managing-data_pw_final_09252013.pdf
     - http://www.comp.dit.ie/btierney/BSI/Han%20Book%20Ch3%20DataExploration.pdf
     - cite:kotsiantis2006
+*** Data wrangling
+:PROPERTIES:
+:ID:       20b10d38-1d24-4a0e-b9b8-d6f2b1394efe
+:END:
+- https://github.com/ben519/DataWrangling
+- cite:pedsnet
+- cite:press2016
+- https://en.wikipedia.org/wiki/OpenRefine
+- https://www.reddit.com/r/datascience/comments/fzweaf/my_giant_data_quality_checklist/
+- missing data imputation http://factominer.free.fr/missMDA/appendix_These_Audigier.pdf
+*** By data type
+:PROPERTIES:
+:ID:       5e1e3127-b16d-499d-8175-b93ceebc0756
+:END:
+- Text
+  - http://labs.rd.ciencias.ulisboa.pt/book/
+- GIS
+  - [[https://docs.qgis.org/3.16/en/docs/][QGIS documentation]]
+*** [[id:CFACF7AD-30FC-4200-92FE-3710B5DC5E9E][LINK TO Machine Learning]]
+:PROPERTIES:
+:ID:       eca4f279-86ee-40ea-a78b-3cddb00b6c67
+:END:
+*** Computable Knowledge
+:PROPERTIES:
+:ID:       29bf3b2d-20c0-4bf7-a06c-3a029b48e5d4
+:END:
+  - Ontology
+    - https://protege.stanford.edu/conference/2006/submissions/slides/OWLTutorial_Part1.pdf
+    - Protege
+      - http://mowl-power.cs.man.ac.uk/protegeowltutorial/resources/ProtegeOWLTutorialP4_v1_2.pdf
+      - https://media.readthedocs.org/pdf/go-protege-tutorial/latest/go-protege-tutorial.pdf
+      - https://protege.stanford.edu/conference/2006/submissions/slides/AppDevelopmentTutorial_Part1.pdf
+    - - https://pypi.python.org/pypi/Owlready2
+    - https://www.w3.org/OWL/
+    - http://obofoundry.org/
+    - http://www.cs.man.ac.uk/~stevensr/menupages/background.php
+    - http://www.obofoundry.org/
+    - https://protegewiki.stanford.edu/wiki/Main_Page
+    - http://protege.stanford.edu/community.php
+    - https://www.youtube.com/watch?v=8Nf2xf5akoM
+    - https://www.ncbi.nlm.nih.gov/pubmed/27239556
+*** Data science communication
+:PROPERTIES:
+:ID:       40bbdcfd-f7c4-49a3-b7ee-d2b7f0bbf92a
+:END:
+- Apps - https://plot.ly/
 - https://www.reddit.com/r/datascience/comments/am2cep/guidelines_for_writing_data_analysis_reports/
-- [[id:1DA3ABC0-79B0-4CED-B926-22B37840379D][Data Visualization]]
-- [[id:20b10d38-1d24-4a0e-b9b8-d6f2b1394efe][Data pre-processing / data wrangling]]  
-*** Data structures
+**** [[id:1DA3ABC0-79B0-4CED-B926-22B37840379D][LINK TO Data Visualization]]
+:PROPERTIES:
+:ID:       c9c6519c-3eee-4542-b72d-1ad34c465d13
+:END:
+*** <<<Data Visualization>>>
+:PROPERTIES:
+:ID:       1DA3ABC0-79B0-4CED-B926-22B37840379D
+:END:
+:LOGBOOK:
+CLOCK: [2017-10-30 Mon 15:33]--[2017-10-30 Mon 15:46] =>  0:13
+CLOCK: [2017-10-30 Mon 14:55]--[2017-10-30 Mon 14:59] =>  0:04
+:END:
+- https://www.reddit.com/r/dataisbeautiful/comments/b1ao5h/estimating_pi_using_monte_carlo_simulation_oc/
+- https://www.reddit.com/r/dataisbeautiful/comments/8yrevu/oc_street_orientation_of_dutch_cities/
+- https://www.reddit.com/r/dataisbeautiful/comments/8uo1q9/popcorn_analytics_oc/
+- https://www.reddit.com/r/datascience/comments/8haezl/python_google_sheets_api_tableau_public_full/
+https://www.freecodecamp.org/news/learn-data-visualization-in-this-free-17-hour-course/
+https://www.reddit.com/r/dataisbeautiful/comments/jkqbtk/oc_presidential_election_forecast_current/
+- https://www.reddit.com/r/dataisbeautiful/comments/89tcd8/monthly_usa_birth_rate_19332015_more_charts_in/dwtcvkv/?st=jfpn11lm&sh=f8f9d265
+
+- https://www.reddit.com/r/dataisbeautiful/comments/8a4gbr/the_office_characters_most_distinguishing_words_oc/dwvr99n/?st=jfpn0x1j&sh=b083f7c5
+
+- https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003833
+- https://www.reddit.com/r/bioinformatics/comments/jd3k0x/what_is_the_most_aesthetically_pleasing_figure/
+- https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008259
+- https://old.reddit.com/r/orgmode/comments/jbl1ky/use_d3_js_and_graphviz_to_publish_git_dynamic/
+- [[https://vega.github.io/vega/docs/schemes/][dark2 scheme]]
+    - nice color scheme https://stackoverflow.com/questions/9563711/r-color-palettes-for-many-data-classes
+
+- https://setosa.io/#/
+- https://www.datarevelations.com/resources/bans/
+- http://compbio.ucsd.edu/making-heat-maps-r/
+- https://biit.cs.ut.ee/clustvis/
+https://github.com/paulvangentcom/python_corona_simulation?files=1
+https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
+https://www.davidrumsey.com/ll/thumbnailView.html?startUrl=%2F%2Fwww.davidrumsey.com%2Fluna%2Fservlet%2Fas%2Fsearch%3Fos%3D0%26mid%3DRUMSEY~8~1~275397~90048657%26sort%3DPub_List_No_InitialSort%2CPub_Date%2CPub_List_No%2CSeries_No%26bs%3D100
+http://www.npr.org/2013/01/18/169708761/edward-tufte-wants-you-to-see-better
+https://www.reddit.com/r/datascience/comments/diufp0/are_there_other_thinkers_with_different_ideas_in/
+https://towardsdatascience.com/recreating-gapminder-animation-in-2-lines-of-python-with-plotly-express-2060c73bedec
+https://www.reddit.com/r/dataisbeautiful/comments/b2fybb/animation_the_10_biggest_cities_in_the_world/
+https://www.reddit.com/r/dataisbeautiful/comments/adhzrw/watch_my_money_flow_an_animated_representation_of/edh0ksm/
+cite:rougier2014 
+https://www.reddit.com/r/dataisbeautiful/comments/aa92ex/seeing_theory/
+  - https://ourworldindata.org/
+https://pbs.twimg.com/media/C0NSXNuXAAIpUgN.jpg:large
+https://www.reddit.com/r/dataisbeautiful/comments/9yg8w9/googles_autocomplete_visualized_like_a_graph_link/
+- d3.js
+  - https://www.google.com/search?safe=off&rlz=1CDGOYI_enUS769US769&hl=en-US&ei=CAnMWuLGEOzGjwTquqnIAQ&q=d3+javascript&oq=d3+java&gs_l=mobile-gws-serp.1.0.0i67j0l4.3717.5619..6830...0....70.515.8..........1..mobile-gws-wiz-serp.......0i71j0i22i30j0i22i10i30j0i131.VC5uK7rClo4%3D
+https://www.theverge.com/platform/amp/2018/10/28/18022986/data-visualization-information-is-beautiful-2018
+https://www.awsgeek.com/
+https://www.reddit.com/r/statistics/comments/2jon2b/anyone_knows_how_are_made_the_graphs_on/#ampf=undefined
+- [[https://www.shipmap.org/]]
+- https://www.reddit.com/r/coolguides/comments/9l83yl/a_guide_4000_years_of_history/
+- https://www.reddit.com/r/dataisbeautiful/comments/9kg9ym/oc_recent_philosophy_visualized/
+- https://processing.org/
+- matlab example- - https://www.reddit.com/r/dataisbeautiful/comments/7ve4i8/comparison_between_two_quadruple_pendulums_with/
+- https://www.reddit.com/r/dataisbeautiful/comments/8nadwr/every_road_in_the_continental_us_oc/
+- https://datavizproject.com/function/part-to-whole/
+- https://datavizcatalogue.com/
+- http://web.cse.ohio-state.edu/~ji.62/VisProject/vis~.html
+- https://www.gapminder.org/
+  - https://www.gapminder.org/tools/#_state_time_delay:100;&marker_axis/_x_scaleType=linear;;;&data_/_lastModified:1521499532636;&chart-type=bubbles
+  - https://github.com/Gapminder
+- https://vizhub.healthdata.org/gbd-compare/
+- See also
+  - ggplot2
+- cite:Liu_2014
+- Representation types
+  - network visualization
+    - http://www.hiveplot.com/
+- Platforms
+  - - https://gephi.org/
+  - - http://chimera.labs.oreilly.com/books/1230000000345/index.html
+  - [[https://d3js.org/][D3 data driven documents]]
+    - - [[https://www.reddit.com/r/dataisbeautiful/comments/72c06m/im_elijah_meeks_author_of_d3js_in_action_and/][reddit: Elijah Meeks, author of D3Js]]
+    - http://vis.stanford.edu/protovis/ex/
+  - Tableau
+    - [[https://www.tableau.com/learn/training][Training videos]]
+      - 
+- Examples
+  - https://observablehq.com/@petulla/statistical-power-explorable
+    - - http://www.shorttails.io/interactive-map-of-reddit-and-subreddit-similarity-calculator/
+  - https://www.reddit.com/r/dataisbeautiful/comments/7b7aa0/visualizing_the_depthfirst_search_recursive/dpfr49n/
+  - - https://beno.org.uk/metromapcreator/
+  - - http://www.besthealthdegrees.com/health-risks/
+  - https://github.com/USGS-VIZLAB/hurricane-irma
+  - - http://www.visualcapitalist.com/wp-content/uploads/2017/09/cognitive-bias-infographic.html
+  - - [[http://flowingdata.com/2017/01/24/one-dataset-visualized-25-ways/][One Dataset, Visualized 25 Ways]]
+  - [[https://www.reddit.com/r/dataisbeautiful/comments/6m0wo7/peak_time_for_sports_and_leisure_oc/][Peak time for sports and leisure {OC}]]
+  - https://pudding.cool/2017/03/film-dialogue/index.html
+  - https://pudding.cool/2017/05/song-repetition/
+  - [[http://students.brown.edu/seeing-theory/][brown.edu Seeing theory]]
+  - [[http://setosa.io/ev/principal-component-analysis/][setosa Principal Component Analysis Explained Visually]]
+  - [[https://trends.google.com/trends/explore][Google trends]]
+  - [[https://www.reddit.com/r/educationalgifs/comments/6iv0kk/how_herd_immunity_works/dj9a5e3/][gif simulation]]
+  - http://www.informationisbeautiful.net/visualizations/snake-oil-supplements/
+  - https://www.bloomberg.com/graphics/2015-whats-warming-the-world/
+  - [[https://www.reddit.com/r/dataisbeautiful/comments/6qnkg0/google_search_interest_follows_the_path_of_the/][reddit: Google search interest follows the path of the August 21, 2017 solar eclipse]]
+- Guides
+  - [[https://www.reddit.com/r/IWantToLearn/comments/62ns0p/how_do_i_create_infographic_videos/][reddit: IWTL how to make infographic videos]]
+
+**** Daniel Janies Visual Analytics of Pathogens                    :lecture:
+:PROPERTIES:
+:ID:       512A6FB6-364D-4AE2-8BBF-EA0F1B64A6E2
+:END:
+:LOGBOOK:
+CLOCK: [2018-01-29 Mon 11:59]--[2018-01-29 Mon 12:49] =>  0:50
+:END:
+https://www.ncbi.nlm.nih.gov/pathogens/
+radar graphs for antibiogram
+
+*** [[id:7d5cda01-172e-49ee-8030-754402f3aa7d][LINK TO Data science in R]]
+:PROPERTIES:
+:ID:       532fe01c-7768-4e6d-b405-aea381eb0692
+:END:
+*** Knowledge representation
+:PROPERTIES:
+:ID:       d80ce5e7-e63b-4565-9343-a755c301380e
+:END:
+- https://www.reddit.com/r/statistics/comments/b5sg97/what_makes_a_good_data_dictionary/
+- Rules
+  - 
+- https://cmap.ihmc.us/
+- Ontologies
+  - https://www.kdnuggets.com/2019/01/ontology-data-science.html
+  - https://en.wikipedia.org/wiki/Ontology_engineering
+  - https://en.wikipedia.org/wiki/Process_ontology
+  - https://en.wikipedia.org/wiki/Ontology_(information_science)#Components
+  - ontology creation in org-mode
+    - https://pypi.org/project/Owlready2/
+    - https://en.m.wikipedia.org/wiki/Ontology_components
+    - https://github.com/caiorss/org-wiki
+    - https://journals.tdl.org/jodi/index.php/jodi/article/view/131/129
+- Lexicography
+  - Elements
+    - Syntax: the study of the combinatorics of units of a language (without reference to their meaning)
+    - Semantics: the relationship between signifiers—like words, phrases, signs, and symbols—and what they stand for, their denotation.
+      - Semantic elements
+        - Synonym
+        - Antonym
+        - Hypernym- e.g. animal is a hypernym of mammal
+        - Hyponym- e.g. dog is a hyponym of mammal
+        - Meronym- e.g. bark is a meronym of tree
+        - Holonym- e.g. forest is a holonym of tree
+        - Troponym- a particular way to do entry's referent, e.g. trim and slice are troponyms of cut
+        - Coordinate term- terms that share a holonym, e.g. man and woman are coordinate terms for human 
+*** General reference
+:PROPERTIES:
+:ID:       08762066-018f-4d6f-bb42-03b37b526814
+:END:
+- https://www.reddit.com/r/datascience/comments/bo2p99/is_java_c_or_c_necessary/
+- http://www.datasciencecourse.org/lectures/
+- https://www.reddit.com/r/datascience/comments/c66buk/top_github_data_science_project/
+- http://openmetric.org/
+- https://bookriot.com/2019/09/20/data-science-books/amp/
+- https://www.reddit.com/r/datascience/comments/lrkob9/interview_question_i_generally_ask_applicants/
+- https://old.reddit.com/r/datascience/comments/libpdr/any_fun_easy_to_read_scientific_papers_youd/
+- https://www.reddit.com/r/datascience/comments/m6lssy/what_are_the_best_intro_classes_to_python_r_and/
+- repositories - https://zenodo.org/
+- https://www.reddit.com/r/datascience/comments/ae4fc3/best_data_science_talk_one_can_watch/
+- https://www.reddit.com/r/datascience/comments/aczhjc/what_is_something_in_ds_that_has_blown_your_mind/
+- https://towardsdatascience.com/a-long-term-data-science-roadmap-which-wont-help-you-become-an-expert-in-only-several-months-4436733e63ff
+- [[https://slu-dss.github.io/news/][SLU DATA SCIENCE SEMINAR]]
+- Quantity has a quality all its own
+- Business rules engines- drools https://www.drools.org/
+- Online Educational Resources
+  - https://www.kaggle.com/
+  - [[https://www.edx.org/course/statistical-thinking-data-science-columbiax-ds101x-0?utm_medium=paid-social&utm_source=facebook&utm_campaign=fb-us-pc-cs-msft-dsc-stats-verla-feed&utm_content=fb-us-pc-cs-msft-dsc-stats-solidtextlogo][self-paced Columbia stat thinking for data science]]
+  - [[https://www.youtube.com/c/thesemicolon?app=desktop][youtube: the semicolon data science]]
+  - [[https://www.datacamp.com/home][data camp]]
+  - https://www.kaggle.com/learn/overview
+  - http://www.inference.phy.cam.ac.uk/itprnn_lectures/
+  - http://mlwhiz.com/blog/2017/03/26/top_data_science_resources_on_the_internet_right_now/
+- http://www.datacarpentry.org/
+- http://courses.csail.mit.edu/18.337/2015/docs/50YearsDataScience.pdf
+*** Data sources, data sets
+:PROPERTIES:
+:ID:       9b13fa97-526c-41eb-abdc-3a2627c54c64
+:END:
+- https://www.reddit.com/r/datascience/comments/ceucnb/ibm_launches_the_data_asset_exchange_dax_an_an/
+- https://www.blog.google/technology/research/open-source-and-open-data/amp/
+- https://github.com/CSSEGISandData/COVID-19
+- https://zenodo.org/
+- https://www.wikidata.org/wiki/Wikidata:Main_Page
+- https://toolbox.google.com/datasetsearch
+- https://gwu-libraries.github.io/sfm-ui/posts/2017-09-14-twitter-data
+- https://meta.wikimedia.org/wiki/Research:Wikipedia_clickstream
+- https://github.com/fivethirtyeight/data
+- http://data.stackexchange.com/
+- https://www.reddit.com/r/datasets/comments/akb4mr/what_is_a_dataset_that_you_cant_believe_is/
+- https://www.wikidata.org/wiki/Wikidata:Main_Page
+*** High dimension data transformation
+:PROPERTIES:
+:ID:       588f6536-9db9-4279-9e67-800890c2de23
+:END:
+- cite:buschmann2016 pg 6010
+- log transformation for skew
+- rlog
+- vst
+*** [[id:F80F3FAF-1D79-40F5-934B-F74D19143DBD][LINK TO Probability and Statistics]]
+:PROPERTIES:
+:ID:       e2b15a0d-bc6d-48d6-9ea2-d7f6be07af31
+:END:
+*** Exploratory Data Analysis (EDA)
+:PROPERTIES:
+:ID:       A6C156F3-9442-4D8F-97F1-446729EC6193
+:CREATED:  [2019-04-22 Mon 15:23]
+:END:
+https://towardsdatascience.com/discovering-the-treasures-of-22-r-exploratory-analysis-packages-9bb1c5b4e6f8
+- DataExplorer::create_report()
+- univariate
+  - describe()
+- multivariate
+
+*** Artificial Intelligence
+:PROPERTIES:
+:ID:       A6C156F3-9442-4D8F-97F1-446729EC6006
+:END:
+
+- https://github.com/norvig/paip-lisp
+- http://aima.cs.berkeley.edu/
+- [[https://www.reddit.com/r/science/comments/65gf8q/selftaught_artificial_intelligence_beats_doctors/][reddit- ai beats docs]]
+- cite:russell2010
+- cite:sankar2014
+- https://www.edx.org/course/artificial-intelligence-ai-columbiax-csmm-101x
+- [[https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-034-artificial-intelligence-fall-2010/][MIT Artificial intelligence 2010]]
+- http://simplystatistics.org/2017/01/19/what-is-artificial-intelligence/
+
+**** Natural Language Processing (NLP)
+:PROPERTIES:
+:ID:       3B071811-9ADD-40AA-9D5F-0D9B73520BCE
+:END:
+:LOGBOOK:
+CLOCK: [2019-02-19 Tue 09:57]--[2019-02-19 Tue 10:24] =>  0:27
+CLOCK: [2017-05-02 Tue 11:09]--[2017-05-02 Tue 11:45] =>  0:36
+CLOCK: [2017-05-02 Tue 10:35]--[2017-05-02 Tue 11:09] =>  0:34
+:END:
+- [[id:E6900F8A-2302-4076-8B27-7963B3EC4CC0][Semantic and natural language processing lab]]
+- [[id:CA21AAC9-F147-4086-A24C-64451EE349F3][Python NLTK]]
+- applications
+  - [[https://www.reddit.com/r/dataisbeautiful/comments/8m9ha6/i_created_a_tool_to_automatically_extract_the/][summarization]]
+  - nl processing bot
+    - https://www.reddit.com/r/autotldr/comments/31bfht/theory_autotldr_concept/?st=j29fxbql&sh=b124ddb9
+    - https://www.reddit.com/r/autotldr/comments/31b9fm/faq_autotldr_bot/?st=j29fxbbd&sh=2c5a4683
+  - crawl a website for nl
+    - http://www.httrack.com/
+    - https://superuser.com/questions/14403/how-can-i-download-an-entire-website
+    - https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+  - healthcare
+    - [[http://clamp.uth.edu/][CLAMP Clinical Language Annotation, Modeling, and Processing Toolkit]]
+      - cite:soysal2017
+    - [[https://metamap.nlm.nih.gov/][metamap]]
+    - https://github.com/ncbi-nlp 
+    - Linguamatics at WashU
+      - [[id:DCCB84AB-69B7-4DCC-9BB3-B1DC3BDEE190][Payne Linguamatics]]
+      - [[id:C717DCDF-F41C-491C-97E3-CB001912EF16][<2017-04-19 10:24> Jackups Payne Cicerelli Linguamatics]]
+
+**** Columbia CSMM.101x Artificial Intelligence (AI)
+:PROPERTIES:
+:ID:       576B5CCD-28AF-43B2-B6A3-EF29AF391251
+:END:
+:LOGBOOK:
+CLOCK: [2017-02-15 Wed 14:06]--[2017-02-15 Wed 14:55] =>  0:49
+CLOCK: [2017-02-13 Mon 18:45]--[2017-02-13 Mon 19:53] =>  1:08
+:END:
+
+- [[http://aima.cs.berkeley.edu/code.html][textbook code repo]]
+same text, but previously using Undacity Stanford Artificial Intelligence 
+https://courses.edx.org/courses/course-v1:ColumbiaX+CSMM.101x+1T2017/courseware/72ad68365307491198cfcadeeb17baad/adbd7b28184343a1ab8532fbdadd7de4/
+
+***** Week 1: Introduction to AI
+:PROPERTIES:
+:ID:       674E10A4-77DB-4745-B98D-3CE96DD32D98
+:END:
+
+***** Week 2: Intelligent Agents and Uninformed Search
+:PROPERTIES:
+:ID:       D211037A-EB0C-4009-8265-18393AACDA9C
+:END:
+
+***** Week 3: Heuristic Search
+:PROPERTIES:
+:ID:       5E6688C5-3577-4831-B7C5-139402A7224E
+:END:
+
+***** Week 4: Advanced Search and Games
+:PROPERTIES:
+:ID:       302F3E5D-F45E-4456-9C65-8499A3E5CE29
+:END:
+
+***** Week 5: Machine Learning 1
+:PROPERTIES:
+:ID:       288686AD-0258-4B1D-A414-F0B73C0D3396
+:END:
+
+***** coursea notes
+:PROPERTIES:
+:ID:       7BB8A6D9-E527-44C2-A3FD-AB7C65A41D20
+:END:
+
+****** 1. Welcome to AI
+:PROPERTIES:
+:ID:       27F2848A-ADB4-45E2-BBC5-8F91C2A0EDEE
+:END:
+
+- Intelligent agent, perception-action cycle: [[file:org.org_imgs/20170206_122258_95886o5b.png]]
+
+- AI- a solution to uncertainty 
+- environment classifications
+  - Fully vs. partially observable environment
+  - Deterministic vs. Stochastic
+    - chess- deterministic
+    - dice- stochastic ~ random
+  - discrete vs. continuous
+  - benign vs. adversarial
+- Examples 
+
+****** 2. Problem Solving
+:PROPERTIES:
+:ID:       1F2B2E06-5707-49E6-9078-B3D39A0ABFEF
+:END:
+
+problem 
+- inital state
+- action
+- result (input state and action, output is new state)
+- goal test
+- path cost 
+
+tree function is a loop that adds paths. paths are collections of actions/results 
+
+uniform cost search (cheapest)
+
+algorithm properties
+- completeness
+- A* search if f + h where f is path function from start to location and h is length from location to destination, stops when shortest path is found
+  - if h(s) is < true cost, then A* finds lowest cost path
+- state space
+  - number of states
+- problem solving algorithms require
+  - fully observable
+  - discrete
+  - deterministic
+  - static
+
+*** Databases and Database Management Systems
 :PROPERTIES:
 :ID:       A4A0EABF-3161-47AA-BDA4-E75DCB509201
 :END:
-:LOGBOOK:
-CLOCK: [2022-01-24 Mon 08:33]--[2022-01-24 Mon 08:49] =>  0:16
-:END:
-- [[https://docs.qgis.org/3.16/en/docs/][QGIS documentation]]
-- http://labs.rd.ciencias.ulisboa.pt/book/
-- CSV
-  - https://www.reddit.com/r/datascience/comments/q9xejd/csv_alternative_with_type_information/- 
-- [[id:0b4dfeac-fc55-47b1-956c-38fb19eba7ff][Data science project management]]
-**** Databases and database management systems
-- Database documentation
-  - [[https://stackoverflow.com/questions/22673352/colorize-table-name-in-graphviz-entity-relationship-diagram][entity - relationship diagrams with graphviz]]
-  - [[https://stackoverflow.com/questions/369266/how-to-document-a-database][stack: how to document a database]]
+- https://github.com/schemacrawler/SchemaCrawler
+- [[https://stackoverflow.com/questions/22673352/colorize-table-name-in-graphviz-entity-relationship-diagram][entity - relationship diagrams with graphviz]]
 - Relational Database Management System (RDBMS)
   - postgreSQL
     - on work linux
@@ -1459,7 +1822,30 @@ CLOCK: [2022-01-24 Mon 08:33]--[2022-01-24 Mon 08:49] =>  0:16
   - [ ] create db https://stackoverflow.com/questions/8200917/postgresql-create-a-new-db-through-pgadmin-ui
   - also dbi, montedb, msosql, mysql, sql mode...
   - https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-sql.html
-- Schema: structure of a database
+- [[https://stackoverflow.com/questions/369266/how-to-document-a-database][stack: how to document a database]]
+- hadoop
+  - https://www.google.com/search?q=mapreduce&oq=mapreduce&aqs=chrome..69i57j0l5.1682j0j7&sourceid=chrome&ie=UTF-8
+- Metadata
+  - Ontology is metadata with technical and descriptive components 
+  - Technical
+    - Constraints and rules in syntax of interpreted language
+    - 
+    - Source documentation
+      - Columns of each table
+      - Inter-table relationships
+      - Enumerations (permissible values)
+- Database view: predefined query across multiple tables
+- See Healthcare Databases
+- Explorers and farmers
+- Integration
+  - Transformation 
+  - Understanding source data
+    - Identify the purpose of each table
+    - Understand constraints and checks
+  - Data model- a subset of the union of diverse data
+  - Logical and physical integration
+    - In physical, data is constructed in the global model instead of referred to 
+- cite:sarkar2014 Chapter 2
 - Relational database (RDB)
   - Performance features
     - Indexes
@@ -1472,14 +1858,16 @@ CLOCK: [2022-01-24 Mon 08:33]--[2022-01-24 Mon 08:49] =>  0:16
     - Query optimization
   - Schema specified by sql 
   - Normalization: minimal duplication across tables
+- Schema: structure of a database
+- https://www.1keydata.com/datawarehousing/data-modeling-levels.html
+
 - Hadoop: open-source toolset that fractions data and computation
   - opposed to enterprise approach with single, powerful computer
   - Architecture
     - MapReduce
     - HDFS file system
-  - hadoop
-    - https://www.google.com/search?q=mapreduce&oq=mapreduce&aqs=chrome..69i57j0l5.1682j0j7&sourceid=chrome&ie=UTF-8
-***** <<<Structured Query Language>>> (<<<SQL>>>)                    :career:
+
+**** <<<Structured Query Language>>> (<<<SQL>>>)                     :career:
 :PROPERTIES:
 :ID:       5B25B211-1888-49DB-8857-A05137D1FF92
 :END:
@@ -1488,7 +1876,7 @@ CLOCK: [2021-09-13 Mon 14:51]--[2021-09-13 Mon 16:02] =>  1:11
 CLOCK: [2018-12-12 Wed 16:31]--[2018-12-12 Wed 16:32] =>  0:01
 CLOCK: [2018-12-12 Wed 15:47]--[2018-12-12 Wed 16:29] =>  0:42
 :END:
-****** Sqlite in org-mode
+***** Sqlite in org-mode
 :PROPERTIES:
 :ID:       4cc925c0-28b0-4234-9f97-3e18dd52a871
 :END:
@@ -1519,14 +1907,14 @@ SELECT material_id from materials
 SELECT DataId, COUNT(*) c FROM DataTab GROUP BY DataId HAVING c > 1;
 #+end_src
   - Write to table
-****** Processes
+***** Processes
 :PROPERTIES:
 :ID:       8e173015-aa21-4844-ab0b-90fbf7153e49
 :END:
 - https://stackoverflow.com/questions/1777257/how-do-you-create-a-yes-no-boolean-field-in-sql-server
 - https://www.google.com/search?q=sql+field+with+long+text+string 
 
-****** Platforms and interfaces
+***** Platforms and interfaces
 :PROPERTIES:
 :ID:       04487e7f-7cb0-4e29-8911-9f0c40540ccf
 :END:
@@ -1542,7 +1930,7 @@ SELECT DataId, COUNT(*) c FROM DataTab GROUP BY DataId HAVING c > 1;
   - temp password is K%2SwkF3VsiF
   - reset with https://stackoverflow.com/questions/4359131/brew-install-mysql-on-mac-os/33924648#33924648
   - [[https://stackoverflow.com/questions/15450091/for-a-newbie-error-2002-hy000-cant-connect-to-local-mysql-server-through-so][ERROR 2002]]
-****** General reference
+***** General reference
 :PROPERTIES:
 :ID:       4a93af22-b67c-4c3b-964b-dd8279bd50e2
 :END:
@@ -1553,7 +1941,7 @@ SELECT DataId, COUNT(*) c FROM DataTab GROUP BY DataId HAVING c > 1;
 - tutorials
   - https://www.dataquest.io/blog/sql-intermediate/
 - resume postgres tutorial on worklinux https://www.postgresql.org/docs/9.1/tutorial-populate.html
-******* DONE Udmey SQL Bootcamp                                      :career:
+****** DONE Udmey SQL Bootcamp                                       :career:
 CLOSED: [2017-06-23 Fri 18:56]
 :PROPERTIES:
 :ID:       9DCE5192-210C-42BF-B94C-C85C80C72A5D
@@ -1794,7 +2182,7 @@ CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
   - ALERT VIEW
   - DROP VIEW
 
-****** Ideas
+***** Ideas
 :PROPERTIES:
 :ID:       31F5C06A-6F4B-4FE0-842E-481BA241AB8E
 :END:
@@ -1802,368 +2190,6 @@ CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
 - [[https://www.google.com/search?q=data+entry+website+to+sql&rlz=1CDGOYI_enUS715US716&oq=data+entry+website+to+sql&aqs=chrome..69i57.8665j0j9&hl=en-US&sourceid=chrome-mobile&ie=UTF-8][Google: data entry website to sql]]
 - [[https://www.google.com/search?safe=off&rlz=1CDGOYI_enUS715US716&hl=en-US&ei=HW5JWcPsPMHOjwSXsZTQAg&q=Make+a+glossary+with+sql&oq=Make+a+glossary+with+sql&gs_l=mobile-gws-serp.3..33i160k1.609342.621121.0.621950.15.15.0.0.0.0.900.4489.0j9j4-1j2j2.14.0....0...1.1.64.mobile-gws-serp..4.11.2269...0j0i67k1j0i7i30k1j0i7i10i30k1j0i22i30k1j33i22i29i30k1.LBD7UzJYOMM][Make a glossary with sql]]
 - SQL in Org Mode
-*** Data pre-processing / data wrangling
-:PROPERTIES:
-:ID:       20b10d38-1d24-4a0e-b9b8-d6f2b1394efe
-:END:
-- https://www.reddit.com/r/datascience/comments/fzweaf/my_giant_data_quality_checklist/
-- https://github.com/ben519/DataWrangling
-- cite:pedsnet
-- cite:press2016
-- https://en.wikipedia.org/wiki/OpenRefine
-- https://www.reddit.com/r/datascience/comments/fzweaf/my_giant_data_quality_checklist/
-- missing data imputation http://factominer.free.fr/missMDA/appendix_These_Audigier.pdf
-*** [[id:F80F3FAF-1D79-40F5-934B-F74D19143DBD][LINK TO Probability and Statistics]]
-:PROPERTIES:
-:ID:       e2b15a0d-bc6d-48d6-9ea2-d7f6be07af31
-:END:
-*** [[id:7d5cda01-172e-49ee-8030-754402f3aa7d][LINK TO Data science in R]]
-:PROPERTIES:
-:ID:       532fe01c-7768-4e6d-b405-aea381eb0692
-:END:
-*** [[id:CFACF7AD-30FC-4200-92FE-3710B5DC5E9E][LINK TO Machine Learning]]
-:PROPERTIES:
-:ID:       eca4f279-86ee-40ea-a78b-3cddb00b6c67
-:END:
-*** <<<Data Visualization>>>
-:PROPERTIES:
-:ID:       1DA3ABC0-79B0-4CED-B926-22B37840379D
-:END:
-:LOGBOOK:
-CLOCK: [2017-10-30 Mon 15:33]--[2017-10-30 Mon 15:46] =>  0:13
-CLOCK: [2017-10-30 Mon 14:55]--[2017-10-30 Mon 14:59] =>  0:04
-:END:
-- https://towardsdatascience.com/a-better-way-to-visualize-decision-trees-with-the-dtreeviz-library-758994cdf05e
-- https://www.reddit.com/r/dataisbeautiful/comments/b1ao5h/estimating_pi_using_monte_carlo_simulation_oc/
-- https://www.reddit.com/r/dataisbeautiful/comments/8yrevu/oc_street_orientation_of_dutch_cities/
-- https://www.reddit.com/r/dataisbeautiful/comments/8uo1q9/popcorn_analytics_oc/
-- https://www.reddit.com/r/datascience/comments/8haezl/python_google_sheets_api_tableau_public_full/
-https://www.freecodecamp.org/news/learn-data-visualization-in-this-free-17-hour-course/
-https://www.reddit.com/r/dataisbeautiful/comments/jkqbtk/oc_presidential_election_forecast_current/
-- https://www.reddit.com/r/dataisbeautiful/comments/89tcd8/monthly_usa_birth_rate_19332015_more_charts_in/dwtcvkv/?st=jfpn11lm&sh=f8f9d265
-
-- https://www.reddit.com/r/dataisbeautiful/comments/8a4gbr/the_office_characters_most_distinguishing_words_oc/dwvr99n/?st=jfpn0x1j&sh=b083f7c5
-
-- https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003833
-- https://www.reddit.com/r/bioinformatics/comments/jd3k0x/what_is_the_most_aesthetically_pleasing_figure/
-- https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008259
-- https://old.reddit.com/r/orgmode/comments/jbl1ky/use_d3_js_and_graphviz_to_publish_git_dynamic/
-- [[https://vega.github.io/vega/docs/schemes/][dark2 scheme]]
-    - nice color scheme https://stackoverflow.com/questions/9563711/r-color-palettes-for-many-data-classes
-
-- https://setosa.io/#/
-- https://www.datarevelations.com/resources/bans/
-- http://compbio.ucsd.edu/making-heat-maps-r/
-- https://biit.cs.ut.ee/clustvis/
-https://github.com/paulvangentcom/python_corona_simulation?files=1
-https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
-https://www.davidrumsey.com/ll/thumbnailView.html?startUrl=%2F%2Fwww.davidrumsey.com%2Fluna%2Fservlet%2Fas%2Fsearch%3Fos%3D0%26mid%3DRUMSEY~8~1~275397~90048657%26sort%3DPub_List_No_InitialSort%2CPub_Date%2CPub_List_No%2CSeries_No%26bs%3D100
-http://www.npr.org/2013/01/18/169708761/edward-tufte-wants-you-to-see-better
-https://www.reddit.com/r/datascience/comments/diufp0/are_there_other_thinkers_with_different_ideas_in/
-https://towardsdatascience.com/recreating-gapminder-animation-in-2-lines-of-python-with-plotly-express-2060c73bedec
-https://www.reddit.com/r/dataisbeautiful/comments/b2fybb/animation_the_10_biggest_cities_in_the_world/
-https://www.reddit.com/r/dataisbeautiful/comments/adhzrw/watch_my_money_flow_an_animated_representation_of/edh0ksm/
-cite:rougier2014 
-https://www.reddit.com/r/dataisbeautiful/comments/aa92ex/seeing_theory/
-  - https://ourworldindata.org/
-https://pbs.twimg.com/media/C0NSXNuXAAIpUgN.jpg:large
-https://www.reddit.com/r/dataisbeautiful/comments/9yg8w9/googles_autocomplete_visualized_like_a_graph_link/
-- d3.js
-  - https://www.google.com/search?safe=off&rlz=1CDGOYI_enUS769US769&hl=en-US&ei=CAnMWuLGEOzGjwTquqnIAQ&q=d3+javascript&oq=d3+java&gs_l=mobile-gws-serp.1.0.0i67j0l4.3717.5619..6830...0....70.515.8..........1..mobile-gws-wiz-serp.......0i71j0i22i30j0i22i10i30j0i131.VC5uK7rClo4%3D
-https://www.theverge.com/platform/amp/2018/10/28/18022986/data-visualization-information-is-beautiful-2018
-https://www.awsgeek.com/
-https://www.reddit.com/r/statistics/comments/2jon2b/anyone_knows_how_are_made_the_graphs_on/#ampf=undefined
-- [[https://www.shipmap.org/]]
-- https://www.reddit.com/r/coolguides/comments/9l83yl/a_guide_4000_years_of_history/
-- https://www.reddit.com/r/dataisbeautiful/comments/9kg9ym/oc_recent_philosophy_visualized/
-- https://processing.org/
-- matlab example- - https://www.reddit.com/r/dataisbeautiful/comments/7ve4i8/comparison_between_two_quadruple_pendulums_with/
-- https://www.reddit.com/r/dataisbeautiful/comments/8nadwr/every_road_in_the_continental_us_oc/
-- https://datavizproject.com/function/part-to-whole/
-- https://datavizcatalogue.com/
-- http://web.cse.ohio-state.edu/~ji.62/VisProject/vis~.html
-- https://www.gapminder.org/
-  - https://www.gapminder.org/tools/#_state_time_delay:100;&marker_axis/_x_scaleType=linear;;;&data_/_lastModified:1521499532636;&chart-type=bubbles
-  - https://github.com/Gapminder
-- https://vizhub.healthdata.org/gbd-compare/
-- See also
-  - ggplot2
-- cite:Liu_2014
-- Representation types
-  - network visualization
-    - http://www.hiveplot.com/
-- Platforms
-  - - https://gephi.org/
-  - - http://chimera.labs.oreilly.com/books/1230000000345/index.html
-  - [[https://d3js.org/][D3 data driven documents]]
-    - - [[https://www.reddit.com/r/dataisbeautiful/comments/72c06m/im_elijah_meeks_author_of_d3js_in_action_and/][reddit: Elijah Meeks, author of D3Js]]
-    - http://vis.stanford.edu/protovis/ex/
-  - Tableau
-    - [[https://www.tableau.com/learn/training][Training videos]]
-      - 
-- Examples
-  - https://observablehq.com/@petulla/statistical-power-explorable
-    - - http://www.shorttails.io/interactive-map-of-reddit-and-subreddit-similarity-calculator/
-  - https://www.reddit.com/r/dataisbeautiful/comments/7b7aa0/visualizing_the_depthfirst_search_recursive/dpfr49n/
-  - - https://beno.org.uk/metromapcreator/
-  - - http://www.besthealthdegrees.com/health-risks/
-  - https://github.com/USGS-VIZLAB/hurricane-irma
-  - - http://www.visualcapitalist.com/wp-content/uploads/2017/09/cognitive-bias-infographic.html
-  - - [[http://flowingdata.com/2017/01/24/one-dataset-visualized-25-ways/][One Dataset, Visualized 25 Ways]]
-  - [[https://www.reddit.com/r/dataisbeautiful/comments/6m0wo7/peak_time_for_sports_and_leisure_oc/][Peak time for sports and leisure {OC}]]
-  - https://pudding.cool/2017/03/film-dialogue/index.html
-  - https://pudding.cool/2017/05/song-repetition/
-  - [[http://students.brown.edu/seeing-theory/][brown.edu Seeing theory]]
-  - [[http://setosa.io/ev/principal-component-analysis/][setosa Principal Component Analysis Explained Visually]]
-  - [[https://trends.google.com/trends/explore][Google trends]]
-  - [[https://www.reddit.com/r/educationalgifs/comments/6iv0kk/how_herd_immunity_works/dj9a5e3/][gif simulation]]
-  - http://www.informationisbeautiful.net/visualizations/snake-oil-supplements/
-  - https://www.bloomberg.com/graphics/2015-whats-warming-the-world/
-  - [[https://www.reddit.com/r/dataisbeautiful/comments/6qnkg0/google_search_interest_follows_the_path_of_the/][reddit: Google search interest follows the path of the August 21, 2017 solar eclipse]]
-- Guides
-  - [[https://www.reddit.com/r/IWantToLearn/comments/62ns0p/how_do_i_create_infographic_videos/][reddit: IWTL how to make infographic videos]]
-
-**** Daniel Janies Visual Analytics of Pathogens                    :lecture:
-:PROPERTIES:
-:ID:       512A6FB6-364D-4AE2-8BBF-EA0F1B64A6E2
-:END:
-:LOGBOOK:
-CLOCK: [2018-01-29 Mon 11:59]--[2018-01-29 Mon 12:49] =>  0:50
-:END:
-https://www.ncbi.nlm.nih.gov/pathogens/
-radar graphs for antibiogram
-
-*** Ontologies
-- https://www.kdnuggets.com/2019/01/ontology-data-science.html
-- https://en.wikipedia.org/wiki/Ontology_engineering
-- https://en.wikipedia.org/wiki/Process_ontology
-- https://en.wikipedia.org/wiki/Ontology_(information_science)#Components
-- ontology creation in org-mode
-  - https://pypi.org/project/Owlready2/
-  - https://en.m.wikipedia.org/wiki/Ontology_components
-  - https://github.com/caiorss/org-wiki
-  - https://journals.tdl.org/jodi/index.php/jodi/article/view/131/129
-- https://protege.stanford.edu/conference/2006/submissions/slides/OWLTutorial_Part1.pdf
-- Protege
-  - http://mowl-power.cs.man.ac.uk/protegeowltutorial/resources/ProtegeOWLTutorialP4_v1_2.pdf
-  - https://media.readthedocs.org/pdf/go-protege-tutorial/latest/go-protege-tutorial.pdf
-  - https://protege.stanford.edu/conference/2006/submissions/slides/AppDevelopmentTutorial_Part1.pdf
-- https://pypi.python.org/pypi/Owlready2
-- https://www.w3.org/OWL/
-- http://obofoundry.org/
-- http://www.cs.man.ac.uk/~stevensr/menupages/background.php
-- http://www.obofoundry.org/
-- https://protegewiki.stanford.edu/wiki/Main_Page
-- http://protege.stanford.edu/community.php
-- https://www.youtube.com/watch?v=8Nf2xf5akoM
-- https://www.ncbi.nlm.nih.gov/pubmed/27239556
-*** Data sources, data sets
-:PROPERTIES:
-:ID:       9b13fa97-526c-41eb-abdc-3a2627c54c64
-:END:
-- https://www.reddit.com/r/datascience/comments/ceucnb/ibm_launches_the_data_asset_exchange_dax_an_an/
-- https://www.blog.google/technology/research/open-source-and-open-data/amp/
-- https://github.com/CSSEGISandData/COVID-19
-- https://zenodo.org/
-- https://www.wikidata.org/wiki/Wikidata:Main_Page
-- https://toolbox.google.com/datasetsearch
-- https://gwu-libraries.github.io/sfm-ui/posts/2017-09-14-twitter-data
-- https://meta.wikimedia.org/wiki/Research:Wikipedia_clickstream
-- https://github.com/fivethirtyeight/data
-- http://data.stackexchange.com/
-- https://www.reddit.com/r/datasets/comments/akb4mr/what_is_a_dataset_that_you_cant_believe_is/
-- https://www.wikidata.org/wiki/Wikidata:Main_Page
-*** High dimension data transformation
-:PROPERTIES:
-:ID:       588f6536-9db9-4279-9e67-800890c2de23
-:END:
-- cite:buschmann2016 pg 6010
-- log transformation for skew
-- rlog
-- vst
-*** Exploratory Data Analysis (EDA)
-:PROPERTIES:
-:ID:       A6C156F3-9442-4D8F-97F1-446729EC6193
-:CREATED:  [2019-04-22 Mon 15:23]
-:END:
-https://towardsdatascience.com/discovering-the-treasures-of-22-r-exploratory-analysis-packages-9bb1c5b4e6f8
-- DataExplorer::create_report()
-- univariate
-  - describe()
-- multivariate
-
-*** Artificial Intelligence
-:PROPERTIES:
-:ID:       A6C156F3-9442-4D8F-97F1-446729EC6006
-:END:
-
-- https://github.com/norvig/paip-lisp
-- http://aima.cs.berkeley.edu/
-- [[https://www.reddit.com/r/science/comments/65gf8q/selftaught_artificial_intelligence_beats_doctors/][reddit- ai beats docs]]
-- cite:russell2010
-- cite:sankar2014
-- https://www.edx.org/course/artificial-intelligence-ai-columbiax-csmm-101x
-- [[https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-034-artificial-intelligence-fall-2010/][MIT Artificial intelligence 2010]]
-- http://simplystatistics.org/2017/01/19/what-is-artificial-intelligence/
-
-**** Natural Language Processing (NLP)
-:PROPERTIES:
-:ID:       3B071811-9ADD-40AA-9D5F-0D9B73520BCE
-:END:
-:LOGBOOK:
-CLOCK: [2019-02-19 Tue 09:57]--[2019-02-19 Tue 10:24] =>  0:27
-CLOCK: [2017-05-02 Tue 11:09]--[2017-05-02 Tue 11:45] =>  0:36
-CLOCK: [2017-05-02 Tue 10:35]--[2017-05-02 Tue 11:09] =>  0:34
-:END:
-- [[id:E6900F8A-2302-4076-8B27-7963B3EC4CC0][Semantic and natural language processing lab]]
-- [[id:CA21AAC9-F147-4086-A24C-64451EE349F3][Python NLTK]]
-- applications
-  - [[https://www.reddit.com/r/dataisbeautiful/comments/8m9ha6/i_created_a_tool_to_automatically_extract_the/][summarization]]
-  - nl processing bot
-    - https://www.reddit.com/r/autotldr/comments/31bfht/theory_autotldr_concept/?st=j29fxbql&sh=b124ddb9
-    - https://www.reddit.com/r/autotldr/comments/31b9fm/faq_autotldr_bot/?st=j29fxbbd&sh=2c5a4683
-  - crawl a website for nl
-    - http://www.httrack.com/
-    - https://superuser.com/questions/14403/how-can-i-download-an-entire-website
-    - https://www.crummy.com/software/BeautifulSoup/bs4/doc/
-  - healthcare
-    - [[http://clamp.uth.edu/][CLAMP Clinical Language Annotation, Modeling, and Processing Toolkit]]
-      - cite:soysal2017
-    - [[https://metamap.nlm.nih.gov/][metamap]]
-    - https://github.com/ncbi-nlp 
-    - Linguamatics at WashU
-      - [[id:DCCB84AB-69B7-4DCC-9BB3-B1DC3BDEE190][Payne Linguamatics]]
-      - [[id:C717DCDF-F41C-491C-97E3-CB001912EF16][<2017-04-19 10:24> Jackups Payne Cicerelli Linguamatics]]
-
-**** Columbia CSMM.101x Artificial Intelligence (AI)
-:PROPERTIES:
-:ID:       576B5CCD-28AF-43B2-B6A3-EF29AF391251
-:END:
-:LOGBOOK:
-CLOCK: [2017-02-15 Wed 14:06]--[2017-02-15 Wed 14:55] =>  0:49
-CLOCK: [2017-02-13 Mon 18:45]--[2017-02-13 Mon 19:53] =>  1:08
-:END:
-
-- [[http://aima.cs.berkeley.edu/code.html][textbook code repo]]
-same text, but previously using Undacity Stanford Artificial Intelligence 
-https://courses.edx.org/courses/course-v1:ColumbiaX+CSMM.101x+1T2017/courseware/72ad68365307491198cfcadeeb17baad/adbd7b28184343a1ab8532fbdadd7de4/
-
-***** Week 1: Introduction to AI
-:PROPERTIES:
-:ID:       674E10A4-77DB-4745-B98D-3CE96DD32D98
-:END:
-
-***** Week 2: Intelligent Agents and Uninformed Search
-:PROPERTIES:
-:ID:       D211037A-EB0C-4009-8265-18393AACDA9C
-:END:
-
-***** Week 3: Heuristic Search
-:PROPERTIES:
-:ID:       5E6688C5-3577-4831-B7C5-139402A7224E
-:END:
-
-***** Week 4: Advanced Search and Games
-:PROPERTIES:
-:ID:       302F3E5D-F45E-4456-9C65-8499A3E5CE29
-:END:
-
-***** Week 5: Machine Learning 1
-:PROPERTIES:
-:ID:       288686AD-0258-4B1D-A414-F0B73C0D3396
-:END:
-
-***** coursea notes
-:PROPERTIES:
-:ID:       7BB8A6D9-E527-44C2-A3FD-AB7C65A41D20
-:END:
-
-****** 1. Welcome to AI
-:PROPERTIES:
-:ID:       27F2848A-ADB4-45E2-BBC5-8F91C2A0EDEE
-:END:
-
-- Intelligent agent, perception-action cycle: [[file:org.org_imgs/20170206_122258_95886o5b.png]]
-
-- AI- a solution to uncertainty 
-- environment classifications
-  - Fully vs. partially observable environment
-  - Deterministic vs. Stochastic
-    - chess- deterministic
-    - dice- stochastic ~ random
-  - discrete vs. continuous
-  - benign vs. adversarial
-- Examples 
-
-****** 2. Problem Solving
-:PROPERTIES:
-:ID:       1F2B2E06-5707-49E6-9078-B3D39A0ABFEF
-:END:
-
-problem 
-- inital state
-- action
-- result (input state and action, output is new state)
-- goal test
-- path cost 
-
-tree function is a loop that adds paths. paths are collections of actions/results 
-
-uniform cost search (cheapest)
-
-algorithm properties
-- completeness
-- A* search if f + h where f is path function from start to location and h is length from location to destination, stops when shortest path is found
-  - if h(s) is < true cost, then A* finds lowest cost path
-- state space
-  - number of states
-- problem solving algorithms require
-  - fully observable
-  - discrete
-  - deterministic
-  - static
-
-*** General reference and miscellaneous
-:PROPERTIES:
-:ID:       08762066-018f-4d6f-bb42-03b37b526814
-:END:
-- https://cmap.ihmc.us/
-- https://github.com/UW-Madison-DataScience
-- Argdown and argumentation notation
-  - http://aifdb.org/argview/4
-  - http://aifdb.org/argview/4
-  - https://argdown.org/sandbox/map
-- https://github.com/UW-Madison-DataScience
-- https://www.freecodecamp.org/news/teach-yourself-data-analytics-in-30-days/
-- https://www.classcentral.com/report/best-data-science-curriculum/
-- https://www.reddit.com/r/datascience/comments/qore0i/what_is_something_you_took_the_time_to_learn_that/
-- https://www.dataquest.io/
-- https://www.reddit.com/r/datascience/comments/bo2p99/is_java_c_or_c_necessary/
-- http://www.datasciencecourse.org/lectures/
-- https://www.reddit.com/r/datascience/comments/c66buk/top_github_data_science_project/
-- http://openmetric.org/
-- https://bookriot.com/2019/09/20/data-science-books/amp/
-- https://www.reddit.com/r/datascience/comments/lrkob9/interview_question_i_generally_ask_applicants/
-- https://old.reddit.com/r/datascience/comments/libpdr/any_fun_easy_to_read_scientific_papers_youd/
-- https://www.reddit.com/r/datascience/comments/m6lssy/what_are_the_best_intro_classes_to_python_r_and/
-- repositories - https://zenodo.org/
-- https://www.reddit.com/r/datascience/comments/ae4fc3/best_data_science_talk_one_can_watch/
-- https://www.reddit.com/r/datascience/comments/aczhjc/what_is_something_in_ds_that_has_blown_your_mind/
-- https://towardsdatascience.com/a-long-term-data-science-roadmap-which-wont-help-you-become-an-expert-in-only-several-months-4436733e63ff
-- [[https://slu-dss.github.io/news/][SLU DATA SCIENCE SEMINAR]]
-- Quantity has a quality all its own
-- Business rules engines- drools https://www.drools.org/
-- Online Educational Resources
-  - https://www.kaggle.com/
-  - [[https://www.edx.org/course/statistical-thinking-data-science-columbiax-ds101x-0?utm_medium=paid-social&utm_source=facebook&utm_campaign=fb-us-pc-cs-msft-dsc-stats-verla-feed&utm_content=fb-us-pc-cs-msft-dsc-stats-solidtextlogo][self-paced Columbia stat thinking for data science]]
-  - [[https://www.youtube.com/c/thesemicolon?app=desktop][youtube: the semicolon data science]]
-  - [[https://www.datacamp.com/home][data camp]]
-  - https://www.kaggle.com/learn/overview
-  - http://www.inference.phy.cam.ac.uk/itprnn_lectures/
-  - http://mlwhiz.com/blog/2017/03/26/top_data_science_resources_on_the_internet_right_now/
-- http://www.datacarpentry.org/
-- http://courses.csail.mit.edu/18.337/2015/docs/50YearsDataScience.pdf
-
 ** [[id:cd560390-aa1e-4c9e-8317-08610e5de42a][LINK TO linux]] 
 :PROPERTIES:
 :ID:       691fe673-ca62-4737-ab8c-055b3a098edf
@@ -2192,7 +2218,6 @@ CLOCK: [2017-06-23 Fri 19:05]--[2017-06-23 Fri 19:35] =>  0:30
 CLOCK: [2018-06-27 Wed 11:59]--[2018-06-27 Wed 12:49] =>  0:50
 CLOCK: [2017-11-28 Tue 18:30]--[2017-11-28 Tue 19:30] =>  1:00
 :END:
-https://github.com/aaronwangy/Data-Science-Cheatsheet/blob/main/Data_Science_Cheatsheet.pdf
 https://www.sciencedirect.com/science/article/pii/S2666389921002348
 https://www.nature.com/articles/s41587-021-01070-8#Sec2
 https://www.reddit.com/r/datascience/comments/ps1ysk/1st_attempt_algorithm_selection_flowchart/
@@ -2214,12 +2239,6 @@ https://old.reddit.com/r/dataisbeautiful/comments/jkadd0/oc_distribution_of_emot
   - cite:fayyad1996
 - support vectors
   - https://stats.stackexchange.com/questions/13194/support-vector-machines-and-regression
-*** PCA for ML feature input
-:PROPERTIES:
-:ID:       41eb5607-7d2f-4dc4-9c3c-42af7223b1c0
-:END:
-- https://stats.stackexchange.com/questions/27300/using-principal-component-analysis-pca-for-feature-selection
-- https://builtin.com/data-science/step-step-explanation-principal-component-analysis
 *** Dimensionality reduction
 :PROPERTIES:
 :ID:       48e06b9b-c3ba-4d84-bfd4-ba64e482be70
@@ -2995,14 +3014,12 @@ CLOCK: [2017-10-18 Wed 09:12]--[2017-10-18 Wed 09:53] =>  0:41
 CLOCK: [2017-08-16 Wed 19:13]--[2017-08-16 Wed 19:15] =>  0:02
 CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 :END:
-- user experience
-  - https://www.freecodecamp.org/news/use-user-reseach-to-create-the-perfect-ui-design/
 - https://www.freecodecamp.org/news/svg-tutorial-learn-to-code-images/
 - https://cellencooper.medium.com/how-to-change-ok-google-to-a-different-phrase-bd6ca322398#:~:text=After%20launching%20the%20app%2C%20tap,to%20call%20your%20Google%20Assistant.
 - https://codeutopia.net/blog/2015/03/01/unit-testing-tdd-and-bdd/
 - https://askubuntu.com/questions/2799/how-to-merge-several-pdf-files
 - ms word transcription-
-  - https://wustl.app.box.com/services/box_for_office_online/4881/713851818202/70446c.e7e0bc024f5a4c864c5a25e0df5e574a309f5df2eef5dde425ff3d81013757aa?node_type=file
+  -  https://wustl.app.box.com/services/box_for_office_online/4881/713851818202/70446c.e7e0bc024f5a4c864c5a25e0df5e574a309f5df2eef5dde425ff3d81013757aa?node_type=file
 - https://www.reddit.com/r/AskReddit/comments/igh1gi/whats_a_free_certification_you_can_get_online/
 - https://www.benkuhn.net/progessays/
 - [[https://medium.com/@zhelinchen91/how-to-convert-from-latex-to-ms-word-with-pandoc-f2045a762293][pandoc latex to word]]
@@ -3027,7 +3044,7 @@ CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 - https://en.wikipedia.org/wiki/Zenodo
 - https://stackoverflow.com/questions/19940236/how-to-generate-pdf-from-a-libreoffice-calc-sheet-fitting-the-page-width
 - https://www.nics.tennessee.edu/eot/edu-resources
-  - https://www.reddit.com/r/bioinformatics/comments/chnt75/guidelines_for_workflow_visualization/
+ - https://www.reddit.com/r/bioinformatics/comments/chnt75/guidelines_for_workflow_visualization/
 
 - http://pixelscommander.com/wp-content/uploads/2014/12/P10.pdf
 - https://erikbern.com/2019/10/16/buffet-lines-are-terrible.html
@@ -3117,11 +3134,9 @@ CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 :PROPERTIES:
 :ID:       670ed8f4-bb93-4d93-b9ea-a142a599169f
 :END:
-- Convert to png https://askubuntu.com/questions/50170/how-to-convert-pdf-to-image
 - https://www.google.com/search?q=pdftk+merge
 - https://www.google.com/search?q=linux+pdf+delete+page 
 - https://www.google.com/search?q=linux+convert+image+to+pdf
-- https://www.google.com/search?q=linux+pdf+strip+annotation 
 - - https://askubuntu.com/questions/113544/how-can-i-reduce-the-file-size-of-a-scanned-pdf-file
 *** Platforms
 :PROPERTIES:
@@ -3339,7 +3354,6 @@ https://mmistakes.github.io/jekyll-theme-basically-basic/recipes/chocolate-chip-
 :LOGBOOK:
 CLOCK: [2019-02-06 Wed 16:12]--[2019-02-06 Wed 17:05] =>  0:53
 :END:
-https://goalkicker.com/
 https://www.freecodecamp.org/news/rust-in-replit/
 - https://www.reddit.com/r/bioinformatics/comments/qpuhn5/which_programming_languages_should_i_learn/hjx3ocg/
 - https://krisbogdanov.com/personal-projects-before-first-internship/?fbclid=IwAR1hna-buWCrhA7pd2qRp-NkNXGEN0pUrUNoll8peSpOK6F3H-ceeevkcNE
@@ -3685,8 +3699,6 @@ rx_dict = {
 :PROPERTIES:
 :ID:       BF9D824A-02EF-4580-97A1-B887299AD461
 :END:
-- https://lgmoneda.github.io/2017/03/15/elisp-summary.html
-- https://learnxinyminutes.com/docs/elisp/
 - https://www.google.com/search?q=lisp+for+loop 
 - https://www.murilopereira.com/a-rabbit-hole-full-of-lisp/
 https://www.emacswiki.org/emacs/ElispCookbook
@@ -3840,6 +3852,14 @@ CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :LOGBOOK:
 CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
 :END:
+- https://www.google.com/search?q=bash+if+function+completes+without+error+then+do+next 
+******* Text file manipulations
+- https://www.google.com/search?q=command+line+remove+first+line+of+text+file 
+******* TUI
+- tui
+  - https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
+******* Sysadmin
+- see [[id:25e57644-f710-41ba-8bf4-d6ee9cc2c9c6][Linux sysadmin]]
 ******* Setup
 :PROPERTIES:
 :ID:       12419776-9b0e-42e9-8392-8f17dc89a63f
@@ -3848,13 +3868,6 @@ CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
   - https://www.google.com/search?q=alias+function+bashrc 
   - https://www.reddit.com/r/commandline/comments/9md3pp/a_very_useful_bashrc_file/
 - themes- https://github.com/ohmybash/oh-my-bash
-******* Sysadmin
-- see [[id:25e57644-f710-41ba-8bf4-d6ee9cc2c9c6][Linux sysadmin]]
-******* Text file manipulations
-- https://www.google.com/search?q=command+line+remove+first+line+of+text+file 
-******* TUI
-- tui
-  - https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
 ******* Open files based on type
 :PROPERTIES:
 :ID:       53e79bac-0644-464e-a28b-cd582cadaa5c
@@ -3937,8 +3950,6 @@ b=( "${a[@]}" )
 :ID:       ccff4529-a532-4111-9ac3-e8df91ec50fa
 :END:
 - if [ "${file: -4}" == ".txt" ] https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
-- https://www.google.com/search?q=bash+find+and+delete+by+size
-  - https://unix.stackexchange.com/questions/287629/find-and-remove-files-bigger-than-a-specific-size-and-type
 ******* Pipes
 :PROPERTIES:
 :ID:       2cb03148-64b0-4a63-985f-c26447342aaa
@@ -3949,13 +3960,7 @@ b=( "${a[@]}" )
 :PROPERTIES:
 :ID:       17707f3f-aee6-4eab-9d79-de07c975a3d5
 :END:
-- Choose from list
-  - https://linuxize.com/post/bash-select/
-  - https://linuxize.com/post/bash-case-statement/
-  - https://askubuntu.com/questions/1705/how-can-i-create-a-select-menu-in-a-shell-script
-  - https://askubuntu.com/questions/682095/create-bash-menu-based-on-file-list-map-files-to-numbers
-  - https://stackoverflow.com/questions/2596807/bash-shell-script-nested-select-statements
-  - https://www.google.com/search?q=bash+choose+options+from+list 
+- https://www.google.com/search?q=bash+choose+options+from+list 
 - https://www.google.com/search?q=linux+sudo+pipe+password&oq=bash+pipe+sudo+pa&aqs=chrome.1.69i57j0i22i30l2.7394j0j4&sourceid=chrome&ie=UTF-8
 
 - https://www.google.com/search?q=bash+read+and+store+as+variable 
@@ -4470,7 +4475,6 @@ pandoc -S $test | xclip -selection clipboard
 :PROPERTIES:
 :ID:       5efce201-5375-42a8-a8d0-827a0325a7bf
 :END:
-- https://www.google.com/search?q=bash+if+function+completes+without+error+then+do+next 
 - https://stackoverflow.com/questions/26675681/how-to-check-the-exit-status-using-an-if-statement
 - if readable
   - https://www.google.com/search?q=bash+check+if+file+is+readable 
@@ -4620,7 +4624,6 @@ if [[ $# -eq 0 ]] || [[ $1 == "h" ]] ; then
 :PROPERTIES:
 :ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
 :END:
-- https://explainshell.com/explain?cmd=set+-euxo+pipefail
 - [[id:BDC42DA2-A632-4FB7-A586-E100B2A045DC][LINK TO UNIX-based operating systems]]
 - [[id:76c4836c-fe3f-4948-86dd-25d8df38d1af][LINK TO GNU tools]]
 - https://pastebin.com/9itu8v0w
@@ -4734,10 +4737,6 @@ if [[ $# -eq 0 ]] || [[ $1 == "h" ]] ; then
 :PROPERTIES:
 :ID:       2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5
 :END:
-- Cannot do string concatenation
-  - https://stackoverflow.com/questions/5484016/how-can-i-do-string-concatenation-or-string-replacement-in-yaml
-- Processes
-  - https://www.google.com/search?q=yaml+make+value+from+other+values 
 **** JSON JavaScript Object Notation
 :PROPERTIES:
 :ID:       9E10CCC0-BC92-4C96-BBF2-99B54E88143D
@@ -4822,7 +4821,7 @@ CLOCK: [2018-11-07 Wed 10:50]--[2018-11-07 Wed 11:15] =>  0:25
 :PROPERTIES:
 :ID:       CDECCD81-E262-4D7F-AD4A-90CE29BF7DF5
 :END:
-- https://stackedit.io/app#org3511de7
+
 - org-markdown-html workflow
   - keep html with #+begin_html 
 https://commonmark.org/
@@ -5878,55 +5877,6 @@ CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
 ****** Local transclusion
-****** Local YAS
-:PROPERTIES:
-:ID:       b477cbfd-b5fe-4297-9429-584de1f21144
-:END:
-:LOGBOOK:
-CLOCK: [2021-08-26 Thu 07:31]--[2021-08-26 Thu 08:01] =>  0:30
-:END:
-#+name: launch.docker.interactive
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/launch.docker.interactive
-# -*- mode: snippet -*-
-# key: launch.docker.interactive
-# expand-env: ((yas-indent-line 'fixed))
-# --
-,#+begin_src bash :tangle ./src/launch_$2.sh
-#!/bin/bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-#
-### Launch interactive settion for ${1:ACCOUNT}/${2:CONTAINER} ###
-#
-                
-# Setup
-set -euxo pipefail
-
-# Commands
-##
-## If already in a docker environment, then exit
-if [ -f /.dockerenv ]; then
- echo "shell already in docker, exiting"
- exit 1
-fi
-
-##
-## Run
-docker run \
-       --env HOME=\${HOME} \
-       --hostname \${HOSTNAME} \
-       --interactive \
-       --tty \
-       --volume /home/:/home/ \
-       --volume /tmp/:/tmp/ \
-       --volume /mnt/:/mnt/ \
-       --user $(id -u \${USER}) \
-       $1/$2 \
-       /bin/bash
-,#+end_src       
-#+END_SRC
-
-
-
 ****** Processes
 :PROPERTIES:
 :ID:       e209c427-c926-4a90-bbfe-38ee396db4be
@@ -6262,6 +6212,55 @@ docker run jeszyman/test
         - --name specifies image name
         - --rm removes container on exit
         - -ti: pseudodotty terminal
+****** Local YAS
+:PROPERTIES:
+:ID:       b477cbfd-b5fe-4297-9429-584de1f21144
+:END:
+:LOGBOOK:
+CLOCK: [2021-08-26 Thu 07:31]--[2021-08-26 Thu 08:01] =>  0:30
+:END:
+#+name: launch.docker.interactive
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/launch.docker.interactive
+# -*- mode: snippet -*-
+# key: launch.docker.interactive
+# expand-env: ((yas-indent-line 'fixed))
+# --
+,#+begin_src bash :tangle ./src/launch_$2.sh
+#!/bin/bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+#
+### Launch interactive settion for ${1:ACCOUNT}/${2:CONTAINER} ###
+#
+                
+# Setup
+set -euxo pipefail
+
+# Commands
+##
+## If already in a docker environment, then exit
+if [ -f /.dockerenv ]; then
+ echo "shell already in docker, exiting"
+ exit 1
+fi
+
+##
+## Run
+docker run \
+       --env HOME=\${HOME} \
+       --hostname \${HOSTNAME} \
+       --interactive \
+       --tty \
+       --volume /home/:/home/ \
+       --volume /tmp/:/tmp/ \
+       --volume /mnt/:/mnt/ \
+       --user $(id -u \${USER}) \
+       $1/$2 \
+       /bin/bash
+,#+end_src       
+#+END_SRC
+
+
+
 ****** General reference
 :PROPERTIES:
 :ID:       69c4be02-d479-4228-8040-eaaef924436e
@@ -6373,8 +6372,7 @@ docker run jeszyman/test
 :PROPERTIES:
 :ID:       e1bbc57a-0660-4ccf-a7e7-9870b3afbff7
 :END:
-- [[https://docs.github.com/en][Documentation]]
-- https://stackoverflow.com/questions/33330771/git-lfs-this-exceeds-githubs-file-size-limit-of-100-00-mb
+  - https://stackoverflow.com/questions/33330771/git-lfs-this-exceeds-githubs-file-size-limit-of-100-00-mb
 - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
 - [[id:E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6][Git]]
 - Processes
@@ -6553,7 +6551,6 @@ specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]
   - [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
   - my profile at /opt/cisco/anyconnect/profile/test.xml
 ***** i3
-https://thevaluable.dev/i3-config-mouseless/
 - https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
 ***** inkscape
 :PROPERTIES:
@@ -6633,7 +6630,6 @@ CLOCK: [2021-11-09 Tue 13:19]--[2021-11-09 Tue 13:49] =>  0:30
 - https://medium.com/@rohit_kapur/how-im-slowly-moving-off-the-cloud-with-nextcloud-460118a7723d
 - https://www.youtube.com/watch?v=y4dtcr2NL5M&ab_channel=LearnLinuxTV
   - 
-***** ncdu 
 ***** offlineimap
   - https://medium.com/@kirang89/emacs-as-email-client-with-offlineimap-and-mu4e-on-os-x-3ba55adc78b6
   - https://github.com/sup-heliotrope/sup/wiki/Complete-gmail-configuration
@@ -6809,9 +6805,6 @@ which singularity
 :LOGBOOK:
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
-
-- https://swcarpentry.github.io/r-novice-inflammation/05-cmdline/index.html
-- https://lachlandeer.github.io/snakemake-econ-r-tutorial/logging-output-and-errors.html
 ****** Processes 
 - Install and setup
   - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
@@ -6830,6 +6823,15 @@ snakemake --help
     - [[https://docs.anaconda.com/anaconda/install/multi-user/][install multi-user miniconda]]
   - add singularity
     - 
+- Write
+  - https://stackoverflow.com/questions/69483414/unspecified-syntax-error-in-snakemake-rule
+  - test workflow output- https://stackoverflow.com/questions/50198628/snakemake-confusion-on-how-to-access-config-files-properly
+  - workaround for using snakemake vars in shell script https://stackoverflow.com/a/49533645/6106936
+  - https://github.com/snakemake/snakemake/issues/971
+  - Configuration files
+    - [[id:2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5][YAML document markup language]]
+    - Using config variables
+      - https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
 - Run
   --lint
   --rulegraph
@@ -6837,18 +6839,7 @@ snakemake --help
 - docker - https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html?highlight=docker#running-jobs-in-containers
 - R package management in snakemake rules
   - https://github.com/lachlandeer/snakemake-econ-r  
-******* Writing snakefiles
-- https://stackoverflow.com/questions/69483414/unspecified-syntax-error-in-snakemake-rule
-- test workflow output- https://stackoverflow.com/questions/50198628/snakemake-confusion-on-how-to-access-config-files-properly
-- workaround for using snakemake vars in shell script https://stackoverflow.com/a/49533645/6106936
-- https://github.com/snakemake/snakemake/issues/971
-- Configuration files
- - [[id:2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5][YAML document markup language]]
- - Using config variables
-   - https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
- - can do multiple config files- see https://stackoverflow.com/questions/62696099/snakemake-multiple-config-files
 ****** Local YAS (prefix smk.)
-#! /usr/bin/env Rscript
 - Insert snakemake file org-mode tree
   #+name: smk
   #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk
@@ -6856,7 +6847,7 @@ snakemake --help
 # key: smk
 # expand-env: ((yas-indent-line 'none))
 # --
-`(make-string (org-current-level) ?*)` [[file:./workflow/$2.smk][${1: SNAKEMAKE PROCESS DESCRIPTIVE HEADER TITLE}]]:smk:
+`(make-string (org-current-level) ?*)` ${1: SNAKEMAKE PROCESS DESCRIPTIVE HEADER TITLE}:smk:
 :PROPERTIES:
 :header-args:snakemake: :tangle ./workflow/${2: SNAKEFILE NAME}.smk
 :END:              
@@ -6867,28 +6858,13 @@ snakemake --help
 `(make-string (+ 1 (org-current-level)) ?*)` Smk rules
 `(make-string (+ 2 (org-current-level)) ?*)` All rule
 ,#+begin_src snakemake
-rule all:
-    input:
-                    
+            
 ,#+end_src                            
 - add rules with smk.rule
-`(make-string (+ 1 (org-current-level)) ?*)` Ideas
-:PROPERTIES:
-:header-args:snakemake: :tangle no
-:END:  
 #+end_src
-- Make Rule
-  #+name: smk.rule
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule
-# -*- mode: snippet -*-
-# key: smk.rule
-# expand-env: ((yas-indent-line 'none))
-# --
-smk.rule.${1:$$(yas-choose-value '("bash" "r"))}
-#+end_src
-  - R rule
-    #+name: smk.rule.r
-    #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.r
+- Make R rule
+  #+name: smk.rule.r
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.r
 # -*- mode: snippet -*-
 # key: smk.rule.r
 # expand-env: ((yas-indent-line 'none))
@@ -6898,34 +6874,28 @@ smk.rule.${1:$$(yas-choose-value '("bash" "r"))}
   ,#+begin_src snakemake
 rule ${1:$(string-replace " " "_" (downcase yas-text))}:
     input:
-    params:
-        script = config["repo"] + "/workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R"
     output:
-    log:
-        config["data_dir"] + "/logs/${1:$(string-replace " " "_" (downcase yas-text))}.log"
-    shell:
-        """
-        Rscript {params.script} \
-        >& {log}
-        """
+    script:
+        "scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R"
 ,#+end_src
 - [[file:./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R][Base script]]
   ,#+begin_src R :noweb yes :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R
+<<r_snakemake_preamble>>
+
 #########1#########2#########3#########4#########5#########6#########7#########8
-
-###
-###   ${2: SCRIPT TITLE}   ###                
-###
-
-args = commandArgs(trailingOnly = TRUE)
-= args[1]                
+# Snakemake variables
+snakemake@input[[1]]
+snakemake@ouput[[1]]        
+# Function
+# Run command
 ,#+end_src
 #+end_src
-  - Bash rule
-    #+name: smk.rule.bash
-    #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.bash
+
+- Insert snakemake rule org-mode headline
+  #+name: smk.rule
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule
 # -*- mode: snippet -*-
-# key: smk.rule.bash
+# key: smk.rule
 # expand-env: ((yas-indent-line 'none))
 # --
 `(make-string (org-current-level) ?*)` ${1: RULE NAME}:smk_rule:
@@ -6936,19 +6906,16 @@ rule ${1:$(string-replace " " "_" (downcase yas-text))}:
     output:
     shell:
         """
-        scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
         """
 ,#+end_src
 - [[file:./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh][Base script]]
-  ,#+begin_src bash :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
-# Snakemake variables
+  ,#+begin_src :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
 # Function
+# Snakemake variables
 # Run command
 ,#+end_src
 #+end_src
-
 ****** Reference
-- https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
 - #+PROPERTY: header-args:bash :tangle-mode (identity #o777)
 - ideas
   `(make-string (+ 2 (org-current-level)) ?*)` Run commands
@@ -7046,7 +7013,6 @@ snakemake --cores 20 --forceall
 #+end_src
 - https://snakemake.readthedocs.io/en/stable/executor_tutorial/google_lifesciences.html
 ****** Ideas
-- parse yaml for shell https://mikefarah.gitbook.io/yq/
 - email notices
 - lock emacs buffer regions with successful run
 ***** Timeshift
@@ -7170,213 +7136,285 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
-******* Processes 
-- https://www.google.com/search?q=git+restore+file+as+new+name 
-- Clone
-  - https://www.google.com/search?q=git+clone+github+stack 
-- Initializing
-  - https://www.google.com/search?q=initialize+git+repo
-  - git branch --set-upstream-to=origin/master master
-- Commands
-  | Action               | Command                                  |
-  |----------------------+------------------------------------------|
-  | <30>                 | <35>                                     |
-  | Create repo          | git init                                 |
-  | Ignore files         | touch .gitignore                         |
-  | Add (stage) file     | git add                                  |
-  | Add recursive        | git add --all                            |
-  | Remove (unstage)     | git reset                                |
-  | Last update          | git log --name-status HEAD^..HEAD        |
-  | To be commited       | git status                               |
-  | List untracked       | git ls-files --others --exclude-standard |
-  | List tracked         | git ls-tree -r master --name-only        |
-  | Stop tracking repo   | rm -rf .git/                             |
-  | View list of commits | git log                                  |
-  | View file changes    | git diff - HEAD --staged                 |
-- Commit
-  - Changing within branch
-    - git commit- add changes WITHIN branch- full repo (not just a file) within branch
-    - git checkout -- undo last commit FOR A SPECIFIC FILE
-- Configuration
-  - hooks
-    - beautiful file size limit pre-commit hook
-      - https://stackoverflow.com/questions/39576257/how-to-limit-file-size-on-commit
-    - to test, simply run as bash script 
-  - gitignore
-    - loading changes -
-      - git rm -r --cached .
-      - git add .
-      - commit
-    - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
-    - https://labs.consol.de/development/git/2017/02/22/gitignore.html
-- Errors
-  - [[https://stackoverflow.com/questions/4254389/git-corrupt-loose-object/18238322#18238322][corrupt loose object]]
-- file comparisons
-  - https://doc.ubuntu-fr.org/meld
-- [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
-- Processes 
+- Processes and commands
+  - Clone
+    - https://www.google.com/search?q=git+clone+github+stack 
   - Initializing
     - https://www.google.com/search?q=initialize+git+repo
     - git branch --set-upstream-to=origin/master master
-  - gitignore
-    - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
-    - https://labs.consol.de/development/git/2017/02/22/gitignore.html
-  - Staging (Add)
-    - git add 'stages' a file- makes it ready to add to repo
-    - git reset unstages
-    - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
+  - Commands
+    | Action               | Command                                  |
+    |----------------------+------------------------------------------|
+    | <30>                 | <35>                                     |
+    | Create repo          | git init                                 |
+    | Ignore files         | touch .gitignore                         |
+    | Add (stage) file     | git add                                  |
+    | Add recursive        | git add --all                            |
+    | Remove (unstage)     | git reset                                |
+    | Last update          | git log --name-status HEAD^..HEAD        |
+    | To be commited       | git status                               |
+    | List untracked       | git ls-files --others --exclude-standard |
+    | List tracked         | git ls-tree -r master --name-only        |
+    | Stop tracking repo   | rm -rf .git/                             |
+    | View list of commits | git log                                  |
+    | View file changes    | git diff - HEAD --staged                 |
   - Commit
-    - https://www.google.com/search?q=git+see+which+files+are+not+added 
-    - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
-    - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
-    - File comparisons
-      - https://doc.ubuntu-fr.org/meld
-    - git checkout -- undo last commit FOR A SPECIFIC FILE
+    - Changing within branch
+      - git commit- add changes WITHIN branch- full repo (not just a file) within branch
+      - git checkout -- undo last commit FOR A SPECIFIC FILE
+  - Configuration
+    - hooks
+      - beautiful file size limit pre-commit hook
+        - https://stackoverflow.com/questions/39576257/how-to-limit-file-size-on-commit
+      - to test, simply run as bash script 
+    - gitignore
+      - loading changes -
+        - git rm -r --cached .
+        - git add .
+        - commit
+      - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
+      - https://labs.consol.de/development/git/2017/02/22/gitignore.html
+  - Errors
+    - [[https://stackoverflow.com/questions/4254389/git-corrupt-loose-object/18238322#18238322][corrupt loose object]]
+  - file comparisons
+    - https://doc.ubuntu-fr.org/meld
+  - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
+  - Processes 
+    - Initializing
+      - https://www.google.com/search?q=initialize+git+repo
+      - git branch --set-upstream-to=origin/master master
+    - gitignore
+      - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
+      - https://labs.consol.de/development/git/2017/02/22/gitignore.html
+    - Staging (Add)
+      - git add 'stages' a file- makes it ready to add to repo
+      - git reset unstages
+      - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
+    - Commit
+      - https://www.google.com/search?q=git+see+which+files+are+not+added 
+      - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
+      - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
+      - File comparisons
+        - https://doc.ubuntu-fr.org/meld
+      - git checkout -- undo last commit FOR A SPECIFIC FILE
+    - Pulls
+      - git merge- FIRST navigate to master, then git merge <BRANCH TO PULL>
+    - Viewing
+      - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
+    - Submodules
+      - add git submodule add <SUBMODULE>
+      - initialize git submodule update --recursive --init
+      - push and pull submodules
+        - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
+      - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
+      - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
+      - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
+    - [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]] 
+    - Searching commits
+      - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
+    - Reverting
+      - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
+      - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
+    - Hooks
+      - file size limit hook      
+    - Branches
+      - git branch
+        - add and delete
+          - -d <BRANCH NAME>
+          - <BRANCH NAME> 
+      - git checkout <BRANCH> switch branches
+    - Reverting
+      - reverting a specific file
+        1. find the commit hash with =git log=
+        2. revert with =git checkout <COMMIT HASH> -- <FILE>=
+      - [[http://stackoverflow.com/questions/4114095/how-to-revert-git-repository-to-a-previous-commit][reverting to previous commit]]
+      - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: Is there a quick git command to see an old version of a file?]]
+    - Removing files
+      - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
+      - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
+    - Remove repository
+      - https://www.google.com/search?q=git+remove+repository 
+      - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
   - Pulls
     - git merge- FIRST navigate to master, then git merge <BRANCH TO PULL>
-  - Viewing
-    - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
-  - Submodules
-    - add git submodule add <SUBMODULE>
-    - initialize git submodule update --recursive --init
-    - push and pull submodules
-      - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
-    - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
-    - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
-    - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
   - [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]] 
-  - Searching commits
-    - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
-  - Reverting
-    - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
-    - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
-  - Hooks
-    - file size limit hook      
-  - Branches
-    - git branch
-      - add and delete
-        - -d <BRANCH NAME>
-        - <BRANCH NAME> 
-    - git checkout <BRANCH> switch branches
+  - removing files
+    - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
+    - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
+  - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
   - Reverting
     - reverting a specific file
       1. find the commit hash with =git log=
       2. revert with =git checkout <COMMIT HASH> -- <FILE>=
     - [[http://stackoverflow.com/questions/4114095/how-to-revert-git-repository-to-a-previous-commit][reverting to previous commit]]
     - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: Is there a quick git command to see an old version of a file?]]
-  - Removing files
-    - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
-    - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
-  - Remove repository
-    - https://www.google.com/search?q=git+remove+repository 
-    - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
-- Pulls
-  - git merge- FIRST navigate to master, then git merge <BRANCH TO PULL>
-- [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]] 
-- removing files
-  - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
-  - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
-- [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
-- [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
-- [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
-- [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
-- Staging
-  - git add 'stages' a file- makes it ready to add to repo
-  - git reset unstages
+    - reverting
+      - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
+      - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
+  - searching within commits
+    - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
+  - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
+  - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
+  - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
+  - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
+  - Staging
+    - git add 'stages' a file- makes it ready to add to repo
+    - git reset unstages
+  - Hooks
+    - https://stackoverflow.com/questions/2050450/git-hooks-management
+  - submodules
+    - add git submodule add <SUBMODULE>
+    - initialize git submodule update --recursive --init
+    - sync
+        #+name: 
+        #+begin_src bash :tangle ~/repos/basecamp/src/daily_git_commit.sh
+    #!/bin/bash
+    #########1#########2#########3#########4#########5#########6#########7#########8
+    #                                                                              #
+    #                       Script to automate git pulls                           #
+    #             from a set of repositories within the same root dir              #
+    #                                                                              #
+    #########1#########2#########3#########4#########5#########6#########7#########8
+    # 
+    date_today=$(date +%F)
+    # 1. Script Checks
+    #
+    ## Check if git exist
+    command -v git >/dev/null 2>&1 # stop if git not found
+    if [ $? -eq 1 ]; then
+        echo "Git not found"
+        exit 1; fi
+    ##
+    ## Check if any repos exist
+    shopt -s nullglob
+    repo_dirs=(~/repos/*)
+    if [ ${#repo_dirs[@]} -eq 0 ]; then
+        echo "No repos at ~/repos/"
+        exit 1; fi
+    shopt -u nullglob
+    ##
+    # 2. Pull Function 
+    #                      
+    for d in $HOME/repos/*
+    do 
+        [[ ! -d "$d" ]] && continue
+        echo "$d" &&
+        cd "$d" &&
+        git add -A &&
+        git commit -am $date_today &&
+        git pull &&
+        git submodule update --recursive &&
+        git submodule update --remote && 
+        git push 
+        cd "$OLDPWD"
+    done
+    #
+    #+end_src      
+    - https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin    
+    - https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
+    - push and pull submodules
+      - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
+    - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
+    - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
+    - submodule commands
+      - # git submodule foreach --recursive git checkout master
+      - # git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
+      - # git submodule foreach --recursive git pull
+      - # git submodule foreach --recursive git push
+  - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
+  - [[https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git][undo]]    
+  - view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
+  - Branch
+    - git branch
+      - add and delete
+        - -d <BRANCH NAME>
+        - <BRANCH NAME> 
+    - git checkout <BRANCH> switch branches
+- Best practices
+  - for git repos, use submodules to push common code up - https://git-scm.com/book/en/v2/Git-Tools-Submodules
+- Scripts
+  - Pre-commit file size check hook
+    #+name: git_size_check_hook
+    #+begin_src bash :noweb yes
+#!/bin/sh
+#########1#########2#########3#########4#########5#########6#########7#########8
+#
+# This script is imported from github.com/jeszyman/basecamp
+# See block git_size_check_hook in
+#  https://github.com/jeszyman/basecamp/blob/master/basecamp.org
 
-- Hooks
-  - https://stackoverflow.com/questions/2050450/git-hooks-management
-- [[https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git][undo]]    
-- Branch
-  - git branch
-    - add and delete
-      - -d <BRANCH NAME>
-      - <BRANCH NAME> 
-  - git checkout <BRANCH> switch branches
-- Reverting
-  - reverting a specific file
-    1. find the commit hash with =git log=
-    2. revert with =git checkout <COMMIT HASH> -- <FILE>=
-  - [[http://stackoverflow.com/questions/4114095/how-to-revert-git-repository-to-a-previous-commit][reverting to previous commit]]
-  - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: Is there a quick git command to see an old version of a file?]]
-  - reverting
-    - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
-    - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
-******** Submodules
-- Add
-  - git submodule add <SUBMODULE>
-- https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407
-- https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
-- https://stackoverflow.com/questions/5814319/git-submodule-push
-- initialize git submodule update --recursive --init
-- sync
-    #+name: 
-    #+begin_src bash :tangle ~/repos/basecamp/src/daily_git_commit.sh
-#!/bin/bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-#                                                                              #
-#                       Script to automate git pulls                           #
-#             from a set of repositories within the same root dir              #
-#                                                                              #
-#########1#########2#########3#########4#########5#########6#########7#########8
-# 
-date_today=$(date +%F)
-# 1. Script Checks
-#
-## Check if git exist
-command -v git >/dev/null 2>&1 # stop if git not found
-if [ $? -eq 1 ]; then
-    echo "Git not found"
-    exit 1; fi
-##
-## Check if any repos exist
-shopt -s nullglob
-repo_dirs=(~/repos/*)
-if [ ${#repo_dirs[@]} -eq 0 ]; then
-    echo "No repos at ~/repos/"
-    exit 1; fi
-shopt -u nullglob
-##
-# 2. Pull Function 
-#                      
-for d in $HOME/repos/*
-do 
-    [[ ! -d "$d" ]] && continue
-    echo "$d" &&
-    cd "$d" &&
-    git add -A &&
-    git commit -am $date_today &&
-    git pull &&
-    git submodule update --recursive &&
-    git submodule update --remote && 
-    git push 
-    cd "$OLDPWD"
-done
-#
-#+end_src      
-- https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin    
-- https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
-- push and pull submodules
-  - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
-- https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
-- https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
-- submodule commands
-  - # git submodule foreach --recursive git checkout master
-  - # git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
-  - # git submodule foreach --recursive git pull
-  - # git submodule foreach --recursive git push
-- to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
-******** Working with previous commits
-- [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
-- view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
-- https://stackoverflow.com/questions/888414/git-checkout-older-revision-of-a-file-under-a-new-name
-******** Search
-- searching for deleted files https://www.google.com/search?q=git+search+deleted+files
-  - https://stackoverflow.com/questions/7203515/how-to-find-a-deleted-file-in-the-project-commit-history
-- searching within commits
-  - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
-******* [[id:fcffb312-ca8d-4450-b837-b1945201f9c1][My git]]
-******* Documentation and general reference
+hard_limit=$(git config hooks.filesizehardlimit)
+soft_limit=$(git config hooks.filesizesoftlimit)
+: ${hard_limit:=10000000}
+: ${soft_limit:=500000}
+
+list_new_or_modified_files()
+{
+    git diff --staged --name-status|sed -e '/^D/ d; /^D/! s/.\s\+//'
+}
+
+unmunge()
+{
+    local result="${1#\"}"
+    result="${result%\"}"
+    env echo -e "$result"
+}
+
+check_file_size()
+{
+    n=0
+    while read -r munged_filename
+    do
+        f="$(unmunge "$munged_filename")"
+        h=$(git ls-files -s "$f"|cut -d' ' -f 2)
+        s=$(git cat-file -s "$h")
+        if [ "$s" -gt $hard_limit ]
+        then
+            env echo -E 1>&2 "ERROR: hard size limit ($hard_limit) exceeded: $munged_filename ($s)"
+            n=$((n+1))
+        elif [ "$s" -gt $soft_limit ]
+        then
+            env echo -E 1>&2 "WARNING: soft size limit ($soft_limit) exceeded: $munged_filename ($s)"
+        fi
+    done
+
+    [ $n -eq 0 ]
+}
+
+list_new_or_modified_files | check_file_size            
+#+end_src
+    #+name: git_size_check_hook_wrapper
+    #+begin_src org :noweb yes
+<<git_size_check_hook>>            
+#+end_src
+  - list-directories-under-git-vc
+    #+BEGIN_SRC sh :results silent
+cd ~/
+find . -type d -name '.git' > ~/all-git-repos.txt 
+#+END_SRC
+- Git repository hosting services
+  - [[https://about.gitlab.com/][GitLab]]
+  - [[https://github.com/][GitHub]]
+    - https://www.reddit.com/r/programming/comments/7deyx8/introducing_security_alerts_on_github_with_your/
+    - [X] [2017-10-19 Thu] Have [[https://mail.google.com/mail/u/0/#inbox/15f3634fd86f200a][student dev pack!]]
+    - Primarily for using git with other people- the advantage is pull requests 
+    - Documentation
+    - [[https://help.github.com/articles/cloning-a-repository/][Cloning a repository]] via url: git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
+    - [[https://guides.github.com/][Guides]]
+      - [[https://guides.github.com/features/mastering-markdown/][Markdown]]
+  - https://guides.github.com/introduction/flow/
+  - GitHub
+    - https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push
+    - https://github.com/settings/keys
+    - [[https://education.github.com/?utm_source=newsletter&utm_medium=email&utm_campaign=student-survey-050818][github: educational tools]]
+    - [[https://guides.github.com/features/pages/][Getting Started with GitHub Pages]]
+    - [[https://education.github.com/pack?utm_source=announcement&utm_medium=email&utm_campaign=education-201806019][GitHub related tools]]
+    - [[https://github.com/trending/r?since=monthly][GitHub trending]]
+    - ideas
+      - https://stackoverflow.com/questions/11852982/can-i-arrange-repositories-into-folders-on-github/11859027#11859027
+    - https://github.com/features/actions
+    - https://lab.github.com/courses?utm_source=newsletter&utm_medium=email&utm_campaign=student-newsletter-120818
+- [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]]
 - Documentation and general reference
   - [[https://git-scm.com/][git website]]
     - [[https://git-scm.com/doc][documentation]]
@@ -7399,28 +7437,80 @@ done
   - Reference
     - https://github.com/UW-Madison-DataScience
     - GUIs- https://www.sourcetreeapp.com/
-- Commit
-- [[https://git-scm.com/][git website]]
-  - [[https://git-scm.com/doc][documentation]]
-- Basic concepts
-  - Repository
-  - Branching- the different versions of the repository
-    - Branches
-      - master
-      - feature- a new branch 
-    - Branching creates a snapshot of master
-  - Encorporating changes
-    - WITHIN a branch: Commit- changes to any branch, not necessarily master
-      - commits can have comments, but this is not necessary
-    - FROM ONE BRANCH TO ANOTHER: Pull request- to pull you changes INTO a branch 
-  - Distributed version control (no canonical, distributed version 'sync' via patch
-- Educational Resources
-  - [[https://try.github.io/levels/1/challenges/1][Command line tutorial]]
-  - [[https://www.git-tower.com/learn/git/ebook/en/command-line/introduction#start][Tower: Learn Version Control with Git]]
-- [[https://stackoverflow.com/questions/954560/how-does-git-handle-symbolic-links][How does Git handle symbolic links?]]
 - Best practices
   - for git repos, use submodules to push common code up - https://git-scm.com/book/en/v2/Git-Tools-Submodules
-******* Interfaces
+- Scripts
+  #+begin_src bash :tangle no
+#!/bin/bash
+date=$(date +%Y-%m-%d)
+
+for d in $HOME/repos/*
+do 
+#	[[ ! -d "$d" ]] && continue
+    echo "$d"
+    cd "$d"
+    git add -A && \
+        git  commit -a -m "$date" && \
+        git push && \
+        git submodule foreach --recursive git add -A && git commit -am "$date" && \
+        git submodule foreach --recursive git push
+done             
+
+#!/bin/bash
+date=$(date +%Y-%m-%d)
+for d in $HOME/repos/*
+do 
+#	[[ ! -d "$d" ]] && continue
+	echo "$d"
+	cd "$d"
+	git add -A && \
+        git commit -a -m "$date" && \
+        git push && \
+        git submodule foreach --recursive git checkout master &&\
+        git submodule foreach --recursive git add -A && git commit -am "$date" && \
+        git submodule foreach --recursive git push
+done             
+
+git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
+git submodule foreach --recursive git push
+git submodule foreach --recursive git pull
+
+cd $repo
+git submodule foreach --recursive git checkout master
+
+
+git submodule foreach --recursive git pull
+
+
+        
+done
+
+#+end_src
+  #+name:list-directories-under-git-vc
+  #+BEGIN_SRC sh :results silent
+  cd ~/
+  find . -type d -name '.git' > ~/all-git-repos.txt 
+  #+END_SRC
+- Documentation and general reference
+  - Commit
+  - [[https://git-scm.com/][git website]]
+    - [[https://git-scm.com/doc][documentation]]
+  - Basic concepts
+    - Repository
+    - Branching- the different versions of the repository
+      - Branches
+        - master
+        - feature- a new branch 
+      - Branching creates a snapshot of master
+    - Encorporating changes
+      - WITHIN a branch: Commit- changes to any branch, not necessarily master
+        - commits can have comments, but this is not necessary
+      - FROM ONE BRANCH TO ANOTHER: Pull request- to pull you changes INTO a branch 
+    - Distributed version control (no canonical, distributed version 'sync' via patch
+  - Educational Resources
+    - [[https://try.github.io/levels/1/challenges/1][Command line tutorial]]
+    - [[https://www.git-tower.com/learn/git/ebook/en/command-line/introduction#start][Tower: Learn Version Control with Git]]
+  - [[https://stackoverflow.com/questions/954560/how-does-git-handle-symbolic-links][How does Git handle symbolic links?]]
 - Git repository hosting services
   - [[https://about.gitlab.com/][GitLab]]
   - [[https://github.com/][GitHub]]
@@ -7444,7 +7534,6 @@ done
     - https://github.com/features/actions
     - https://lab.github.com/courses?utm_source=newsletter&utm_medium=email&utm_campaign=student-newsletter-120818
 - GUIs- https://www.sourcetreeapp.com/
-******** [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]]
 ***** By application
 :PROPERTIES:
 :ID:       c18758a1-5db9-4ffe-8cc5-91c172a47331
@@ -7921,7 +8010,6 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
-https://linuxjourney.com/
 ******** Processes
 - clipboard
   - https://askubuntu.com/questions/382767/how-to-pipe-dump-clipboard-contents-to-a-file  
@@ -8948,11 +9036,7 @@ http://www.mitchchn.me/2014/os-x-terminal/
 - GNU - [[https://www.gnu.org/help/help.html][Helping GNU]]
 - [[https://www.reddit.com/r/commandline/comments/7d5fwa/jobson_automatically_turn_commandline/][reddit: automatically turn command-line applications into webapps]]
 
-**** Software engineering
-:PROPERTIES:
-:ID:       d4c65ebf-8abd-4876-8b79-08ae9fcc50c2
-:END:
-- https://www.kdnuggets.com/2019/03/best-tips-agile-data-science-research.html
+**** Software development / deployment
 - software development
   - cite:nowogrodzki2019
 - https://www.sciencedirect.com/science/article/pii/S0950584914001050
