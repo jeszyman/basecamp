@@ -6373,6 +6373,7 @@ docker run jeszyman/test
 :PROPERTIES:
 :ID:       e1bbc57a-0660-4ccf-a7e7-9870b3afbff7
 :END:
+- github for phi https://mail.google.com/mail/u/0/#inbox/FMfcgzGmtrSFVZLwRBfnJQJMVGLgzhJG
 - [[https://docs.github.com/en][Documentation]]
 - https://stackoverflow.com/questions/33330771/git-lfs-this-exceeds-githubs-file-size-limit-of-100-00-mb
 - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
@@ -6810,6 +6811,7 @@ which singularity
 :LOGBOOK:
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
+https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
 ****** Processes 
 - Install and setup
   - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
