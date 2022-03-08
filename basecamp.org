@@ -5,6 +5,9 @@
 :LOGBOOK:
 CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 :END:  
+** Android
+- https://www.google.com/search?q=android+block+number 
+** [[*Software flat list][Software flat list]]
 ** Setup
 :PROPERTIES:
 :ID:       d08d41e0-5772-4865-96df-b0e753e66b7d
@@ -12,6 +15,7 @@ CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 #+begin_src bash
 repo="/home/jeszyman/repos/basecamp"
 mkdir -p "${repo}/docker"
+mkdir -p "${repo}/resources"
 #+end_src
 ** Processes
 :PROPERTIES:
@@ -430,14 +434,14 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
-command line parsing argparse
-http://r4ds.had.co.nz/
-https://beep-boopr.github.io/ubcBIOL548L/articles/group-03_Using-cowplot-multi-panel.html
+- command line parsing argparse
+- make objects https://bioconductor.org/packages/devel/bioc/vignettes/SummarizedExperiment/inst/doc/Extensions.html
+- http://r4ds.had.co.nz/
+- https://beep-boopr.github.io/ubcBIOL548L/articles/group-03_Using-cowplot-multi-panel.html
 - https://stackoverflow.com/questions/20934103/if-file-exists-in-folder-read-it-else-skip-the-processing-part
-
-https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply
-https://little-books-of-r.readthedocs.io/en/latest/
-https://stackoverflow.com/questions/44066117/convert-data-frame-to-reference-class-object-in-r
+- https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply
+- https://little-books-of-r.readthedocs.io/en/latest/
+- https://stackoverflow.com/questions/44066117/convert-data-frame-to-reference-class-object-in-r
 *** Local YAS
 :PROPERTIES:
 :ID:       d013547e-3e14-4510-948a-4b24de6a2e62
@@ -491,6 +495,7 @@ ${1:FUNCTION NAME} = function(${2:VARIABLE LIST}){
 :LOGBOOK:
 CLOCK: [2021-06-04 Fri 10:17]--[2021-06-04 Fri 10:25] =>  0:08
 :END:
+
 **** Import
 :PROPERTIES:
 :ID:       8fe67560-d881-4cc3-ad0f-fea419a81023
@@ -522,9 +527,9 @@ as.character(Sys.info()["nodename"])
 CLOCK: [2021-06-04 Fri 10:25]--[2021-06-04 Fri 10:58] =>  0:33
 CLOCK: [2019-03-19 Tue 14:35]--[2019-03-19 Tue 16:45] =>  2:10
 :END:
-- [[id:39F11977-BE11-47CF-98B1-14CE6D9B97C4][Information Science / Data Science]]
 - https://www.r-bloggers.com/2021/06/10-tips-and-tricks-for-data-scientists-vol-9/amp/
 - https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
+***** [[id:39F11977-BE11-47CF-98B1-14CE6D9B97C4][Information Science / Data Science]]
 ***** Examples
 :PROPERTIES:
 :ID:       045d1771-be15-4a8d-b0ac-ef326d93a54b
@@ -1367,6 +1372,11 @@ CLOCK: [2022-01-24 Mon 07:30]--[2022-01-24 Mon 08:05] =>  0:35
 CLOCK: [2021-06-04 Fri 08:50]--[2021-06-04 Fri 09:53] =>  1:03
 CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 :END:
+https://nceas.github.io/sasap-training/materials/reproducible_research_in_r_fairbanks/data-modeling-tidy-data.html
+https://www.reddit.com/r/MachineLearning/comments/t55lbw/d_whats_your_favorite_unpopularforgotten_machine/
+https://www.reddit.com/r/datascience/comments/so7l3n/must_reads/
+https://jku-vds-lab.at/
+https://www.nature.com/articles/sdata201618#Sec11
 https://www.scnsoft.com/blog/guide-to-data-quality-management
 *** Data science project management
 :PROPERTIES:
@@ -1487,6 +1497,7 @@ CLOCK: [2021-09-13 Mon 14:51]--[2021-09-13 Mon 16:02] =>  1:11
 CLOCK: [2018-12-12 Wed 16:31]--[2018-12-12 Wed 16:32] =>  0:01
 CLOCK: [2018-12-12 Wed 15:47]--[2018-12-12 Wed 16:29] =>  0:42
 :END:
+https://bitspook.in/blog/using-org-mode-as-an-sql-playground/
 ****** Sqlite in org-mode
 :PROPERTIES:
 :ID:       4cc925c0-28b0-4234-9f97-3e18dd52a871
@@ -1832,6 +1843,9 @@ CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
 CLOCK: [2017-10-30 Mon 15:33]--[2017-10-30 Mon 15:46] =>  0:13
 CLOCK: [2017-10-30 Mon 14:55]--[2017-10-30 Mon 14:59] =>  0:04
 :END:
+- t-sne
+  - https://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf
+  - https://github.com/jkrijthe/Rtsne
 - https://towardsdatascience.com/a-better-way-to-visualize-decision-trees-with-the-dtreeviz-library-758994cdf05e
 - https://www.reddit.com/r/dataisbeautiful/comments/b1ao5h/estimating_pi_using_monte_carlo_simulation_oc/
 - https://www.reddit.com/r/dataisbeautiful/comments/8yrevu/oc_street_orientation_of_dutch_cities/
@@ -2191,6 +2205,11 @@ CLOCK: [2017-06-23 Fri 19:05]--[2017-06-23 Fri 19:35] =>  0:30
 CLOCK: [2018-06-27 Wed 11:59]--[2018-06-27 Wed 12:49] =>  0:50
 CLOCK: [2017-11-28 Tue 18:30]--[2017-11-28 Tue 19:30] =>  1:00
 :END:
+https://www.reddit.com/r/statistics/comments/t3ok40/q_is_there_any_difference_between_latent_profile/
+https://torchstudio.ai/
+https://www.reddit.com/r/datascience/comments/sxtppd/stop_resampling_data_in_classification_problems/
+https://www.reddit.com/r/datascience/comments/so7l3n/must_reads/
+https://www.reddit.com/r/datascience/comments/sm96f5/machine_learning_simplified_book/
 https://github.com/aaronwangy/Data-Science-Cheatsheet/blob/main/Data_Science_Cheatsheet.pdf
 https://www.sciencedirect.com/science/article/pii/S2666389921002348
 https://www.nature.com/articles/s41587-021-01070-8#Sec2
@@ -3035,7 +3054,9 @@ CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 - https://www.reddit.com/r/datasets/comments/d9ycp1/github_releases_dataset_of_six_million_methods/
 - https://blog.dominodatalab.com/lesser-known-ways-of-using-notebooks/
 - https://mail.google.com/mail/u/0/#inbox/FMfcgxwDqnjnHJFDpDpBQQdGrjgtfdfn
-
+*** Processes
+- devops
+  - http://howardism.org/Technical/Emacs/literate-devops.html
 *** general guides and tutorials
 :PROPERTIES:
 :ID:       2faf071d-912b-4003-a42a-d9f18144434b
@@ -3116,6 +3137,7 @@ CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 :PROPERTIES:
 :ID:       670ed8f4-bb93-4d93-b9ea-a142a599169f
 :END:
+- https://www.ilovepdf.com/
 - Convert to png https://askubuntu.com/questions/50170/how-to-convert-pdf-to-image
 - https://www.google.com/search?q=pdftk+merge
 - https://www.google.com/search?q=linux+pdf+delete+page 
@@ -3338,6 +3360,7 @@ https://mmistakes.github.io/jekyll-theme-basically-basic/recipes/chocolate-chip-
 :LOGBOOK:
 CLOCK: [2019-02-06 Wed 16:12]--[2019-02-06 Wed 17:05] =>  0:53
 :END:
+https://www.freecodecamp.org/news/learn-c-with-free-31-hour-course/
 https://goalkicker.com/
 https://www.freecodecamp.org/news/rust-in-replit/
 - https://www.reddit.com/r/bioinformatics/comments/qpuhn5/which_programming_languages_should_i_learn/hjx3ocg/
@@ -4912,6 +4935,7 @@ cite:yasini2012guideline
 :PROPERTIES:
 :ID:       10af5937-004b-46f8-818d-b81d30462164
 :END:
+http://howardism.org/Technical/Emacs/literate-devops.html
 - https://github.com/norvig/pytudes/blob/main/ipynb/risk.ipynb
 - https://github.com/alhassy/emacs.d/blob/master/README.org#what-does-literate-programming-look-like
 
@@ -5760,6 +5784,12 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
 **** Software flat list
+***** draw.io
+https://github.com/jgraph/drawio-desktop/releases/tag/v16.5.1
+***** Advanced package tool (APT)
+- can install .deb files with sudo apt install <.DEB>
+***** Outlook on the web :software:
+- can get permalink urls to specific emails via send to OneNote
 ***** box
   - https://community.box.com/t5/Community/ct-p/English
   - [[https://www.youtube.com/channel/UClVkSYJyS4XTpzukZn1zm7w][box youtube]]
@@ -6579,22 +6609,10 @@ https://thevaluable.dev/i3-config-mouseless/
 :PROPERTIES:
 :ID:       ec8355ce-7324-4ffd-ad3b-25c39edc7390
 :END:
+- https://help.libreoffice.org/4.4/Common/List_of_Regular_Expressions
 - https://extensions.libreoffice.org/extensions
 - https://extensions.libreoffice.org/extensions
 - https://www.google.com/search?q=libreoffice+escape+comment
-****** libreoffice impress
-:PROPERTIES:
-:ID:       9981156b-c7a5-4c38-bdd9-765621f5ff56
-:END:
-
-- https://www.google.com/search?q=libreoffice+snap+line
-- https://ask.libreoffice.org/en/question/10973/permanently-set-default-page-style/
-
-
-***** libreoffice 
-:PROPERTIES:
-:ID:       dc8d8b6a-8518-471c-8fec-c3515a4bc6d9
-:END:
 - https://ask.libreoffice.org/en/question/157807/set-memory-settings-in-version-6042/
 - https://superuser.com/questions/345365/exporting-vector-graphics-from-inkscape-into-libreoffice
 - https://askubuntu.com/questions/599915/what-is-the-closest-font-to-helvetica-available-on-ubuntu
@@ -6602,13 +6620,15 @@ https://thevaluable.dev/i3-config-mouseless/
 - https://ask.libreoffice.org/en/question/157807/set-memory-settings-in-version-6042/
 - https://www.reddit.com/r/libreoffice/comments/7umifb/has_libreoffice_6_just_killed_the_indispensable/
 - https://www.google.com/search?q=libreoffice+escape+comment
-****** libreoffice impress
+
+***** libreoffice impress
 :PROPERTIES:
-:ID:       bc100c54-05f8-4e8c-9790-b0df3ef518db
+:ID:       9981156b-c7a5-4c38-bdd9-765621f5ff56
 :END:
 
 - https://www.google.com/search?q=libreoffice+snap+line
 - https://ask.libreoffice.org/en/question/10973/permanently-set-default-page-style/
+
 
 
 ***** mamba
@@ -6811,9 +6831,9 @@ which singularity
 :LOGBOOK:
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
-https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
+- https://github.com/EthanHolleman/snake-backup/blob/main/Snakefile.py
 ****** Processes 
-- Install and setup
+******* Install and setup
   - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
     #+begin_src bash
 conda init bash 
@@ -6830,14 +6850,10 @@ snakemake --help
     - [[https://docs.anaconda.com/anaconda/install/multi-user/][install multi-user miniconda]]
   - add singularity
     - 
-- Run
-  --lint
-  --rulegraph
-  - https://www.google.com/search?q=snakemake+run+specific+rule 
-- docker - https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html?highlight=docker#running-jobs-in-containers
+******* Writing snakefiles
+- To pass character vector to R snakemake rule https://stackoverflow.com/questions/13840207/character-vector-as-an-argument-to-r-script
 - R package management in snakemake rules
   - https://github.com/lachlandeer/snakemake-econ-r  
-******* Writing snakefiles
 - https://lachlandeer.github.io/snakemake-econ-r-tutorial/logging-output-and-errors.html
 - https://stackoverflow.com/questions/69483414/unspecified-syntax-error-in-snakemake-rule
 - test workflow output- https://stackoverflow.com/questions/50198628/snakemake-confusion-on-how-to-access-config-files-properly
@@ -6848,6 +6864,12 @@ snakemake --help
  - Using config variables
    - https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
  - can do multiple config files- see https://stackoverflow.com/questions/62696099/snakemake-multiple-config-files
+******* Run
+  --lint
+  --rulegraph
+  - https://www.google.com/search?q=snakemake+run+specific+rule 
+  - docker - https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html?highlight=docker#running-jobs-in-containers
+
 ****** Local YAS (prefix smk.)
 #! /usr/bin/env Rscript
 - Insert snakemake file org-mode tree
@@ -6896,7 +6918,7 @@ smk.rule.${1:$$(yas-choose-value '("bash" "r"))}
 # --
 `(make-string (org-current-level) ?*)` ${1: RULE NAME}:smk_rule:
 - Snakemake
-,#+begin_src snakemake
+  #+begin_src snakemake
 rule ${1:$(string-replace " " "_" (downcase yas-text))}:
 input:
 params:
@@ -6911,7 +6933,7 @@ shell:
     """
 ,#+end_src
 - [[file:./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R][Base script]]
-,#+begin_src R :noweb yes :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R
+  #+begin_src R :noweb yes :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R
 #!/usr/bin/env Rscript
 #########1#########2#########3#########4#########5#########6#########7#########8
 ###
@@ -6952,6 +6974,7 @@ shell:
 #+end_src
 
 ****** Reference
+- https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
 - https://swcarpentry.github.io/r-novice-inflammation/05-cmdline/index.html
 - https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
 - #+PROPERTY: header-args:bash :tangle-mode (identity #o777)
@@ -7060,7 +7083,19 @@ snakemake --cores 20 --forceall
 ***** tramp
   - [currently not working] to goodle drive- - https://www.gnu.org/software/tramp/#Using-Google-Drive
 ***** trash http://hasseg.org/trash/
-***** trash http://hasseg.org/trash/
+***** xdg-utils
+:LOGBOOK:
+:END:
+- "desktop" entries
+  - ~/.local/share/applications
+  - /usr/share/applications
+  - https://wiki.archlinux.org/title/Desktop_entries
+- https://wiki.archlinux.org/title/XDG_MIME_Applications#:~:text=The%20XDG%20Shared%20MIME%2Dinfo,from%20shared%2Dmime%2Dinfo.
+- https://unix.stackexchange.com/questions/36380/how-to-properly-and-easily-configure-xdg-open-without-any-environment
+- local defaults list at ~/.config/mimeapps.list
+- $ xdg-mime default Thunar.desktop inode/directory
+- application interactions, xdg
+  - https://wiki.archlinux.org/title/Xdg-utils
 ***** virtualbox
 :PROPERTIES:
 :ID:       147fb935-7526-497f-ab84-2b7903ea996e
@@ -7094,9 +7129,10 @@ snakemake --cores 20 --forceall
 CLOCK: [2020-01-16 Thu 08:16]--[2020-01-16 Thu 08:45] =>  0:29
 CLOCK: [2019-03-04 Mon 14:59]--[2019-03-04 Mon 15:17] =>  0:18
 :END:
-- https://github.com/willsALMANJ/Zutilo
-- zotfile
-- better biblatex 
+- plugins
+  - https://github.com/willsALMANJ/Zutilo
+  - zotfile
+  - better biblatex 
 - [[https://www.zotero.org/support/][documentation]]
 - https://www.google.com/search?q=zotfile+sync+files&oq=zotfile+sync+files&aqs=chrome..69i57.4295j0j4&client=ubuntu&sourceid=chrome&ie=UTF-8
 - Add-ons
@@ -7131,13 +7167,52 @@ CLOCK: [2019-03-04 Mon 14:59]--[2019-03-04 Mon 15:17] =>  0:18
 :PROPERTIES:
 :CREATED:  [2021-11-15 Mon 12:12]
 :END:
+***** By application
+:PROPERTIES:
+:ID:       c18758a1-5db9-4ffe-8cc5-91c172a47331
+:END:
+
+****** Images
+:PROPERTIES:
+:ID:       57027e14-5ca6-4fdd-a50c-dcb98f81da39
+:END:
+- capture screen to gif
+  - https://www.cockos.com/licecap/
+******* imagemagick
+:PROPERTIES:
+:ID:       9b764756-e8af-4ef8-91c3-5e52bbc6ee33
+:END:
+#+begin_src bash
+for file in ~/Pre-PACE\ Images/*.pdf;
+do
+    base=$(basename -s .pdf "$file")
+    echo $base
+    convert -units PixelsPerInch "$file" -density 600 "${base}.tiff"
+done
+#+end_src
+
+- https://askubuntu.com/questions/573246/quick-way-to-calculate-dimension-in-inch-for-photos-in-ubuntu
+- https://askubuntu.com/questions/591733/rotate-images-from-terminal
+- https://unix.stackexchange.com/questions/406454/how-to-get-the-dpi-of-an-image-file-png
+****** Text editors
+:PROPERTIES:
+:ID:       e5de88cc-837e-45cb-b68d-e529a92a35d5
+:END:
+  - vim https://www.reddit.com/r/linux4noobs/comments/iy3mcc/vim_cheatsheet_for_noobs_with_corrections/
+****** Data storage and transfer
+:PROPERTIES:
+:ID:       40a77a9b-24f3-44a3-97bf-fbf64d4e43e7
+:END:
+  - - globus
+    - [[https://docs.globus.org/cli/][cli]]
+      - [[https://docs.globus.org/cli/reference/][documentation]]
+        - https://docs.globus.org/how-to/globus-connect-personal-linux/#globus-connect-personal-cli
+
 ***** Version Control
 :PROPERTIES:
 :ID:       A9EE8CE0-ED58-4127-8B57-B53AE680B441
 :END:
-
-https://github.com/simonthum/git-sync
-- Web-based
+****** Web-based
   - GitHub
     - Contributions
       - https://guides.github.com/activities/forking/
@@ -7176,12 +7251,14 @@ CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
 ******* Processes 
-- https://www.google.com/search?q=git+restore+file+as+new+name 
+- Branch
+  - git branch
+    - add and delete
+      - -d <BRANCH NAME>
+      - <BRANCH NAME> 
+  - git checkout <BRANCH> switch branches
 - Clone
   - https://www.google.com/search?q=git+clone+github+stack 
-- Initializing
-  - https://www.google.com/search?q=initialize+git+repo
-  - git branch --set-upstream-to=origin/master master
 - Commands
   | Action               | Command                                  |
   |----------------------+------------------------------------------|
@@ -7199,6 +7276,12 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
   | View list of commits | git log                                  |
   | View file changes    | git diff - HEAD --staged                 |
 - Commit
+  - https://www.google.com/search?q=git+see+which+files+are+not+added 
+  - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
+  - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
+  - File comparisons
+    - https://doc.ubuntu-fr.org/meld
+  - git checkout -- undo last commit FOR A SPECIFIC FILE
   - Changing within branch
     - git commit- add changes WITHIN branch- full repo (not just a file) within branch
     - git checkout -- undo last commit FOR A SPECIFIC FILE
@@ -7214,89 +7297,34 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
       - commit
     - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
     - https://labs.consol.de/development/git/2017/02/22/gitignore.html
-- Errors
-  - [[https://stackoverflow.com/questions/4254389/git-corrupt-loose-object/18238322#18238322][corrupt loose object]]
-- file comparisons
-  - https://doc.ubuntu-fr.org/meld
-- [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
-- Processes 
-  - Initializing
-    - https://www.google.com/search?q=initialize+git+repo
-    - git branch --set-upstream-to=origin/master master
   - gitignore
     - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
     - https://labs.consol.de/development/git/2017/02/22/gitignore.html
-  - Staging (Add)
-    - git add 'stages' a file- makes it ready to add to repo
-    - git reset unstages
-    - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
-  - Commit
-    - https://www.google.com/search?q=git+see+which+files+are+not+added 
-    - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
-    - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
-    - File comparisons
-      - https://doc.ubuntu-fr.org/meld
-    - git checkout -- undo last commit FOR A SPECIFIC FILE
-  - Pulls
-    - git merge- FIRST navigate to master, then git merge <BRANCH TO PULL>
-  - Viewing
-    - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
-  - Submodules
-    - add git submodule add <SUBMODULE>
-    - initialize git submodule update --recursive --init
-    - push and pull submodules
-      - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
-    - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
-    - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
-    - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
-  - [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]] 
-  - Searching commits
-    - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
-  - Reverting
-    - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
-    - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
   - Hooks
     - file size limit hook      
-  - Branches
-    - git branch
-      - add and delete
-        - -d <BRANCH NAME>
-        - <BRANCH NAME> 
-    - git checkout <BRANCH> switch branches
-  - Reverting
-    - reverting a specific file
-      1. find the commit hash with =git log=
-      2. revert with =git checkout <COMMIT HASH> -- <FILE>=
-    - [[http://stackoverflow.com/questions/4114095/how-to-revert-git-repository-to-a-previous-commit][reverting to previous commit]]
-    - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: Is there a quick git command to see an old version of a file?]]
+- Errors
+  - [[https://stackoverflow.com/questions/4254389/git-corrupt-loose-object/18238322#18238322][corrupt loose object]]
+- File comparisons
+  - https://doc.ubuntu-fr.org/meld
+- [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
+- git merge- FIRST navigate to master, then git merge <BRANCH TO PULL>
+- Hooks
+  - https://stackoverflow.com/questions/2050450/git-hooks-management
+- Initializing
+  - https://www.google.com/search?q=initialize+git+repo
+  - git branch --set-upstream-to=origin/master master
+- [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]] 
+- Removing
   - Removing files
     - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
     - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
   - Remove repository
     - https://www.google.com/search?q=git+remove+repository 
     - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
-- Pulls
-  - git merge- FIRST navigate to master, then git merge <BRANCH TO PULL>
-- [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]] 
-- removing files
-  - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
-  - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
+  - removing files
+    - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
+    - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
 - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
-- [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
-- [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
-- [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
-- Staging
-  - git add 'stages' a file- makes it ready to add to repo
-  - git reset unstages
-- Hooks
-  - https://stackoverflow.com/questions/2050450/git-hooks-management
-- [[https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git][undo]]    
-- Branch
-  - git branch
-    - add and delete
-      - -d <BRANCH NAME>
-      - <BRANCH NAME> 
-  - git checkout <BRANCH> switch branches
 - Reverting
   - reverting a specific file
     1. find the commit hash with =git log=
@@ -7306,6 +7334,20 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
   - reverting
     - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
     - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
+  - https://www.google.com/search?q=git+restore+file+as+new+name 
+- Searching commits
+  - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
+- [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
+- [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
+- Staging (Add)
+  - git add 'stages' a file- makes it ready to add to repo
+  - git reset unstages
+  - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
+  - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
+
+- [[https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git][undo]]    
+- Viewing
+  - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
 ******** Submodules
 - Add
   - git submodule add <SUBMODULE>
@@ -7370,6 +7412,14 @@ done
   - # git submodule foreach --recursive git pull
   - # git submodule foreach --recursive git push
 - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
+- Submodules
+  - add git submodule add <SUBMODULE>
+  - initialize git submodule update --recursive --init
+  - push and pull submodules
+    - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
+  - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
+  - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
+  - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules  
 ******** Working with previous commits
 - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
 - view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
@@ -7449,78 +7499,8 @@ done
     - https://lab.github.com/courses?utm_source=newsletter&utm_medium=email&utm_campaign=student-newsletter-120818
 - GUIs- https://www.sourcetreeapp.com/
 ******** [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]]
-***** By application
-:PROPERTIES:
-:ID:       c18758a1-5db9-4ffe-8cc5-91c172a47331
-:END:
 
-****** Images
-:PROPERTIES:
-:ID:       57027e14-5ca6-4fdd-a50c-dcb98f81da39
-:END:
-- capture screen to gif
-  - https://www.cockos.com/licecap/
-******* imagemagick
-:PROPERTIES:
-:ID:       9b764756-e8af-4ef8-91c3-5e52bbc6ee33
-:END:
-#+begin_src bash
-for file in ~/Pre-PACE\ Images/*.pdf;
-do
-    base=$(basename -s .pdf "$file")
-    echo $base
-    convert -units PixelsPerInch "$file" -density 600 "${base}.tiff"
-done
-#+end_src
-
-- https://askubuntu.com/questions/573246/quick-way-to-calculate-dimension-in-inch-for-photos-in-ubuntu
-- https://askubuntu.com/questions/591733/rotate-images-from-terminal
-- https://unix.stackexchange.com/questions/406454/how-to-get-the-dpi-of-an-image-file-png
-****** Text editors
-:PROPERTIES:
-:ID:       e5de88cc-837e-45cb-b68d-e529a92a35d5
-:END:
-  - vim https://www.reddit.com/r/linux4noobs/comments/iy3mcc/vim_cheatsheet_for_noobs_with_corrections/
-****** Data storage and transfer
-:PROPERTIES:
-:ID:       40a77a9b-24f3-44a3-97bf-fbf64d4e43e7
-:END:
-  - - globus
-    - [[https://docs.globus.org/cli/][cli]]
-      - [[https://docs.globus.org/cli/reference/][documentation]]
-        - https://docs.globus.org/how-to/globus-connect-personal-linux/#globus-connect-personal-cli
-
-***** Version Control
-:PROPERTIES:
-:ID:       A9EE8CE0-ED58-4127-8B57-B53AE680B441
-:END:
-
-https://github.com/simonthum/git-sync
-- Web-based
-  - GitHub
-    - Contributions
-      - https://guides.github.com/activities/forking/
-      - [[https://help.github.com/articles/fork-a-repo/][Forking]] allows for posting
-      - [[https://help.github.com/articles/cloning-a-repository/][Cloning]] allows for work on a project
-    - [[https://opensource.guide/][GitHub open source guide]]
-      - [[https://opensource.guide/how-to-contribute/#anatomy-of-an-open-source-project][Anatomy of an open source project]]
-        - People
-          - Author
-          - Owner
-          - Maintainers
-          - Contributors
-          - Community members
-        - Documentation
-          - License
-          - Readme- guidance for using the project
-          - Contributing
-          - Code of conduct
-        - Tools to organize discussion
-          - Issue tracker
-          - Pull requests
-          - Discussion forums
-          - Chat
-
+****** Emacs vc-mode
 ***** Operating Systems
 :PROPERTIES:
 :ID:       16DB2FD8-1988-48E4-8D8D-E69398823A70
@@ -7927,16 +7907,17 @@ CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
 https://linuxjourney.com/
 ******** Processes
+- keyboard remapping
+  - https://askubuntu.com/questions/321510/set-context-menu-key-to-function-as-right-control
 - clipboard
   - https://askubuntu.com/questions/382767/how-to-pipe-dump-clipboard-contents-to-a-file  
 - https://www.google.com/search?q=linux+add+to+path 
 - https://unix.stackexchange.com/questions/1519/how-do-i-delete-a-file-whose-name-begins-with-hyphen-a-k-a-dash-or-minus
 - https://www.google.com/search?q=linux+see+largest+files+in+all+subdirectories 
-- application interactions, xdg
-  - https://wiki.archlinux.org/title/Xdg-utils
 - ocr
   - https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
   - [[https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux][optical character recognition in linux]]
+
 ********* File system navigation
 - Find 
   - find / -xdev -type f -size +1G 2>&1 | grep -v "Permission denied"
