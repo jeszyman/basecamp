@@ -5694,10 +5694,11 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
   - [[http://reasoniamhere.com/2013/09/16/awk-gtf-how-to-analyze-a-transcriptome-like-a-pro-part-1/][AWK GTF! How to Analyze a Transcriptome Like a Pro]]
 - reference
   - [[file:~/.emacs.d/snippets/org-mode/software]]
-****** grep
+****** grep processes
 :PROPERTIES:
 :ID:       024b269b-27ca-492d-981f-d8f9083a38d2
 :END:
+- https://www.google.com/search?q=grep+search+in+all+text+files+in+directory 
 - https://www.google.com/search?q=grep+phrase+with+space 
 - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
 - grep -r --unclude \*.R "as.Date" ~/
