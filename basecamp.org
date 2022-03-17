@@ -434,6 +434,7 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
+https://cran.r-project.org/web/packages/sjPlot/vignettes/tab_bayes.html
 - command line parsing argparse
 - make objects https://bioconductor.org/packages/devel/bioc/vignettes/SummarizedExperiment/inst/doc/Extensions.html
 - http://r4ds.had.co.nz/
@@ -3013,6 +3014,8 @@ CLOCK: [2017-10-18 Wed 09:12]--[2017-10-18 Wed 09:53] =>  0:41
 CLOCK: [2017-08-16 Wed 19:13]--[2017-08-16 Wed 19:15] =>  0:02
 CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 :END:
+- https://www.freecodecamp.org/news/learn-vim-beginners-tutorial/
+- 
 - user experience
   - https://www.freecodecamp.org/news/use-user-reseach-to-create-the-perfect-ui-design/
 - https://www.freecodecamp.org/news/svg-tutorial-learn-to-code-images/
@@ -3139,11 +3142,14 @@ CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 :END:
 - https://www.ilovepdf.com/
 - Convert to png https://askubuntu.com/questions/50170/how-to-convert-pdf-to-image
-- https://www.google.com/search?q=pdftk+merge
+
 - https://www.google.com/search?q=linux+pdf+delete+page 
 - https://www.google.com/search?q=linux+convert+image+to+pdf
 - https://www.google.com/search?q=linux+pdf+strip+annotation 
 - - https://askubuntu.com/questions/113544/how-can-i-reduce-the-file-size-of-a-scanned-pdf-file
+**** Processes
+- merge pdf files with pdftk file1.pdf file2.pdf cat output mergedfile.pdf
+  - https://www.google.com/search?q=pdftk+merge
 *** Platforms
 :PROPERTIES:
 :ID:       CDC80E83-69E2-4A26-9E09-E09FA0475AE9
@@ -3159,6 +3165,7 @@ CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 :PROPERTIES:
 :ID:       3A02CE83-279F-4D28-A56E-A8AF1094B77B
 :END:
+https://www.freecodecamp.org/news/learn-html-beginners-course/
 https://www.reddit.com/r/webdev/comments/r98r95/been_working_for_2_years_on_plasmic_a_visual/
 https://www.freecodecamp.org/news/creating-apis-with-python-free-19-hour-course/
 https://old.reddit.com/r/webdev/comments/pjfs7r/any_cheap_hosts/
@@ -6719,110 +6726,112 @@ https://carpentries-incubator.github.io/singularity-introduction/03-singularity-
 - Processes
   - Install
     - https://sylabs.io/guides/3.0/user-guide/installation.html
-    #+begin_src bash
-# which pkg-config
+        #+begin_src bash
+    # which pkg-config
 
-# echo $PATH
+    # echo $PATH
 
-# #https://github.com/apptainer/singularity/issues/5242
-# sudo apt-get remove -y libseccomp-dev
+    # #https://github.com/apptainer/singularity/issues/5242
+    # sudo apt-get remove -y libseccomp-dev
 
-# export PATH=/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/texlive/2019/bin/x86_64-linux:/home/jeszyman/repos/basecamp/bin:/home/jeszyman/bin/shell:/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/texlive/2019/bin/x86_64-linux:/home/jeszyman/repos/basecamp/bin:/home/jeszyman/bin/shell:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/home/jeszyman/go/bin:/home/jeszyman/go/bin:/home/jeszyman/go/bin
+    # export PATH=/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/texlive/2019/bin/x86_64-linux:/home/jeszyman/repos/basecamp/bin:/home/jeszyman/bin/shell:/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/texlive/2019/bin/x86_64-linux:/home/jeszyman/repos/basecamp/bin:/home/jeszyman/bin/shell:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/home/jeszyman/go/bin:/home/jeszyman/go/bin:/home/jeszyman/go/bin
 
-#########1#########2#########3#########4#########5#########6#########7#########8
-# https://sylabs.io/guides/3.0/user-guide/installation.html
-# Install dependencies via apt
-sudo apt-get update && sudo apt-get install -y \
-    build-essential \
-    libssl-dev \
-    uuid-dev \
-    libgpgme11-dev \
-    squashfs-tools \
-    libseccomp-dev \
-    pkg-config            
+    #########1#########2#########3#########4#########5#########6#########7#########8
+    # https://sylabs.io/guides/3.0/user-guide/installation.html
+    # Install dependencies via apt
+    sudo apt-get update && sudo apt-get install -y \
+        build-essential \
+        libssl-dev \
+        uuid-dev \
+        libgpgme11-dev \
+        squashfs-tools \
+        libseccomp-dev \
+        pkg-config            
 
-# Install Go
-export VERSION=1.11 OS=linux ARCH=amd64 && \
-    wget https://dl.google.com/go/go$VERSION.$OS-$ARCH.tar.gz && \
-    sudo tar -C /usr/local -xzvf go$VERSION.$OS-$ARCH.tar.gz && \
-    rm go$VERSION.$OS-$ARCH.tar.gz
+    # Install Go
+    export VERSION=1.11 OS=linux ARCH=amd64 && \
+        wget https://dl.google.com/go/go$VERSION.$OS-$ARCH.tar.gz && \
+        sudo tar -C /usr/local -xzvf go$VERSION.$OS-$ARCH.tar.gz && \
+        rm go$VERSION.$OS-$ARCH.tar.gz
 
-# Setup Go environment
-echo 'export GOPATH=${HOME}/go' >> ~/.bashrc && \
-    echo 'export PATH=/usr/local/go/bin:${PATH}:${GOPATH}/bin' >> ~/.bashrc && \
-    source ~/.bashrc
+    # Setup Go environment
+    echo 'export GOPATH=${HOME}/go' >> ~/.bashrc && \
+        echo 'export PATH=/usr/local/go/bin:${PATH}:${GOPATH}/bin' >> ~/.bashrc && \
+        source ~/.bashrc
 
-go get -u github.com/golang/dep/cmd/dep
+    go get -u github.com/golang/dep/cmd/dep
 
-go get -d github.com/sylabs/singularity
+    go get -d github.com/sylabs/singularity
 
-export VERSION=v3.0.3 # or another tag or branch if you like && \
-    cd $GOPATH/src/github.com/sylabs/singularity && \
-    git fetch && \
-    git checkout $VERSION # omit this command to install the latest bleeding edge code from master
+    export VERSION=v3.0.3 # or another tag or branch if you like && \
+        cd $GOPATH/src/github.com/sylabs/singularity && \
+        git fetch && \
+        git checkout $VERSION # omit this command to install the latest bleeding edge code from master
 
-./mconfig && \
-    make -C ./builddir && \
-    sudo make -C ./builddir install
+    ./mconfig && \
+        make -C ./builddir && \
+        sudo make -C ./builddir install
 
-which singularity
-#+end_src  
+    which singularity
+    #+end_src  
+  - Run
+    - Interactive https://www.google.com/search?q=singularity+run+interactive&oq=singularity+run+&aqs=chrome.1.69i57j69i59l2.3155j0j4&sourceid=chrome&ie=UTF-8
   - https://search.brave.com/search?q=make+singularity+container+from+docker&source=desktop
     - https://stackoverflow.com/questions/60314664/how-to-build-singularity-container-from-dockerfile
-  #+begin_src bash
-sudo apt-get remove singularity-container
+        #+begin_src bash
+    sudo apt-get remove singularity-container
 
-y
+    y
 
-sudo rm -rf /usr/local/libexec/singularity
+    sudo rm -rf /usr/local/libexec/singularity
 
-sudo rm -rf /usr/local/etc/singularity
+    sudo rm -rf /usr/local/etc/singularity
 
-sudo rm -rf /usr/local/include/singularity
+    sudo rm -rf /usr/local/include/singularity
 
-sudo rm -rf /usr/local/lib/singularity
+    sudo rm -rf /usr/local/lib/singularity
 
-sudo rm -rf /usr/local/var/lib/singularity/
+    sudo rm -rf /usr/local/var/lib/singularity/
 
-sudo rm /usr/local/bin/singularity
+    sudo rm /usr/local/bin/singularity
 
-sudo rm /usr/local/bin/run-singularity
+    sudo rm /usr/local/bin/run-singularity
 
-sudo rm /usr/local/etc/bash_completion.d/singularity
+    sudo rm /usr/local/etc/bash_completion.d/singularity
 
-sudo rm /usr/local/man/man1/singularity.1
+    sudo rm /usr/local/man/man1/singularity.1
 
-which singularity
+    which singularity
 
-which go
+    which go
 
-cd /tmp
+    cd /tmp
 
-wget https://golang.org/dl/go1.17.3.linux-amd64.tar.gz
+    wget https://golang.org/dl/go1.17.3.linux-amd64.tar.gz
 
-sudo rm -rf /usr/local/go
+    sudo rm -rf /usr/local/go
 
-tar -xzf go1.17.3.linux-amd64.tar.gz
+    tar -xzf go1.17.3.linux-amd64.tar.gz
 
-sudo cp -r go /usr/local/
-export PATH=$PATH:/usr/local/go/bin
+    sudo cp -r go /usr/local/
+    export PATH=$PATH:/usr/local/go/bin
 
-which go
+    which go
 
-wget https://github.com/sylabs/singularity/releases/download/v3.9.0/singularity-ce-3.9.0.tar.gz
+    wget https://github.com/sylabs/singularity/releases/download/v3.9.0/singularity-ce-3.9.0.tar.gz
 
-tar xvf singularity-ce-3.9.0.tar.gz
+    tar xvf singularity-ce-3.9.0.tar.gz
 
-cd singularity-ce-3.9.0
+    cd singularity-ce-3.9.0
 
-./mconfig
+    ./mconfig
 
-make -C builddir
+    make -C builddir
 
-sudo make -C builddir install
+    sudo make -C builddir install
 
-which singularity
-#+end_src
+    which singularity
+    #+end_src
 
 ***** snakemake                                                     :biotool:
 :PROPERTIES:
@@ -6832,6 +6841,7 @@ which singularity
 :LOGBOOK:
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
+- https://www.biostars.org/p/9496955/
 - https://github.com/EthanHolleman/snake-backup/blob/main/Snakefile.py
 ****** Processes 
 ******* Install and setup
@@ -6919,22 +6929,22 @@ smk.rule.${1:$$(yas-choose-value '("bash" "r"))}
 # --
 `(make-string (org-current-level) ?*)` ${1: RULE NAME}:smk_rule:
 - Snakemake
-  #+begin_src snakemake
+  ,#+begin_src snakemake
 rule ${1:$(string-replace " " "_" (downcase yas-text))}:
-input:
-params:
-    script = config["repo"] + "/workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R"
-output:
-log:
-    config["data_dir"] + "/logs/${1:$(string-replace " " "_" (downcase yas-text))}.log"
-shell:
-    """
-    Rscript {params.script} \
-    >& {log}
-    """
+    input:
+    params:
+        script = config["repo"] + "/workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R"
+    output:
+    log:
+        config["data_dir"] + "/logs/${1:$(string-replace " " "_" (downcase yas-text))}.log"
+    shell:
+        """
+        Rscript {params.script} \
+        >& {log}
+        """
 ,#+end_src
 - [[file:./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R][Base script]]
-  #+begin_src R :noweb yes :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R
+  ,#+begin_src R :noweb yes :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R
 #!/usr/bin/env Rscript
 #########1#########2#########3#########4#########5#########6#########7#########8
 ###
