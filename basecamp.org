@@ -5402,6 +5402,12 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
 **** Software flat list
+***** arecord
+:PROPERTIES:
+:ID:       9e436b91-4cf0-4868-b0b4-3f4551149640
+:END:
+- https://superuser.com/questions/597227/linux-arecord-capture-sound-card-output-rather-than-microphone-input
+- https://www.commandlinefu.com/commands/using/arecord
 ***** draw.io
 - Processes
   - https://www.google.com/search?q=draw.io+insert+image 
@@ -6204,7 +6210,8 @@ specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]
   - [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
   - my profile at /opt/cisco/anyconnect/profile/test.xml
 ***** i3
-https://thevaluable.dev/i3-config-mouseless/
+- https://i3wm.org/docs/
+- https://thevaluable.dev/i3-config-mouseless/
 - https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
 ***** inkscape
 :PROPERTIES:
@@ -6700,6 +6707,10 @@ snakemake --cores 20 --forceall
 - parse yaml for shell https://mikefarah.gitbook.io/yq/
 - email notices
 - lock emacs buffer regions with successful run
+***** sox
+:PROPERTIES:
+:ID:       8d136117-c69c-4526-9977-be34c01e6eb0
+:END:
 ***** Timeshift
 - https://ostechnix.com/how-to-backup-and-restore-linux-system-with-timeshift/
 - https://github.com/teejee2008/timeshift
