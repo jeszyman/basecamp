@@ -2670,6 +2670,10 @@ CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 - https://www.google.com/search?q=calibre+convert+epub+to+pdf   
 - devops
   - http://howardism.org/Technical/Emacs/literate-devops.html
+**** Document file conversion
+https://manpages.ubuntu.com/manpages/bionic/man1/doc2odt.1.html
+https://superuser.com/questions/268244/how-to-convert-pdf-to-ppt-or-odp
+https://askubuntu.com/questions/797836/is-there-any-tool-to-convert-pdf-to-ppt-odp-slides-in-linux-ubuntu-offline
 **** pdf files
 :PROPERTIES:
 :ID:       670ed8f4-bb93-4d93-b9ea-a142a599169f
@@ -3473,7 +3477,7 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
-
+http://redsymbol.net/articles/unofficial-bash-strict-mode/
 ****** Processes 
 :PROPERTIES:
 :ID:       c3e424cd-7191-423e-815b-7e7fcb770100
@@ -3578,9 +3582,8 @@ b=( "${a[@]}" )
 :ID:       ccff4529-a532-4111-9ac3-e8df91ec50fa
 :END:
 - if [ "${file: -4}" == ".txt" ] https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
-- File size
-  - https://www.google.com/search?q=bash+find+and+delete+by+size
-    - https://unix.stackexchange.com/questions/287629/find-and-remove-files-bigger-than-a-specific-size-and-type
+- https://www.google.com/search?q=bash+find+and+delete+by+size
+  - https://unix.stackexchange.com/questions/287629/find-and-remove-files-bigger-than-a-specific-size-and-type
 ******* Pipes
 :PROPERTIES:
 :ID:       2cb03148-64b0-4a63-985f-c26447342aaa
@@ -4258,12 +4261,11 @@ if [[ $# -eq 0 ]] || [[ $1 == "h" ]] ; then
 #+end_src
 - [[file:~/.emacs.d/snippets/sh-mode/]]
 - [[file:~/.emacs.d/snippets/sh-mode/write.bash]]
-****** General reference
+****** Reference
 :PROPERTIES:
 :ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
 :END:
 - https://explainshell.com/explain?cmd=set+-euxo+pipefail
-- http://redsymbol.net/articles/unofficial-bash-strict-mode/
 - [[id:BDC42DA2-A632-4FB7-A586-E100B2A045DC][LINK TO UNIX-based operating systems]]
 - [[id:76c4836c-fe3f-4948-86dd-25d8df38d1af][LINK TO GNU tools]]
 - https://pastebin.com/9itu8v0w
@@ -5406,7 +5408,6 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
 **** Software flat list
 ***** draw.io
-https://tomd.xyz/diagrams-as-code-drawio/
 - Processes
   - https://www.google.com/search?q=draw.io+insert+image 
 - https://github.com/jgraph/drawio-desktop/releases/tag/v16.5.1
@@ -6478,7 +6479,6 @@ snakemake --help
   - add singularity
     - 
 ******* Writing snakefiles
-- Run rule on all files in dir https://snakemake.readthedocs.io/en/stable/project_info/faq.html#how-do-i-run-my-rule-on-all-files-of-a-certain-directory
 - To pass character vector to R snakemake rule https://stackoverflow.com/questions/13840207/character-vector-as-an-argument-to-r-script
 - R package management in snakemake rules
   - https://github.com/lachlandeer/snakemake-econ-r  
@@ -6705,8 +6705,6 @@ snakemake --cores 20 --forceall
 - parse yaml for shell https://mikefarah.gitbook.io/yq/
 - email notices
 - lock emacs buffer regions with successful run
-***** syncthing
-- ip is http://127.0.0.1:8384
 ***** Timeshift
 - https://ostechnix.com/how-to-backup-and-restore-linux-system-with-timeshift/
 - https://github.com/teejee2008/timeshift
@@ -6977,11 +6975,12 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 - Viewing
   - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
 ******** Submodules
-- Add- git submodule add <SUBMODULE>
-- initialize git submodule update --recursive --init
+- Add
+  - git submodule add <SUBMODULE>
 - https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407
 - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
 - https://stackoverflow.com/questions/5814319/git-submodule-push
+- initialize git submodule update --recursive --init
 - sync
     #+name: 
     #+begin_src bash :tangle ~/repos/basecamp/src/daily_git_commit.sh
