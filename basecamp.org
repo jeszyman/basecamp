@@ -5,6 +5,11 @@
 :LOGBOOK:
 CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 :END:  
+** byzanz
+:PROPERTIES:
+:ID:       65e67524-2812-482f-8d06-58d8aa3bce6d
+:END:
+https://askubuntu.com/questions/55709/how-to-select-display-to-record-in-recordmydesktop
 ** [[*Software flat list][Software flat list]]
 ** Setup
 :PROPERTIES:
@@ -6309,6 +6314,7 @@ CLOCK: [2021-11-09 Tue 13:19]--[2021-11-09 Tue 13:49] =>  0:30
 :PROPERTIES:
 :ID:       a5717be7-afe9-4db2-8b4d-b797c7631466
 :END:
+- https://github.com/orgzly/orgzly-android/issues/674
 - orgzly event reminders occur at time of event https://github.com/orgzly/orgzly-android/issues/664
 ***** rclone
 :PROPERTIES:
@@ -7052,6 +7058,8 @@ done
 - view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
 - https://stackoverflow.com/questions/888414/git-checkout-older-revision-of-a-file-under-a-new-name
 ******** Search
+- https://stackoverflow.com/questions/7663451/view-a-specific-git-commit
+- https://stackoverflow.com/questions/2364147/how-to-get-just-one-file-from-another-branch
 - searching for deleted files https://www.google.com/search?q=git+search+deleted+files
   - https://stackoverflow.com/questions/7203515/how-to-find-a-deleted-file-in-the-project-commit-history
 - searching within commits
