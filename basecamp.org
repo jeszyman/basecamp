@@ -3486,6 +3486,17 @@ CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :LOGBOOK:
 CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
 :END:
+- read a 2-column tsv into an array
+  #+begin_src bash
+# Create a simple tsv
+cat <<EOT >> greetings.txt
+line 	1
+line 	2
+EOT            
+#+end_src
+
+https://www.google.com/search?q=bash+read+csv 
+https://www.google.com/search?q=bash+rename+file+shift+string+to+end 
 ******* Setup
 :PROPERTIES:
 :ID:       12419776-9b0e-42e9-8392-8f17dc89a63f
@@ -6884,6 +6895,52 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
+******* Code tangle
+- sync
+    #+name: 
+    #+begin_src bash :tangle ~/repos/basecamp/src/daily_git_commit.sh
+#!/bin/bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+#                                                                              #
+#                       Script to automate git pulls                           #
+#             from a set of repositories within the same root dir              #
+#                                                                              #
+#########1#########2#########3#########4#########5#########6#########7#########8
+# 
+date_today=$(date +%F)
+# 1. Script Checks
+#
+## Check if git exist
+command -v git >/dev/null 2>&1 # stop if git not found
+if [ $? -eq 1 ]; then
+    echo "Git not found"
+    exit 1; fi
+##
+## Check if any repos exist
+shopt -s nullglob
+repo_dirs=(~/repos/*)
+if [ ${#repo_dirs[@]} -eq 0 ]; then
+    echo "No repos at ~/repos/"
+    exit 1; fi
+shopt -u nullglob
+##
+# 2. Pull Function 
+#                      
+for d in $HOME/repos/*
+do 
+    [[ ! -d "$d" ]] && continue
+    echo "$d" &&
+    cd "$d" &&
+    git add -A &&
+    git commit -am $date_today &&
+    git pull &&
+    git submodule update --recursive &&
+    git submodule update --remote && 
+    git push 
+    cd "$OLDPWD"
+done
+#
+#+end_src      
 ******* Processes 
 - Branch
   - git branch
@@ -6978,81 +7035,33 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
   - git reset unstages
   - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
   - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
-
 - [[https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git][undo]]    
 - Viewing
   - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
 ******** Submodules
+- https://www.google.com/search?q=private+git+submodules
+  - https://stackoverflow.com/questions/37638034/private-folder-submodule-in-a-public-repo
 - Add- git submodule add <SUBMODULE>
 - initialize git submodule update --recursive --init
-- https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407
-- https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
-- https://stackoverflow.com/questions/5814319/git-submodule-push
-- sync
-    #+name: 
-    #+begin_src bash :tangle ~/repos/basecamp/src/daily_git_commit.sh
-#!/bin/bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-#                                                                              #
-#                       Script to automate git pulls                           #
-#             from a set of repositories within the same root dir              #
-#                                                                              #
-#########1#########2#########3#########4#########5#########6#########7#########8
-# 
-date_today=$(date +%F)
-# 1. Script Checks
-#
-## Check if git exist
-command -v git >/dev/null 2>&1 # stop if git not found
-if [ $? -eq 1 ]; then
-    echo "Git not found"
-    exit 1; fi
-##
-## Check if any repos exist
-shopt -s nullglob
-repo_dirs=(~/repos/*)
-if [ ${#repo_dirs[@]} -eq 0 ]; then
-    echo "No repos at ~/repos/"
-    exit 1; fi
-shopt -u nullglob
-##
-# 2. Pull Function 
-#                      
-for d in $HOME/repos/*
-do 
-    [[ ! -d "$d" ]] && continue
-    echo "$d" &&
-    cd "$d" &&
-    git add -A &&
-    git commit -am $date_today &&
-    git pull &&
-    git submodule update --recursive &&
-    git submodule update --remote && 
-    git push 
-    cd "$OLDPWD"
-done
-#
-#+end_src      
-- https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin    
-- https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
-- push and pull submodules
-  - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
-- https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
-- https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
-- submodule commands
-  - # git submodule foreach --recursive git checkout master
-  - # git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
-  - # git submodule foreach --recursive git pull
-  - # git submodule foreach --recursive git push
-- to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
-- Submodules
-  - add git submodule add <SUBMODULE>
-  - initialize git submodule update --recursive --init
+- Pull
+  - https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin    
+  - https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
   - push and pull submodules
     - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
-  - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
+- Commit
   - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
-  - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules  
+  - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
+- Push
+  - https://stackoverflow.com/questions/5814319/git-submodule-push
+- General reference
+  - https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407
+  - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
+  - submodule commands
+    - # git submodule foreach --recursive git checkout master
+    - # git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
+    - # git submodule foreach --recursive git pull
+    - # git submodule foreach --recursive git push
+  - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
 ******** Working with previous commits
 - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
 - view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
@@ -7774,6 +7783,7 @@ cp /etc/skel/.bashrc ${HOME}/.bashrc
     - [[http://ubuntuforums.org/showthread.php?t=1880394][these updates]]
     - install chromium
 - [[http://www.pcmag.com/article2/0,2817,2488836,00.asp][hardware?]]
+- https://askubuntu.com/questions/3697/how-do-i-install-fonts
 ********* macbook ubuntu build
 :PROPERTIES:
 :ID:       34C28D0E-A905-4700-A20E-557E79BC7DDC
