@@ -38,7 +38,8 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
-- https://cran.r-project.org/web/packages/sjPlot/vignettes/tab_bayes.html
+
+https://cran.r-project.org/web/packages/sjPlot/vignettes/tab_bayes.html
 - command line parsing argparse
 - make objects https://bioconductor.org/packages/devel/bioc/vignettes/SummarizedExperiment/inst/doc/Extensions.html
 - http://r4ds.had.co.nz/
@@ -93,14 +94,13 @@ ${1:FUNCTION NAME} = function(${2:VARIABLE LIST}){
 }
 #+end_src
 
-*** Processes
+*** Processes and Applications
 :PROPERTIES:
 :ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
 :END:
 :LOGBOOK:
 CLOCK: [2021-06-04 Fri 10:17]--[2021-06-04 Fri 10:25] =>  0:08
 :END:
-get package version with packageVersion("PACKAGENAME")
 **** Import
 :PROPERTIES:
 :ID:       8fe67560-d881-4cc3-ad0f-fea419a81023
@@ -163,6 +163,7 @@ CLOCK: [2019-03-19 Tue 14:35]--[2019-03-19 Tue 16:45] =>  2:10
 :ID:       ae65c4a5-7fe5-474c-90e3-b8b567017ac4
 :END:
 
+
 **** Text
 :PROPERTIES:
 :ID:       94242006-2d2c-4615-8104-8613fd5df6d9
@@ -199,13 +200,6 @@ coronary
 - [[https://stackoverflow.com/questions/7906332/how-to-calculate-combination-and-permutation-in-r][How to calculate combination and permutation in R? {closed}]] 
 - https://stats.stackexchange.com/questions/8605/column-wise-matrix-normalization-in-r
 
-<<<<<<< HEAD
-ARG DEBIAN_FRONTEND=noninteractive
-ENV TZ=America/Chicago
-ENV LANG en_US.UTF-8  
-ENV LANGUAGE en_US:en  
-ENV LC_ALL en_US.UTF-8    
-=======
 - https://stat.ethz.ch/R-manual/R-devel/library/stats/html/fisher.test.html
 - http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r#spearman-rank-correlation-coefficient
 - https://rpubs.com/aaronsc32/spearman-rank-correlation
@@ -222,41 +216,15 @@ ENV LC_ALL en_US.UTF-8
 :PROPERTIES:
 :ID:       A4CA9F60-8E82-4655-B6F5-2780A4CD93C5
 :END:
->>>>>>> dc48269bd540785b36c3e186c158610738e9ffa6
 
  Purpose: Asks whether...
  Equation: 
  Assumptions: 
 
-<<<<<<< HEAD
-RUN apt-get update
-
-RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
-    build-essential \
-    bzip2 \
-    cifs.utils \
-    cmake \
-    dirmngr \
-    emacs \
-    gcc \
-    git \
-    gnupg \
-    libcurl4-openssl-dev \
-    libfftw3-dev \
-    libgsl-dev \
-    libxmu-dev \
-    locales \
-    nano \
-    parallel \
-    screen \
-    software-properties-common \
-    wget
-=======
 ******* Testing Assumptions
 :PROPERTIES:
 :ID:       531DD201-BBB4-4C21-BDDE-02982DB43847
 :END:
->>>>>>> dc48269bd540785b36c3e186c158610738e9ffa6
 
 ******** Normalcy
 :PROPERTIES:
@@ -297,26 +265,9 @@ RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
 :ID:       5FEA38FE-3723-4ECF-8D9C-4A256163F55A
 :END:
 
-<<<<<<< HEAD
-RUN apt-get update -qq \
-	&& apt-get install -qq --no-install-recommends \
-        libxml2-dev
-                 
-RUN R -e "install.packages('tidyverse',repos='http://cran.rstudio.com/')"
-#+end_src
-- Ideas
-  ## Emacs Snapshot
-RUN apt-get install -qq --no-install-recommends software-properties-common
-RUN add-apt-repository ppa:ubuntu-elisp/ppa
-RUN apt-get update
-RUN apt-get install -qq --no-install-recommends emacs-snapshot
-RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
-    locale-gen
-=======
  Purpose: Asks whether...
  Equation: 
  Assumptions:  
->>>>>>> dc48269bd540785b36c3e186c158610738e9ffa6
 
 ******* Regression Modeling
 :PROPERTIES:
@@ -2719,6 +2670,10 @@ CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 - https://www.google.com/search?q=calibre+convert+epub+to+pdf   
 - devops
   - http://howardism.org/Technical/Emacs/literate-devops.html
+**** Document file conversion
+https://manpages.ubuntu.com/manpages/bionic/man1/doc2odt.1.html
+https://superuser.com/questions/268244/how-to-convert-pdf-to-ppt-or-odp
+https://askubuntu.com/questions/797836/is-there-any-tool-to-convert-pdf-to-ppt-odp-slides-in-linux-ubuntu-offline
 **** pdf files
 :PROPERTIES:
 :ID:       670ed8f4-bb93-4d93-b9ea-a142a599169f
@@ -3522,7 +3477,7 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
-
+http://redsymbol.net/articles/unofficial-bash-strict-mode/
 ****** Processes 
 :PROPERTIES:
 :ID:       c3e424cd-7191-423e-815b-7e7fcb770100
@@ -3530,17 +3485,6 @@ CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :LOGBOOK:
 CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
 :END:
-- read a 2-column tsv into an array
-  #+begin_src bash
-# Create a simple tsv
-cat <<EOT >> greetings.txt
-line 	1
-line 	2
-EOT            
-#+end_src
-
-https://www.google.com/search?q=bash+read+csv 
-https://www.google.com/search?q=bash+rename+file+shift+string+to+end 
 ******* Setup
 :PROPERTIES:
 :ID:       12419776-9b0e-42e9-8392-8f17dc89a63f
@@ -3638,9 +3582,8 @@ b=( "${a[@]}" )
 :ID:       ccff4529-a532-4111-9ac3-e8df91ec50fa
 :END:
 - if [ "${file: -4}" == ".txt" ] https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
-- File size
-  - https://www.google.com/search?q=bash+find+and+delete+by+size
-    - https://unix.stackexchange.com/questions/287629/find-and-remove-files-bigger-than-a-specific-size-and-type
+- https://www.google.com/search?q=bash+find+and+delete+by+size
+  - https://unix.stackexchange.com/questions/287629/find-and-remove-files-bigger-than-a-specific-size-and-type
 ******* Pipes
 :PROPERTIES:
 :ID:       2cb03148-64b0-4a63-985f-c26447342aaa
@@ -4249,7 +4192,7 @@ $0
 ,#+end_src
 #+end_src
 - print_array
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/shell-mode/bash.print_array
+  #+begin_src fundamental :tangle ~/.emacs.d/snippets/shell-mode/bash.print_array
 # -*- mode: snippet -*-
 # name: bash.print_array
 # key: bash.print_array
@@ -4258,7 +4201,7 @@ printf '%s\n' "${${1:ARRAY_NAME}[@]}"
 $0
 #+end_src
 - bash.array.from.find
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/sh-mode/bash.array.from.find
+  #+begin_src fundamental :tangle ~/.emacs.d/snippets/sh-mode/bash.array.from.find
 # -*- mode: snippet -*-
 # name: bash.array.from.find
 # key: bash.array.from.find
@@ -4271,7 +4214,7 @@ printf '%s\n' "\${$1[@]}"
 $0
 #+end_src
 - bash.script
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.script
+  #+begin_src fundamental :tangle ~/.emacs.d/snippets/fundamental-mode/bash.script
 # -*- mode: snippet -*-
 # key: bash.script
 # --
@@ -4302,7 +4245,7 @@ ${1:function_name}(){
 }
 #+end_src
 - bash.usage
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.usage
+  #+begin_src fundamental :tangle ~/.emacs.d/snippets/fundamental-mode/bash.usage
 # -*- mode: snippet -*-
 # name: bash.usage
 # key: bash.usage
@@ -4318,12 +4261,11 @@ if [[ $# -eq 0 ]] || [[ $1 == "h" ]] ; then
 #+end_src
 - [[file:~/.emacs.d/snippets/sh-mode/]]
 - [[file:~/.emacs.d/snippets/sh-mode/write.bash]]
-****** General reference
+****** Reference
 :PROPERTIES:
 :ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
 :END:
 - https://explainshell.com/explain?cmd=set+-euxo+pipefail
-- http://redsymbol.net/articles/unofficial-bash-strict-mode/
 - [[id:BDC42DA2-A632-4FB7-A586-E100B2A045DC][LINK TO UNIX-based operating systems]]
 - [[id:76c4836c-fe3f-4948-86dd-25d8df38d1af][LINK TO GNU tools]]
 - https://pastebin.com/9itu8v0w
@@ -5456,8 +5398,6 @@ http://www.mitchchn.me/2014/os-x-terminal/
     - [[http://zmjones.com/mac-setup/][setting up osx for data analysis]]
     - [[http://osxdaily.com/2009/02/25/show-hidden-files-in-os-x/][hidden files]]
 
-**** Android
-- https://www.google.com/search?q=android+block+number 
 *** Software
 :PROPERTIES:
 :ID:       9E19E626-9D6C-4296-BEDB-80033A846CF4
@@ -5468,7 +5408,6 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
 **** Software flat list
 ***** draw.io
-https://tomd.xyz/diagrams-as-code-drawio/
 - Processes
   - https://www.google.com/search?q=draw.io+insert+image 
 - https://github.com/jgraph/drawio-desktop/releases/tag/v16.5.1
@@ -5650,6 +5589,9 @@ docker run \
 - create singularity containers https://stackoverflow.com/questions/60314664/how-to-build-singularity-container-from-dockerfile
 - https://stackoverflow.com/questions/38118791/can-t-delete-docker-image-with-dependent-child-images/50650745
 - https://stackoverflow.com/questions/16296753/can-you-run-gui-applications-in-a-docker-container/50356450#50356450
+- write dockerfiles
+  - https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008316#sec021
+  - https://hub.docker.com/r/rocker/r-devel/dockerfile
 - build image
   - user repos (like mine are / not : for FROM build command!!!
   - [[https://docs.docker.com/engine/reference/builder/#parser-directives][Dockerfile reference]]
@@ -5685,12 +5627,7 @@ docker run --rm -p 6379:6379 <CONTAINER>
   - https://www.google.com/search?q=docker+run+mount+home+directory
   - in timezone with a wget     tzdata command in the dockerfile, then docker run -e "TZ=America/Chicago" -it jeszyman/dev
   - https://confluence.ris.wustl.edu/display/RSUM/Docker+Wrapper+Environment+Variables
-- run with display- see https://bioconductor.org/help/docker/
-******* write dockerfiles
-- To run installs of Rscripts, e.g. bioconductor method- https://github.com/Bioconductor/bioconductor_docker/blob/master/bioc_scripts/install.R
-- https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008316#sec021
-- https://hub.docker.com/r/rocker/r-devel/dockerfile
-
+- run with display
 ******* Sysadmin
 - install
   - [[https://docs.docker.com/install/linux/docker-ce/ubuntu/#prerequisites][install community edition through ubuntu]] https://docs.docker.com/install/linux/linux-postinstall/
@@ -6373,7 +6310,6 @@ CLOCK: [2021-11-09 Tue 13:19]--[2021-11-09 Tue 13:49] =>  0:30
 :PROPERTIES:
 :ID:       a5717be7-afe9-4db2-8b4d-b797c7631466
 :END:
-- https://github.com/orgzly/orgzly-android/issues/674
 - orgzly event reminders occur at time of event https://github.com/orgzly/orgzly-android/issues/664
 ***** rclone
 :PROPERTIES:
@@ -6543,7 +6479,6 @@ snakemake --help
   - add singularity
     - 
 ******* Writing snakefiles
-- Run rule on all files in dir https://snakemake.readthedocs.io/en/stable/project_info/faq.html#how-do-i-run-my-rule-on-all-files-of-a-certain-directory
 - To pass character vector to R snakemake rule https://stackoverflow.com/questions/13840207/character-vector-as-an-argument-to-r-script
 - R package management in snakemake rules
   - https://github.com/lachlandeer/snakemake-econ-r  
@@ -6770,8 +6705,6 @@ snakemake --cores 20 --forceall
 - parse yaml for shell https://mikefarah.gitbook.io/yq/
 - email notices
 - lock emacs buffer regions with successful run
-***** syncthing
-- ip is http://127.0.0.1:8384
 ***** Timeshift
 - https://ostechnix.com/how-to-backup-and-restore-linux-system-with-timeshift/
 - https://github.com/teejee2008/timeshift
@@ -6839,11 +6772,6 @@ CLOCK: [2019-03-04 Mon 14:59]--[2019-03-04 Mon 15:17] =>  0:18
 - Performance- manual entry lag
   - [[https://forums.zotero.org/discussion/16733/manual-citation-entry-clunky][No answers, but question asked]]
 
-***** byzanz
-:PROPERTIES:
-:ID:       65e67524-2812-482f-8d06-58d8aa3bce6d
-:END:
-https://askubuntu.com/questions/55709/how-to-select-display-to-record-in-recordmydesktop
 **** Software hierarchical list by purpose
 - by application
   - pdf ocr
@@ -6948,52 +6876,6 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
-******* Code tangle
-- sync
-    #+name: 
-    #+begin_src bash :tangle ~/repos/basecamp/src/daily_git_commit.sh
-#!/bin/bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-#                                                                              #
-#                       Script to automate git pulls                           #
-#             from a set of repositories within the same root dir              #
-#                                                                              #
-#########1#########2#########3#########4#########5#########6#########7#########8
-# 
-date_today=$(date +%F)
-# 1. Script Checks
-#
-## Check if git exist
-command -v git >/dev/null 2>&1 # stop if git not found
-if [ $? -eq 1 ]; then
-    echo "Git not found"
-    exit 1; fi
-##
-## Check if any repos exist
-shopt -s nullglob
-repo_dirs=(~/repos/*)
-if [ ${#repo_dirs[@]} -eq 0 ]; then
-    echo "No repos at ~/repos/"
-    exit 1; fi
-shopt -u nullglob
-##
-# 2. Pull Function 
-#                      
-for d in $HOME/repos/*
-do 
-    [[ ! -d "$d" ]] && continue
-    echo "$d" &&
-    cd "$d" &&
-    git add -A &&
-    git commit -am $date_today &&
-    git pull &&
-    git submodule update --recursive &&
-    git submodule update --remote && 
-    git push 
-    cd "$OLDPWD"
-done
-#
-#+end_src      
 ******* Processes 
 - Branch
   - git branch
@@ -7088,40 +6970,87 @@ done
   - git reset unstages
   - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
   - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
+
 - [[https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git][undo]]    
 - Viewing
   - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
 ******** Submodules
-- https://www.google.com/search?q=private+git+submodules
-  - https://stackoverflow.com/questions/37638034/private-folder-submodule-in-a-public-repo
-- Add- git submodule add <SUBMODULE>
+- Add
+  - git submodule add <SUBMODULE>
+- https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407
+- https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
+- https://stackoverflow.com/questions/5814319/git-submodule-push
 - initialize git submodule update --recursive --init
-- Pull
-  - https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin    
-  - https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
+- sync
+    #+name: 
+    #+begin_src bash :tangle ~/repos/basecamp/src/daily_git_commit.sh
+#!/bin/bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+#                                                                              #
+#                       Script to automate git pulls                           #
+#             from a set of repositories within the same root dir              #
+#                                                                              #
+#########1#########2#########3#########4#########5#########6#########7#########8
+# 
+date_today=$(date +%F)
+# 1. Script Checks
+#
+## Check if git exist
+command -v git >/dev/null 2>&1 # stop if git not found
+if [ $? -eq 1 ]; then
+    echo "Git not found"
+    exit 1; fi
+##
+## Check if any repos exist
+shopt -s nullglob
+repo_dirs=(~/repos/*)
+if [ ${#repo_dirs[@]} -eq 0 ]; then
+    echo "No repos at ~/repos/"
+    exit 1; fi
+shopt -u nullglob
+##
+# 2. Pull Function 
+#                      
+for d in $HOME/repos/*
+do 
+    [[ ! -d "$d" ]] && continue
+    echo "$d" &&
+    cd "$d" &&
+    git add -A &&
+    git commit -am $date_today &&
+    git pull &&
+    git submodule update --recursive &&
+    git submodule update --remote && 
+    git push 
+    cd "$OLDPWD"
+done
+#
+#+end_src      
+- https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin    
+- https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
+- push and pull submodules
+  - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
+- https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
+- https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
+- submodule commands
+  - # git submodule foreach --recursive git checkout master
+  - # git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
+  - # git submodule foreach --recursive git pull
+  - # git submodule foreach --recursive git push
+- to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
+- Submodules
+  - add git submodule add <SUBMODULE>
+  - initialize git submodule update --recursive --init
   - push and pull submodules
     - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
-- Commit
-  - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
-  - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
-- Push
-  - https://stackoverflow.com/questions/5814319/git-submodule-push
-- General reference
-  - https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407
   - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
-  - submodule commands
-    - # git submodule foreach --recursive git checkout master
-    - # git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
-    - # git submodule foreach --recursive git pull
-    - # git submodule foreach --recursive git push
-  - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
+  - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
+  - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules  
 ******** Working with previous commits
 - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
 - view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
 - https://stackoverflow.com/questions/888414/git-checkout-older-revision-of-a-file-under-a-new-name
 ******** Search
-- https://stackoverflow.com/questions/7663451/view-a-specific-git-commit
-- https://stackoverflow.com/questions/2364147/how-to-get-just-one-file-from-another-branch
 - searching for deleted files https://www.google.com/search?q=git+search+deleted+files
   - https://stackoverflow.com/questions/7203515/how-to-find-a-deleted-file-in-the-project-commit-history
 - searching within commits
@@ -7836,7 +7765,6 @@ cp /etc/skel/.bashrc ${HOME}/.bashrc
     - [[http://ubuntuforums.org/showthread.php?t=1880394][these updates]]
     - install chromium
 - [[http://www.pcmag.com/article2/0,2817,2488836,00.asp][hardware?]]
-- https://askubuntu.com/questions/3697/how-do-i-install-fonts
 ********* macbook ubuntu build
 :PROPERTIES:
 :ID:       34C28D0E-A905-4700-A20E-557E79BC7DDC
@@ -8673,6 +8601,8 @@ http://www.mitchchn.me/2014/os-x-terminal/
 - yaml cannot do variable placeholders- https://stackoverflow.com/questions/41620674/use-placeholders-in-yaml/41620747#41620747
   - some workarounds https://stackoverflow.com/questions/2063616/how-to-reference-a-yaml-setting-from-elsewhere-in-the-same-yaml-file
 - https://yaml.org/spec/1.2.2/  
+*** Android
+- https://www.google.com/search?q=android+block+number 
 *** Processes
 :PROPERTIES:
 :ID:       2896cf35-9ccf-4533-b451-6b0f7a3bc91c
@@ -8846,7 +8776,6 @@ primeKeyUnique = function(df,pk){
 :ID:       79e01a67-5ba1-4257-8353-8c5cf1ac8c4a
 :END:
 #+begin_src bash :tangle ./docker/basecamp_Dockerfile
-FROM ubuntu:bionic
 #########1#########2#########3#########4#########5#########6#########7#########8
 
 #######################################################
@@ -8893,7 +8822,6 @@ RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
     libfftw3-dev \
     libgsl-dev \
     libxmu-dev \
-    libxml2-dev \   
     locales \
     nano \
     parallel \
@@ -8901,7 +8829,6 @@ RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
     software-properties-common \
     wget
 
-        
 RUN apt-get autoremove -y && \
     apt-get autoclean -y && \
     apt-get clean
@@ -8918,12 +8845,6 @@ ENV PATH="/opt/miniconda/bin:${PATH}"
 ### R 4 and CRAN Packages ###
 #############################
 
-RUN apt-get update -qq \
-	&& apt-get install -qq --no-install-recommends \
-        libcurl4-openssl-dev \
-        libssl-dev
-
-
 # import the signing key (by Michael Rutter) for these repo
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
 # add the R 4.0 repo from CRAN -- adjust 'focal' to 'groovy' or 'bionic' as needed
@@ -8934,13 +8855,32 @@ RUN apt-get install -qq --no-install-recommends r-base r-base-dev
 ENV PATH="/usr/bin:${PATH}"
 RUN echo 'local({r <- getOption("repos"); r["CRAN"] <- "http://cran.r-project.org"; options(repos=r)})' > ~/.Rprofile
 
+RUN Rscript -e 'install.packages(c("devtools", \
+                                   "git2r", \
+                                   "optparse", \
+                                   "plyr", \
+                                   "stringr", \
+                                   "tidyverse"), repos = c(CRAN="http://cran.rstudio.com"))'
+
+####################################
+### NON-Package manager installs ###
+####################################
+
+#+end_src
+#+begin_src fundamental :tangle ./docker/basecamp_Dockerfile
+RUN apt-get update -qq \
+	&& apt-get install -qq --no-install-recommends \
+        libcurl4-openssl-dev \
+        libssl-dev
+                
+RUN apt-get install -qq --no-install-recommends r-base r-base-dev
+    
 # R CRAN Installs
 RUN R -e "install.packages(c('caret', \
                              'circularize', \
                              'cowplot', \
                              'cutpointr', \
                              'data.table', \
-                             'devtools', \
                              'FSA', \
                              'ggplot2', \
                              'ggpval', \
@@ -8948,18 +8888,13 @@ RUN R -e "install.packages(c('caret', \
                              'ggsci', \
                              'ggvenn', \
                              'ggrepel', \
-                             'git2r', \ 
                              'grid', \
                              'gridExtra', \
                              'Hmisc', \
                              'kableExtra', \
                              'naniar', \
-                             'optparse', \
                              'pheatmap', \
-                             'plyr', \
                              'RColorBrewer', \
-                             'stringr', \
-                             'tidyverse', \
                              'UpSetR', \
                              'viridis'), \
                              repos='http://cran.rstudio.com/')"
@@ -8969,11 +8904,6 @@ RUN apt-get update -qq \
         libxml2-dev
                  
 RUN R -e "install.packages('tidyverse',repos='http://cran.rstudio.com/')"
-
-####################################
-### NON-Package manager installs ###
-####################################
-
 #+end_src
 - Ideas
   ## Emacs Snapshot
