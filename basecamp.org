@@ -5,11 +5,6 @@
 :LOGBOOK:
 CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 :END:  
-** byzanz
-:PROPERTIES:
-:ID:       65e67524-2812-482f-8d06-58d8aa3bce6d
-:END:
-https://askubuntu.com/questions/55709/how-to-select-display-to-record-in-recordmydesktop
 ** [[*Software flat list][Software flat list]]
 ** Setup
 :PROPERTIES:
@@ -43,8 +38,7 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
-
-https://cran.r-project.org/web/packages/sjPlot/vignettes/tab_bayes.html
+- https://cran.r-project.org/web/packages/sjPlot/vignettes/tab_bayes.html
 - command line parsing argparse
 - make objects https://bioconductor.org/packages/devel/bioc/vignettes/SummarizedExperiment/inst/doc/Extensions.html
 - http://r4ds.had.co.nz/
@@ -99,13 +93,14 @@ ${1:FUNCTION NAME} = function(${2:VARIABLE LIST}){
 }
 #+end_src
 
-*** Processes and Applications
+*** Processes
 :PROPERTIES:
 :ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
 :END:
 :LOGBOOK:
 CLOCK: [2021-06-04 Fri 10:17]--[2021-06-04 Fri 10:25] =>  0:08
 :END:
+get package version with packageVersion("PACKAGENAME")
 **** Import
 :PROPERTIES:
 :ID:       8fe67560-d881-4cc3-ad0f-fea419a81023
@@ -168,7 +163,6 @@ CLOCK: [2019-03-19 Tue 14:35]--[2019-03-19 Tue 16:45] =>  2:10
 :ID:       ae65c4a5-7fe5-474c-90e3-b8b567017ac4
 :END:
 
-
 **** Text
 :PROPERTIES:
 :ID:       94242006-2d2c-4615-8104-8613fd5df6d9
@@ -205,6 +199,13 @@ coronary
 - [[https://stackoverflow.com/questions/7906332/how-to-calculate-combination-and-permutation-in-r][How to calculate combination and permutation in R? {closed}]] 
 - https://stats.stackexchange.com/questions/8605/column-wise-matrix-normalization-in-r
 
+<<<<<<< HEAD
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=America/Chicago
+ENV LANG en_US.UTF-8  
+ENV LANGUAGE en_US:en  
+ENV LC_ALL en_US.UTF-8    
+=======
 - https://stat.ethz.ch/R-manual/R-devel/library/stats/html/fisher.test.html
 - http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r#spearman-rank-correlation-coefficient
 - https://rpubs.com/aaronsc32/spearman-rank-correlation
@@ -221,15 +222,41 @@ coronary
 :PROPERTIES:
 :ID:       A4CA9F60-8E82-4655-B6F5-2780A4CD93C5
 :END:
+>>>>>>> dc48269bd540785b36c3e186c158610738e9ffa6
 
  Purpose: Asks whether...
  Equation: 
  Assumptions: 
 
+<<<<<<< HEAD
+RUN apt-get update
+
+RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
+    build-essential \
+    bzip2 \
+    cifs.utils \
+    cmake \
+    dirmngr \
+    emacs \
+    gcc \
+    git \
+    gnupg \
+    libcurl4-openssl-dev \
+    libfftw3-dev \
+    libgsl-dev \
+    libxmu-dev \
+    locales \
+    nano \
+    parallel \
+    screen \
+    software-properties-common \
+    wget
+=======
 ******* Testing Assumptions
 :PROPERTIES:
 :ID:       531DD201-BBB4-4C21-BDDE-02982DB43847
 :END:
+>>>>>>> dc48269bd540785b36c3e186c158610738e9ffa6
 
 ******** Normalcy
 :PROPERTIES:
@@ -270,9 +297,26 @@ coronary
 :ID:       5FEA38FE-3723-4ECF-8D9C-4A256163F55A
 :END:
 
+<<<<<<< HEAD
+RUN apt-get update -qq \
+	&& apt-get install -qq --no-install-recommends \
+        libxml2-dev
+                 
+RUN R -e "install.packages('tidyverse',repos='http://cran.rstudio.com/')"
+#+end_src
+- Ideas
+  ## Emacs Snapshot
+RUN apt-get install -qq --no-install-recommends software-properties-common
+RUN add-apt-repository ppa:ubuntu-elisp/ppa
+RUN apt-get update
+RUN apt-get install -qq --no-install-recommends emacs-snapshot
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen
+=======
  Purpose: Asks whether...
  Equation: 
  Assumptions:  
+>>>>>>> dc48269bd540785b36c3e186c158610738e9ffa6
 
 ******* Regression Modeling
 :PROPERTIES:
@@ -4206,7 +4250,7 @@ $0
 ,#+end_src
 #+end_src
 - print_array
-  #+begin_src fundamental :tangle ~/.emacs.d/snippets/shell-mode/bash.print_array
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/shell-mode/bash.print_array
 # -*- mode: snippet -*-
 # name: bash.print_array
 # key: bash.print_array
@@ -4215,7 +4259,7 @@ printf '%s\n' "${${1:ARRAY_NAME}[@]}"
 $0
 #+end_src
 - bash.array.from.find
-  #+begin_src fundamental :tangle ~/.emacs.d/snippets/sh-mode/bash.array.from.find
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/sh-mode/bash.array.from.find
 # -*- mode: snippet -*-
 # name: bash.array.from.find
 # key: bash.array.from.find
@@ -4228,7 +4272,7 @@ printf '%s\n' "\${$1[@]}"
 $0
 #+end_src
 - bash.script
-  #+begin_src fundamental :tangle ~/.emacs.d/snippets/fundamental-mode/bash.script
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.script
 # -*- mode: snippet -*-
 # key: bash.script
 # --
@@ -4259,7 +4303,7 @@ ${1:function_name}(){
 }
 #+end_src
 - bash.usage
-  #+begin_src fundamental :tangle ~/.emacs.d/snippets/fundamental-mode/bash.usage
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.usage
 # -*- mode: snippet -*-
 # name: bash.usage
 # key: bash.usage
@@ -5413,6 +5457,8 @@ http://www.mitchchn.me/2014/os-x-terminal/
     - [[http://zmjones.com/mac-setup/][setting up osx for data analysis]]
     - [[http://osxdaily.com/2009/02/25/show-hidden-files-in-os-x/][hidden files]]
 
+**** Android
+- https://www.google.com/search?q=android+block+number 
 *** Software
 :PROPERTIES:
 :ID:       9E19E626-9D6C-4296-BEDB-80033A846CF4
@@ -5606,9 +5652,6 @@ docker run \
 - create singularity containers https://stackoverflow.com/questions/60314664/how-to-build-singularity-container-from-dockerfile
 - https://stackoverflow.com/questions/38118791/can-t-delete-docker-image-with-dependent-child-images/50650745
 - https://stackoverflow.com/questions/16296753/can-you-run-gui-applications-in-a-docker-container/50356450#50356450
-- write dockerfiles
-  - https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008316#sec021
-  - https://hub.docker.com/r/rocker/r-devel/dockerfile
 - build image
   - user repos (like mine are / not : for FROM build command!!!
   - [[https://docs.docker.com/engine/reference/builder/#parser-directives][Dockerfile reference]]
@@ -5644,7 +5687,12 @@ docker run --rm -p 6379:6379 <CONTAINER>
   - https://www.google.com/search?q=docker+run+mount+home+directory
   - in timezone with a wget     tzdata command in the dockerfile, then docker run -e "TZ=America/Chicago" -it jeszyman/dev
   - https://confluence.ris.wustl.edu/display/RSUM/Docker+Wrapper+Environment+Variables
-- run with display
+- run with display- see https://bioconductor.org/help/docker/
+******* write dockerfiles
+- To run installs of Rscripts, e.g. bioconductor method- https://github.com/Bioconductor/bioconductor_docker/blob/master/bioc_scripts/install.R
+- https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008316#sec021
+- https://hub.docker.com/r/rocker/r-devel/dockerfile
+
 ******* Sysadmin
 - install
   - [[https://docs.docker.com/install/linux/docker-ce/ubuntu/#prerequisites][install community edition through ubuntu]] https://docs.docker.com/install/linux/linux-postinstall/
@@ -6793,6 +6841,11 @@ CLOCK: [2019-03-04 Mon 14:59]--[2019-03-04 Mon 15:17] =>  0:18
 - Performance- manual entry lag
   - [[https://forums.zotero.org/discussion/16733/manual-citation-entry-clunky][No answers, but question asked]]
 
+***** byzanz
+:PROPERTIES:
+:ID:       65e67524-2812-482f-8d06-58d8aa3bce6d
+:END:
+https://askubuntu.com/questions/55709/how-to-select-display-to-record-in-recordmydesktop
 **** Software hierarchical list by purpose
 - by application
   - pdf ocr
@@ -8624,8 +8677,6 @@ http://www.mitchchn.me/2014/os-x-terminal/
 - yaml cannot do variable placeholders- https://stackoverflow.com/questions/41620674/use-placeholders-in-yaml/41620747#41620747
   - some workarounds https://stackoverflow.com/questions/2063616/how-to-reference-a-yaml-setting-from-elsewhere-in-the-same-yaml-file
 - https://yaml.org/spec/1.2.2/  
-*** Android
-- https://www.google.com/search?q=android+block+number 
 *** Processes
 :PROPERTIES:
 :ID:       2896cf35-9ccf-4533-b451-6b0f7a3bc91c
@@ -8799,6 +8850,7 @@ primeKeyUnique = function(df,pk){
 :ID:       79e01a67-5ba1-4257-8353-8c5cf1ac8c4a
 :END:
 #+begin_src bash :tangle ./docker/basecamp_Dockerfile
+FROM ubuntu:bionic
 #########1#########2#########3#########4#########5#########6#########7#########8
 
 #######################################################
@@ -8845,6 +8897,7 @@ RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
     libfftw3-dev \
     libgsl-dev \
     libxmu-dev \
+    libxml2-dev \   
     locales \
     nano \
     parallel \
@@ -8852,6 +8905,7 @@ RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
     software-properties-common \
     wget
 
+        
 RUN apt-get autoremove -y && \
     apt-get autoclean -y && \
     apt-get clean
@@ -8868,6 +8922,12 @@ ENV PATH="/opt/miniconda/bin:${PATH}"
 ### R 4 and CRAN Packages ###
 #############################
 
+RUN apt-get update -qq \
+	&& apt-get install -qq --no-install-recommends \
+        libcurl4-openssl-dev \
+        libssl-dev
+
+
 # import the signing key (by Michael Rutter) for these repo
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
 # add the R 4.0 repo from CRAN -- adjust 'focal' to 'groovy' or 'bionic' as needed
@@ -8878,32 +8938,13 @@ RUN apt-get install -qq --no-install-recommends r-base r-base-dev
 ENV PATH="/usr/bin:${PATH}"
 RUN echo 'local({r <- getOption("repos"); r["CRAN"] <- "http://cran.r-project.org"; options(repos=r)})' > ~/.Rprofile
 
-RUN Rscript -e 'install.packages(c("devtools", \
-                                   "git2r", \
-                                   "optparse", \
-                                   "plyr", \
-                                   "stringr", \
-                                   "tidyverse"), repos = c(CRAN="http://cran.rstudio.com"))'
-
-####################################
-### NON-Package manager installs ###
-####################################
-
-#+end_src
-#+begin_src fundamental :tangle ./docker/basecamp_Dockerfile
-RUN apt-get update -qq \
-	&& apt-get install -qq --no-install-recommends \
-        libcurl4-openssl-dev \
-        libssl-dev
-                
-RUN apt-get install -qq --no-install-recommends r-base r-base-dev
-    
 # R CRAN Installs
 RUN R -e "install.packages(c('caret', \
                              'circularize', \
                              'cowplot', \
                              'cutpointr', \
                              'data.table', \
+                             'devtools', \
                              'FSA', \
                              'ggplot2', \
                              'ggpval', \
@@ -8911,13 +8952,18 @@ RUN R -e "install.packages(c('caret', \
                              'ggsci', \
                              'ggvenn', \
                              'ggrepel', \
+                             'git2r', \ 
                              'grid', \
                              'gridExtra', \
                              'Hmisc', \
                              'kableExtra', \
                              'naniar', \
+                             'optparse', \
                              'pheatmap', \
+                             'plyr', \
                              'RColorBrewer', \
+                             'stringr', \
+                             'tidyverse', \
                              'UpSetR', \
                              'viridis'), \
                              repos='http://cran.rstudio.com/')"
@@ -8927,6 +8973,11 @@ RUN apt-get update -qq \
         libxml2-dev
                  
 RUN R -e "install.packages('tidyverse',repos='http://cran.rstudio.com/')"
+
+####################################
+### NON-Package manager installs ###
+####################################
+
 #+end_src
 - Ideas
   ## Emacs Snapshot
