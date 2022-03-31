@@ -3486,6 +3486,7 @@ CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :LOGBOOK:
 CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
 :END:
+https://unix.stackexchange.com/questions/689949/rename-file-by-moving-middle-string-to-end-of-the-filename
 - read a 2-column tsv into an array
   #+begin_src bash
 # Create a simple tsv
@@ -5547,6 +5548,7 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
+- always need apt update prior to gets https://askubuntu.com/questions/1159096/ubuntu-18-04-throws-404-error-while-fetching-dependencies
 ****** Local transclusion
 ****** Local YAS
 :PROPERTIES:
@@ -7041,9 +7043,11 @@ done
 ******** Submodules
 - https://www.google.com/search?q=private+git+submodules
   - https://stackoverflow.com/questions/37638034/private-folder-submodule-in-a-public-repo
+- https://stackoverflow.com/questions/19728933/continue-looping-over-submodules-with-the-git-submodule-foreach-command-after
 - Add- git submodule add <SUBMODULE>
 - initialize git submodule update --recursive --init
 - Pull
+  - 
   - https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin    
   - https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
   - push and pull submodules
