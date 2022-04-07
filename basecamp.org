@@ -3524,6 +3524,9 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+https://www.google.com/search?q=bash+redirect+to+logfile 
+https://www.google.com/search?q=bash+rm+use+regex 
+https://www.google.com/search?q=bash+test+before+rm 
 https://stackoverflow.com/questions/169511/how-do-i-iterate-over-a-range-of-numbers-defined-by-variables-in-bash
 ****** Processes 
 :PROPERTIES:
@@ -6413,7 +6416,14 @@ https://carpentries-incubator.github.io/singularity-introduction/03-singularity-
   - Install
     - https://sylabs.io/guides/3.0/user-guide/installation.html
         #+begin_src bash
-    # which pkg-config
+sudo rm -rf \
+    /usr/local/libexec/singularity \
+    /usr/local/var/singularity \
+    /usr/local/etc/singularity \
+    /usr/local/bin/singularity \
+    /usr/local/bin/run-singularity \
+    /usr/local/etc/bash_completion.d/singularity
+# which pkg-config
 
     # echo $PATH
 
@@ -6435,7 +6445,7 @@ https://carpentries-incubator.github.io/singularity-introduction/03-singularity-
         pkg-config            
 
     # Install Go
-    export VERSION=1.11 OS=linux ARCH=amd64 && \
+    export VERSION=1.13 OS=linux ARCH=amd64 && \
         wget https://dl.google.com/go/go$VERSION.$OS-$ARCH.tar.gz && \
         sudo tar -C /usr/local -xzvf go$VERSION.$OS-$ARCH.tar.gz && \
         rm go$VERSION.$OS-$ARCH.tar.gz
@@ -6447,9 +6457,10 @@ https://carpentries-incubator.github.io/singularity-introduction/03-singularity-
 
     go get -u github.com/golang/dep/cmd/dep
 
-    go get -d github.com/sylabs/singularity
+#https://github.com/apptainer/singularity/blob/master/CHANGELOG.md
+    go get -d github.com/hpcng/singularity
 
-    export VERSION=v3.0.3 # or another tag or branch if you like && \
+    export VERSION=v3.5.3 && \
         cd $GOPATH/src/github.com/sylabs/singularity && \
         git fetch && \
         git checkout $VERSION # omit this command to install the latest bleeding edge code from master
@@ -6459,9 +6470,45 @@ https://carpentries-incubator.github.io/singularity-introduction/03-singularity-
         sudo make -C ./builddir install
 
     which singularity
+
+# https://github.com/apptainer/singularity/issues/5099
+sudo apt-get update && \
+sudo apt-get install -y build-essential \
+libseccomp-dev pkg-config squashfs-tools cryptsetup
+
+sudo rm -r /usr/local/go
+
+export VERSION=1.13.15 OS=linux ARCH=amd64  # change this as you need
+
+wget -O /tmp/go${VERSION}.${OS}-${ARCH}.tar.gz https://dl.google.com/go/go${VERSION}.${OS}-${ARCH}.tar.gz && \
+sudo tar -C /usr/local -xzf /tmp/go${VERSION}.${OS}-${ARCH}.tar.gz
+
+echo 'export GOPATH=${HOME}/go' >> ~/.bashrc && \
+echo 'export PATH=/usr/local/go/bin:${PATH}:${GOPATH}/bin' >> ~/.bashrc && \
+source ~/.bashrc
+
+curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh |
+sh -s -- -b $(go env GOPATH)/bin v1.21.0
+
+mkdir -p ${GOPATH}/src/github.com/sylabs && \
+cd ${GOPATH}/src/github.com/sylabs && \
+git clone https://github.com/sylabs/singularity.git && \
+cd singularity
+
+git checkout v3.6.3
+
+cd ${GOPATH}/src/github.com/sylabs/singularity && \
+./mconfig && \
+cd ./builddir && \
+make && \
+sudo make install
+
+singularity version
     #+end_src  
   - Run
     - Interactive https://www.google.com/search?q=singularity+run+interactive&oq=singularity+run+&aqs=chrome.1.69i57j69i59l2.3155j0j4&sourceid=chrome&ie=UTF-8
+      - singularity shell --bind /mnt:/mnt ~/sing_containers/atac.sif             
+
   - https://search.brave.com/search?q=make+singularity+container+from+docker&source=desktop
     - https://stackoverflow.com/questions/60314664/how-to-build-singularity-container-from-dockerfile
         #+begin_src bash
@@ -6525,11 +6572,22 @@ https://carpentries-incubator.github.io/singularity-introduction/03-singularity-
 :CREATED:  [2021-09-13 Mon 07:29]
 :END:
 :LOGBOOK:
+CLOCK: [2022-04-07 Thu 07:39]--[2022-04-07 Thu 07:44] =>  0:05
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
-https://github.com/zhxiaokang/RASflow
+https://stackoverflow.com/questions/17126996/emacs-mode-for-snakemake
+- syntax for running shell https://stackoverflow.com/questions/45553762/recommended-way-to-do-multiple-shell-commands-with-shell/49533645#49533645
+- check md5 https://stackoverflow.com/questions/65907256/snakemake-use-checksums-instead-of-timestamps
+- python dict for names https://stackoverflow.com/questions/50413374/glob-wildcards-on-multiple-directories-with-different-file-names
+- https://github.com/zhxiaokang/RASflow
 - https://www.biostars.org/p/9496955/
 - https://github.com/EthanHolleman/snake-backup/blob/main/Snakefile.py
+****** Style
+- Externalize all scripts from workflow and allow independent script execution
+- Each rule has logfile defined in workflow directed to log_dir
+- Software generated log files are redirected to log_dir
+- Repos have MWE for each snakefile
+
 ****** Processes 
 ******* Install and setup
   - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
@@ -6570,15 +6628,14 @@ snakemake --help
   - docker - https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html?highlight=docker#running-jobs-in-containers
 
 ****** Local YAS (prefix smk.)
-#! /usr/bin/env Rscript
-- Insert snakemake file org-mode tree
-  #+name: smk
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk
+******* Insert snakemake file org-mode tree
+#+name: smk
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk
 # -*- mode: snippet -*-
 # key: smk
 # expand-env: ((yas-indent-line 'none))
 # --
-`(make-string (org-current-level) ?*)` [[file:./workflow/$2.smk][${1: SNAKEMAKE PROCESS DESCRIPTIVE HEADER TITLE}]]:smk:
+`(make-string (org-current-level) ?*)` [[file:./workflow/$2.smk][Snakefile]]:smk:
 :PROPERTIES:
 :header-args:snakemake: :tangle ./workflow/${2: SNAKEFILE NAME}.smk
 :END:              
@@ -6594,6 +6651,10 @@ rule all:
                     
 ,#+end_src                            
 - add rules with smk.rule
+`(make-string (+ 1 (org-current-level)) ?*)` Dev
+:PROPERTIES:
+:header-args:snakemake: :tangle no
+:END:  
 `(make-string (+ 1 (org-current-level)) ?*)` Ideas
 :PROPERTIES:
 :header-args:snakemake: :tangle no
@@ -6654,15 +6715,15 @@ args = commandArgs(trailingOnly = TRUE)
 - Snakemake
 ,#+begin_src snakemake
 rule ${1:$(string-replace " " "_" (downcase yas-text))}:
-input:
-output:
-shell:
-    """
-    scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
-    """
+    input:
+    output:
+    shell:
+        """
+        scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
+        """
 ,#+end_src
-- [[file:./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh][Base script]]
-,#+begin_src bash :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
+- [[file:./workflows/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh][Base script]]
+,  #+begin_src bash :tangle ./workflows/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
 #!/usr/bin/env bash
 #########1#########2#########3#########4#########5#########6#########7#########8               
 ###
@@ -7101,6 +7162,7 @@ done
 - Viewing
   - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
 ******** Submodules
+https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-symlinks-to-a-single-clone-locally
 - https://www.google.com/search?q=private+git+submodules
   - https://stackoverflow.com/questions/37638034/private-folder-submodule-in-a-public-repo
 - https://stackoverflow.com/questions/19728933/continue-looping-over-submodules-with-the-git-submodule-foreach-command-after
