@@ -1861,6 +1861,8 @@ CLOCK: [2017-06-23 Fri 19:05]--[2017-06-23 Fri 19:35] =>  0:30
 CLOCK: [2018-06-27 Wed 11:59]--[2018-06-27 Wed 12:49] =>  0:50
 CLOCK: [2017-11-28 Tue 18:30]--[2017-11-28 Tue 19:30] =>  1:00
 :END:
+https://stats.stackexchange.com/questions/471822/are-there-any-power-calculation-formulas-for-ml-methods-beyond-logistic-regressi
+https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0224365
 https://www.reddit.com/r/statistics/comments/t3ok40/q_is_there_any_difference_between_latent_profile/
 https://torchstudio.ai/
 https://www.reddit.com/r/datascience/comments/sxtppd/stop_resampling_data_in_classification_problems/
@@ -2944,6 +2946,7 @@ https://www.google.com/search?q=javascript+diagram&oq=Javascript+dia&aqs=chrome.
 CLOCK: [2020-06-14 Sun 19:38]--[2020-06-14 Sun 20:15] =>  0:37
 CLOCK: [2020-06-14 Sun 18:38]--[2020-06-14 Sun 18:58] =>  0:20
 :END:
+https://www.reddit.com/r/learnjavascript/comments/twdemi/best_videobased_course_to_learn_javascript_both/
 https://www.theodinproject.com/paths/full-stack-javascript/courses/javascript
 https://www.freecodecamp.org/news/full-javascript-course-for-beginners/
 https://www.freecodecamp.org/news/functional-programming-in-javascript-for-beginners/
@@ -3124,6 +3127,7 @@ $0
 ,#+end_src            
 #+end_src
 ****** Processes
+- https://stackoverflow.com/questions/57459455/changing-the-name-of-multiple-files-based-on-an-index
 - Get variable type https://www.google.com/search?q=python+get+variable+type type()
 - Probability and statistics 
   - https://stackoverflow.blog/2021/02/23/level-up-mastering-statistics-with-python-part-2/?cb=1&_ga=2.59352485.940265309.1614263567-766544545.1565628865
@@ -3524,6 +3528,7 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+https://stackoverflow.com/questions/22962591/how-to-prevent-direct-bash-script-execution-and-allow-only-usage-from-other-scri
 https://www.google.com/search?q=bash+redirect+to+logfile 
 https://www.google.com/search?q=bash+rm+use+regex 
 https://www.google.com/search?q=bash+test+before+rm 
@@ -6575,6 +6580,11 @@ singularity version
 CLOCK: [2022-04-07 Thu 07:39]--[2022-04-07 Thu 07:44] =>  0:05
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
+https://stackoverflow.com/questions/56042158/snakemake-correct-syntax-for-accessing-dictionary-values
+https://edwards.flinders.edu.au/wildcards-in-snakemake/
+https://snakemake-wrappers.readthedocs.io/en/stable/wrappers.html
+https://github.com/yztxwd/rna-seq-standard-pipeline/tree/c19a9e27216b86d3dbfdaed7228aeff59f869383
+https://github.com/porchard/ATACseq-Snakemake/blob/master/src/Snakefile
 https://stackoverflow.com/questions/17126996/emacs-mode-for-snakemake
 - syntax for running shell https://stackoverflow.com/questions/45553762/recommended-way-to-do-multiple-shell-commands-with-shell/49533645#49533645
 - check md5 https://stackoverflow.com/questions/65907256/snakemake-use-checksums-instead-of-timestamps
@@ -6734,6 +6744,7 @@ rule ${1:$(string-replace " " "_" (downcase yas-text))}:
 #+end_src
 
 ****** Reference
+- https://github.com/aomlomics/tourmaline
 - https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
 - https://swcarpentry.github.io/r-novice-inflammation/05-cmdline/index.html
 - https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
@@ -7015,6 +7026,9 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
+https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-symlinks-to-a-single-clone-locally
+https://stackoverflow.com/questions/28357350/two-git-repositories-share-common-code
+https://stackoverflow.com/questions/11852982/can-i-arrange-repositories-into-folders-on-github#:~:text=On%20GitHub%20itself%2C%20you%20cannot,a%20nested%20team%20organization%20structure.
 https://softwareengineering.stackexchange.com/questions/206668/using-multiple-git-repositories-instead-of-a-single-one-containing-many-apps-fro
 https://stackoverflow.com/questions/816619/managing-many-git-repositories
 ******* Code tangle
