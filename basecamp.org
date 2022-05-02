@@ -2718,26 +2718,426 @@ https://webanno.github.io/webanno/
 - https://blog.dominodatalab.com/lesser-known-ways-of-using-notebooks/
 - https://mail.google.com/mail/u/0/#inbox/FMfcgxwDqnjnHJFDpDpBQQdGrjgtfdfn
 *** Processes
+- https://www.google.com/search?q=stack+exchange+webpage+annotation+highlight 
 - https://askubuntu.com/questions/651309/software-to-automatically-remove-background-from-images
 - https://www.google.com/search?q=linux+convert+epub+to+pdf
 - https://www.google.com/search?q=calibre+convert+epub+to+pdf   
 - devops
   - http://howardism.org/Technical/Emacs/literate-devops.html
-**** pdf files
+**** PDF file processes
 :PROPERTIES:
 :ID:       670ed8f4-bb93-4d93-b9ea-a142a599169f
 :END:
-- https://www.google.com/search?q=ubuntu+command+line+select+pages+from+pdf&oq=ubuntu+command+line+select+pages+from+pdf&aqs=chrome..69i57.7826j0j1&sourceid=chrome&ie=UTF-8
+- https://www.google.com/search?q=ubuntu+pdf+rotate+page 
+- Pages
+  - Delete
+    - https://www.google.com/search?q=linux+pdf+delete+page 
+  - merge
+    - pdf files with pdftk file1.pdf file2.pdf cat output mergedfile.pdf
+    - https://www.google.com/search?q=pdftk+merge
+  - Select pages
+    - https://www.google.com/search?q=ubuntu+command+line+select+pages+from+pdf&oq=ubuntu+command+line+select+pages+from+pdf&aqs=chrome..69i57.7826j0j1&sourceid=chrome&ie=UTF-8
+- annotate
+  - okular
+  - https://www.google.com/search?q=linux+pdf+strip+annotation 
+- Convert
+  - to png - https://askubuntu.com/questions/50170/how-to-convert-pdf-to-image
+  - https://www.google.com/search?q=linux+convert+image+to+pdf
+- https://askubuntu.com/questions/113544/how-can-i-reduce-the-file-size-of-a-scanned-pdf-file
+- Ideas
+  - Extract annotations
+    - https://www.google.com/search?q=linux+extract+pdf+annotations 
 - https://www.ilovepdf.com/
-- Convert to png - https://askubuntu.com/questions/50170/how-to-convert-pdf-to-image
+**** Miscellaneous
+:PROPERTIES:
+:ID:       88c4ae60-8bcc-4b1d-8347-2bbfbd112398
+:END:
+- - The secret to using DDG is to pre-fix your query (!g for Google, !b for Bing and there are tons of other ones too) when DDG doesn't come up with something useful. This way you can use DDG kind of as the Swiss army knife of search engines.
+- https://unix.stackexchange.com/questions/359832/converting-csv-to-tsv
+- convert epub to pdf with calibre https://askubuntu.com/questions/299747/converting-epub-files-to-pdf-format
+**** Setups
+:PROPERTIES:
+:ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
+:END:
+***** My emacs IDEs
+:PROPERTIES:
+:ID:       2913d46c-63aa-4950-af70-a296a0a7a744
+:END:
 
-- https://www.google.com/search?q=linux+pdf+delete+page 
-- https://www.google.com/search?q=linux+convert+image+to+pdf
-- https://www.google.com/search?q=linux+pdf+strip+annotation 
-- - https://askubuntu.com/questions/113544/how-can-i-reduce-the-file-size-of-a-scanned-pdf-file
-***** Processes
-- merge pdf files with pdftk file1.pdf file2.pdf cat output mergedfile.pdf
-  - https://www.google.com/search?q=pdftk+merge
+- ess-remote to docker R
+https://www.reddit.com/r/emacs/comments/op4fcm/send_command_to_vterm_and_execute_it/
+https://blog.calebjay.com/posts/my-emacs-environment/#on-programming-in-emacs
+- https://jmonlong.github.io/Hippocamplus/emacs/
+****** Emacs shell IDE
+:PROPERTIES:
+:ID:       07b8634c-70a6-4a99-90b5-0f5083ccaf04
+:END:
+- interfaces
+  - emacs
+    - https://stackoverflow.com/questions/1008750/ide-emacs-mode-for-shell-scripting-in-bash-sh-etc
+    - http://www.skybert.net/emacs/bash-linting-in-emacs/
+****** Ideas
+:PROPERTIES:
+:ID:       ea022e58-f02d-4f37-831f-59bc0fb9957f
+:END:
+- custom send to shell functions https://emacs.stackexchange.com/questions/37887/send-region-to-shell-in-another-buffer
+- libvterm https://github.com/akermu/emacs-libvterm
+- isend mode
+  - https://github.com/ffevotte/isend-mode.el/blob/master/isend-mode.el
+  - https://stat.ethz.ch/pipermail/ess-help/2015-July/010628.html
+  - https://github.com/ffevotte/isend-mode.el
+
+***** All repo setup
+:PROPERTIES:
+:ID:       c90aaf71-7311-48d8-98e8-221be4ebc290
+:END:
+#+begin_src bash :tangle ./src/all_repo_setup.sh
+unset repoDIRs
+repoDIRs=(data figures imgs method miscellaneous presentations pubs reports results testing tex)
+for dir in "${repoDIRs[@]}"
+do
+    mkdir -p $repo/"$dir"
+done
+#+end_src
+***** R basecamp setup
+:PROPERTIES:
+:ID:       a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc
+:END:
+#+name: basecamp_r_setup
+#+begin_src R :noweb yes :tangle ./src/setup.R 
+# Check CRAN packages, install as needed
+##
+packages = c(
+"caret",
+"circlize",
+'cowplot',
+"cutpointr",
+#"data.table",
+#"factoextra",
+"FSA",
+"ggplot2",
+#'ggpubr',
+"ggpval",
+"ggsci",
+"ggvenn",
+"ggrepel",
+"grid",
+"gridExtra",
+"Hmisc",
+"kableExtra",
+"magrittr",
+"naniar",
+"pheatmap",
+"RColorBrewer",
+"readr",
+"readxl",
+"scales",
+"tidyverse",
+"UpSetR",
+"viridis"
+)
+#
+package.check = lapply(
+  packages,
+  FUN=function(x) {
+    if (!require(x, character.only=T)) {
+      install.packages(x, dependencies=T)
+      library(x,character.only=T)
+    }
+  }
+)
+
+#
+# Theme
+theme_general <- function () { 
+  theme_cowplot(16) %+replace%
+    theme()
+}
+
+
+#
+select=dplyr::select
+filter=dplyr::filter
+group_by=dplyr::group_by
+summarise=dplyr::summarise
+#+end_src
+
+#+name: basecamp_r_setup_wrapper
+#+begin_src org :noweb yes
+<<basecamp_r_setup>>
+#+end_src
+
+- Set environmental variables
+  ,#+begin_src R :tangle ./src/setup.R
+# Set environmental variables
+
+#+end_src
+- Check CRAN packages, install as needed
+
+- Set environment variables
+  #+begin_src R :tangle ./src/setup.R
+#########1#########2#########3#########4#########5#########6#########7#########8
+# Set variables
+select=dplyr::select
+filter=dplyr::filter
+#+end_src
+- install
+  - https://unix.stackexchange.com/questions/149451/install-r-in-my-own-directory
+- Data model functions
+  ## Data checks
+### Check primary key uniqeness
+primeKeyUnique = function(df,pk){
+  nrow(df)==length(unique(df[,pk]))
+}
+
+
+- https://www.google.com/search?q=R+check+hostname 
+- https://www.google.com/search?q=R+where+to+store+packages
+
+
+
+***** Basecamp bash setup
+:PROPERTIES:
+:ID:       426130a8-cc03-49a7-a35d-6a5db4b485c3
+:END:
+#+name: basecamp_bash_setup_wrapper
+#+begin_src bash :noweb yes
+<<docker_interactive>>
+<<docker_check>>
+<<check_software_dependencies>>
+<<symlink-by-csv-script>>
+<<check_local_software>>        
+#+end_src
+***** Basecamp Docker
+:PROPERTIES:
+:ID:       c9327fad-4f38-4bbe-8b2e-58ad589fbdf6
+:END:
+****** Write [[file:docker/basecamp_Dockerfile][basecamp Dockerfile]]
+:PROPERTIES:
+:ID:       79e01a67-5ba1-4257-8353-8c5cf1ac8c4a
+:END:
+#+begin_src bash :tangle ./docker/basecamp_Dockerfile
+FROM ubuntu:bionic
+#########1#########2#########3#########4#########5#########6#########7#########8
+
+#######################################################
+#######################################################
+###   Dockerfile to build a basecamp docker image   ###
+#######################################################
+#######################################################
+
+#############
+### Notes ###
+#############
+#
+# After build, the image will be pushed to the dockerhub as
+# jeszyman/basecamp
+# (https://hub.docker.com/repository/docker/jeszyman/basecamp)
+#
+# See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+
+FROM ubuntu:bionic
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=America/Chicago
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen
+ENV LANG en_US.UTF-8  
+ENV LANGUAGE en_US:en  
+ENV LC_ALL en_US.UTF-8    
+
+###########
+### APT ###
+###########
+
+RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
+    build-essential \
+    bzip2 \
+    cifs.utils \
+    cmake \
+    dirmngr \
+    emacs \
+    gcc \
+    git \
+    gnupg \
+    libcurl4-openssl-dev \
+    libfftw3-dev \
+    libgsl-dev \
+    libxmu-dev \
+    libxml2-dev \   
+    locales \
+    nano \
+    parallel \
+    screen \
+    software-properties-common \
+    wget
+
+        
+RUN apt-get autoremove -y && \
+    apt-get autoclean -y && \
+    apt-get clean
+
+#################
+### Miniconda ###
+#################
+
+RUN cd /tmp && wget --no-check-certificate https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh
+RUN bash /tmp/Miniconda3-4.3.21-Linux-x86_64.sh -b -p /opt/miniconda
+ENV PATH="/opt/miniconda/bin:${PATH}"
+
+#############################
+### R 4 and CRAN Packages ###
+#############################
+
+RUN apt-get update -qq \
+	&& apt-get install -qq --no-install-recommends \
+        libcurl4-openssl-dev \
+        libssl-dev
+
+
+# import the signing key (by Michael Rutter) for these repo
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+# add the R 4.0 repo from CRAN -- adjust 'focal' to 'groovy' or 'bionic' as needed
+RUN add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
+#
+RUN apt-get install -qq --no-install-recommends r-base r-base-dev
+
+ENV PATH="/usr/bin:${PATH}"
+RUN echo 'local({r <- getOption("repos"); r["CRAN"] <- "http://cran.r-project.org"; options(repos=r)})' > ~/.Rprofile
+
+# R CRAN Installs
+RUN R -e "install.packages(c('caret', \
+                             'circularize', \
+                             'cowplot', \
+                             'cutpointr', \
+                             'data.table', \
+                             'devtools', \
+                             'FSA', \
+                             'ggplot2', \
+                             'ggpval', \
+                             'ggpubr', \
+                             'ggsci', \
+                             'ggvenn', \
+                             'ggrepel', \
+                             'git2r', \ 
+                             'grid', \
+                             'gridExtra', \
+                             'Hmisc', \
+                             'kableExtra', \
+                             'naniar', \
+                             'optparse', \
+                             'pheatmap', \
+                             'plyr', \
+                             'RColorBrewer', \
+                             'stringr', \
+                             'tidyverse', \
+                             'UpSetR', \
+                             'viridis'), \
+                             repos='http://cran.rstudio.com/')"
+
+RUN apt-get update -qq \
+	&& apt-get install -qq --no-install-recommends \
+        libxml2-dev
+                 
+RUN R -e "install.packages('tidyverse',repos='http://cran.rstudio.com/')"
+
+####################################
+### NON-Package manager installs ###
+####################################
+
+#+end_src
+- Ideas
+  ## Emacs Snapshot
+RUN apt-get install -qq --no-install-recommends software-properties-common
+RUN add-apt-repository ppa:ubuntu-elisp/ppa
+RUN apt-get update
+RUN apt-get install -qq --no-install-recommends emacs-snapshot
+
+****** Build docker container
+:PROPERTIES:
+:ID:       32236b08-3aa2-45ed-87d1-2ee820701de5
+:END:
+#+begin_src bash :tangle no
+buildDIR=~/repos/basecamp
+user=jeszyman
+repo=basecamp
+#########1#########2#########3#########4#########5#########6#########7#########8
+cd "$buildDIR"
+docker build . --file Dockerfile --tag "${user}/${repo}"
+docker push "${user}/${repo}"
+
+
+#########1#########2#########3#########4#########5#########6#########7#########8
+
+cd ~/repos/basecamp/docker
+ls
+docker build . --file basecamp_Dockerfile --tag jeszyman/basecamp
+docker push jeszyman/basecamp
+#+end_src
+****** run docker interactively 
+:PROPERTIES:
+:ID:       cff4499e-b420-4ae7-8a30-cbe04013db60
+:END:
+  #+name: docker_interactive
+  #+begin_src bash :tangle ./src/functions.sh
+docker_interactive() {
+    if [ -f /.dockerenv ]; then
+        echo "shell already in docker, exiting"
+        exit 1
+    else
+        account="USER INPUT"
+        container="USER INPUT"
+        read -p "docker account name: " account
+        account="${account:=jeszyman}"
+        read -p "container name: " container
+        container="${container:=biotools}"
+        case $HOSTNAME in
+            (radonc-cancerbio) docker run -it \
+                                      --env HOME=${HOME} \
+                                      --hostname ${HOSTNAME} \
+                                      --user $(id -u ${USER}) \
+                                      --volume /home/:/home/ \
+                                      --volume /mnt/:/mnt/ \
+                                      --volume /tmp/:/tmp/ \
+                                      $account/$container \
+                                      /bin/bash;;
+            (acl*) docker run -it \
+                          --env HOME=${HOME} \
+                          --hostname ${HOSTNAME} \
+                          -v /drive3/:/drive3/ \
+                          -v /duo4/:/duo4/ \
+                          -v /home/:/home/ \
+                          -v /tmp/:/tmp/ \
+                          -u $(id -u ${USER}) \
+                          $account/$container \
+                          /bin/bash;;
+            (ACL*) docker run -it \
+                          --env HOME=${HOME} \
+                          --hostname ${HOSTNAME} \
+                          -v /home/:/home/ \
+                          -v /duo4/:/duo4/ \
+                          -u $(id -u ${USER}):$(id -g ${USER}) \
+                          $account/$container \
+                          /bin/bash;;
+            (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker($account/'"$container"')' /bin/bash;;
+            (*) docker run -it \
+                       --env HOME=/home/${USER} \
+                       --hostname ${HOSTNAME} \
+                       --user $(id -u ${USER}) \
+                       --volume /home/:/home/ \
+                       --volume /mnt/:/mnt/ \
+                       --volume /tmp/:/tmp/ \
+                       $account/$container \
+                       /bin/bash;;
+        esac
+    fi
+}
+#+end_src
+****** Reference
+:PROPERTIES:
+:ID:       e04ad9da-1aa6-4f66-9659-34e9c9634eae
+:END:
+  - [[file:~/repos/basecamp/Dockerfile]]
 *** General reference, guides, and tutorials
 :PROPERTIES:
 :ID:       2faf071d-912b-4003-a42a-d9f18144434b
@@ -2829,6 +3229,7 @@ https://webanno.github.io/webanno/
 :PROPERTIES:
 :ID:       3A02CE83-279F-4D28-A56E-A8AF1094B77B
 :END:
+https://www.reddit.com/r/webdev/comments/r98r95/been_working_for_2_years_on_plasmic_a_visual/
 https://www.freecodecamp.org/news/learn-html-beginners-course/
 https://www.reddit.com/r/webdev/comments/r98r95/been_working_for_2_years_on_plasmic_a_visual/
 https://www.freecodecamp.org/news/creating-apis-with-python-free-19-hour-course/
@@ -3528,11 +3929,32 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
-https://stackoverflow.com/questions/22962591/how-to-prevent-direct-bash-script-execution-and-allow-only-usage-from-other-scri
-https://www.google.com/search?q=bash+redirect+to+logfile 
+- Command line script
+  #+name: bash_cmdline_script_preamble
+  #+begin_src bash :noweb yes
+#!/usr/bin/env bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+# Notes:
+#  This script is tangled from source code in the mpnst-frag.org file
+#  Therefore any changes to this compiled file in place will likely be reverted
+#  by a subsequent tangle operation.
+#
+#  This script assumes you are running from the repository main directory in
+#  order to source the appriopriate configuation file. 
+
+# Load bash configuation
+if [ -f ./config/${HOSTNAME}.sh ]; then
+    source ./config/${HOSTNAME}.sh
+else
+    echo "No bash config found. Are you running from repo main dir?"
+fi
+#+end_src
+https://www.google.com/search?q=bash+prevent+script+execution 
 https://www.google.com/search?q=bash+rm+use+regex 
 https://www.google.com/search?q=bash+test+before+rm 
 https://stackoverflow.com/questions/169511/how-do-i-iterate-over-a-range-of-numbers-defined-by-variables-in-bash
+- [[https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script][Meaning of exit 0, exit 1 and exit 2 in a bash script]]
+- [[https://www.cyberciti.biz/faq/linux-unix-formatting-dates-for-display/][formatting dates for display]]  
 ****** Processes 
 :PROPERTIES:
 :ID:       c3e424cd-7191-423e-815b-7e7fcb770100
@@ -3540,18 +3962,9 @@ https://stackoverflow.com/questions/169511/how-do-i-iterate-over-a-range-of-numb
 :LOGBOOK:
 CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
 :END:
-https://unix.stackexchange.com/questions/689949/rename-file-by-moving-middle-string-to-end-of-the-filename
-- read a 2-column tsv into an array
-  #+begin_src bash
-# Create a simple tsv
-cat <<EOT >> greetings.txt
-line 	1
-line 	2
-EOT            
-#+end_src
 
-https://www.google.com/search?q=bash+read+csv 
-https://www.google.com/search?q=bash+rename+file+shift+string+to+end 
+- https://stackoverflow.com/questions/22962591/how-to-prevent-direct-bash-script-execution-and-allow-only-usage-from-other-scri
+
 ******* Setup
 :PROPERTIES:
 :ID:       12419776-9b0e-42e9-8392-8f17dc89a63f
@@ -3560,6 +3973,12 @@ https://www.google.com/search?q=bash+rename+file+shift+string+to+end
   - https://www.google.com/search?q=alias+function+bashrc 
   - https://www.reddit.com/r/commandline/comments/9md3pp/a_very_useful_bashrc_file/
 - themes- https://github.com/ohmybash/oh-my-bash
+******* Output
+- https://www.google.com/search?q=bash+redirect+to+logfile 
+- output direction
+  - - 1 & 2 https://stackoverflow.com/questions/10508843/what-is-dev-null-21
+******* Input
+https://www.google.com/search?q=bash+read+csv 
 ******* Sysadmin
 - see [[id:25e57644-f710-41ba-8bf4-d6ee9cc2c9c6][Linux sysadmin]]
 ******* Text file manipulations
@@ -3599,20 +4018,21 @@ https://www.google.com/search?q=bash+rename+file+shift+string+to+end
 :PROPERTIES:
 :ID:       f824de5e-ecce-4f4e-aa25-1daf675577a6
 :END:
-- variables
-  - 1 & 2 https://stackoverflow.com/questions/10508843/what-is-dev-null-21
-  - [[https://stackoverflow.com/questions/91368/checking-from-shell-script-if-a-directory-contains-files][use globbing in variables with shopt]]
-  - [[https://www.cyberciti.biz/faq/linux-unix-formatting-dates-for-display/][formatting dates for display]]
-  - [[https://data36.com/variables-if-statements-while-loops-bash-data-science/][variables for if statements and while loops]].
-  - To make executable: chmod +x /path/to/yourscript.sh
-  - https://stackoverflow.com/questions/19512550/what-does-mean-in-a-shell-if-statement
-  - [[https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script][Meaning of exit 0, exit 1 and exit 2 in a bash script]]
-  - https://stackoverflow.com/questions/2642585/read-a-variable-in-bash-with-a-default-value
-******** Arrays
+- [[https://stackoverflow.com/questions/91368/checking-from-shell-script-if-a-directory-contains-files][use globbing in variables with shopt]]
+- General reference
+  - [[https://data36.com/variables-if-statements-while-loops-bash-data-science/][variables for if statements and while loops]]
+******* Arrays
 :PROPERTIES:
 :ID:       9cbffcad-49c3-4936-9111-d2472d40276c
 :END:
-- https://www.google.com/search?q=bash+symlink+associatve+array 
+- read a 2-column tsv into an array
+  #+begin_src bash
+# Create a simple tsv
+cat <<EOT >> greetings.txt
+line 	1
+line 	2
+EOT            
+#+end_src
 - [[https://stackoverflow.com/questions/18921350/shell-script-correct-way-to-declare-an-empty-array][declare]]
 - populate
   - from list of variables
@@ -3630,9 +4050,10 @@ https://www.google.com/search?q=bash+rename+file+shift+string+to+end
       - https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
     - https://www.google.com/search?q=pass+cat+output+to+array+variable
     - command output https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
+- access all values "${array[@]}"
 - make associative array
   - https://www.google.com/search?q=bash+make+associative+array 
-- access all values "${array[@]}"
+  - https://www.google.com/search?q=bash+symlink+associatve+array 
 - [[https://unix.stackexchange.com/questions/125632/printing-an-array-to-a-file-with-each-element-of-the-array-in-a-new-line-in-bash][print array with line breaks]]
 - https://www.google.com/search?q=bash+create+array 
 - https://www.google.com/search?q=bash+pass+array+to+for+loop 
@@ -3662,6 +4083,7 @@ b=( "${a[@]}" )
 :PROPERTIES:
 :ID:       17707f3f-aee6-4eab-9d79-de07c975a3d5
 :END:
+- https://stackoverflow.com/questions/2642585/read-a-variable-in-bash-with-a-default-value
 - Choose from list
   - https://linuxize.com/post/bash-select/
   - https://linuxize.com/post/bash-case-statement/
@@ -5478,6 +5900,10 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
 **** Software flat list
+***** Remarkable
+https://remarkablewiki.com/tech/file_transfer
+
+https://remarkablewiki.com/tips/client - linux client doesn't work 
 ***** draw.io
 https://tomd.xyz/diagrams-as-code-drawio/
 - Processes
@@ -6409,13 +6835,26 @@ y
 y
 q
 #+end_src
+***** rename
+- https://unix.stackexchange.com/questions/689949/rename-file-by-moving-middle-string-to-end-of-the-filename
 
+https://www.google.com/search?q=bash+rename+file+shift+string+to+end 
 ***** Reference
 - https://youtube-dl.org/
 ***** singularity
 :PROPERTIES:
 :CREATED:  [2021-11-17 Wed 11:34]
 :END:
+#+begin_src bash :tangle ./src/launch_singularity_shell.sh
+singularity shell --bind /mnt:/mnt ~/sing_containers/biotools.sif            
+#+end_src
+#+begin_src bash :noweb yes 
+<<bash_cmdline_script_preamble>>
+
+singularity pull "${data_dir}/frag.sif" docker://jeszyman/frag
+
+cp "${data_dir}/frag.sif" "${sif_dir}/frag.sif"
+#+end_src
 https://carpentries-incubator.github.io/singularity-introduction/03-singularity-shell/index.html
 - Processes
   - Install
@@ -6580,6 +7019,28 @@ singularity version
 CLOCK: [2022-04-07 Thu 07:39]--[2022-04-07 Thu 07:44] =>  0:05
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
+- Snakemake
+  #+name: bash_script_smk_preamble
+  #+begin_src bash :noweb yes
+#!/usr/bin/env bash
+           
+#+end_src
+snakemake   --printshellcmds \
+
+remove from a python sample list as :
+
+#+begin_src snakemake
+ALLLIB = []
+for number in range(1,249):
+    ALLLIB.append((str("lib"f"{number:03d}")))
+ALLLIB.remove("lib115")
+ALLLIB.remove("lib118")
+ALLLIB.remove("lib200")
+ALLLIB.remove("lib234")
+ALLLIB.remove("lib240")
+#+end_src              
+https://mail.google.com/mail/u/0/#inbox/FMfcgzGpFgqmWTzSTxFbqlqjBLnzFsWT
+https://stackoverflow.com/questions/41767999/use-multiple-parameters-in-snakemake
 https://stackoverflow.com/questions/56042158/snakemake-correct-syntax-for-accessing-dictionary-values
 https://edwards.flinders.edu.au/wildcards-in-snakemake/
 https://snakemake-wrappers.readthedocs.io/en/stable/wrappers.html
@@ -6592,6 +7053,21 @@ https://stackoverflow.com/questions/17126996/emacs-mode-for-snakemake
 - https://github.com/zhxiaokang/RASflow
 - https://www.biostars.org/p/9496955/
 - https://github.com/EthanHolleman/snake-backup/blob/main/Snakefile.py
+****** Scripts
+- Repo test
+  #+begin_src bash :tangle ./src/smk_repo_test.sh
+eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
+
+conda activate snakemake
+
+snakemake \
+    --configfile $1 \
+    --cores 4 \
+    --use-singularity \
+    --forceall \
+    --snakefile $2
+#+end_src
+
 ****** Style
 - Externalize all scripts from workflow and allow independent script execution
 - Each rule has logfile defined in workflow directed to log_dir
@@ -6900,6 +7376,8 @@ snakemake --cores 20 --forceall
 CLOCK: [2020-01-16 Thu 08:16]--[2020-01-16 Thu 08:45] =>  0:29
 CLOCK: [2019-03-04 Mon 14:59]--[2019-03-04 Mon 15:17] =>  0:18
 :END:
+- Processes
+  - https://www.google.com/search?q=zotero+extract+pdf+annotations 
 - plugins
   - https://github.com/willsALMANJ/Zutilo
   - zotfile
@@ -6923,6 +7401,7 @@ CLOCK: [2019-03-04 Mon 14:59]--[2019-03-04 Mon 15:17] =>  0:18
 :END:
 https://askubuntu.com/questions/55709/how-to-select-display-to-record-in-recordmydesktop
 **** Software hierarchical list by purpose
+https://github.com/xournalpp/xournalpp
 - by application
   - pdf ocr
     - https://softwarerecs.stackexchange.com/questions/3412/free-ocr-software-that-makes-a-pdf-searchable-with-searchable-text-at-the-right
@@ -6952,6 +7431,7 @@ https://askubuntu.com/questions/55709/how-to-select-display-to-record-in-recordm
 :PROPERTIES:
 :ID:       57027e14-5ca6-4fdd-a50c-dcb98f81da39
 :END:
+https://imagemagick.org/script/montage.php
 - capture screen to gif
   - https://www.cockos.com/licecap/
 ******* imagemagick
@@ -7026,11 +7506,69 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
-https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-symlinks-to-a-single-clone-locally
-https://stackoverflow.com/questions/28357350/two-git-repositories-share-common-code
-https://stackoverflow.com/questions/11852982/can-i-arrange-repositories-into-folders-on-github#:~:text=On%20GitHub%20itself%2C%20you%20cannot,a%20nested%20team%20organization%20structure.
-https://softwareengineering.stackexchange.com/questions/206668/using-multiple-git-repositories-instead-of-a-single-one-containing-many-apps-fro
-https://stackoverflow.com/questions/816619/managing-many-git-repositories
+- https://www.reddit.com/r/webdev/comments/udod9z/git_makes_me_want_to_pull_my_hair_out/
+- https://www.reddit.com/r/commandline/comments/uaub3o/new_version_of_gitcliff_is_out/
+- Pre-commit file size check hook
+  #+name: git_size_check_hook
+  #+begin_src bash :noweb yes
+#!/bin/sh
+#########1#########2#########3#########4#########5#########6#########7#########8
+#
+# This script is imported from github.com/jeszyman/basecamp
+# See block git_size_check_hook in
+#  https://github.com/jeszyman/basecamp/blob/master/basecamp.org
+
+hard_limit=$(git config hooks.filesizehardlimit)
+soft_limit=$(git config hooks.filesizesoftlimit)
+: ${hard_limit:=10000000}
+: ${soft_limit:=500000}
+
+list_new_or_modified_files()
+{
+    git diff --staged --name-status|sed -e '/^D/ d; /^D/! s/.\s\+//'
+}
+
+unmunge()
+{
+    local result="${1#\"}"
+    result="${result%\"}"
+    env echo -e "$result"
+}
+
+check_file_size()
+{
+    n=0
+    while read -r munged_filename
+    do
+        f="$(unmunge "$munged_filename")"
+        h=$(git ls-files -s "$f"|cut -d' ' -f 2)
+        s=$(git cat-file -s "$h")
+        if [ "$s" -gt $hard_limit ]
+        then
+            env echo -E 1>&2 "ERROR: hard size limit ($hard_limit) exceeded: $munged_filename ($s)"
+            n=$((n+1))
+        elif [ "$s" -gt $soft_limit ]
+        then
+            env echo -E 1>&2 "WARNING: soft size limit ($soft_limit) exceeded: $munged_filename ($s)"
+        fi
+    done
+
+    [ $n -eq 0 ]
+}
+
+list_new_or_modified_files | check_file_size            
+#+end_src
+    #+name: git_size_check_hook_wrapper
+    #+begin_src org :noweb yes
+<<git_size_check_hook>>            
+#+end_src
+- https://www.bitsnbites.eu/a-stable-mainline-branching-model-for-git/
+- https://semver.org/
+- https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-symlinks-to-a-single-clone-locally
+- https://stackoverflow.com/questions/28357350/two-git-repositories-share-common-code
+- https://stackoverflow.com/questions/11852982/can-i-arrange-repositories-into-folders-on-github#:~:text=On%20GitHub%20itself%2C%20you%20cannot,a%20nested%20team%20organization%20structure.
+- https://softwareengineering.stackexchange.com/questions/206668/using-multiple-git-repositories-instead-of-a-single-one-containing-many-apps-fro
+- https://stackoverflow.com/questions/816619/managing-many-git-repositories
 ******* Code tangle
 - sync
     #+name: 
@@ -7689,6 +8227,7 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+https://www.ventoy.net/en/index.html
 https://linuxjourney.com/
 ******** Processes
 - keyboard remapping
@@ -8718,6 +9257,9 @@ http://www.mitchchn.me/2014/os-x-terminal/
 - GNU - [[https://www.gnu.org/help/help.html][Helping GNU]]
 - [[https://www.reddit.com/r/commandline/comments/7d5fwa/jobson_automatically_turn_commandline/][reddit: automatically turn command-line applications into webapps]]
 
+***** Text file
+***** [[id:670ed8f4-bb93-4d93-b9ea-a142a599169f][pdf files]]
+
 **** Software engineering
 :PROPERTIES:
 :ID:       d4c65ebf-8abd-4876-8b79-08ae9fcc50c2
@@ -8760,400 +9302,6 @@ http://www.mitchchn.me/2014/os-x-terminal/
 - yaml cannot do variable placeholders- https://stackoverflow.com/questions/41620674/use-placeholders-in-yaml/41620747#41620747
   - some workarounds https://stackoverflow.com/questions/2063616/how-to-reference-a-yaml-setting-from-elsewhere-in-the-same-yaml-file
 - https://yaml.org/spec/1.2.2/  
-*** Processes
-:PROPERTIES:
-:ID:       2896cf35-9ccf-4533-b451-6b0f7a3bc91c
-:END:
-**** Miscellaneous
-:PROPERTIES:
-:ID:       88c4ae60-8bcc-4b1d-8347-2bbfbd112398
-:END:
-- - The secret to using DDG is to pre-fix your query (!g for Google, !b for Bing and there are tons of other ones too) when DDG doesn't come up with something useful. This way you can use DDG kind of as the Swiss army knife of search engines.
-- https://unix.stackexchange.com/questions/359832/converting-csv-to-tsv
-- convert epub to pdf with calibre https://askubuntu.com/questions/299747/converting-epub-files-to-pdf-format
-**** Setups
-:PROPERTIES:
-:ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
-:END:
-***** My emacs IDEs
-:PROPERTIES:
-:ID:       2913d46c-63aa-4950-af70-a296a0a7a744
-:END:
-
-- ess-remote to docker R
-https://www.reddit.com/r/emacs/comments/op4fcm/send_command_to_vterm_and_execute_it/
-https://blog.calebjay.com/posts/my-emacs-environment/#on-programming-in-emacs
-- https://jmonlong.github.io/Hippocamplus/emacs/
-****** Emacs shell IDE
-:PROPERTIES:
-:ID:       07b8634c-70a6-4a99-90b5-0f5083ccaf04
-:END:
-- interfaces
-  - emacs
-    - https://stackoverflow.com/questions/1008750/ide-emacs-mode-for-shell-scripting-in-bash-sh-etc
-    - http://www.skybert.net/emacs/bash-linting-in-emacs/
-****** Ideas
-:PROPERTIES:
-:ID:       ea022e58-f02d-4f37-831f-59bc0fb9957f
-:END:
-- custom send to shell functions https://emacs.stackexchange.com/questions/37887/send-region-to-shell-in-another-buffer
-- libvterm https://github.com/akermu/emacs-libvterm
-- isend mode
-  - https://github.com/ffevotte/isend-mode.el/blob/master/isend-mode.el
-  - https://stat.ethz.ch/pipermail/ess-help/2015-July/010628.html
-  - https://github.com/ffevotte/isend-mode.el
-
-***** All repo setup
-:PROPERTIES:
-:ID:       c90aaf71-7311-48d8-98e8-221be4ebc290
-:END:
-#+begin_src bash :tangle ./src/all_repo_setup.sh
-unset repoDIRs
-repoDIRs=(data figures imgs method miscellaneous presentations pubs reports results testing tex)
-for dir in "${repoDIRs[@]}"
-do
-    mkdir -p $repo/"$dir"
-done
-#+end_src
-***** R basecamp setup
-:PROPERTIES:
-:ID:       a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc
-:END:
-#+name: basecamp_r_setup
-#+begin_src R :noweb yes :tangle ./src/setup.R 
-# Check CRAN packages, install as needed
-##
-packages = c(
-"caret",
-"circlize",
-'cowplot',
-"cutpointr",
-#"data.table",
-#"factoextra",
-"FSA",
-"ggplot2",
-#'ggpubr',
-"ggpval",
-"ggsci",
-"ggvenn",
-"ggrepel",
-"grid",
-"gridExtra",
-"Hmisc",
-"kableExtra",
-"magrittr",
-"naniar",
-"pheatmap",
-"RColorBrewer",
-"readr",
-"readxl",
-"scales",
-"tidyverse",
-"UpSetR",
-"viridis"
-)
-#
-package.check = lapply(
-  packages,
-  FUN=function(x) {
-    if (!require(x, character.only=T)) {
-      install.packages(x, dependencies=T)
-      library(x,character.only=T)
-    }
-  }
-)
-
-#
-# Theme
-theme_general <- function () { 
-  theme_cowplot(16) %+replace%
-    theme()
-}
-
-
-#
-select=dplyr::select
-filter=dplyr::filter
-group_by=dplyr::group_by
-summarise=dplyr::summarise
-#+end_src
-
-#+name: basecamp_r_setup_wrapper
-#+begin_src org :noweb yes
-<<basecamp_r_setup>>
-#+end_src
-
-- Set environmental variables
-  ,#+begin_src R :tangle ./src/setup.R
-# Set environmental variables
-
-#+end_src
-- Check CRAN packages, install as needed
-
-- Set environment variables
-  #+begin_src R :tangle ./src/setup.R
-#########1#########2#########3#########4#########5#########6#########7#########8
-# Set variables
-select=dplyr::select
-filter=dplyr::filter
-#+end_src
-- install
-  - https://unix.stackexchange.com/questions/149451/install-r-in-my-own-directory
-- Data model functions
-  ## Data checks
-### Check primary key uniqeness
-primeKeyUnique = function(df,pk){
-  nrow(df)==length(unique(df[,pk]))
-}
-
-
-- https://www.google.com/search?q=R+check+hostname 
-- https://www.google.com/search?q=R+where+to+store+packages
-
-
-
-***** Basecamp bash setup
-:PROPERTIES:
-:ID:       426130a8-cc03-49a7-a35d-6a5db4b485c3
-:END:
-#+name: basecamp_bash_setup_wrapper
-#+begin_src bash :noweb yes
-<<docker_interactive>>
-<<docker_check>>
-<<check_software_dependencies>>
-<<symlink-by-csv-script>>
-<<check_local_software>>        
-#+end_src
-***** Basecamp Docker
-:PROPERTIES:
-:ID:       c9327fad-4f38-4bbe-8b2e-58ad589fbdf6
-:END:
-****** Write [[file:docker/basecamp_Dockerfile][basecamp Dockerfile]]
-:PROPERTIES:
-:ID:       79e01a67-5ba1-4257-8353-8c5cf1ac8c4a
-:END:
-#+begin_src bash :tangle ./docker/basecamp_Dockerfile
-FROM ubuntu:bionic
-#########1#########2#########3#########4#########5#########6#########7#########8
-
-#######################################################
-#######################################################
-###   Dockerfile to build a basecamp docker image   ###
-#######################################################
-#######################################################
-
-#############
-### Notes ###
-#############
-#
-# After build, the image will be pushed to the dockerhub as
-# jeszyman/basecamp
-# (https://hub.docker.com/repository/docker/jeszyman/basecamp)
-#
-# See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
-
-FROM ubuntu:bionic
-
-ARG DEBIAN_FRONTEND=noninteractive
-ENV TZ=America/Chicago
-RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
-    locale-gen
-ENV LANG en_US.UTF-8  
-ENV LANGUAGE en_US:en  
-ENV LC_ALL en_US.UTF-8    
-
-###########
-### APT ###
-###########
-
-RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
-    build-essential \
-    bzip2 \
-    cifs.utils \
-    cmake \
-    dirmngr \
-    emacs \
-    gcc \
-    git \
-    gnupg \
-    libcurl4-openssl-dev \
-    libfftw3-dev \
-    libgsl-dev \
-    libxmu-dev \
-    libxml2-dev \   
-    locales \
-    nano \
-    parallel \
-    screen \
-    software-properties-common \
-    wget
-
-        
-RUN apt-get autoremove -y && \
-    apt-get autoclean -y && \
-    apt-get clean
-
-#################
-### Miniconda ###
-#################
-
-RUN cd /tmp && wget --no-check-certificate https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh
-RUN bash /tmp/Miniconda3-4.3.21-Linux-x86_64.sh -b -p /opt/miniconda
-ENV PATH="/opt/miniconda/bin:${PATH}"
-
-#############################
-### R 4 and CRAN Packages ###
-#############################
-
-RUN apt-get update -qq \
-	&& apt-get install -qq --no-install-recommends \
-        libcurl4-openssl-dev \
-        libssl-dev
-
-
-# import the signing key (by Michael Rutter) for these repo
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
-# add the R 4.0 repo from CRAN -- adjust 'focal' to 'groovy' or 'bionic' as needed
-RUN add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
-#
-RUN apt-get install -qq --no-install-recommends r-base r-base-dev
-
-ENV PATH="/usr/bin:${PATH}"
-RUN echo 'local({r <- getOption("repos"); r["CRAN"] <- "http://cran.r-project.org"; options(repos=r)})' > ~/.Rprofile
-
-# R CRAN Installs
-RUN R -e "install.packages(c('caret', \
-                             'circularize', \
-                             'cowplot', \
-                             'cutpointr', \
-                             'data.table', \
-                             'devtools', \
-                             'FSA', \
-                             'ggplot2', \
-                             'ggpval', \
-                             'ggpubr', \
-                             'ggsci', \
-                             'ggvenn', \
-                             'ggrepel', \
-                             'git2r', \ 
-                             'grid', \
-                             'gridExtra', \
-                             'Hmisc', \
-                             'kableExtra', \
-                             'naniar', \
-                             'optparse', \
-                             'pheatmap', \
-                             'plyr', \
-                             'RColorBrewer', \
-                             'stringr', \
-                             'tidyverse', \
-                             'UpSetR', \
-                             'viridis'), \
-                             repos='http://cran.rstudio.com/')"
-
-RUN apt-get update -qq \
-	&& apt-get install -qq --no-install-recommends \
-        libxml2-dev
-                 
-RUN R -e "install.packages('tidyverse',repos='http://cran.rstudio.com/')"
-
-####################################
-### NON-Package manager installs ###
-####################################
-
-#+end_src
-- Ideas
-  ## Emacs Snapshot
-RUN apt-get install -qq --no-install-recommends software-properties-common
-RUN add-apt-repository ppa:ubuntu-elisp/ppa
-RUN apt-get update
-RUN apt-get install -qq --no-install-recommends emacs-snapshot
-
-****** Build docker container
-:PROPERTIES:
-:ID:       32236b08-3aa2-45ed-87d1-2ee820701de5
-:END:
-#+begin_src bash :tangle no
-buildDIR=~/repos/basecamp
-user=jeszyman
-repo=basecamp
-#########1#########2#########3#########4#########5#########6#########7#########8
-cd "$buildDIR"
-docker build . --file Dockerfile --tag "${user}/${repo}"
-docker push "${user}/${repo}"
-
-
-#########1#########2#########3#########4#########5#########6#########7#########8
-
-cd ~/repos/basecamp/docker
-ls
-docker build . --file basecamp_Dockerfile --tag jeszyman/basecamp
-docker push jeszyman/basecamp
-#+end_src
-****** run docker interactively 
-:PROPERTIES:
-:ID:       cff4499e-b420-4ae7-8a30-cbe04013db60
-:END:
-  #+name: docker_interactive
-  #+begin_src bash :tangle ./src/functions.sh
-docker_interactive() {
-    if [ -f /.dockerenv ]; then
-        echo "shell already in docker, exiting"
-        exit 1
-    else
-        account="USER INPUT"
-        container="USER INPUT"
-        read -p "docker account name: " account
-        account="${account:=jeszyman}"
-        read -p "container name: " container
-        container="${container:=biotools}"
-        case $HOSTNAME in
-            (radonc-cancerbio) docker run -it \
-                                      --env HOME=${HOME} \
-                                      --hostname ${HOSTNAME} \
-                                      --user $(id -u ${USER}) \
-                                      --volume /home/:/home/ \
-                                      --volume /mnt/:/mnt/ \
-                                      --volume /tmp/:/tmp/ \
-                                      $account/$container \
-                                      /bin/bash;;
-            (acl*) docker run -it \
-                          --env HOME=${HOME} \
-                          --hostname ${HOSTNAME} \
-                          -v /drive3/:/drive3/ \
-                          -v /duo4/:/duo4/ \
-                          -v /home/:/home/ \
-                          -v /tmp/:/tmp/ \
-                          -u $(id -u ${USER}) \
-                          $account/$container \
-                          /bin/bash;;
-            (ACL*) docker run -it \
-                          --env HOME=${HOME} \
-                          --hostname ${HOSTNAME} \
-                          -v /home/:/home/ \
-                          -v /duo4/:/duo4/ \
-                          -u $(id -u ${USER}):$(id -g ${USER}) \
-                          $account/$container \
-                          /bin/bash;;
-            (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker($account/'"$container"')' /bin/bash;;
-            (*) docker run -it \
-                       --env HOME=/home/${USER} \
-                       --hostname ${HOSTNAME} \
-                       --user $(id -u ${USER}) \
-                       --volume /home/:/home/ \
-                       --volume /mnt/:/mnt/ \
-                       --volume /tmp/:/tmp/ \
-                       $account/$container \
-                       /bin/bash;;
-        esac
-    fi
-}
-#+end_src
-****** Reference
-:PROPERTIES:
-:ID:       e04ad9da-1aa6-4f66-9659-34e9c9634eae
-:END:
-  - [[file:~/repos/basecamp/Dockerfile]]
 ** Reference
 :PROPERTIES:
 :ID:       3eb81250-e885-4941-a559-997381abc196
