@@ -3517,6 +3517,27 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
+****** Processes
+- https://stackoverflow.com/questions/57459455/changing-the-name-of-multiple-files-based-on-an-index
+- Get variable type https://www.google.com/search?q=python+get+variable+type type()
+- Probability and statistics 
+  - https://stackoverflow.blog/2021/02/23/level-up-mastering-statistics-with-python-part-2/?cb=1&_ga=2.59352485.940265309.1614263567-766544545.1565628865
+- Install package
+  - https://www.google.com/search?q=python+install+pandas 
+******* Python dictionaries
+:PROPERTIES:
+:ID:       f20681eb-de70-4540-a9ba-63de0c800321
+:END:
+  #+begin_src snakemake
+ALLLIB = []
+for number in range(1,249):
+    ALLLIB.append((str("lib"f"{number:03d}")))
+ALLLIB.remove("lib115")
+ALLLIB.remove("lib118")
+ALLLIB.remove("lib200")
+ALLLIB.remove("lib234")
+ALLLIB.remove("lib240")
+#+end_src              
 ****** Local YAS
 #+name: code.py
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.py
@@ -3528,13 +3549,6 @@ CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 $0            
 ,#+end_src            
 #+end_src
-****** Processes
-- https://stackoverflow.com/questions/57459455/changing-the-name-of-multiple-files-based-on-an-index
-- Get variable type https://www.google.com/search?q=python+get+variable+type type()
-- Probability and statistics 
-  - https://stackoverflow.blog/2021/02/23/level-up-mastering-statistics-with-python-part-2/?cb=1&_ga=2.59352485.940265309.1614263567-766544545.1565628865
-- Install package
-  - https://www.google.com/search?q=python+install+pandas 
 ****** Packages
 :PROPERTIES:
 :ID:       7facb855-05a8-4cc5-b61e-cc3112251524
@@ -5901,8 +5915,11 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
 **** Software flat list
+***** nohup
+https://unix.stackexchange.com/questions/420594/why-process-killed-with-nohup
 ***** Remarkable
-https://remarkablewiki.com/tech/file_transfer
+- https://www.google.com/search?q=remarkable+quick+sheets+delete 
+- https://remarkablewiki.com/tech/file_transfer
 
 https://remarkablewiki.com/tips/client - linux client doesn't work 
 ***** draw.io
@@ -7011,7 +7028,7 @@ singularity version
     which singularity
     #+end_src
 
-***** snakemake                                                     :biotool:
+***** snakemake                                                     :biotool:career:
 :PROPERTIES:
 :ID:       a8b27140-4b9e-40c5-86ab-ee5afeae723f
 :CREATED:  [2021-09-13 Mon 07:29]
@@ -7020,40 +7037,51 @@ singularity version
 CLOCK: [2022-04-07 Thu 07:39]--[2022-04-07 Thu 07:44] =>  0:05
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
-- Snakemake
-  #+name: bash_script_smk_preamble
-  #+begin_src bash :noweb yes
-#!/usr/bin/env bash
-           
+****** Processes 
+
+******* Install and setup
+  - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
+    #+begin_src bash
+conda init bash 
+/bin/bash
+conda activate base
+conda install -n base -c conda-forge mamba
+y
+mamba create -c conda-forge -c bioconda -n snakemake snakemake
+y
+conda activate snakemake
+snakemake --help
 #+end_src
-snakemake   --printshellcmds \
-
-remove from a python sample list as :
-
-#+begin_src snakemake
-ALLLIB = []
-for number in range(1,249):
-    ALLLIB.append((str("lib"f"{number:03d}")))
-ALLLIB.remove("lib115")
-ALLLIB.remove("lib118")
-ALLLIB.remove("lib200")
-ALLLIB.remove("lib234")
-ALLLIB.remove("lib240")
-#+end_src              
-https://mail.google.com/mail/u/0/#inbox/FMfcgzGpFgqmWTzSTxFbqlqjBLnzFsWT
-https://stackoverflow.com/questions/41767999/use-multiple-parameters-in-snakemake
-https://stackoverflow.com/questions/56042158/snakemake-correct-syntax-for-accessing-dictionary-values
-https://edwards.flinders.edu.au/wildcards-in-snakemake/
-https://snakemake-wrappers.readthedocs.io/en/stable/wrappers.html
-https://github.com/yztxwd/rna-seq-standard-pipeline/tree/c19a9e27216b86d3dbfdaed7228aeff59f869383
-https://github.com/porchard/ATACseq-Snakemake/blob/master/src/Snakefile
-https://stackoverflow.com/questions/17126996/emacs-mode-for-snakemake
-- syntax for running shell https://stackoverflow.com/questions/45553762/recommended-way-to-do-multiple-shell-commands-with-shell/49533645#49533645
-- check md5 https://stackoverflow.com/questions/65907256/snakemake-use-checksums-instead-of-timestamps
+  - via miniconda
+    - [[https://docs.anaconda.com/anaconda/install/multi-user/][install multi-user miniconda]]
+  - add singularity
+    - 
+******* Writing snakefiles
+- [[id:f20681eb-de70-4540-a9ba-63de0c800321][Python dictionaries]]
+- https://stackoverflow.com/questions/56042158/snakemake-correct-syntax-for-accessing-dictionary-values
 - python dict for names https://stackoverflow.com/questions/50413374/glob-wildcards-on-multiple-directories-with-different-file-names
-- https://github.com/zhxiaokang/RASflow
-- https://www.biostars.org/p/9496955/
-- https://github.com/EthanHolleman/snake-backup/blob/main/Snakefile.py
+- Run rule on all files in dir https://snakemake.readthedocs.io/en/stable/project_info/faq.html#how-do-i-run-my-rule-on-all-files-of-a-certain-directory
+- To pass character vector to R snakemake rule https://stackoverflow.com/questions/13840207/character-vector-as-an-argument-to-r-script
+- R package management in snakemake rules
+  - https://github.com/lachlandeer/snakemake-econ-r  
+- https://lachlandeer.github.io/snakemake-econ-r-tutorial/logging-output-and-errors.html
+- https://stackoverflow.com/questions/69483414/unspecified-syntax-error-in-snakemake-rule
+- test workflow output- https://stackoverflow.com/questions/50198628/snakemake-confusion-on-how-to-access-config-files-properly
+- workaround for using snakemake vars in shell script https://stackoverflow.com/a/49533645/6106936
+- https://github.com/snakemake/snakemake/issues/971
+- Configuration files
+ - [[id:2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5][YAML document markup language]]
+ - Using config variables
+   - https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
+ - can do multiple config files- see https://stackoverflow.com/questions/62696099/snakemake-multiple-config-files
+******* Run
+  --lint
+  --rulegraph
+  - https://www.google.com/search?q=snakemake+run+specific+rule 
+  - docker - https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html?highlight=docker#running-jobs-in-containers
+- syntax for running shell https://stackoverflow.com/questions/45553762/recommended-way-to-do-multiple-shell-commands-with-shell/49533645#49533645
+- https://stackoverflow.com/questions/17126996/emacs-mode-for-snakemake
+- check md5 https://stackoverflow.com/questions/65907256/snakemake-use-checksums-instead-of-timestamps
 ****** Scripts
 - Repo test
   #+begin_src bash :tangle ./src/smk_repo_test.sh :tangle-mode (identity #o555)
@@ -7123,45 +7151,6 @@ fi
 - Each rule has logfile defined in workflow directed to log_dir
 - Software generated log files are redirected to log_dir
 - Repos have MWE for each snakefile
-
-****** Processes 
-******* Install and setup
-  - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
-    #+begin_src bash
-conda init bash 
-/bin/bash
-conda activate base
-conda install -n base -c conda-forge mamba
-y
-mamba create -c conda-forge -c bioconda -n snakemake snakemake
-y
-conda activate snakemake
-snakemake --help
-#+end_src
-  - via miniconda
-    - [[https://docs.anaconda.com/anaconda/install/multi-user/][install multi-user miniconda]]
-  - add singularity
-    - 
-******* Writing snakefiles
-- Run rule on all files in dir https://snakemake.readthedocs.io/en/stable/project_info/faq.html#how-do-i-run-my-rule-on-all-files-of-a-certain-directory
-- To pass character vector to R snakemake rule https://stackoverflow.com/questions/13840207/character-vector-as-an-argument-to-r-script
-- R package management in snakemake rules
-  - https://github.com/lachlandeer/snakemake-econ-r  
-- https://lachlandeer.github.io/snakemake-econ-r-tutorial/logging-output-and-errors.html
-- https://stackoverflow.com/questions/69483414/unspecified-syntax-error-in-snakemake-rule
-- test workflow output- https://stackoverflow.com/questions/50198628/snakemake-confusion-on-how-to-access-config-files-properly
-- workaround for using snakemake vars in shell script https://stackoverflow.com/a/49533645/6106936
-- https://github.com/snakemake/snakemake/issues/971
-- Configuration files
- - [[id:2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5][YAML document markup language]]
- - Using config variables
-   - https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
- - can do multiple config files- see https://stackoverflow.com/questions/62696099/snakemake-multiple-config-files
-******* Run
-  --lint
-  --rulegraph
-  - https://www.google.com/search?q=snakemake+run+specific+rule 
-  - docker - https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html?highlight=docker#running-jobs-in-containers
 
 ****** Local YAS (prefix smk.)
 ******* Insert snakemake file org-mode tree
@@ -7269,7 +7258,7 @@ rule ${1:$(string-replace " " "_" (downcase yas-text))}:
 ,#+end_src
 #+end_src
 
-****** Reference
+****** General reference
 - https://github.com/aomlomics/tourmaline
 - https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
 - https://swcarpentry.github.io/r-novice-inflammation/05-cmdline/index.html
@@ -7308,13 +7297,6 @@ rule ${1:$(string-replace " " "_" (downcase yas-text))}:
 - for repos, git ignore the singularity build 
 - https://github.com/EnvGen/snakemake-workflows
 
-******* Examples
-- https://www.biostars.org/p/406385/
-- https://github.com/chrishah/samtools-docker/blob/master/Dockerfile
-- https://github.com/lachlandeer/snakemake-econ-r
-******* [[https://snakemake.readthedocs.io/en/stable/index.html][Documentation]]
-- 
-- [[Snakemake Tutorial][Snakemake Tutorial]]
 ******* Tutorials and guides
 - https://reproducibility.sschmeier.com/index.html
 - a tutorial
@@ -7370,6 +7352,18 @@ open report.html
 snakemake --cores 20 --forceall
 #+end_src
 - https://snakemake.readthedocs.io/en/stable/executor_tutorial/google_lifesciences.html
+****** [[https://snakemake.readthedocs.io/en/stable/index.html][Documentation]]
+- https://snakemake-wrappers.readthedocs.io/en/stable/wrappers.html
+- [[Snakemake Tutorial][Snakemake Tutorial]]
+****** Examples
+- https://github.com/ohsu-cedar-comp-hub/cfRNA-seq-pipeline-Ngo-manuscript-2019
+- https://github.com/yztxwd/rna-seq-standard-pipeline/tree/c19a9e27216b86d3dbfdaed7228aeff59f869383
+- https://github.com/porchard/ATACseq-Snakemake/blob/master/src/Snakefile
+- https://github.com/zhxiaokang/RASflow
+- https://github.com/EthanHolleman
+- https://www.biostars.org/p/406385/
+- https://github.com/chrishah/samtools-docker/blob/master/Dockerfile
+- https://github.com/lachlandeer/snakemake-econ-r
 ****** Ideas
 - parse yaml for shell https://mikefarah.gitbook.io/yq/
 - email notices
@@ -7543,11 +7537,12 @@ done
           - Discussion forums
           - Chat
 
-****** Git
+****** Git :career:
 :PROPERTIES:
 :ID:       E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6
 :END:
 :LOGBOOK:
+CLOCK: [2022-05-04 Wed 09:42]--[2022-05-04 Wed 10:06] =>  0:24
 CLOCK: [2021-12-21 Tue 09:59]--[2021-12-21 Tue 10:29] =>  0:30
 CLOCK: [2018-08-10 Fri 16:03]--[2018-08-10 Fri 16:13] =>  0:10
 CLOCK: [2017-11-29 Wed 19:30]--[2017-11-29 Wed 19:51] =>  0:21
@@ -7556,12 +7551,165 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
-https://www.conventionalcommits.org/en/v1.0.0/#summary
-- https://stackoverflow.com/questions/29933349/how-can-i-make-git-commit-messages-divide-into-multiple-lines
-- https://stackoverflow.com/questions/179123/how-to-modify-existing-unpushed-commit-messages
+******* Processes 
+- Ignore
+  - https://www.google.com/search?q=git+ignore+all+symlinks https://stackoverflow.com/questions/8650871/telling-git-to-ignore-symlinks 
+- Commit messages
+  - https://semver.org/
+  - https://stackoverflow.com/questions/179123/how-to-modify-existing-unpushed-commit-messages
+    - hooks
+      - beautiful file size limit pre-commit hook
+        - https://stackoverflow.com/questions/39576257/how-to-limit-file-size-on-commit
+      - to test, simply run as bash script 
+    - gitignore
+      - loading changes -
+        - git rm -r --cached .
+        - git add .
+        - commit
+      - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
+      - https://labs.consol.de/development/git/2017/02/22/gitignore.html
+    - gitignore
+      - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
+      - https://labs.consol.de/development/git/2017/02/22/gitignore.html
+    - Hooks
+      - file size limit hook      
+  - https://stackoverflow.com/questions/29933349/how-can-i-make-git-commit-messages-divide-into-multiple-lines
+  - https://www.conventionalcommits.org/en/v1.0.0/#summary
+- Project management, multiple git repos, multiple branches
+  - https://stackoverflow.com/questions/816619/managing-many-git-repositories
+  - https://softwareengineering.stackexchange.com/questions/206668/using-multiple-git-repositories-instead-of-a-single-one-containing-many-apps-fro
+  - https://stackoverflow.com/questions/11852982/can-i-arrange-repositories-into-folders-on-github#:~:text=On%20GitHub%20itself%2C%20you%20cannot,a%20nested%20team%20organization%20structure.
+  - https://stackoverflow.com/questions/28357350/two-git-repositories-share-common-code
+  - https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-symlinks-to-a-single-clone-locally
+  - https://www.bitsnbites.eu/a-stable-mainline-branching-model-for-git/
+- Branch
+  - git branch
+    - add and delete
+      - -d <BRANCH NAME>
+      - <BRANCH NAME> 
+  - git checkout <BRANCH> switch branches
+- Clone
+  - https://www.google.com/search?q=git+clone+github+stack 
+- Commands
+  | Action               | Command                                  |
+  |----------------------+------------------------------------------|
+  | <30>                 | <35>                                     |
+  | Create repo          | git init                                 |
+  | Ignore files         | touch .gitignore                         |
+  | Add (stage) file     | git add                                  |
+  | Add recursive        | git add --all                            |
+  | Remove (unstage)     | git reset                                |
+  | Last update          | git log --name-status HEAD^..HEAD        |
+  | To be commited       | git status                               |
+  | List untracked       | git ls-files --others --exclude-standard |
+  | List tracked         | git ls-tree -r master --name-only        |
+  | Stop tracking repo   | rm -rf .git/                             |
+  | View list of commits | git log                                  |
+  | View file changes    | git diff - HEAD --staged                 |
+- Commit
+  - https://www.google.com/search?q=git+see+which+files+are+not+added 
+  - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
+  - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
+  - File comparisons
+    - https://doc.ubuntu-fr.org/meld
+  - git checkout -- undo last commit FOR A SPECIFIC FILE
+  - Changing within branch
+    - git commit- add changes WITHIN branch- full repo (not just a file) within branch
+    - git checkout -- undo last commit FOR A SPECIFIC FILE
+- Configuration
+- File comparisons
+  - https://www.freecodecamp.org/news/git-diff-command/
+  - https://doc.ubuntu-fr.org/meld
+- [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
+- git merge- FIRST navigate to master, then git merge <BRANCH TO PULL>
+- Hooks
+  - https://stackoverflow.com/questions/2050450/git-hooks-management
+- Initializing
+  - https://www.google.com/search?q=initialize+git+repo
+  - git branch --set-upstream-to=origin/master master
+- [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]] 
+- Removing
+  - Removing files
+    - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
+    - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
+  - Remove repository
+    - https://www.google.com/search?q=git+remove+repository 
+    - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
+  - removing files
+    - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
+    - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
+
+- [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
+- [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
+******** Reverting
+:PROPERTIES:
+:ID:       a3515f1b-c8c6-4c0b-bb4d-737c3edc9886
+:END:
+  - reverting a specific file
+    1. find the commit hash with =git log=
+    2. revert with =git checkout <COMMIT HASH> -- <FILE>=
+  - [[http://stackoverflow.com/questions/4114095/how-to-revert-git-repository-to-a-previous-commit][reverting to previous commit]]
+  - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: Is there a quick git command to see an old version of a file?]]
+  - reverting
+    - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
+    - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
+  - https://www.google.com/search?q=git+restore+file+as+new+name 
+******** Staging (Add)
+  - git add 'stages' a file- makes it ready to add to repo
+  - git reset unstages
+  - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
+  - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
+
+
+******** Errors
+- [[id:a3515f1b-c8c6-4c0b-bb4d-737c3edc9886][Reverting]]
+- [[https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git][undo]]    
 - https://www.google.com/search?q=git+Not+possible+to+fast-forward+aborting 
-- https://www.reddit.com/r/webdev/comments/udod9z/git_makes_me_want_to_pull_my_hair_out/
-- https://www.reddit.com/r/commandline/comments/uaub3o/new_version_of_gitcliff_is_out/
+- [[https://stackoverflow.com/questions/4254389/git-corrupt-loose-object/18238322#18238322][corrupt loose object]]
+- [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
+******** Submodules
+https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-symlinks-to-a-single-clone-locally
+- https://www.google.com/search?q=private+git+submodules
+  - https://stackoverflow.com/questions/37638034/private-folder-submodule-in-a-public-repo
+- https://stackoverflow.com/questions/19728933/continue-looping-over-submodules-with-the-git-submodule-foreach-command-after
+- Add- git submodule add <SUBMODULE>
+- initialize git submodule update --recursive --init
+- Pull
+  - 
+  - https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin    
+  - https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
+  - push and pull submodules
+    - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
+- Commit
+  - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
+  - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
+- Push
+  - https://stackoverflow.com/questions/5814319/git-submodule-push
+- General reference
+  - https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407
+  - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
+  - submodule commands
+    - # git submodule foreach --recursive git checkout master
+    - # git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
+    - # git submodule foreach --recursive git pull
+    - # git submodule foreach --recursive git push
+  - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
+******** Working with previous commits
+- [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
+- view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
+- https://stackoverflow.com/questions/888414/git-checkout-older-revision-of-a-file-under-a-new-name
+******** Search and view
+- Viewing
+  - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
+- https://stackoverflow.com/questions/7663451/view-a-specific-git-commit
+- https://stackoverflow.com/questions/2364147/how-to-get-just-one-file-from-another-branch
+- searching for deleted files https://www.google.com/search?q=git+search+deleted+files
+  - https://stackoverflow.com/questions/7203515/how-to-find-a-deleted-file-in-the-project-commit-history
+- searching within commits
+  - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
+- Searching commits
+  - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
+******* Code tangle
 - Pre-commit file size check hook
   #+name: git_size_check_hook
   #+begin_src bash :noweb yes
@@ -7616,14 +7764,6 @@ list_new_or_modified_files | check_file_size
     #+begin_src org :noweb yes
 <<git_size_check_hook>>            
 #+end_src
-- https://www.bitsnbites.eu/a-stable-mainline-branching-model-for-git/
-- https://semver.org/
-- https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-symlinks-to-a-single-clone-locally
-- https://stackoverflow.com/questions/28357350/two-git-repositories-share-common-code
-- https://stackoverflow.com/questions/11852982/can-i-arrange-repositories-into-folders-on-github#:~:text=On%20GitHub%20itself%2C%20you%20cannot,a%20nested%20team%20organization%20structure.
-- https://softwareengineering.stackexchange.com/questions/206668/using-multiple-git-repositories-instead-of-a-single-one-containing-many-apps-fro
-- https://stackoverflow.com/questions/816619/managing-many-git-repositories
-******* Code tangle
 - sync
     #+name: 
     #+begin_src bash :tangle ~/repos/basecamp/src/daily_git_commit.sh
@@ -7669,144 +7809,9 @@ do
 done
 #
 #+end_src      
-******* Processes 
-- Branch
-  - git branch
-    - add and delete
-      - -d <BRANCH NAME>
-      - <BRANCH NAME> 
-  - git checkout <BRANCH> switch branches
-- Clone
-  - https://www.google.com/search?q=git+clone+github+stack 
-- Commands
-  | Action               | Command                                  |
-  |----------------------+------------------------------------------|
-  | <30>                 | <35>                                     |
-  | Create repo          | git init                                 |
-  | Ignore files         | touch .gitignore                         |
-  | Add (stage) file     | git add                                  |
-  | Add recursive        | git add --all                            |
-  | Remove (unstage)     | git reset                                |
-  | Last update          | git log --name-status HEAD^..HEAD        |
-  | To be commited       | git status                               |
-  | List untracked       | git ls-files --others --exclude-standard |
-  | List tracked         | git ls-tree -r master --name-only        |
-  | Stop tracking repo   | rm -rf .git/                             |
-  | View list of commits | git log                                  |
-  | View file changes    | git diff - HEAD --staged                 |
-- Commit
-  - https://www.google.com/search?q=git+see+which+files+are+not+added 
-  - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
-  - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
-  - File comparisons
-    - https://doc.ubuntu-fr.org/meld
-  - git checkout -- undo last commit FOR A SPECIFIC FILE
-  - Changing within branch
-    - git commit- add changes WITHIN branch- full repo (not just a file) within branch
-    - git checkout -- undo last commit FOR A SPECIFIC FILE
-- Configuration
-  - hooks
-    - beautiful file size limit pre-commit hook
-      - https://stackoverflow.com/questions/39576257/how-to-limit-file-size-on-commit
-    - to test, simply run as bash script 
-  - gitignore
-    - loading changes -
-      - git rm -r --cached .
-      - git add .
-      - commit
-    - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
-    - https://labs.consol.de/development/git/2017/02/22/gitignore.html
-  - gitignore
-    - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
-    - https://labs.consol.de/development/git/2017/02/22/gitignore.html
-  - Hooks
-    - file size limit hook      
-- Errors
-  - [[https://stackoverflow.com/questions/4254389/git-corrupt-loose-object/18238322#18238322][corrupt loose object]]
-- File comparisons
-  - https://www.freecodecamp.org/news/git-diff-command/
-  - https://doc.ubuntu-fr.org/meld
-- [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
-- git merge- FIRST navigate to master, then git merge <BRANCH TO PULL>
-- Hooks
-  - https://stackoverflow.com/questions/2050450/git-hooks-management
-- Initializing
-  - https://www.google.com/search?q=initialize+git+repo
-  - git branch --set-upstream-to=origin/master master
-- [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]] 
-- Removing
-  - Removing files
-    - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
-    - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
-  - Remove repository
-    - https://www.google.com/search?q=git+remove+repository 
-    - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
-  - removing files
-    - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
-    - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
-- [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
-- Reverting
-  - reverting a specific file
-    1. find the commit hash with =git log=
-    2. revert with =git checkout <COMMIT HASH> -- <FILE>=
-  - [[http://stackoverflow.com/questions/4114095/how-to-revert-git-repository-to-a-previous-commit][reverting to previous commit]]
-  - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: Is there a quick git command to see an old version of a file?]]
-  - reverting
-    - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]] 
-    - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
-  - https://www.google.com/search?q=git+restore+file+as+new+name 
-- Searching commits
-  - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
-- [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
-- [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
-- Staging (Add)
-  - git add 'stages' a file- makes it ready to add to repo
-  - git reset unstages
-  - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
-  - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
-- [[https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git][undo]]    
-- Viewing
-  - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
-******** Submodules
-https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-symlinks-to-a-single-clone-locally
-- https://www.google.com/search?q=private+git+submodules
-  - https://stackoverflow.com/questions/37638034/private-folder-submodule-in-a-public-repo
-- https://stackoverflow.com/questions/19728933/continue-looping-over-submodules-with-the-git-submodule-foreach-command-after
-- Add- git submodule add <SUBMODULE>
-- initialize git submodule update --recursive --init
-- Pull
-  - 
-  - https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin    
-  - https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
-  - push and pull submodules
-    - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
-- Commit
-  - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
-  - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
-- Push
-  - https://stackoverflow.com/questions/5814319/git-submodule-push
-- General reference
-  - https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407
-  - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
-  - submodule commands
-    - # git submodule foreach --recursive git checkout master
-    - # git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
-    - # git submodule foreach --recursive git pull
-    - # git submodule foreach --recursive git push
-  - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
-******** Working with previous commits
-- [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
-- view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
-- https://stackoverflow.com/questions/888414/git-checkout-older-revision-of-a-file-under-a-new-name
-******** Search
-- https://stackoverflow.com/questions/7663451/view-a-specific-git-commit
-- https://stackoverflow.com/questions/2364147/how-to-get-just-one-file-from-another-branch
-- searching for deleted files https://www.google.com/search?q=git+search+deleted+files
-  - https://stackoverflow.com/questions/7203515/how-to-find-a-deleted-file-in-the-project-commit-history
-- searching within commits
-  - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
 ******* [[id:fcffb312-ca8d-4450-b837-b1945201f9c1][My git]]
 ******* Documentation and general reference
+- https://www.reddit.com/r/webdev/comments/udod9z/git_makes_me_want_to_pull_my_hair_out/
 - Documentation and general reference
   - [[https://git-scm.com/][git website]]
     - [[https://git-scm.com/doc][documentation]]
@@ -7875,7 +7880,8 @@ https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-
     - https://lab.github.com/courses?utm_source=newsletter&utm_medium=email&utm_campaign=student-newsletter-120818
 - GUIs- https://www.sourcetreeapp.com/
 ******** [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]]
-
+******* Ideas
+- Changelog via gitcliff and org- https://www.reddit.com/r/commandline/comments/uaub3o/new_version_of_gitcliff_is_out/
 ****** Emacs vc-mode
 ***** Operating Systems
 :PROPERTIES:
