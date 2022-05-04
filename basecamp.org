@@ -1,5 +1,6 @@
 * Basecamp
 :PROPERTIES:
+:header-args:bash: :tangle-mode (identity #o555)
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
 :LOGBOOK:
@@ -7076,7 +7077,47 @@ snakemake \
 fi
 
 #+end_src
+- Dry run
+  #+begin_src bash :tangle ./src/smk_dry_run.sh
+# Check for parameters, return usage if empty
+if [[ $# -eq 0 ]] || [[ smk_dry_run.sh == "h" ]] ; then
+    printf "\n usage: smk_dry_run.sh config_file smk_file
+\n This run will not test singularity container is working 
+            \n "
+else
+eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
 
+conda activate snakemake
+
+snakemake \
+    --configfile $1 --cores 4 \
+    --use-singularity \
+    --dry-run \
+    --forceall \
+    --printshellcmds \
+    --snakefile $2
+fi
+#+end_src
+- Forced run
+  #+begin_src bash :tangle ./src/smk_forced_run.sh
+# Check for parameters, return usage if empty
+if [[ $# -eq 0 ]] || [[ smk_dry_run.sh == "h" ]] ; then
+    printf "\n usage: smk_forced_run.sh config_file smk_file
+           \n "
+else
+eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
+
+conda activate snakemake
+
+snakemake \
+    --configfile $1 --cores 4 \
+    --use-singularity \
+    --forceall \
+    --printshellcmds \
+    --rerun-incomplete \
+    --snakefile $2
+fi
+#+end_src
 ****** Style
 - Externalize all scripts from workflow and allow independent script execution
 - Each rule has logfile defined in workflow directed to log_dir
@@ -7515,6 +7556,10 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
+https://www.conventionalcommits.org/en/v1.0.0/#summary
+- https://stackoverflow.com/questions/29933349/how-can-i-make-git-commit-messages-divide-into-multiple-lines
+- https://stackoverflow.com/questions/179123/how-to-modify-existing-unpushed-commit-messages
+- https://www.google.com/search?q=git+Not+possible+to+fast-forward+aborting 
 - https://www.reddit.com/r/webdev/comments/udod9z/git_makes_me_want_to_pull_my_hair_out/
 - https://www.reddit.com/r/commandline/comments/uaub3o/new_version_of_gitcliff_is_out/
 - Pre-commit file size check hook
@@ -9273,6 +9318,7 @@ http://www.mitchchn.me/2014/os-x-terminal/
 :PROPERTIES:
 :ID:       d4c65ebf-8abd-4876-8b79-08ae9fcc50c2
 :END:
+https://engineering-shiny.org/golem.html
 - https://www.kdnuggets.com/2019/03/best-tips-agile-data-science-research.html
 - software development
   - cite:nowogrodzki2019
