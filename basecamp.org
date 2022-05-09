@@ -6,6 +6,376 @@
 :LOGBOOK:
 CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 :END:  
+** README
+This is a general purpose repository for information science and computer science.
+
+This repo also documents the dockerfile for my basecamp container. Basecamp contains basic apt, conda, and R installs and is used 
+** Basecamp Docker
+:PROPERTIES:
+:ID:       c9327fad-4f38-4bbe-8b2e-58ad589fbdf6
+:END:
+*** Write [[file:docker/basecamp_Dockerfile][basecamp Dockerfile]]
+:PROPERTIES:
+:ID:       79e01a67-5ba1-4257-8353-8c5cf1ac8c4a
+:END:
+- Intro
+  #+begin_src bash :tangle ./docker/basecamp_Dockerfile
+FROM ubuntu:bionic
+#########1#########2#########3#########4#########5#########6#########7#########8
+#########1#########2#########3#########4#########5#########6#########7#########8
+###                                                                          ###
+###               Dockerfile to build a basecamp docker image                ###
+###                                                                          ###
+#########1#########2#########3#########4#########5#########6#########7#########8
+#########1#########2#########3#########4#########5#########6#########7#########8
+
+#############
+### Notes ###
+#############
+#
+# After build, the image will be pushed to the dockerhub as
+# jeszyman/basecamp
+# (https://hub.docker.com/repository/docker/jeszyman/basecamp)
+
+#+end_src
+- Apt
+  #+begin_src bash :tangle ./docker/basecamp_Dockerfile
+###########
+### APT ###
+###########
+
+# Should block prompts for timezone or geographic area
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update
+
+RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
+    build-essential \
+    bzip2 \
+    cifs.utils \
+    cmake \
+    dirmngr \
+    emacs \
+    gcc \
+    git \
+    gnupg \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libfftw3-dev \
+    libgsl-dev \
+    libxmu-dev \
+    libxml2-dev \
+    locales \
+    nano \
+    parallel \
+    screen \
+    software-properties-common \
+    wget
+
+RUN apt-get autoremove -y && \
+    apt-get autoclean -y && \
+    apt-get clean
+
+#+end_src
+- Miniconda
+  #+begin_src bash :tangle ./docker/basecamp_Dockerfile
+#################
+### Miniconda ###
+#################
+
+RUN cd /tmp && wget --no-check-certificate https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh
+RUN bash /tmp/Miniconda3-4.3.21-Linux-x86_64.sh -b -p /opt/miniconda
+ENV PATH="/opt/miniconda/bin:${PATH}"
+
+#+end_src
+- R
+  #+begin_src bash :tangle ./docker/basecamp_Dockerfile
+#############################
+### R 4 and CRAN Packages ###
+#############################
+
+# Import the signing key (by Michael Rutter) 
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+
+# Add the R 4 repo from CRAN 
+RUN add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
+
+#
+RUN apt-get install -qq --no-install-recommends r-base r-base-dev
+
+#
+ENV PATH="/usr/bin:${PATH}"
+
+#
+RUN echo 'local({r <- getOption("repos"); r["CRAN"] <- "http://cran.r-project.org"; options(repos=r)})' > ~/.Rprofile
+
+# R CRAN Installs
+RUN R -e "install.packages(c('caret', \
+                             'circularize', \
+                             'cowplot', \
+                             'cutpointr', \
+                             'data.table', \
+                             'devtools', \
+                             'FSA', \
+                             'ggplot2', \
+                             'ggpval', \
+                             'ggpubr', \
+                             'ggsci', \
+                             'ggvenn', \
+                             'ggrepel', \
+                             'git2r', \ 
+                             'grid', \
+                             'gridExtra', \
+                             'Hmisc', \
+                             'kableExtra', \
+                             'naniar', \
+                             'optparse', \
+                             'pheatmap', \
+                             'plyr', \
+                             'RColorBrewer', \
+                             'stringr', \
+                             'tidyverse', \
+                             'UpSetR', \
+                             'viridis'), \
+                             repos='http://cran.rstudio.com/')"
+
+#+end_src
+  
+- Old
+  #+begin_src bash 
+FROM ubuntu:bionic
+#########1#########2#########3#########4#########5#########6#########7#########8
+
+#######################################################
+#######################################################
+###   Dockerfile to build a basecamp docker image   ###
+#######################################################
+#######################################################
+
+#############
+### Notes ###
+#############
+#
+# After build, the image will be pushed to the dockerhub as
+# jeszyman/basecamp
+# (https://hub.docker.com/repository/docker/jeszyman/basecamp)
+#
+# See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+
+
+# ARG DEBIAN_FRONTEND=noninteractive
+# ENV TZ=America/Chicago
+# RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+#     locale-gen
+# ENV LANG en_US.UTF-8  
+# ENV LANGUAGE en_US:en  
+# ENV LC_ALL en_US.UTF-8    
+
+###########
+### APT ###
+###########
+
+RUN apt-get update
+
+RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
+    build-essential \
+    bzip2 \
+    cifs.utils \
+    cmake \
+    dirmngr \
+    emacs \
+    gcc \
+    git \
+    gnupg \
+    libcurl4-openssl-dev \
+    libfftw3-dev \
+    libgsl-dev \
+    libxmu-dev \
+    libxml2-dev \   
+    locales \
+    nano \
+    parallel \
+    screen \
+    software-properties-common \
+    wget
+
+        
+RUN apt-get autoremove -y && \
+    apt-get autoclean -y && \
+    apt-get clean
+
+#################
+### Miniconda ###
+#################
+
+RUN cd /tmp && wget --no-check-certificate https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh
+RUN bash /tmp/Miniconda3-4.3.21-Linux-x86_64.sh -b -p /opt/miniconda
+ENV PATH="/opt/miniconda/bin:${PATH}"
+
+#############################
+### R 4 and CRAN Packages ###
+#############################
+
+RUN apt-get update -qq \
+	&& apt-get install -qq --no-install-recommends \
+        libcurl4-openssl-dev \
+        libssl-dev
+
+
+# import the signing key (by Michael Rutter) for these repo
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+# add the R 4.0 repo from CRAN -- adjust 'focal' to 'groovy' or 'bionic' as needed
+RUN add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
+#
+RUN apt-get install -qq --no-install-recommends r-base r-base-dev
+
+ENV PATH="/usr/bin:${PATH}"
+RUN echo 'local({r <- getOption("repos"); r["CRAN"] <- "http://cran.r-project.org"; options(repos=r)})' > ~/.Rprofile
+
+# R CRAN Installs
+RUN R -e "install.packages(c('caret', \
+                             'circularize', \
+                             'cowplot', \
+                             'cutpointr', \
+                             'data.table', \
+                             'devtools', \
+                             'FSA', \
+                             'ggplot2', \
+                             'ggpval', \
+                             'ggpubr', \
+                             'ggsci', \
+                             'ggvenn', \
+                             'ggrepel', \
+                             'git2r', \ 
+                             'grid', \
+                             'gridExtra', \
+                             'Hmisc', \
+                             'kableExtra', \
+                             'naniar', \
+                             'optparse', \
+                             'pheatmap', \
+                             'plyr', \
+                             'RColorBrewer', \
+                             'stringr', \
+                             'tidyverse', \
+                             'UpSetR', \
+                             'viridis'), \
+                             repos='http://cran.rstudio.com/')"
+
+RUN apt-get update -qq \
+	&& apt-get install -qq --no-install-recommends \
+        libxml2-dev
+                 
+RUN R -e "install.packages('tidyverse',repos='http://cran.rstudio.com/')"
+
+####################################
+### NON-Package manager installs ###
+####################################
+
+#+end_src
+
+- Ideas
+  ## Emacs Snapshot
+
+
+# ARG DEBIAN_FRONTEND=noninteractive
+# ENV TZ=America/Chicago
+# RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+#     locale-gen
+# ENV LANG en_US.UTF-8  
+# ENV LANGUAGE en_US:en  
+# ENV LC_ALL en_US.UTF-8    
+
+RUN apt-get install -qq --no-install-recommends software-properties-common
+RUN add-apt-repository ppa:ubuntu-elisp/ppa
+RUN apt-get update
+RUN apt-get install -qq --no-install-recommends emacs-snapshot
+
+*** Build docker container
+:PROPERTIES:
+:ID:       32236b08-3aa2-45ed-87d1-2ee820701de5
+:END:
+#+begin_src bash :tangle no
+buildDIR=~/repos/basecamp
+user=jeszyman
+repo=basecamp
+#########1#########2#########3#########4#########5#########6#########7#########8
+cd "$buildDIR"
+docker build . --file Dockerfile --tag "${user}/${repo}"
+docker push "${user}/${repo}"
+
+
+#########1#########2#########3#########4#########5#########6#########7#########8
+
+cd ~/repos/basecamp/docker
+ls
+docker build . --file basecamp_Dockerfile --tag jeszyman/basecamp
+docker push jeszyman/basecamp
+#+end_src
+*** run docker interactively 
+:PROPERTIES:
+:ID:       cff4499e-b420-4ae7-8a30-cbe04013db60
+:END:
+  #+name: docker_interactive
+  #+begin_src bash :tangle ./src/functions.sh
+docker_interactive() {
+    if [ -f /.dockerenv ]; then
+        echo "shell already in docker, exiting"
+        exit 1
+    else
+        account="USER INPUT"
+        container="USER INPUT"
+        read -p "docker account name: " account
+        account="${account:=jeszyman}"
+        read -p "container name: " container
+        container="${container:=biotools}"
+        case $HOSTNAME in
+            (radonc-cancerbio) docker run -it \
+                                      --env HOME=${HOME} \
+                                      --hostname ${HOSTNAME} \
+                                      --user $(id -u ${USER}) \
+                                      --volume /home/:/home/ \
+                                      --volume /mnt/:/mnt/ \
+                                      --volume /tmp/:/tmp/ \
+                                      $account/$container \
+                                      /bin/bash;;
+            (acl*) docker run -it \
+                          --env HOME=${HOME} \
+                          --hostname ${HOSTNAME} \
+                          -v /drive3/:/drive3/ \
+                          -v /duo4/:/duo4/ \
+                          -v /home/:/home/ \
+                          -v /tmp/:/tmp/ \
+                          -u $(id -u ${USER}) \
+                          $account/$container \
+                          /bin/bash;;
+            (ACL*) docker run -it \
+                          --env HOME=${HOME} \
+                          --hostname ${HOSTNAME} \
+                          -v /home/:/home/ \
+                          -v /duo4/:/duo4/ \
+                          -u $(id -u ${USER}):$(id -g ${USER}) \
+                          $account/$container \
+                          /bin/bash;;
+            (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker($account/'"$container"')' /bin/bash;;
+            (*) docker run -it \
+                       --env HOME=/home/${USER} \
+                       --hostname ${HOSTNAME} \
+                       --user $(id -u ${USER}) \
+                       --volume /home/:/home/ \
+                       --volume /mnt/:/mnt/ \
+                       --volume /tmp/:/tmp/ \
+                       $account/$container \
+                       /bin/bash;;
+        esac
+    fi
+}
+#+end_src
+*** Reference
+:PROPERTIES:
+:ID:       e04ad9da-1aa6-4f66-9659-34e9c9634eae
+:END:
+  - [[file:~/repos/basecamp/Dockerfile]]
 ** [[*Software flat list][Software flat list]]
 ** Setup
 :PROPERTIES:
@@ -1017,6 +1387,103 @@ CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
   - ideas
     - define path variables in r
     - [ ] how to stop R ESS tab complete from pinging countries?
+
+
+*** R basecamp setup
+:PROPERTIES:
+:ID:       a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc
+:END:
+#+name: basecamp_r_setup
+#+begin_src R :noweb yes :tangle ./src/setup.R 
+# Check CRAN packages, install as needed
+##
+packages = c(
+"caret",
+"circlize",
+'cowplot',
+"cutpointr",
+#"data.table",
+#"factoextra",
+"FSA",
+"ggplot2",
+#'ggpubr',
+"ggpval",
+"ggsci",
+"ggvenn",
+"ggrepel",
+"grid",
+"gridExtra",
+"Hmisc",
+"kableExtra",
+"magrittr",
+"naniar",
+"pheatmap",
+"RColorBrewer",
+"readr",
+"readxl",
+"scales",
+"tidyverse",
+"UpSetR",
+"viridis"
+)
+#
+package.check = lapply(
+  packages,
+  FUN=function(x) {
+    if (!require(x, character.only=T)) {
+      install.packages(x, dependencies=T)
+      library(x,character.only=T)
+    }
+  }
+)
+
+#
+# Theme
+theme_general <- function () { 
+  theme_cowplot(16) %+replace%
+    theme()
+}
+
+
+#
+select=dplyr::select
+filter=dplyr::filter
+group_by=dplyr::group_by
+summarise=dplyr::summarise
+#+end_src
+
+#+name: basecamp_r_setup_wrapper
+#+begin_src org :noweb yes
+<<basecamp_r_setup>>
+#+end_src
+
+- Set environmental variables
+  ,#+begin_src R :tangle ./src/setup.R
+# Set environmental variables
+
+#+end_src
+- Check CRAN packages, install as needed
+
+- Set environment variables
+  #+begin_src R :tangle ./src/setup.R
+#########1#########2#########3#########4#########5#########6#########7#########8
+# Set variables
+select=dplyr::select
+filter=dplyr::filter
+#+end_src
+- install
+  - https://unix.stackexchange.com/questions/149451/install-r-in-my-own-directory
+- Data model functions
+  ## Data checks
+### Check primary key uniqeness
+primeKeyUnique = function(df,pk){
+  nrow(df)==length(unique(df[,pk]))
+}
+
+
+- https://www.google.com/search?q=R+check+hostname 
+- https://www.google.com/search?q=R+where+to+store+packages
+
 
 
 ** Information Science / Data Science :career:
@@ -2756,389 +3223,7 @@ https://webanno.github.io/webanno/
 - - The secret to using DDG is to pre-fix your query (!g for Google, !b for Bing and there are tons of other ones too) when DDG doesn't come up with something useful. This way you can use DDG kind of as the Swiss army knife of search engines.
 - https://unix.stackexchange.com/questions/359832/converting-csv-to-tsv
 - convert epub to pdf with calibre https://askubuntu.com/questions/299747/converting-epub-files-to-pdf-format
-**** Setups
-:PROPERTIES:
-:ID:       181dcf49-4df1-4155-9564-ff7c85b408b0
-:END:
-***** My emacs IDEs
-:PROPERTIES:
-:ID:       2913d46c-63aa-4950-af70-a296a0a7a744
-:END:
 
-- ess-remote to docker R
-https://www.reddit.com/r/emacs/comments/op4fcm/send_command_to_vterm_and_execute_it/
-https://blog.calebjay.com/posts/my-emacs-environment/#on-programming-in-emacs
-- https://jmonlong.github.io/Hippocamplus/emacs/
-****** Emacs shell IDE
-:PROPERTIES:
-:ID:       07b8634c-70a6-4a99-90b5-0f5083ccaf04
-:END:
-- interfaces
-  - emacs
-    - https://stackoverflow.com/questions/1008750/ide-emacs-mode-for-shell-scripting-in-bash-sh-etc
-    - http://www.skybert.net/emacs/bash-linting-in-emacs/
-****** Ideas
-:PROPERTIES:
-:ID:       ea022e58-f02d-4f37-831f-59bc0fb9957f
-:END:
-- custom send to shell functions https://emacs.stackexchange.com/questions/37887/send-region-to-shell-in-another-buffer
-- libvterm https://github.com/akermu/emacs-libvterm
-- isend mode
-  - https://github.com/ffevotte/isend-mode.el/blob/master/isend-mode.el
-  - https://stat.ethz.ch/pipermail/ess-help/2015-July/010628.html
-  - https://github.com/ffevotte/isend-mode.el
-
-***** All repo setup
-:PROPERTIES:
-:ID:       c90aaf71-7311-48d8-98e8-221be4ebc290
-:END:
-#+begin_src bash :tangle ./src/all_repo_setup.sh
-unset repoDIRs
-repoDIRs=(data figures imgs method miscellaneous presentations pubs reports results testing tex)
-for dir in "${repoDIRs[@]}"
-do
-    mkdir -p $repo/"$dir"
-done
-#+end_src
-***** R basecamp setup
-:PROPERTIES:
-:ID:       a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc
-:END:
-#+name: basecamp_r_setup
-#+begin_src R :noweb yes :tangle ./src/setup.R 
-# Check CRAN packages, install as needed
-##
-packages = c(
-"caret",
-"circlize",
-'cowplot',
-"cutpointr",
-#"data.table",
-#"factoextra",
-"FSA",
-"ggplot2",
-#'ggpubr',
-"ggpval",
-"ggsci",
-"ggvenn",
-"ggrepel",
-"grid",
-"gridExtra",
-"Hmisc",
-"kableExtra",
-"magrittr",
-"naniar",
-"pheatmap",
-"RColorBrewer",
-"readr",
-"readxl",
-"scales",
-"tidyverse",
-"UpSetR",
-"viridis"
-)
-#
-package.check = lapply(
-  packages,
-  FUN=function(x) {
-    if (!require(x, character.only=T)) {
-      install.packages(x, dependencies=T)
-      library(x,character.only=T)
-    }
-  }
-)
-
-#
-# Theme
-theme_general <- function () { 
-  theme_cowplot(16) %+replace%
-    theme()
-}
-
-
-#
-select=dplyr::select
-filter=dplyr::filter
-group_by=dplyr::group_by
-summarise=dplyr::summarise
-#+end_src
-
-#+name: basecamp_r_setup_wrapper
-#+begin_src org :noweb yes
-<<basecamp_r_setup>>
-#+end_src
-
-- Set environmental variables
-  ,#+begin_src R :tangle ./src/setup.R
-# Set environmental variables
-
-#+end_src
-- Check CRAN packages, install as needed
-
-- Set environment variables
-  #+begin_src R :tangle ./src/setup.R
-#########1#########2#########3#########4#########5#########6#########7#########8
-# Set variables
-select=dplyr::select
-filter=dplyr::filter
-#+end_src
-- install
-  - https://unix.stackexchange.com/questions/149451/install-r-in-my-own-directory
-- Data model functions
-  ## Data checks
-### Check primary key uniqeness
-primeKeyUnique = function(df,pk){
-  nrow(df)==length(unique(df[,pk]))
-}
-
-
-- https://www.google.com/search?q=R+check+hostname 
-- https://www.google.com/search?q=R+where+to+store+packages
-
-
-
-***** Basecamp bash setup
-:PROPERTIES:
-:ID:       426130a8-cc03-49a7-a35d-6a5db4b485c3
-:END:
-#+name: basecamp_bash_setup_wrapper
-#+begin_src bash :noweb yes
-<<docker_interactive>>
-<<docker_check>>
-<<check_software_dependencies>>
-<<symlink-by-csv-script>>
-<<check_local_software>>        
-#+end_src
-***** Basecamp Docker
-:PROPERTIES:
-:ID:       c9327fad-4f38-4bbe-8b2e-58ad589fbdf6
-:END:
-****** Write [[file:docker/basecamp_Dockerfile][basecamp Dockerfile]]
-:PROPERTIES:
-:ID:       79e01a67-5ba1-4257-8353-8c5cf1ac8c4a
-:END:
-#+begin_src bash :tangle ./docker/basecamp_Dockerfile
-FROM ubuntu:bionic
-#########1#########2#########3#########4#########5#########6#########7#########8
-
-#######################################################
-#######################################################
-###   Dockerfile to build a basecamp docker image   ###
-#######################################################
-#######################################################
-
-#############
-### Notes ###
-#############
-#
-# After build, the image will be pushed to the dockerhub as
-# jeszyman/basecamp
-# (https://hub.docker.com/repository/docker/jeszyman/basecamp)
-#
-# See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
-
-FROM ubuntu:bionic
-
-ARG DEBIAN_FRONTEND=noninteractive
-ENV TZ=America/Chicago
-RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
-    locale-gen
-ENV LANG en_US.UTF-8  
-ENV LANGUAGE en_US:en  
-ENV LC_ALL en_US.UTF-8    
-
-###########
-### APT ###
-###########
-
-RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
-    build-essential \
-    bzip2 \
-    cifs.utils \
-    cmake \
-    dirmngr \
-    emacs \
-    gcc \
-    git \
-    gnupg \
-    libcurl4-openssl-dev \
-    libfftw3-dev \
-    libgsl-dev \
-    libxmu-dev \
-    libxml2-dev \   
-    locales \
-    nano \
-    parallel \
-    screen \
-    software-properties-common \
-    wget
-
-        
-RUN apt-get autoremove -y && \
-    apt-get autoclean -y && \
-    apt-get clean
-
-#################
-### Miniconda ###
-#################
-
-RUN cd /tmp && wget --no-check-certificate https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh
-RUN bash /tmp/Miniconda3-4.3.21-Linux-x86_64.sh -b -p /opt/miniconda
-ENV PATH="/opt/miniconda/bin:${PATH}"
-
-#############################
-### R 4 and CRAN Packages ###
-#############################
-
-RUN apt-get update -qq \
-	&& apt-get install -qq --no-install-recommends \
-        libcurl4-openssl-dev \
-        libssl-dev
-
-
-# import the signing key (by Michael Rutter) for these repo
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
-# add the R 4.0 repo from CRAN -- adjust 'focal' to 'groovy' or 'bionic' as needed
-RUN add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
-#
-RUN apt-get install -qq --no-install-recommends r-base r-base-dev
-
-ENV PATH="/usr/bin:${PATH}"
-RUN echo 'local({r <- getOption("repos"); r["CRAN"] <- "http://cran.r-project.org"; options(repos=r)})' > ~/.Rprofile
-
-# R CRAN Installs
-RUN R -e "install.packages(c('caret', \
-                             'circularize', \
-                             'cowplot', \
-                             'cutpointr', \
-                             'data.table', \
-                             'devtools', \
-                             'FSA', \
-                             'ggplot2', \
-                             'ggpval', \
-                             'ggpubr', \
-                             'ggsci', \
-                             'ggvenn', \
-                             'ggrepel', \
-                             'git2r', \ 
-                             'grid', \
-                             'gridExtra', \
-                             'Hmisc', \
-                             'kableExtra', \
-                             'naniar', \
-                             'optparse', \
-                             'pheatmap', \
-                             'plyr', \
-                             'RColorBrewer', \
-                             'stringr', \
-                             'tidyverse', \
-                             'UpSetR', \
-                             'viridis'), \
-                             repos='http://cran.rstudio.com/')"
-
-RUN apt-get update -qq \
-	&& apt-get install -qq --no-install-recommends \
-        libxml2-dev
-                 
-RUN R -e "install.packages('tidyverse',repos='http://cran.rstudio.com/')"
-
-####################################
-### NON-Package manager installs ###
-####################################
-
-#+end_src
-- Ideas
-  ## Emacs Snapshot
-RUN apt-get install -qq --no-install-recommends software-properties-common
-RUN add-apt-repository ppa:ubuntu-elisp/ppa
-RUN apt-get update
-RUN apt-get install -qq --no-install-recommends emacs-snapshot
-
-****** Build docker container
-:PROPERTIES:
-:ID:       32236b08-3aa2-45ed-87d1-2ee820701de5
-:END:
-#+begin_src bash :tangle no
-buildDIR=~/repos/basecamp
-user=jeszyman
-repo=basecamp
-#########1#########2#########3#########4#########5#########6#########7#########8
-cd "$buildDIR"
-docker build . --file Dockerfile --tag "${user}/${repo}"
-docker push "${user}/${repo}"
-
-
-#########1#########2#########3#########4#########5#########6#########7#########8
-
-cd ~/repos/basecamp/docker
-ls
-docker build . --file basecamp_Dockerfile --tag jeszyman/basecamp
-docker push jeszyman/basecamp
-#+end_src
-****** run docker interactively 
-:PROPERTIES:
-:ID:       cff4499e-b420-4ae7-8a30-cbe04013db60
-:END:
-  #+name: docker_interactive
-  #+begin_src bash :tangle ./src/functions.sh
-docker_interactive() {
-    if [ -f /.dockerenv ]; then
-        echo "shell already in docker, exiting"
-        exit 1
-    else
-        account="USER INPUT"
-        container="USER INPUT"
-        read -p "docker account name: " account
-        account="${account:=jeszyman}"
-        read -p "container name: " container
-        container="${container:=biotools}"
-        case $HOSTNAME in
-            (radonc-cancerbio) docker run -it \
-                                      --env HOME=${HOME} \
-                                      --hostname ${HOSTNAME} \
-                                      --user $(id -u ${USER}) \
-                                      --volume /home/:/home/ \
-                                      --volume /mnt/:/mnt/ \
-                                      --volume /tmp/:/tmp/ \
-                                      $account/$container \
-                                      /bin/bash;;
-            (acl*) docker run -it \
-                          --env HOME=${HOME} \
-                          --hostname ${HOSTNAME} \
-                          -v /drive3/:/drive3/ \
-                          -v /duo4/:/duo4/ \
-                          -v /home/:/home/ \
-                          -v /tmp/:/tmp/ \
-                          -u $(id -u ${USER}) \
-                          $account/$container \
-                          /bin/bash;;
-            (ACL*) docker run -it \
-                          --env HOME=${HOME} \
-                          --hostname ${HOSTNAME} \
-                          -v /home/:/home/ \
-                          -v /duo4/:/duo4/ \
-                          -u $(id -u ${USER}):$(id -g ${USER}) \
-                          $account/$container \
-                          /bin/bash;;
-            (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker($account/'"$container"')' /bin/bash;;
-            (*) docker run -it \
-                       --env HOME=/home/${USER} \
-                       --hostname ${HOSTNAME} \
-                       --user $(id -u ${USER}) \
-                       --volume /home/:/home/ \
-                       --volume /mnt/:/mnt/ \
-                       --volume /tmp/:/tmp/ \
-                       $account/$container \
-                       /bin/bash;;
-        esac
-    fi
-}
-#+end_src
-****** Reference
-:PROPERTIES:
-:ID:       e04ad9da-1aa6-4f66-9659-34e9c9634eae
-:END:
-  - [[file:~/repos/basecamp/Dockerfile]]
 *** General reference, guides, and tutorials
 :PROPERTIES:
 :ID:       2faf071d-912b-4003-a42a-d9f18144434b
@@ -6048,6 +6133,7 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
+- [[id:c9327fad-4f38-4bbe-8b2e-58ad589fbdf6][Basecamp Docker]]
 - always need apt update prior to gets https://askubuntu.com/questions/1159096/ubuntu-18-04-throws-404-error-while-fetching-dependencies
 ****** Local transclusion
 ****** Local YAS
@@ -6195,7 +6281,7 @@ sudo docker run hello-world
 - Host management
   - https://www.google.com/search?q=docker+cleanup
   - remove https://docs.docker.com/config/pruning/
-****** Docker-related bash functions
+****** Local bash scripts and functions
 :PROPERTIES:
 :ID:       ecdf5e8f-88ce-4760-b48b-c75d4887b48a
 :END:
@@ -6205,14 +6291,6 @@ sudo docker run hello-world
 cd ~/repos/biotools
 docker build . --file Dockerfile --tag jeszyman/test
 docker build . --file Dockerfile --tag jeszyman/biotools
-#+end_src
-    #+name: build-dockerfile
-    #+begin_src bash 
-#NOTE: Cannot build for local machine while connected to VPN- apt can't install software
-cd ~/repos/basecamp
-test=~/repos/basecamp
-
-docker build . --file Dockerfile --tag jeszyman/test
 #+end_src
   - interactive launch by docker image name and current server location 
     #+begin_src bash :tangle no
@@ -9375,6 +9453,35 @@ https://engineering-shiny.org/golem.html
 - yaml cannot do variable placeholders- https://stackoverflow.com/questions/41620674/use-placeholders-in-yaml/41620747#41620747
   - some workarounds https://stackoverflow.com/questions/2063616/how-to-reference-a-yaml-setting-from-elsewhere-in-the-same-yaml-file
 - https://yaml.org/spec/1.2.2/  
+*** Emacs
+**** My emacs IDEs
+:PROPERTIES:
+:ID:       2913d46c-63aa-4950-af70-a296a0a7a744
+:END:
+
+- ess-remote to docker R
+https://www.reddit.com/r/emacs/comments/op4fcm/send_command_to_vterm_and_execute_it/
+https://blog.calebjay.com/posts/my-emacs-environment/#on-programming-in-emacs
+- https://jmonlong.github.io/Hippocamplus/emacs/
+***** Emacs shell IDE
+:PROPERTIES:
+:ID:       07b8634c-70a6-4a99-90b5-0f5083ccaf04
+:END:
+- interfaces
+  - emacs
+    - https://stackoverflow.com/questions/1008750/ide-emacs-mode-for-shell-scripting-in-bash-sh-etc
+    - http://www.skybert.net/emacs/bash-linting-in-emacs/
+***** Ideas
+:PROPERTIES:
+:ID:       ea022e58-f02d-4f37-831f-59bc0fb9957f
+:END:
+- custom send to shell functions https://emacs.stackexchange.com/questions/37887/send-region-to-shell-in-another-buffer
+- libvterm https://github.com/akermu/emacs-libvterm
+- isend mode
+  - https://github.com/ffevotte/isend-mode.el/blob/master/isend-mode.el
+  - https://stat.ethz.ch/pipermail/ess-help/2015-July/010628.html
+  - https://github.com/ffevotte/isend-mode.el
+
 ** Reference
 :PROPERTIES:
 :ID:       3eb81250-e885-4941-a559-997381abc196

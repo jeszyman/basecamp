@@ -1,11 +1,11 @@
 FROM ubuntu:bionic
 #########1#########2#########3#########4#########5#########6#########7#########8
-
-#######################################################
-#######################################################
-###   Dockerfile to build a basecamp docker image   ###
-#######################################################
-#######################################################
+#########1#########2#########3#########4#########5#########6#########7#########8
+###                                                                          ###
+###               Dockerfile to build a basecamp docker image                ###
+###                                                                          ###
+#########1#########2#########3#########4#########5#########6#########7#########8
+#########1#########2#########3#########4#########5#########6#########7#########8
 
 #############
 ### Notes ###
@@ -14,22 +14,15 @@ FROM ubuntu:bionic
 # After build, the image will be pushed to the dockerhub as
 # jeszyman/basecamp
 # (https://hub.docker.com/repository/docker/jeszyman/basecamp)
-#
-# See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
-
-FROM ubuntu:bionic
-
-ARG DEBIAN_FRONTEND=noninteractive
-ENV TZ=America/Chicago
-RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
-    locale-gen
-ENV LANG en_US.UTF-8  
-ENV LANGUAGE en_US:en  
-ENV LC_ALL en_US.UTF-8    
 
 ###########
 ### APT ###
 ###########
+
+# Should block prompts for timezone or geographic area
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update
 
 RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
     build-essential \
@@ -42,10 +35,11 @@ RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
     git \
     gnupg \
     libcurl4-openssl-dev \
+    libssl-dev \
     libfftw3-dev \
     libgsl-dev \
     libxmu-dev \
-    libxml2-dev \   
+    libxml2-dev \
     locales \
     nano \
     parallel \
@@ -53,7 +47,6 @@ RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
     software-properties-common \
     wget
 
-        
 RUN apt-get autoremove -y && \
     apt-get autoclean -y && \
     apt-get clean
@@ -70,20 +63,19 @@ ENV PATH="/opt/miniconda/bin:${PATH}"
 ### R 4 and CRAN Packages ###
 #############################
 
-RUN apt-get update -qq \
-	&& apt-get install -qq --no-install-recommends \
-        libcurl4-openssl-dev \
-        libssl-dev
-
-
-# import the signing key (by Michael Rutter) for these repo
+# Import the signing key (by Michael Rutter) 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
-# add the R 4.0 repo from CRAN -- adjust 'focal' to 'groovy' or 'bionic' as needed
+
+# Add the R 4 repo from CRAN 
 RUN add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
+
 #
 RUN apt-get install -qq --no-install-recommends r-base r-base-dev
 
+#
 ENV PATH="/usr/bin:${PATH}"
+
+#
 RUN echo 'local({r <- getOption("repos"); r["CRAN"] <- "http://cran.r-project.org"; options(repos=r)})' > ~/.Rprofile
 
 # R CRAN Installs
@@ -115,13 +107,3 @@ RUN R -e "install.packages(c('caret', \
                              'UpSetR', \
                              'viridis'), \
                              repos='http://cran.rstudio.com/')"
-
-RUN apt-get update -qq \
-	&& apt-get install -qq --no-install-recommends \
-        libxml2-dev
-                 
-RUN R -e "install.packages('tidyverse',repos='http://cran.rstudio.com/')"
-
-####################################
-### NON-Package manager installs ###
-####################################
