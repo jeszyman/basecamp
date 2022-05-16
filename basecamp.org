@@ -6409,7 +6409,7 @@ docker build . --file Dockerfile --tag jeszyman/test
                             -e "localdata=/mnt/xt3/mpnst" \
                             jeszyman/$image \
                             /bin/bash;;
-<<<<<<< HEAD
+
             (jeszyman-*) docker run -it \
                                 -v /home/:/home/ \
                                 -u $(id -u ${USER}) \
@@ -8251,6 +8251,7 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
+https://www.google.com/search?q=git+not+possible+to+fast-forward+aborting 
 https://www.reddit.com/r/git/comments/ukrhb1/versioning_changelogs_release_notes_squashing_and/
 ******* Processes 
 - https://www.google.com/search?q=git+make+stable+version+branch 
