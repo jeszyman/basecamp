@@ -1,8 +1,8 @@
-# Check for parameters and return usage
+# Check for parameters, return usage if empty
 if [ "$#" -ne 2 ];
 then
-    printf "\n usage: smk_forced_run.sh config_file smk_file
-    \n Script to complete forced run of snakefile. 
+    printf "\n usage: smk_forced_run.sh <SMK CONFIG YAML> <SMK FILE>
+    \n Script to complete an normal run of a snakefile
     \n Assumes
     - Singularity container specified in config
     - a mount point at /mnt
@@ -16,9 +16,8 @@ else
     snakemake \
         --configfile $1 --cores 4 \
         --use-singularity \
-        --singularity-args "--bind ${HOME}:${HOME} --bind /mnt:/mnt" \
-        --forceall \
         --printshellcmds \
+        --singularity-args "--bind ${HOME}:${HOME} --bind /mnt:/mnt" \
         --rerun-incomplete \
         --snakefile $2 \
         --verbose

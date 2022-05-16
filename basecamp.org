@@ -39,6 +39,15 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
+#+begin_src R
+# Load configuration 
+if(file.exists(paste0("./config/",as.character(Sys.info()["nodename"]),".R"))) {
+  source(paste0("./config/",as.character(Sys.info()["nodename"]),".R"))
+} else {
+  stop("No config file found")
+}
+
+#+end_src
 - https://cran.r-project.org/web/packages/sjPlot/vignettes/tab_bayes.html
 - command line parsing argparse
 - make objects https://bioconductor.org/packages/devel/bioc/vignettes/SummarizedExperiment/inst/doc/Extensions.html
@@ -1041,6 +1050,27 @@ https://www.scnsoft.com/blog/guide-to-data-quality-management
 :LOGBOOK:
 CLOCK: [2022-01-24 Mon 08:05]--[2022-01-24 Mon 08:33] =>  0:28
 :END:
+- Create local repository, init, and basic structure  
+  #+begin_src bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+# Create repository 
+if [ -d /home/jeszyman/repos ]; then
+    mkdir -p /home/jeszyman/repos/cardradbio-atac; fi
+
+# Initialize
+cd /home/jeszyman/repos/cardradbio-atac/
+git init
+
+# Create repository structure
+repo=/home/jeszyman/repos/cardradbio-atac
+mkdir -p "${repo}/config"
+mkdir -p "${repo}/resources"
+mkdir -p "${repo}/results/csv"
+mkdir -p "${repo}/results/imgs"
+mkdir -p "${repo}/results/reports"
+mkdir -p "${repo}/src"
+mkdir -p "${repo}/workflow/scripts"
+#+end_src
 - cite:sarkar2014 Chapter 2
   - Integration
     - Transformation 
@@ -2719,6 +2749,7 @@ https://webanno.github.io/webanno/
 - https://blog.dominodatalab.com/lesser-known-ways-of-using-notebooks/
 - https://mail.google.com/mail/u/0/#inbox/FMfcgxwDqnjnHJFDpDpBQQdGrjgtfdfn
 *** Processes
+- https://www.omgubuntu.co.uk/2019/07/scrcpy-mirror-android-to-ubuntu-linux
 - https://www.google.com/search?q=stack+exchange+webpage+annotation+highlight 
 - https://askubuntu.com/questions/651309/software-to-automatically-remove-background-from-images
 - https://www.google.com/search?q=linux+convert+epub+to+pdf
@@ -3796,6 +3827,11 @@ rx_dict = {
 :PROPERTIES:
 :ID:       BF9D824A-02EF-4580-97A1-B887299AD461
 :END:
+- elisp
+  - https://www.gnu.org/software/emacs/manual/html_mono/elisp.html
+  - https://www.gnu.org/software/emacs/manual/html_node/eintr/index.html
+  - https://exercism.org/tracks/emacs-lisp
+  - https://old.reddit.com/r/emacs/comments/qcr432/elispemacs_tutorialbook_with_real_world_projects/
 - https://lgmoneda.github.io/2017/03/15/elisp-summary.html
 - https://learnxinyminutes.com/docs/elisp/
 - https://www.google.com/search?q=lisp+for+loop 
@@ -3859,6 +3895,118 @@ https://www.reddit.com/r/emacs/comments/kt3mvf/introduction_to_emacs_lisp_fundam
 - https://www.google.com/search?q=youtube+introduction+to+lisp&rlz=1C9BKJA_enUS678US679&oq=youtube+introduction+to+lisp&aqs=chrome..69i57.9485j0j7&hl=en-US&sourceid=chrome-mobile&ie=UTF-8
 - https://www.gnu.org/software/emacs/manual/html_node/elisp/index.html#SEC_Contents
 - http://cl-cookbook.sourceforge.net/files.html
+
+****** Scripts
+- Lisp export function for master inputs table
+  #+begin_src emacs-lisp :tangle ./src/org_master_input_tbl_export.el
+(require 'org)
+
+(defun my-tbl-export (name)
+"Search for table named `NAME` and export."
+(interactive "s")
+(show-all)
+(let ((case-fold-search t))
+  (if (search-forward-regexp (concat "#\\+NAME: +" name) nil t)
+  (progn
+    (next-line)
+    (org-table-export (format "data/%s_table.csv" name) "orgtbl-to-csv")))))
+#+end_src
+- Lisp export function
+  #+begin_src emacs-lisp :tangle ./src/org_tbl_export.el
+(require 'org)
+
+(defun my-tbl-export (name)
+"Search for table named `NAME` and export."
+(interactive "s")
+(show-all)
+(let ((case-fold-search t))
+  (if (search-forward-regexp (concat "#\\+NAME: +" name) nil t)
+  (progn
+    (next-line)
+    (org-table-export (format "data/inputs/%s.csv" name) "orgtbl-to-csv")))))
+#+end_src
+- Bash non-interactive emacs function
+  #+begin_src bash :tangle ./src/org_tbl_export.sh
+source config/${HOSTNAME}.sh
+
+org_tables=()
+org_tables=("libraries"
+            "participants")
+
+for table in "${org_tables[@]}";
+do
+  /usr/bin/emacs-snapshot --batch "${repo}/mpnst.org" -l "${repo}/src/org_tbl_export.el" --eval '(my-tbl-export "'"$table"'")'
+done
+
+/usr/bin/emacs-snapshot --batch "${repo}/mpnst.org" -l "${repo}/src/org_master_input_tbl_export.el" --eval '(my-tbl-export "'"input"'")'
+
+#+end_src   
+  locvars
+- Lisp export functions
+  #+begin_src emacs-lisp :tangle ./src/org_tbl_export.el
+(require 'org)
+
+(defun my-tbl-export ()
+"Search for table named `NAME` and export."
+(interactive "s")
+(show-all)
+  (if (search-forward-regexp (concat("#\\+name: .*_input$") nil t)
+  (progn
+    (next-line)
+    (org-table-export (format "/tmp/%s.csv" name) "orgtbl-to-csv"))))
+#+end_src  
+  #+begin_src emacs-lisp :tangle ./src/org_tbl_export.el
+(require 'org)
+
+(defun my-tbl-export (name)
+"Search for table named `NAME` and export."
+(interactive "s")
+(show-all)
+(let ((case-fold-search t))
+  (if (search-forward-regexp ("#\\+NAME: .*_name$") nil t)
+  (progn
+    (let (name (replace-match
+    (next-line)
+    (org-table-export (format "/tmp/%s.csv" name) "orgtbl-to-csv")))))
+#+end_src
+  #+begin_src emacs-lisp :tangle ./src/org_input_tbl_export.el
+(require 'org)
+
+(defun my-tbl-export (name)
+"Search for table named `NAME` and export."
+(interactive "s")
+(show-all)
+(let ((case-fold-search t))
+  (if (search-forward-regexp (concat "#\\+NAME: +" name) nil t)
+  (progn
+    (next-line)
+    (org-table-export (format "data/%s_table.csv" name) "orgtbl-to-csv")))))
+#+end_src  
+- Bash to make the csvs
+  #+begin_src bash :session cardshell :tangle ./src/org_tbl_export.sh
+org_tables=()
+org_tables=("experiments"
+          "cohorts"
+          "subjects"
+          "specimens"
+          "isolates"
+          "seq_runs"
+          "libraries"
+          "tarbase_targeting_gja1"
+          "lit_targeting_gja1"
+          "mirdb_targeting_human_gja1"
+          "mirdb_targeting_mouse_gja1"
+          "notch_rentschler")
+
+for table in "${org_tables[@]}";
+do
+  /usr/bin/emacs-snapshot --batch "/home/jeszyman/repos/card-rad-bio/card-rad-bio.org" -l "/home/jeszyman/repos/card-rad-bio/src/org_tbl_export.el" --eval '(my-tbl-export "'"$table"'")'
+done
+
+/usr/bin/emacs-snapshot --batch "/home/jeszyman/repos/card-rad-bio/card-rad-bio.org" -l "/home/jeszyman/repos/card-rad-bio/src/org_input_tbl_export.el" --eval '(my-tbl-export "'"input"'")'
+
+
+#+end_src   
 
 ****** MIT Structure and Interpretation of Computer Programs
 :PROPERTIES:
@@ -3944,6 +4092,7 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+****** Local scripts
 - Command line script
   #+name: bash_cmdline_script_preamble
   #+begin_src bash :noweb yes
@@ -3964,12 +4113,6 @@ else
     echo "No bash config found. Are you running from repo main dir?"
 fi
 #+end_src
-https://www.google.com/search?q=bash+prevent+script+execution 
-https://www.google.com/search?q=bash+rm+use+regex 
-https://www.google.com/search?q=bash+test+before+rm 
-https://stackoverflow.com/questions/169511/how-do-i-iterate-over-a-range-of-numbers-defined-by-variables-in-bash
-- [[https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script][Meaning of exit 0, exit 1 and exit 2 in a bash script]]
-- [[https://www.cyberciti.biz/faq/linux-unix-formatting-dates-for-display/][formatting dates for display]]  
 ****** Processes 
 :PROPERTIES:
 :ID:       c3e424cd-7191-423e-815b-7e7fcb770100
@@ -3977,6 +4120,12 @@ https://stackoverflow.com/questions/169511/how-do-i-iterate-over-a-range-of-numb
 :LOGBOOK:
 CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
 :END:
+- https://www.google.com/search?q=bash+prevent+script+execution 
+- https://www.google.com/search?q=bash+rm+use+regex 
+- https://www.google.com/search?q=bash+test+before+rm 
+- https://stackoverflow.com/questions/169511/how-do-i-iterate-over-a-range-of-numbers-defined-by-variables-in-bash
+- [[https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script][Meaning of exit 0, exit 1 and exit 2 in a bash script]]
+- [[https://www.cyberciti.biz/faq/linux-unix-formatting-dates-for-display/][formatting dates for display]]  
 
 - https://stackoverflow.com/questions/22962591/how-to-prevent-direct-bash-script-execution-and-allow-only-usage-from-other-scri
 
@@ -4033,6 +4182,7 @@ https://www.google.com/search?q=bash+read+csv
 :PROPERTIES:
 :ID:       f824de5e-ecce-4f4e-aa25-1daf675577a6
 :END:
+- [[id:9cbffcad-49c3-4936-9111-d2472d40276c][Arrays]]
 - [[https://stackoverflow.com/questions/91368/checking-from-shell-script-if-a-directory-contains-files][use globbing in variables with shopt]]
 - General reference
   - [[https://data36.com/variables-if-statements-while-loops-bash-data-science/][variables for if statements and while loops]]
@@ -4040,14 +4190,6 @@ https://www.google.com/search?q=bash+read+csv
 :PROPERTIES:
 :ID:       9cbffcad-49c3-4936-9111-d2472d40276c
 :END:
-- read a 2-column tsv into an array
-  #+begin_src bash
-# Create a simple tsv
-cat <<EOT >> greetings.txt
-line 	1
-line 	2
-EOT            
-#+end_src
 - [[https://stackoverflow.com/questions/18921350/shell-script-correct-way-to-declare-an-empty-array][declare]]
 - populate
   - from list of variables
@@ -4065,13 +4207,21 @@ EOT
       - https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
     - https://www.google.com/search?q=pass+cat+output+to+array+variable
     - command output https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
-- access all values "${array[@]}"
 - make associative array
   - https://www.google.com/search?q=bash+make+associative+array 
   - https://www.google.com/search?q=bash+symlink+associatve+array 
 - [[https://unix.stackexchange.com/questions/125632/printing-an-array-to-a-file-with-each-element-of-the-array-in-a-new-line-in-bash][print array with line breaks]]
 - https://www.google.com/search?q=bash+create+array 
 - https://www.google.com/search?q=bash+pass+array+to+for+loop 
+- access all values "${array[@]}"
+- read a 2-column tsv into an array
+  #+begin_src bash
+# Create a simple tsv
+cat <<EOT >> greetings.txt
+line 	1
+line 	2
+EOT            
+#+end_src
 #+begin_src bash :tangle no
 # Assign variable which holds array to another name
 a=('a' 'b' 'c')
@@ -4752,17 +4902,16 @@ ${1:function_name}(){
 - bash.usage
   #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.usage
 # -*- mode: snippet -*-
-# name: bash.usage
 # key: bash.usage
+# expand-env: ((yas-indent-line 'fixed))  
 # --
 # Check for parameters, return usage if empty
-if [[ $# -eq 0 ]] || [[ $1 == "h" ]] ; then
-   printf "\n usage: ${1:function name} ${2:variable 1} ${3:variable 2}
-           \n ${3:function or script purpose}
-           \n $2: ${4:variable 1 descriptor}
-           \n $3: ${5:variable 2 descriptor}
-           \n $0"
-
+if [ $# -ne ${1:NUMBER OF VARIABLES} ];
+then
+    printf "\n usage: ${2:FUNCTION NAME} ${3: VAR 1} ${4: VAR 2}
+    \n ${5: SCRIPT FUNCTION OR PURPOSE}
+    \n $0"
+else
 #+end_src
 - [[file:~/.emacs.d/snippets/sh-mode/]]
 - [[file:~/.emacs.d/snippets/sh-mode/write.bash]]
@@ -5771,12 +5920,13 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
   - https://www.biostars.org/p/63816/
   - https://www.biostars.org/p/216905/
   - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
-- [[elisp:(with-minibuffer-input (call-interactively 'woman) "wget")][wget]]
-  - [[https://www.tecmint.com/commandline-download-accelerators-for-linux/amp/][pass list to]]
-  - [[https://superuser.com/questions/283481/how-do-i-properly-set-wget-to-download-only-new-files][download only on server side change]]
-    - AND SET -O !!
-  - download in background & resume broke  wget -bqc <PATH>
-  - clobber = overwrite
+******* [[elisp:(with-minibuffer-input (call-interactively 'woman) "wget")][wget]]
+- [[id:a8415f7e-36e1-4641-b909-565b73f79e1b][Chaudhuri medgenome wget]]
+- [[https://www.tecmint.com/commandline-download-accelerators-for-linux/amp/][pass list to]]
+- [[https://superuser.com/questions/283481/how-do-i-properly-set-wget-to-download-only-new-files][download only on server side change]]
+  - AND SET -O !!
+- download in background & resume broke  wget -bqc <PATH>
+- clobber = overwrite
 ******* make
 :PROPERTIES:
 :ID:       5b075f74-e2cf-4d2f-a8f7-db7c64080f47
@@ -5915,22 +6065,8 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
 **** Software flat list
-***** nohup
-https://unix.stackexchange.com/questions/420594/why-process-killed-with-nohup
-***** Remarkable
-- https://www.google.com/search?q=remarkable+quick+sheets+delete 
-- https://remarkablewiki.com/tech/file_transfer
-
-https://remarkablewiki.com/tips/client - linux client doesn't work 
-***** draw.io
-https://tomd.xyz/diagrams-as-code-drawio/
-- Processes
-  - https://www.google.com/search?q=draw.io+insert+image 
-- https://github.com/jgraph/drawio-desktop/releases/tag/v16.5.1
 ***** Advanced package tool (APT)
 - can install .deb files with sudo apt install <.DEB>
-***** Outlook on the web :software:
-- can get permalink urls to specific emails via send to OneNote
 ***** box
   - https://community.box.com/t5/Community/ct-p/English
   - [[https://www.youtube.com/channel/UClVkSYJyS4XTpzukZn1zm7w][box youtube]]
@@ -5943,6 +6079,11 @@ https://tomd.xyz/diagrams-as-code-drawio/
     - wustl box parameters
       - 15 gb per file
       - unlimited storage
+***** byzanz
+:PROPERTIES:
+:ID:       65e67524-2812-482f-8d06-58d8aa3bce6d
+:END:
+https://askubuntu.com/questions/55709/how-to-select-display-to-record-in-recordmydesktop
 ***** Cisco AnyConect
   - [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
   - my profile at /opt/cisco/anyconnect/profile/test.xml
@@ -6048,6 +6189,8 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
+https://stackoverflow.com/questions/39433480/dockerfile-versioning-best-practice
+- [[*singularity][singularity]]
 - always need apt update prior to gets https://askubuntu.com/questions/1159096/ubuntu-18-04-throws-404-error-while-fetching-dependencies
 ****** Local transclusion
 ****** Local YAS
@@ -6505,26 +6648,325 @@ docker run jeszyman/test
 - dockerize emacs gui https://github.com/JAremko/docker-emacs
 - Dockerfile best practices ideas
   - include comment w/ build time  
-***** [[id:FB8FF6B1-C6BD-4272-AC15-05BB15DF609B][Emacs]]
-- [[https://stackoverflow.com/questions/196357/making-iterm-to-translate-meta-key-in-the-same-way-as-in-other-oses][remapping option as meta for terminal emacs]] - see answer 2  
-***** gimp
+***** draw.io
+https://tomd.xyz/diagrams-as-code-drawio/
+- Processes
+  - https://www.google.com/search?q=draw.io+insert+image 
+- https://github.com/jgraph/drawio-desktop/releases/tag/v16.5.1
+***** Emacs
+- https://stackoverflow.com/questions/18778894/emacs-24-3-python-cant-guess-python-indent-offset-using-defaults-4/51966682
+- https://www.reddit.com/r/emacs/comments/rxa29k/is_it_possible_to_have_a_window_which_is_just_the/
+- hack fonts
+  - https://www.reddit.com/r/emacs/comments/bhr19v/unable_to_use_hack_font_in_emacs262/
+- [[https://stackoverflow.com/questions/196357/making-iterm-to-translate-meta-key-in-the-same-way-as-in-other-oses][remapping option as meta for terminal emacs]] - see answer 2
+- https://www.reddit.com/r/emacs/comments/ujuokl/my_take_on_dotemacsorg/
+- https://www.reddit.com/r/emacs/comments/ucldkz/are_we_living_in_the_golden_age_of_emacs/
+- emacs shell colors
+- https://alhassy.github.io/emacs.d/
+- https://www.reddit.com/r/emacs/comments/f2c99b/you_can_play_doom_inside_emacs_using_eaf/
+- https://www.reddit.com/r/emacs/comments/td9t7w/enhanced_my_coding_experience_with_svgtagmode/
+- https://www.reddit.com/r/emacs/comments/ta6s74/steveys_tech_talk_e39_a_guided_tour_of_emacs/
+
+- [[https://www.reddit.com/r/emacs/comments/60nb8b/favorite_builtin_emacs_commands/][reddit: favorite emacs command]]
+- Init file examples
+  - https://gitlab.com/Kaligule/emacs-config/-/blob/master/config.org
+  - https://github.com/wasamasa/dotemacs/blob/master/init.org
+  - https://github.com/pprevos/EmacsLife/blob/master/InitFiles.org
+  - [[http://pages.sachachua.com/.emacs.d/Sacha.html][Chua emacs config]]
+  - https://github.com/c02y/dotemacs.d/blob/master/init.el#L182-L207
+  - https://ogbe.net/emacsconfig.html
+  - "init file bankrupcy" 
+  - .emacs configs
+    - http://pages.sachachua.com/.emacs.d/Sacha.html
+    - https://www.reddit.com/r/emacs/comments/585n3j/i_have_created_a_list_of_people_with_nice_config/
+  - https://www.emacswiki.org/emacs/RobertAdesamConfig
+  - https://github.com/grettke/home/blob/master/ALEC.txt#L3256
+  - http://nullman.net/emacs/files/init-emacs.org
+  - https://github.com/KaratasFurkan/.emacs.d
+  - https://github.com/senny/emacs.d/blob/master/init.el
+  - https://muto.ca/posts/my-emacs-configuration.html
+  - https://www.reddit.com/r/emacs/comments/m9zxw6/444_days_of_literate_configuration_450_days_using/  
+****** Scripts
+- reference snippet to install snapshot on ubunut
+  #+begin_src bash :tangle no
+sudo add-apt-repository ppa:ubuntu-elisp/ppa
+sudo apt-get update
+sudo apt-get install emacs-snapshot
+#+end_src
+****** Processes
+- bash linting - http://www.skybert.net/emacs/bash-linting-in-emacs/
+- screen shot - https://www.reddit.com/r/emacs/comments/ejef2d/screenshot_code/
+- unicode - to add special chars- http://ergoemacs.org/emacs/emacs_n_unicode.html
+- [[id:EF8F2A3C-F614-4B7F-9CF6-084BDFE2A241][Customization]]
+- profiling and optimization
+  - https://stackoverflow.com/questions/5762098/how-do-i-profile-my-emacs-configuration
+- linux setup using apt
+  - https://docs.docker.com/install/linux/linux-postinstall/
+- [[https://superuser.com/questions/637979/install-emacs-without-sudo][Install emacs on server]]
+- Emacs as shell IDE
+  - Use windows for bash script and *shell*
+  - Use essh.el commands to pipe line-by-line to *shell*
+    - C-c C-p pipe line to shell and skip
+  - Other useful shell functionality
+    - put output of one-liner into current buffer: C-u M-!
+    - https://www.emacswiki.org/emacs/EshellRedirection
+- https://github.com/ianpan870102/.emacs.d/blob/master/config.org
+- [[https://superuser.com/questions/637979/install-emacs-without-sudo][Server install how to]]
+- tramp gdrive
+  - [currently not working] to goodle drive- https://www.gnu.org/software/tramp/#Using-Google-Drive
+- https://emacsconf.org/2021/all/
+- https://sheer.tj/the_way_of_emacs.html
+- [[https://www.youtube.com/c/SystemCrafters/videos?app=desktop&view=0&sort=p&flow=list][system crafters youtube]]
+
+- Selection
+  - https://www.google.com/search?q=emacs+rectangle+paste
+- Text
+  - auto indent after written https://unix.stackexchange.com/questions/162057/can-i-have-emacs-automatically-indent-my-whole-code-after-it-is-all-written
+  - https://www.google.com/search?q=emacs+remove+line+breaks
+  - https://www.google.com/search?q=emacs+paste+without+line+breaks 
+  - https://www.google.com/search?q=emacs+replace+multiple+spaces+with+one
+  - https://www.google.com/search?q=emacs+replace+regex+double+space     
+  - select word at cursor https://emacs.stackexchange.com/questions/35069/best-way-to-select-a-word
+- https://www.google.com/search?q=emacs+change+keybinding
+
+- https://www.reddit.com/r/emacs/comments/mqtwzx/creating_custom_minor_modes_learning_emacs_lisp_7/
+- https://askubuntu.com/questions/598985/how-to-upgrade-to-the-latest-emacs          
+****** Interfaces
 :PROPERTIES:
-:ID:       1001a862-f3a7-4b07-8f2c-882f1e69398b
+:ID:       0c0667a7-dcb3-4ef8-98c1-8fa1b9cc3116
 :END:
-- commands
-  |----------+---------|
-  | function | command |
-  |----------+---------|
-  | <35>     | <35>    |
-  |          |         |
-- processes
-  - https://www.google.com/search?q=gimp+crop+image
-  - https://www.google.com/search?q=gimp+convert+to+black+and+white
-- standards and best practice
-- documentation
-- applications
-- reference
-  - [[file:~/.emacs.d/snippets/org-mode/software]]
+- [currently not working] to goodle drive- https://www.gnu.org/software/tramp/#Using-Google-Drive
+
+- https://www.reddit.com/r/emacs/comments/dtciau/is_there_any_way_i_can_integrate_emacs_with/
+- https://www.reddit.com/r/emacs/comments/ggke5m/new_calibredbel_yet_another_calibre_emacs_client/  
+- docker
+  - https://github.com/JAremko/docker-emacs
+  - https://github.com/Silex/docker.el
+  - https://github.com/Silex/docker.el
+  - https://github.com/spotify/dockerfile-mode
+- python
+  - https://realpython.com/emacs-the-best-python-editor/
+  - https://www.reddit.com/r/emacs/comments/d2mhx7/nonprogrammer_here_looking_to_learn_python_should/
+- web
+  - https://github.com/karlicoss/cloudmacs
+  - https://emacs.stackexchange.com/questions/40829/cannot-open-new-chrome-tab-by-browse-url-chrome-newtab
+  - https://github.com/karlicoss/cloudmacs
+- shells
+  - https://www.reddit.com/r/emacs/comments/r2p12t/eshellmode/
+  - - https://emacs.stackexchange.com/questions/50539/sending-code-to-an-ansi-term-via-isend-mode-how-to-modify-default-buffer-chosen
+  - [[https://emacs.stackexchange.com/questions/43711/displaying-a-second-buffer-with-a-shell][see send-line-to-region-and-step]]
+  - https://github.com/riscy/shx-for-emacs#description
+  - eshell
+    - https://old.reddit.com/r/emacs/comments/cyu4is/anyone_actually_using_eshells_smart_display/
+  - https://old.reddit.com/r/emacs/comments/cyu4is/anyone_actually_using_eshells_smart_display/
+- https://rebeja.eu/posts/python-ide-with-emacs-and-docker/
+****** Documentation
+:PROPERTIES:
+:ID:       6a66a393-75c0-4576-b77d-e259dbd5d252
+:END:
+- Local with C-h r
+  - Navigating documentation
+    - C-h i g
+    - [[http://stackoverflow.com/questions/14915572/how-do-i-get-started-using-emacs-documentation][intro to documentation]]  
+- 5
+  - 5.24  - [[https://www.gnu.org/software/emacs/manual/html_mono/efaq.html#Turning-off-beeping][stop emacs beeps]]
+  - [[https://www.gnu.org/software/emacs/manual/html_mono/efaq.html#Matching-parentheses][5.27 Parenthesis matching]]
+  - 5.33 How do I insert <some text> at the beginning of every line?
+- 12 Hippie Expansion 
+  - 12.5 Rectangles
+    - add leading comment symbol with string-input-rectangle
+- 13
+  - 13.8 Bookmarks
+    - prototypical use of bookmarks is to record where you were reading in various files
+    - https://wooww.emacswiki.org/emacs/BookMarks
+- [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Display.html#Display][14 Controlling the Display]]
+  - https://github.com/joostkremers/visual-fill-column
+  - http://ergoemacs.org/emacs/emacs_playing_with_color_theme.html
+- 17 Keyboard Macros
+  - https://emacsnotes.wordpress.com/2018/05/27/keyboard-macros-build-custom-commands-with-the-emacs-command-language/
+  - 17.5
+    - Troubleshooting- M-x profiler-start / profiler-report                    
+- 18 File handling
+  - https://old.reddit.com/r/orgmode/comments/p1raro/executable_org_file_bootstrapping/
+- 10 Help
+  | type    | action         | command |
+  | help    | info program   | C-h i   |
+  | help    | function doc   | C-h f   |
+  | help    | variable doc   | C-h v   |
+  | help    | key combo      | C-h k   |
+  | help    | curr buff mode | C-h m   |
+  |         |                |         |
+  | help    | list all cmmds | C-h m   |
+  |         |                |         |
+  | display | all key bind   | X-b     |
+  |         |                |         |
+  | help    | info directory | C-h i d |
+  |         |                |         |
+  |         | show mode info | C-h m   |
+- [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Windows.html#Windows][20 Multiple Windows]]
+  - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Split-Window.html#Split-Window][20.2 Splitting Windows]]  
+- 21 Frames and Graphical Displays
+  | type   | action       | command     |
+  | resize | shrink h     | S-C-<left>  |
+  |        | enlarge h    | S-C-<right> |
+  |        | shrink v     | S-C-<down>  |
+  |        | enlarge v    | S-C-<up>    |
+  |        |              |             |
+  | buffer | kill current | C-x k       |
+  |        |              |             |
+  | Text   | Larger/small | C-x-+/-     |
+  - ;; Prevents local frame splitting  (set-frame-parameter nil 'unsplittable t)
+- 22 input methods
+  - [[https://stackoverflow.com/a/10197062/6106936][input greek characters]]
+- 23 Major and Minor Modes
+  - https://www.reddit.com/r/emacs/comments/mqtwzx/creating_custom_minor_modes_learning_emacs_lisp_7/
+  - [[https://www.gnu.org/software/emacs/manual/html_mono/forms.html#Forms-Example][forms mode]]
+  - [[https://www.gnu.org/software/tramp/][Tramp mode]]
+  - Minor Modes
+    - Flyspell
+      - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Spelling.html][Flyspell]]
+      - also [[https://www.emacswiki.org/emacs/FlySpell][see these]] which are added to init
+      - https://www-sop.inria.fr/members/Manuel.Serrano/flyspell/flyspell.html
+      - Commands
+        | type       | function        | command |
+        |------------+-----------------+---------|
+        |            | suggest words   | M-$     |
+        |            | add word        | i       |
+        |            | check next word | M-s M-n |
+        | minibuffer | add to dict     | i       |
+    - next
+
+    | type    | action            | command        |
+    | frames  | new window        | C-x 5 2        |
+    |         |                   |                |
+    | windows | new below         | C-x 2          |
+    |         | new side          | C-x 3          |
+    |         | max current       | C-x 1          |
+    |         |                   |                |
+    | buffer  | list              | C-x C-b        |
+    |         | switch            | C-x <l/r>      |
+    |         | name switch       | C-x b          |
+    | text    | increase/decrease | C-x C+/C-      |
+    |         | color them        | M-x load-theme |
+    |         |                   |                |
+- 24.1 [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Indentation-Commands.html][Indentation Commands]]
+- 25. Commands for human languages
+  - 
+  - https://kitchingroup.cheme.cmu.edu/blog/2014/09/13/Make-some-org-sections-read-only/
+  - 25.15 [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Text-Based-Tables.html#Text-Based-Tables][Editing Text-based Tables]]
+    - https://stackoverflow.com/questions/22837229/how-to-compute-the-dot-product-of-two-column-think-full-column-as-a-vector
+- 27 Compiling and Testing Programs
+  - 27.6 Running Debuggers
+    - Debugging
+      - - https://www.reddit.com/r/emacs/comments/6uc7g5/just_figured_out_why_emacs_pauses_sometimes/
+      - - M-x toggle-debug-on-error
+      - https://www.reddit.com/r/emacs/comments/2dmv85/invalid_search_bound_wrong_side_of_point_whenever/
+    - bactrace with (setq debug-on-error t)
+  - 27.8 Libraries of Lisp Code for Emacs
+    - variables
+      - load-path
+- 28
+  - https://emacs.stackexchange.com/questions/293/what-should-shouldnt-i-do-when-keeping-emacs-and-emacs-d-in-version-control
+- 29. Abbrevs
+  - http://pragmaticemacs.com/emacs/use-abbreviations-to-expand-text/#:~:text=Emacs%20has%20the%20ability%20to,teh%E2%80%9D%20for%20%E2%80%9Cthe%E2%80%9D.
+- 39. [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Emacs-Server.html][Using Emacs as a Server]]
+- 40. Operating system interface
+  - Batch Mode
+    - https://www.google.com/search?q=emacs+batch+bash+variable+in+command
+
+- 41. [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Sorting.html][to auto-sort a region]]
+- 44 [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html][Saving Emacs Sessions]]
+  - Don't! takes incredibly long to load 
+    #+begin_src emacs-lisp
+  ;;(desktop-save-mode 1)
+    #+end_src                              
+****** General reference
+- https://depp.brause.cc/shackle/
+- Appearance- [[https://www.reddit.com/r/emacs/comments/8nzbvj/how_your_emacs_looks_like/][reddit: How your "emacs" looks like?]]
+- [[https://www.reddit.com/r/emacs/comments/ba9j65/what_plugins_do_you_use_to_make_emacs_like_other/][What plugins do you use to make Emacs like other higher level editors? (VSCode, Sublime, etc)]]
+- ;;https://superuser.com/questions/602510/how-to-insert-tab-character-in-text-mode
+- name shell by starting with C-u M-x 
+- https://github.com/manateelazycat/aweshell/blob/master/README.md
+- [[http://ergoemacs.org/emacs/emacs_shell_vs_terminal.html][Why Run Shell in Emacs?]]
+  
+- https://github.com/c02y/dotemacs.d/blob/81153dcce335b0d2ef4b2416eae6e1ca3c70cd76/init.el#L2955-L3098
+- [X] generate local byte-compiled elisp
+  - if VC makes a newer .el, .elc will load, but with warning to recompile
+  - http://ergoemacs.org/emacs/emacs_byte_compile.html
+- cite:monnier2020
+- https://bofh.org.uk/2019/02/25/baking-with-emacs/
+- https://github.com/sunnyhasija/DOOMEmacs
+
+- https://karthinks.com/software/batteries-included-with-emacs/
+- https://www.reddit.com/user/publicvoit/
+- https://github.com/alphapapa/unpackaged.el
+- https://dougie.io/emacs/indentation/
+- Tutorials and Challenges
+  - [[https://blog.markhepburn.com/2013/12/07/andrew-hyatts-emacs-calc-tutorials][Andrew Hyatt's emacs calc tutorials]]
+  - [[https://vimeo.com/search/sort:latest?q=vimgolf+in+emacs][golf in emacs]]
+  - http://cestlaz.github.io/stories/emacs/
+  - https://sachachua.com/blog/2019/06/2019-06-10-emacs-news/
+  - guides
+    - https://www.reddit.com/r/emacs/comments/bbb42t/whats_your_job_whats_your_daily_emacs_workflow/
+    - [-] tuhdo
+      - [X] https://tuhdo.github.io/emacs-tutor.html
+      - [ ] https://tuhdo.github.io/emacs-tutor2.html
+    - http://emacslife.com/
+    - http://emacsrocks.com/
+    - [[http://emacs.stackexchange.com/questions?sort=votes][emacs stack exchange questions by vote]]
+    - [[https://pawelbx.github.io/emacs-theme-gallery/][nice emacs theme gallary]]
+    - cite:bingmann2015 
+    - not useful
+      - [[http://david.rothlis.net/emacs/howtolearn.html][Rothlisberger How to Learn Emacs]]
+- config/init file examples
+  - https://shreyas.ragavan.co/docs/emacs-config/
+  - https://github.com/jzohrab/emacs.d/blob/master/init.el#L31
+  - https://emacs.christianbaeuerlein.com/#org7a4a164
+  - https://www.reddit.com/r/emacs/comments/eewwyh/officially_introducing_memacs/
+  - https://jmonlong.github.io/Hippocamplus/emacs/
+  - https://github.com/0pendev/dotfiles/blob/master/emacs/config.org
+  - [[https://github.com/xgarrido/emacs-starter-kit/blob/master/starter-kit.org][github: xgarrido emacs starter kit]]
+- Emacs from Scratch
+  - 
+  - https://www.reddit.com/r/emacs/comments/k5cqwb/emacs_ide_python_development_configuration_live/
+
+https://kitchingroup.cheme.cmu.edu/blog/2017/04/07/Object-oriented-font-locking-in-emacs-lisp/
+https://www.reddit.com/r/emacs/comments/pk5ad6/draw_and_scribble_in_gnu_emacs/
+- https://www.google.com/search?q="emacs"+"shell"+tab+complete+slow+lag+freeze 
+- https://www.google.com/search?client=ubuntu&hs=MjH&sxsrf=ALeKk00pCsDFnS4Sdtxwh9bZU8HhLT0sJw%3A1613614369863&ei=Ic0tYPqPLu-E9PwPkOC1iAc&q=emacs+remote+bash+completion+slow&oq=emacs+remote+bash+completion+slow&gs_lcp=Cgdnd3Mtd2l6EAMyBQghEKABOgcIABBHELADOgQIABBDOgUIABCRAjoICAAQsQMQgwE6BQgAELEDOgIIADoICC4QsQMQgwE6BQguELEDOggIABCxAxCRAjoHCAAQsQMQCjoGCAAQFhAeOggIABAWEAoQHjoFCCEQqwI6CAghEBYQHRAeOgcIIRAKEKABUPxUWIx-YPqAAWgBcAJ4AIABmQGIAcEUkgEEMjMuNpgBAKABAaoBB2d3cy13aXrIAQLAAQE&sclient=gws-wiz&ved=0ahUKEwi6pMH6rfLuAhVvAp0JHRBwDXEQ4dUDCA0&uact=5
+- https://www.google.com/search?q=emacs+paste+without+line+breaks&oq=emacs+paste+without+line+breaks&aqs=chrome..69i57.9783j0j7&client=ubuntu&sourceid=chrome&ie=UTF-8
+- https://stackoverflow.com/questions/14760567/emacs-auto-load-color-theme-by-time
+- https://karl-voit.at/2020/01/01/appendorgheading/
+- https://www.reddit.com/r/emacs/comments/gmsc2o/best_way_to_learn_enough_to_contribute_to_emacs/
+- https://www.reddit.com/r/emacs/comments/gumld3/svg_rounded_box_experiment/
+- https://emacs.stackexchange.com/questions/3105/how-to-use-an-external-program-as-the-default-way-to-open-pdfs-from-emacs
+- http://ergoemacs.org/emacs/elisp_compact_empty_lines.html
+https://github.com/politza/pdf-tools
+- https://www.reddit.com/r/emacs/comments/ajwtcb/emacs_on_the_go/
+- https://github.com/JAremko/docker-emacs
+- [[http://ergoemacs.org/emacs/emacs_shell_vs_terminal.html][Why Run Shell in Emacs?]]
+- [[https://www.emacswiki.org/emacs/TabCompletion][tab complete]]
+- [ ] [[https://emacs.stackexchange.com/questions/14833/debugging-warning-reference-to-free-variable][stack:emacs: Debugging “Warning: Reference to free variable”]]
+- https://github.com/Fuco1/smartparens
+- [[https://github.com/emacs-evil/evil/blob/master/README.md][EVIL mode]]
+- https://github.com/emacs-tw/awesome-emacs
+- Ideas
+  - Fix Warning (bytecomp): reference to free variable ‘oauth--token-data’ type warnings
+  - Load org-mode buffers at startup
+  - [[http://orgmode.org/worg/org-hacks.html][cool hacks]]
+  - font lock mods for highlighting text
+    - http://emacs.stackexchange.com/questions/5889/how-to-highlight-text-permanently-in-org-mode
+    - http://emacs.stackexchange.com/questions/12814/extending-org-mode-with-more-markups
+    - https://www.gnu.org/software/emacs/manual/html_node/emacs/Highlight-Interactively.html#Highlight-Interactively
+    - http://stackoverflow.com/questions/3579895/whats-the-font-lock-mode-for-in-emacs
+    - https://www.emacswiki.org/emacs/FontLockMode
+    - http://emacs.stackexchange.com/questions/9840/how-to-use-font-lock-to-highlight-end-of-line-comments
+    - http://stackoverflow.com/questions/20016634/highlight-selected-text-in-emacs-org-mode
+  - https://www.reddit.com/r/emacs/comments/5oo51r/wolframalpha_integration_with_emacs/
+  - [[http://emacs.stackexchange.com/questions/28772/manage-same-init-file-for-linux-and-windows][same init for multiple platforms]]
+- how to autoupdate packages? 
+- https://github.com/emacs-tw/awesome-emacs
+- https://tuhdo.github.io/emacs-tutor3.html            
 ***** gimp
 :PROPERTIES:
 :ID:       9ecdf234-2e25-486f-926d-ee71a7179a96
@@ -6792,6 +7234,7 @@ y
 :ID:       4F02B352-1A93-4CF4-A386-2788387A18C0
 :END:
 
+***** ncdu 
 ***** Nextcloud
 :LOGBOOK:
 CLOCK: [2021-11-09 Tue 13:19]--[2021-11-09 Tue 13:49] =>  0:30
@@ -6799,7 +7242,8 @@ CLOCK: [2021-11-09 Tue 13:19]--[2021-11-09 Tue 13:49] =>  0:30
 - https://medium.com/@rohit_kapur/how-im-slowly-moving-off-the-cloud-with-nextcloud-460118a7723d
 - https://www.youtube.com/watch?v=y4dtcr2NL5M&ab_channel=LearnLinuxTV
   - 
-***** ncdu 
+***** nohup
+https://unix.stackexchange.com/questions/420594/why-process-killed-with-nohup
 ***** offlineimap
   - https://medium.com/@kirang89/emacs-as-email-client-with-offlineimap-and-mu4e-on-os-x-3ba55adc78b6
   - https://github.com/sup-heliotrope/sup/wiki/Complete-gmail-configuration
@@ -6832,10 +7276,29 @@ CLOCK: [2021-11-09 Tue 13:19]--[2021-11-09 Tue 13:49] =>  0:30
 :END:
 - https://github.com/orgzly/orgzly-android/issues/674
 - orgzly event reminders occur at time of event https://github.com/orgzly/orgzly-android/issues/664
+***** Outlook on the web :software:
+- can get permalink urls to specific emails via send to OneNote
 ***** rclone
 :PROPERTIES:
 :ID:       be76a873-d2fe-447f-a43c-b84c52a8e77b
 :END:
+- Setup rclone config
+  #+begin_src bash
+rclone config 
+n
+remote
+6
+
+<ENTER>
+<ENTER> 
+
+n
+n
+
+y
+y
+q
+#+end_src
 - [[https://rclone.org/][rclone]]
 #+begin_src bash
 rclone config 
@@ -6853,12 +7316,18 @@ y
 y
 q
 #+end_src
+***** Reference
+- https://youtube-dl.org/
+***** Remarkable
+- https://www.reddit.com/r/RemarkableTablet/comments/ui4w46/remarkable2_without_connect/
+- https://www.google.com/search?q=remarkable+quick+sheets+delete 
+- https://remarkablewiki.com/tech/file_transfer
+
+https://remarkablewiki.com/tips/client - linux client doesn't work 
 ***** rename
 - https://unix.stackexchange.com/questions/689949/rename-file-by-moving-middle-string-to-end-of-the-filename
 
 https://www.google.com/search?q=bash+rename+file+shift+string+to+end 
-***** Reference
-- https://youtube-dl.org/
 ***** singularity
 :PROPERTIES:
 :CREATED:  [2021-11-17 Wed 11:34]
@@ -7027,16 +7496,290 @@ singularity version
 
     which singularity
     #+end_src
-
+- [[id:D2FAA88D-70CC-4450-BBB3-8A446CB43AF3][Docker]]
+- https://www.google.com/search?q=singularity+check+which+docker+container 
 ***** snakemake                                                     :biotool:career:
 :PROPERTIES:
 :ID:       a8b27140-4b9e-40c5-86ab-ee5afeae723f
 :CREATED:  [2021-09-13 Mon 07:29]
 :END:
 :LOGBOOK:
+CLOCK: [2022-05-16 Mon 07:48]--[2022-05-16 Mon 07:54] =>  0:06
 CLOCK: [2022-04-07 Thu 07:39]--[2022-04-07 Thu 07:44] =>  0:05
 CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
 :END:
+[[./basecamp.org_20220516_075051.png]]
+[[./basecamp.org_20220516_075119.png]]
+****** Scripts
+******* Draw rulegraph
+:PROPERTIES:
+:ID:       78a99954-1d5d-4e09-87a4-6690f28f4519
+:END:
+#+begin_src bash :tangle ./src/smk_draw.sh
+# Check for parameters and return usage
+if [ "$#" -ne 3 ];
+then
+    printf "\n usage: smk_dry_run.sh config_file smk_file pdf_loc
+    \n Draws the rulegraph for a snakemake file at pdf_loc
+    \n "
+else
+    # Necessary to run conda snakemake command in shell script
+    eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
+    #
+    conda activate snakemake
+    #
+    snakemake \
+        --configfile $1 \
+        --cores 1 \
+        --rulegraph \
+        --snakefile $2 | dot -Tpdf > $3
+fi
+#+end_src
+
+#+begin_src bash :tangle ./src/smk_draw.sh
+# Check for parameters, return usage if empty
+if [[ $# -eq 0 ]] ||
+       [[ $1 == "h" ]] ||
+       [[ $1 == "-h" ]] ||
+       [[ $1 == "help" ]] ;
+then
+    printf "\n usage: smk_dry_run.sh config_file smk_file pdf_loc
+\n Draws the rulegraph for a snakemake file at pdf_loc
+            \n "
+else
+eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
+
+conda activate snakemake
+
+snakemake \
+    --configfile $1 \
+    --cores 1 \
+    --rulegraph \
+    --snakefile $2 | dot -Tpdf > $3
+fi
+#+end_src
+******* Dry run
+:PROPERTIES:
+:ID:       c6c494f0-5dbe-4cc4-bf99-8bcd7b12de24
+:END:
+#+begin_src bash :tangle ./src/smk_dry_run.sh
+# Check for parameters and return usage
+if [ "$#" -ne 2 ];
+then
+    printf "\n usage: smk_dry_run.sh <SMK CONFIG YAML> <SMK FILE>
+    \n Script for snakemake dry run. 
+    \n Will not test singularity container is working 
+    \n "
+else
+    # Necessary to run conda snakemake command in shell script
+    eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
+    #
+    conda activate snakemake
+    #
+    snakemake \
+        --configfile $1 \
+        --cores 1 \
+        --dry-run \
+        --forceall \
+        --printshellcmds \
+        --use-singularity \
+        --snakefile $2
+fi
+#+end_src
+******* Forced run
+:PROPERTIES:
+:ID:       c2a25d2f-05bb-4eda-920f-e2d9fa768de6
+:END:
+#+begin_src bash :tangle ./src/smk_forced_run.sh
+# Check for parameters and return usage
+if [ "$#" -ne 2 ];
+then
+    printf "\n usage: smk_forced_run.sh config_file smk_file
+    \n Script to complete forced run of snakefile. 
+    \n Assumes
+    - Singularity container specified in config
+    - a mount point at /mnt
+    \n "
+else
+    # Necessary to run conda snakemake command in shell script    
+    eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
+    #
+    conda activate snakemake
+    #
+    snakemake \
+        --configfile $1 --cores 4 \
+        --use-singularity \
+        --singularity-args "--bind ${HOME}:${HOME} --bind /mnt:/mnt" \
+        --forceall \
+        --printshellcmds \
+        --rerun-incomplete \
+        --snakefile $2 \
+        --verbose
+fi
+#+end_src
+******* Normal run
+:PROPERTIES:
+:ID:       3adf72d3-aa35-4a3d-8eba-0df075c52e26
+:END:
+#+begin_src bash :tangle ./src/smk_run.sh
+# Check for parameters, return usage if empty
+if [ "$#" -ne 2 ];
+then
+    printf "\n usage: smk_forced_run.sh <SMK CONFIG YAML> <SMK FILE>
+    \n Script to complete an normal run of a snakefile
+    \n Assumes
+    - Singularity container specified in config
+    - a mount point at /mnt
+    \n "
+else
+    # Necessary to run conda snakemake command in shell script    
+    eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
+    #
+    conda activate snakemake
+    #
+    snakemake \
+        --configfile $1 --cores 4 \
+        --use-singularity \
+        --printshellcmds \
+        --singularity-args "--bind ${HOME}:${HOME} --bind /mnt:/mnt" \
+        --rerun-incomplete \
+        --snakefile $2 \
+        --verbose
+fi
+#+end_src
+******* Dev
+#+begin_src bash 
+#!/bin/bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+
+####################################
+###   Choose and Run Snakefile   ###
+####################################
+
+# Setup
+#set -euxov pipefail
+
+source config/${HOSTNAME}.sh
+echo "The following `*.smk` archives were found; select one:"
+
+# set the prompt used by select, replacing "#?"
+PS3="Use number to select an option"
+
+select filename in ./workflow/*.smk
+
+do
+    if [[ "$filename" == "" ]]
+    then
+        echo "'$REPLY' is not a valid number"
+        continue
+    fi
+    echo $filename
+    select run_option in dry_run normal force_final force_all
+    do
+        echo selected $run_option
+        case $run_option in
+            dry_run)
+                source activate snakemake
+                snakemake \
+                    --configfile config/${HOSTNAME}.yaml \
+                    --cores $threads \
+                    --directory ${repo} \
+                    --dry-run \
+                    --rerun-incomplete \
+                    --singularity-args "--bind $mntpt:$mntpt" \
+                    --use-singularity \
+                    --snakefile $filename
+                ;;
+            normal) 
+                source activate snakemake
+                select nohup_option in no yes
+                do
+                    case $nohup_option in
+                        no)
+                            snakemake \
+                                --configfile config/${HOSTNAME}.yaml \
+                                --cores $threads \
+                                --directory ${repo} \
+                                --singularity-args "--bind $mntpt:$mntpt" \
+                                --use-singularity \
+                                --snakefile $filename
+                            ;;
+                        yes)
+                            nohup snakemake \
+                                  --configfile config/${HOSTNAME}.yaml \
+                                  --cores $threads \
+                                  --directory ${repo} \
+                                  --singularity-args "--bind $mntpt:$mntpt" \
+                                  --use-singularity \
+                                  --snakefile $filename
+                            ;;
+                    esac
+                done                
+                ;;
+            force_final)
+                source activate snakemake
+                select nohup_option in no yes
+                do
+                    case $nohup_option in
+                        no)                                          
+                            snakemake \
+                                --configfile config/${HOSTNAME}.yaml \
+                                --cores $threads \
+                                --directory ${repo} \
+                                --force \
+                                --singularity-args "--bind $mntpt:$mntpt" \
+                                --use-singularity \
+                                --snakefile $filename
+                            ;;
+                        yes)
+                            nohup snakemake \
+                                  --configfile config/${HOSTNAME}.yaml \
+                                  --cores $threads \
+                                  --directory ${repo} \
+                                  --force \
+                                  --singularity-args "--bind $mntpt:$mntpt" \
+                                  --use-singularity \
+                                  --snakefile $filename
+                            ;;
+                    esac
+                done                
+                ;;            
+            force_all)
+                source activate snakemake
+                select nohup_option in no yes
+                do
+                    case $nohup_option in
+                        no)                                          
+                
+                snakemake \
+                    --configfile config/${HOSTNAME}.yaml \
+                    --cores $threads \
+                    --directory ${repo} \
+                    -F \
+                    --singularity-args "--bind $mntpt:$mntpt" \
+                    --use-singularity \
+                    --snakefile $filename
+                                            ;;
+                        yes)
+                nohup snakemake \
+                    --configfile config/${HOSTNAME}.yaml \
+                    --cores $threads \
+                    --directory ${repo} \
+                    -F \
+                    --singularity-args "--bind $mntpt:$mntpt" \
+                    --use-singularity \
+                    --snakefile $filename
+                            ;;
+                    esac
+                done                
+                ;;            
+        esac
+        break
+    done
+    break
+done
+#+end_src
+
 ****** Processes 
 
 ******* Install and setup
@@ -7082,71 +7825,21 @@ snakemake --help
 - syntax for running shell https://stackoverflow.com/questions/45553762/recommended-way-to-do-multiple-shell-commands-with-shell/49533645#49533645
 - https://stackoverflow.com/questions/17126996/emacs-mode-for-snakemake
 - check md5 https://stackoverflow.com/questions/65907256/snakemake-use-checksums-instead-of-timestamps
-****** Scripts
-- Repo test
-  #+begin_src bash :tangle ./src/smk_repo_test.sh :tangle-mode (identity #o555)
-#!/bin/bash
-# Check for parameters, return usage if empty
-if [[ $# -eq 0 ]] || [[ $1 == "h" ]] ; then
-   printf "\n usage: smk_repo_test.sh config-file snakefile
-           \n"
-   else
-eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
-
-conda activate snakemake
-
-snakemake \
-    --configfile $1 \
-    --cores 4 \
-    --use-singularity \
-    --forceall \
-    --snakefile $2
-       
-fi
-
-#+end_src
-- Dry run
-  #+begin_src bash :tangle ./src/smk_dry_run.sh
-# Check for parameters, return usage if empty
-if [[ $# -eq 0 ]] || [[ smk_dry_run.sh == "h" ]] ; then
-    printf "\n usage: smk_dry_run.sh config_file smk_file
-\n This run will not test singularity container is working 
-            \n "
-else
-eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
-
-conda activate snakemake
-
-snakemake \
-    --configfile $1 --cores 4 \
-    --use-singularity \
-    --dry-run \
-    --forceall \
-    --printshellcmds \
-    --snakefile $2
-fi
-#+end_src
-- Forced run
-  #+begin_src bash :tangle ./src/smk_forced_run.sh
-# Check for parameters, return usage if empty
-if [[ $# -eq 0 ]] || [[ smk_dry_run.sh == "h" ]] ; then
-    printf "\n usage: smk_forced_run.sh config_file smk_file
-           \n "
-else
-eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
-
-conda activate snakemake
-
-snakemake \
-    --configfile $1 --cores 4 \
-    --use-singularity \
-    --forceall \
-    --printshellcmds \
-    --rerun-incomplete \
-    --snakefile $2
-fi
-#+end_src
 ****** Style
+- Configuration
+  - tabular- declare per-unit identifiers and index in snakefile preamble. /E.g./ # units = pd.read_table("bin/units_test.tsv").set_index("sample", drop=False)
+    - needs import pandas
+  - YAML files
+    - subdivide labels. /E.g./
+      ref:
+        index:
+      rather than ref_index:
+      (use as ref = config["ref"]["index"])
+    - Favor parameterizing only a main data directory and then writing subpaths directly in rules. /E.g/ config["data_dir"] + "/qc" rather than config["qc_dir"].
+    - Use boolean setters in the config.
+      - /E.g./
+        - in config: call_variants: false
+        - and in rule all:         lambda wildcards: "analysis/09a_variant_annot/all.merged.filt.PASS.snpeff.vcf.gz.tbi" if config["call_variants"] else [],
 - Externalize all scripts from workflow and allow independent script execution
 - Each rule has logfile defined in workflow directed to log_dir
 - Software generated log files are redirected to log_dir
@@ -7356,6 +8049,7 @@ snakemake --cores 20 --forceall
 - https://snakemake-wrappers.readthedocs.io/en/stable/wrappers.html
 - [[Snakemake Tutorial][Snakemake Tutorial]]
 ****** Examples
+- https://github.com/vari-bbc/rnaseq_workflow/blob/master/Snakefile
 - https://github.com/ohsu-cedar-comp-hub/cfRNA-seq-pipeline-Ngo-manuscript-2019
 - https://github.com/yztxwd/rna-seq-standard-pipeline/tree/c19a9e27216b86d3dbfdaed7228aeff59f869383
 - https://github.com/porchard/ATACseq-Snakemake/blob/master/src/Snakefile
@@ -7376,17 +8070,6 @@ snakemake --cores 20 --forceall
 ***** tramp
   - [currently not working] to goodle drive- - https://www.gnu.org/software/tramp/#Using-Google-Drive
 ***** trash http://hasseg.org/trash/
-***** xdg-utils
-- "desktop" entries
-  - ~/.local/share/applications
-  - /usr/share/applications
-  - https://wiki.archlinux.org/title/Desktop_entries
-- https://wiki.archlinux.org/title/XDG_MIME_Applications#:~:text=The%20XDG%20Shared%20MIME%2Dinfo,from%20shared%2Dmime%2Dinfo.
-- https://unix.stackexchange.com/questions/36380/how-to-properly-and-easily-configure-xdg-open-without-any-environment
-- local defaults list at ~/.config/mimeapps.list
-- $ xdg-mime default Thunar.desktop inode/directory
-- application interactions, xdg
-  - https://wiki.archlinux.org/title/Xdg-utils
 ***** virtualbox
 :PROPERTIES:
 :ID:       147fb935-7526-497f-ab84-2b7903ea996e
@@ -7412,6 +8095,28 @@ snakemake --cores 20 --forceall
     | Slower       | CMD -         |
     | Jump back    | CMD ALT LEFT  |
     | Jump forward | CMD ALT RIGHT |
+***** wine
+#+begin_src bash
+sudo apt update            
+#+end_src
+***** xdg-utils
+- "desktop" entries
+  - ~/.local/share/applications
+  - /usr/share/applications
+  - https://wiki.archlinux.org/title/Desktop_entries
+- https://wiki.archlinux.org/title/XDG_MIME_Applications#:~:text=The%20XDG%20Shared%20MIME%2Dinfo,from%20shared%2Dmime%2Dinfo.
+- https://unix.stackexchange.com/questions/36380/how-to-properly-and-easily-configure-xdg-open-without-any-environment
+- local defaults list at ~/.config/mimeapps.list
+- $ xdg-mime default Thunar.desktop inode/directory
+- application interactions, xdg
+  - https://wiki.archlinux.org/title/Xdg-utils
+***** youtube-dl
+#+begin_src bash
+sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+sudo chmod a+rx /usr/local/bin/youtube-dl
+            
+#+end_src
+https://github.com/ytdl-org/youtube-dl/blob/master/README.md#readme
 ***** Zotero
 :PROPERTIES:
 :ID:       25D1FA26-1865-4BFC-845C-8D1B1830EE13
@@ -7439,11 +8144,6 @@ CLOCK: [2019-03-04 Mon 14:59]--[2019-03-04 Mon 15:17] =>  0:18
 - Performance- manual entry lag
   - [[https://forums.zotero.org/discussion/16733/manual-citation-entry-clunky][No answers, but question asked]]
 
-***** byzanz
-:PROPERTIES:
-:ID:       65e67524-2812-482f-8d06-58d8aa3bce6d
-:END:
-https://askubuntu.com/questions/55709/how-to-select-display-to-record-in-recordmydesktop
 **** Software hierarchical list by purpose
 https://github.com/xournalpp/xournalpp
 - by application
@@ -7551,7 +8251,9 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
+https://www.reddit.com/r/git/comments/ukrhb1/versioning_changelogs_release_notes_squashing_and/
 ******* Processes 
+- https://www.google.com/search?q=git+make+stable+version+branch 
 - Ignore
   - https://www.google.com/search?q=git+ignore+all+symlinks https://stackoverflow.com/questions/8650871/telling-git-to-ignore-symlinks 
 - Commit messages
@@ -7582,12 +8284,6 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
   - https://stackoverflow.com/questions/28357350/two-git-repositories-share-common-code
   - https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-symlinks-to-a-single-clone-locally
   - https://www.bitsnbites.eu/a-stable-mainline-branching-model-for-git/
-- Branch
-  - git branch
-    - add and delete
-      - -d <BRANCH NAME>
-      - <BRANCH NAME> 
-  - git checkout <BRANCH> switch branches
 - Clone
   - https://www.google.com/search?q=git+clone+github+stack 
 - Commands
@@ -7638,9 +8334,15 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
   - removing files
     - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
     - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
-
 - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
 - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
+******** Branches
+  - git branch
+    - add and delete
+      - -d <BRANCH NAME>
+      - <BRANCH NAME> 
+  - git checkout <BRANCH> switch branches
+https://stackoverflow.com/questions/67699/how-to-clone-all-remote-branches-in-git    
 ******** Reverting
 :PROPERTIES:
 :ID:       a3515f1b-c8c6-4c0b-bb4d-737c3edc9886
@@ -7668,23 +8370,23 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 - [[https://stackoverflow.com/questions/4254389/git-corrupt-loose-object/18238322#18238322][corrupt loose object]]
 - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
 ******** Submodules
-https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-symlinks-to-a-single-clone-locally
-- https://www.google.com/search?q=private+git+submodules
-  - https://stackoverflow.com/questions/37638034/private-folder-submodule-in-a-public-repo
-- https://stackoverflow.com/questions/19728933/continue-looping-over-submodules-with-the-git-submodule-foreach-command-after
-- Add- git submodule add <SUBMODULE>
-- initialize git submodule update --recursive --init
+- Add
+  - Add from github https://stackoverflow.com/questions/1911109/how-do-i-clone-a-specific-git-branch
+  - Add specific branch with -b 
+  - git submodule add <SUBMODULE>
+- Initialize git submodule update --recursive --init
 - Pull
   - 
   - https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin    
   - https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
   - push and pull submodules
     - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
+- Remove https://stackoverflow.com/questions/12898278/issue-with-adding-common-code-as-git-submodule-already-exists-in-the-index
 - Commit
-  - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
   - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
 - Push
   - https://stackoverflow.com/questions/5814319/git-submodule-push
+- Remove
 - General reference
   - https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407
   - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
@@ -7694,13 +8396,16 @@ https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-
     - # git submodule foreach --recursive git pull
     - # git submodule foreach --recursive git push
   - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
+  - https://stackoverflow.com/questions/19728933/continue-looping-over-submodules-with-the-git-submodule-foreach-command-after
+  - https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-symlinks-to-a-single-clone-locally
+  - https://www.google.com/search?q=private+git+submodules
+    - https://stackoverflow.com/questions/37638034/private-folder-submodule-in-a-public-repo
 ******** Working with previous commits
 - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
 - view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
 - https://stackoverflow.com/questions/888414/git-checkout-older-revision-of-a-file-under-a-new-name
 ******** Search and view
-- Viewing
-  - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
+- [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
 - https://stackoverflow.com/questions/7663451/view-a-specific-git-commit
 - https://stackoverflow.com/questions/2364147/how-to-get-just-one-file-from-another-branch
 - searching for deleted files https://www.google.com/search?q=git+search+deleted+files
@@ -7709,6 +8414,78 @@ https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-
   - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
 - Searching commits
   - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
+******* Scripts
+#+begin_src bash :tangle no
+#!/bin/bash
+date=$(date +%Y-%m-%d)
+
+git add -A && \
+    git  commit -a -m "$date" && \
+    git push
+
+    && \
+    git submodule foreach --recursive git add -A && git commit -am "$date" && \
+    git submodule foreach --recursive git push
+
+
+#!/bin/bash
+date=$(date +%Y-%m-%d)
+for d in $HOME/repos/*
+do 
+#	[[ ! -d "$d" ]] && continue
+	echo "$d"
+	cd "$d"
+	git add -A && \
+        git commit -a -m "$date" && \
+        git push && \
+        git submodule foreach --recursive git checkout master &&\
+        git submodule foreach --recursive git add -A && git commit -am "$date" && \
+        git submodule foreach --recursive git push
+done             
+
+git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
+git submodule foreach --recursive git push
+git submodule foreach --recursive git pull
+
+cd $repo
+git submodule foreach --recursive git checkout master
+
+
+git submodule foreach --recursive git pull
+
+
+        
+done
+
+#+end_src
+- Setup submodules
+  #+begin_src bash
+git submodule add git@github.com:jeszyman/latex            
+git submodule update --recursive --init
+#+end_src
+- Setup link to github
+  #+begin_src bash
+if [ -d /home/jeszyman/repos/cardradbio-atac ]; then
+    cd /home/jeszyman/repos/cardradbio-atac            
+fi
+
+git add -A
+
+git commit -am "First commit"
+
+git branch -M master
+
+git remote add origin git@github.com:jeszyman/cardradbio-atac.git
+
+git push -u origin master
+#+end_src
+- Import size check hook (bash config will check this is readable)
+  #+begin_src bash :noweb yes 
+<<../basecamp/basecamp.org:git_size_check_hook_wrapper()>>            
+#+end_src
+  #+begin_src bash
+ln -s /home/jeszyman/repos/cardradbio-atac/config/precommit_git_hook /home/jeszyman/repos/cardradbio-atac/.git/hooks/precommit
+#+end_src
 ******* Code tangle
 - Pre-commit file size check hook
   #+name: git_size_check_hook
