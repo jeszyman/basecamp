@@ -3,12 +3,12 @@
 ### symlink-by-csv ###
 ######################
 #
-# Purpose: generates symbolic links in bulk from a csv file 
+# Purpose: generates symbolic links in bulk from a csv file
 #
 # Input:
-# A .csv file of two columns, 
+# A .csv file of two columns,
 #  Column 1 with source file paths
-#  Column 2 with destination symbolic link paths 
+#  Column 2 with destination symbolic link paths
 #
 # Function:
 symlink_by_csv(){
@@ -98,10 +98,10 @@ fi
 #########1#########2#########3#########4#########5#########6#########7#########8
 function check_dependencies {
     if [[ $# -eq 0 ]] || [[ $1 = -h ]] || [[ $1 = --help ]] ; then
-        printf "\n check_dependencies 
+        printf "\n check_dependencies
                      \n Uses WHICH command to confirm software install
                      \n \$1 = a bash array of software names, e.g. dependencies=("docker" "wget" "bash")
-                     \n  "  
+                     \n  "
     else
         local -n arr=$1
         for dependency in "${arr[@]}"
@@ -170,11 +170,11 @@ docker_interactive() {
 
 check_local_software(){
     if [[ $# -eq 0 ]] ; then
-        printf "\n check_local_software 
+        printf "\n check_local_software
               \n Checks list of software in array, exits with error message if not found
               \n \$1 = Bash array of software, e.g. software=(bash, git)
               \n "
-    else    
+    else
         software=$1
         for i in "${software[@]}"; do
             if command -v $i >/dev/null 2>&1 ; then

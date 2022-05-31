@@ -42,7 +42,7 @@ package.check = lapply(
 
 #
 # Theme
-theme_general <- function () { 
+theme_general <- function () {
   theme_cowplot(16) %+replace%
     theme()
 }

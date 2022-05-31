@@ -8,7 +8,7 @@ then
     - a mount point at /mnt
     \n "
 else
-    # Necessary to run conda snakemake command in shell script    
+    # Necessary to run conda snakemake command in shell script
     eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
     #
     conda activate snakemake

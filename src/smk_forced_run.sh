@@ -2,13 +2,13 @@
 if [ "$#" -ne 2 ];
 then
     printf "\n usage: smk_forced_run.sh config_file smk_file
-    \n Script to complete forced run of snakefile. 
+    \n Script to complete forced run of snakefile.
     \n Assumes
     - Singularity container specified in config
     - a mount point at /mnt
     \n "
 else
-    # Necessary to run conda snakemake command in shell script    
+    # Necessary to run conda snakemake command in shell script
     eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
     #
     conda activate snakemake

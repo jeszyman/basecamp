@@ -2,8 +2,8 @@
 if [ "$#" -ne 2 ];
 then
     printf "\n usage: smk_dry_run.sh <SMK CONFIG YAML> <SMK FILE>
-    \n Script for snakemake dry run. 
-    \n Will not test singularity container is working 
+    \n Script for snakemake dry run.
+    \n Will not test singularity container is working
     \n "
 else
     # Necessary to run conda snakemake command in shell script

@@ -5,7 +5,7 @@
 #             from a set of repositories within the same root dir              #
 #                                                                              #
 #########1#########2#########3#########4#########5#########6#########7#########8
-# 
+#
 date_today=$(date +%F)
 # 1. Script Checks
 #
@@ -23,10 +23,10 @@ if [ ${#repo_dirs[@]} -eq 0 ]; then
     exit 1; fi
 shopt -u nullglob
 ##
-# 2. Pull Function 
-#                      
+# 2. Pull Function
+#
 for d in $HOME/repos/*
-do 
+do
     [[ ! -d "$d" ]] && continue
     echo "$d" &&
     cd "$d" &&
@@ -34,8 +34,8 @@ do
     git commit -am $date_today &&
     git pull &&
     git submodule update --recursive &&
-    git submodule update --remote && 
-    git push 
+    git submodule update --remote &&
+    git push
     cd "$OLDPWD"
 done
 #
