@@ -6,6 +6,7 @@
 :LOGBOOK:
 CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 :END:
+- [ ] symlink to $HOME/.local/bin
 ** Git repo scripts
 - Common
   #+name: bash_common_config
@@ -6160,6 +6161,7 @@ https://askubuntu.com/questions/55709/how-to-select-display-to-record-in-recordm
 :PROPERTIES:
 :ID:       b16d0202-8d35-472b-b538-87a7d6a6cef7
 :END:
+- https://stackoverflow.com/questions/43222407/how-to-list-package-versions-available-with-conda
 - Processes
   - Conda/mamba/mambaforge install
     #+begin_src bash
@@ -8351,6 +8353,10 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
+******* Git process flat list
+******** Create and initialize
+  - https://www.google.com/search?q=initialize+git+repo
+  - git branch --set-upstream-to=origin/master master
 #+begin_src bash
 repo=/home/jeszyman/repos/mpnst-preprocessing
 cd $repo
@@ -8363,7 +8369,6 @@ git remote add origin git@github.com:jeszyman/mpnst-preprocessing.git
 git branch -M master
 git push -u origin master
 #+end_src
-******* Processes
 ******** Branches
   - git branch
     - add and delete
@@ -8429,15 +8434,12 @@ https://stackoverflow.com/questions/67699/how-to-clone-all-remote-branches-in-gi
 ******** Hooks
   - https://stackoverflow.com/questions/2050450/git-hooks-management
 ******** Ignore
+- https://www.toptal.com/developers/gitignore
 - Ignore a directory and all contents
   - https://www.google.com/search?q=git+ignore+directory
 - Ignore symlinks
   - https://www.google.com/search?q=git+ignore+all+symlinks
   - https://stackoverflow.com/questions/8650871/telling-git-to-ignore-symlinks
-******** Initializing
-  - https://www.google.com/search?q=initialize+git+repo
-  - git branch --set-upstream-to=origin/master master
-
 ******** Pull
 - https://www.google.com/search?q=git+not+possible+to+fast-forward+aborting
 ******** Removing
@@ -8607,7 +8609,7 @@ git push -u origin master
   #+begin_src bash
 ln -s /home/jeszyman/repos/cardradbio-atac/config/precommit_git_hook /home/jeszyman/repos/cardradbio-atac/.git/hooks/precommit
 #+end_src
-******* Code tangle
+******** Code tangle
 - Pre-commit file size check hook
   #+name: git_size_check_hook
   #+begin_src bash :noweb yes
@@ -8709,6 +8711,10 @@ done
 #+end_src
 ******* [[id:fcffb312-ca8d-4450-b837-b1945201f9c1][My git]]
 ******* Documentation and general reference
+- Repository directory structure
+  - https://medium.com/code-factory-berlin/github-repository-structure-best-practices-248e6effc405
+  - https://softwareengineering.stackexchange.com/questions/86914/whats-the-best-structure-for-a-repository
+  - https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html
 - https://www.reddit.com/r/webdev/comments/udod9z/git_makes_me_want_to_pull_my_hair_out/
 - Documentation and general reference
   - [[https://git-scm.com/][git website]]
@@ -8752,8 +8758,9 @@ done
   - [[https://www.git-tower.com/learn/git/ebook/en/command-line/introduction#start][Tower: Learn Version Control with Git]]
 - [[https://stackoverflow.com/questions/954560/how-does-git-handle-symbolic-links][How does Git handle symbolic links?]]
 - Best practices
+  - https://github.com/elsewhencode/project-guidelines
   - for git repos, use submodules to push common code up - https://git-scm.com/book/en/v2/Git-Tools-Submodules
-******* Interfaces
+******** Interfaces
 - Git repository hosting services
   - [[https://about.gitlab.com/][GitLab]]
   - [[https://github.com/][GitHub]]
@@ -8777,8 +8784,8 @@ done
     - https://github.com/features/actions
     - https://lab.github.com/courses?utm_source=newsletter&utm_medium=email&utm_campaign=student-newsletter-120818
 - GUIs- https://www.sourcetreeapp.com/
-******** [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]]
-******* Ideas
+********* [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]]
+******** Ideas
 - Changelog via gitcliff and org- https://www.reddit.com/r/commandline/comments/uaub3o/new_version_of_gitcliff_is_out/
 ****** Emacs vc-mode
 ***** Operating Systems
