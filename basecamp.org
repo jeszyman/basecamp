@@ -4157,6 +4157,7 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+# see https://stackoverflow.com/questions/7131670/make-a-bash-alias-that-takes-a-parameter
 ****** Local scripts
 - Command line script
   #+name: bash_cmdline_script_preamble
@@ -5992,6 +5993,7 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - [[https://superuser.com/questions/283481/how-do-i-properly-set-wget-to-download-only-new-files][download only on server side change]]
   - AND SET -O !!
 - download in background & resume broke  wget -bqc <PATH>
+- https://www.google.com/search?q=wget+github+raw
 - clobber = overwrite
 ******* make
 :PROPERTIES:
@@ -6725,6 +6727,7 @@ https://tomd.xyz/diagrams-as-code-drawio/
   - https://www.google.com/search?q=draw.io+insert+image
 - https://github.com/jgraph/drawio-desktop/releases/tag/v16.5.1
 ***** Emacs
+https://www.reddit.com/r/emacs/comments/v0kv5d/my_emacs_workflow_as_a_software_engineer_and/
 https://www.emacswiki.org/emacs/OneOnOneEmacs
 - https://stackoverflow.com/questions/18778894/emacs-24-3-python-cant-guess-python-indent-offset-using-defaults-4/51966682
 - https://www.reddit.com/r/emacs/comments/rxa29k/is_it_possible_to_have_a_window_which_is_just_the/
@@ -7901,6 +7904,8 @@ snakemake --help
   - add singularity
     -
 ******* Writing snakefiles
+- Input functions
+  - https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/09-input_functions/index.html
 - [[id:f20681eb-de70-4540-a9ba-63de0c800321][Python dictionaries]]
 - https://stackoverflow.com/questions/56042158/snakemake-correct-syntax-for-accessing-dictionary-values
 - python dict for names https://stackoverflow.com/questions/50413374/glob-wildcards-on-multiple-directories-with-different-file-names
@@ -7914,10 +7919,10 @@ snakemake --help
 - workaround for using snakemake vars in shell script https://stackoverflow.com/a/49533645/6106936
 - https://github.com/snakemake/snakemake/issues/971
 - Configuration files
- - [[id:2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5][YAML document markup language]]
- - Using config variables
-   - https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
- - can do multiple config files- see https://stackoverflow.com/questions/62696099/snakemake-multiple-config-files
+  - [[id:2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5][YAML document markup language]]
+  - Using config variables
+    - https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
+  - can do multiple config files- see https://stackoverflow.com/questions/62696099/snakemake-multiple-config-files
 ******* Run
   --lint
   --rulegraph
@@ -8578,6 +8583,20 @@ git submodule foreach --recursive git pull
 
 
 
+done
+
+#+end_src
+- Push all
+  #+begin_src bash :tangle ./tools/shell/git_push_all.sh
+#!/usr/bin/env bash
+d=$(date +%Y-%m-%d)
+for d in $HOME/repos/*
+do
+	[[ ! -d "$d" ]] && continue
+	echo "$d"
+	cd "$d"
+        git pull
+	git add -A && git commit -m. && git push
 done
 
 #+end_src
@@ -9252,6 +9271,8 @@ CLOCK: [2019-06-01 Sat 09:36]--[2019-06-01 Sat 09:40] =>  0:04
     - [[https://askubuntu.com/questions/307876/how-to-search-for-files-recursively-into-subdirectories][How to Search for Files Recursively into Subdirectories]]
     - [[https://stackoverflow.com/questions/1987926/how-do-i-grep-recursively][Recursively search subdirectories with grep -r "<SEARCH>" .]]
 ********** Installs
+- https://victoria.dev/verbose/how-to-set-up-a-fresh-ubuntu-desktop-using-only-dotfiles-and-bash-scripts/
+
 - https://unix.stackexchange.com/questions/159094/how-to-install-a-deb-file-by-dpkg-i-or-by-apt
 ********** Sysadmin
 :PROPERTIES:
