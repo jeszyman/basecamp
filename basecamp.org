@@ -1,3 +1,4 @@
+- [ ] need to harmonize conda installs across systems to use w/ emacs
 * Basecamp
 :PROPERTIES:
 :header-args:bash: :tangle-mode (identity #o555)
@@ -3036,6 +3037,7 @@ FROM ubuntu:bionic
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Chicago
+
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
     locale-gen
 ENV LANG en_US.UTF-8
@@ -6727,6 +6729,7 @@ https://tomd.xyz/diagrams-as-code-drawio/
   - https://www.google.com/search?q=draw.io+insert+image
 - https://github.com/jgraph/drawio-desktop/releases/tag/v16.5.1
 ***** Emacs
+https://www.labri.fr/perso/nrougier/GTD/index.html
 https://www.reddit.com/r/emacs/comments/v0kv5d/my_emacs_workflow_as_a_software_engineer_and/
 https://www.emacswiki.org/emacs/OneOnOneEmacs
 - https://stackoverflow.com/questions/18778894/emacs-24-3-python-cant-guess-python-indent-offset-using-defaults-4/51966682
@@ -8359,6 +8362,7 @@ CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
 ******* Git process flat list
+- https://stackoverflow.com/questions/1911109/how-do-i-clone-a-specific-git-branch
 ******** Create and initialize
   - https://www.google.com/search?q=initialize+git+repo
   - git branch --set-upstream-to=origin/master master
@@ -8728,6 +8732,15 @@ do
     cd "$OLDPWD"
 done
 #
+#+end_src
+******** Repository no message commit to master
+#+begin_src bash :tangle ./tools/shell/no_message_commit.sh
+#!/usr/bin/env bash
+cd ~/repos/mpnst
+git pull
+git add -A
+git commit -m.
+git push
 #+end_src
 ******* [[id:fcffb312-ca8d-4450-b837-b1945201f9c1][My git]]
 ******* Documentation and general reference
@@ -9212,6 +9225,7 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+https://www.programming-helper.com/linux
 ******** Processes- see [[id:b33a7727-70b2-4743-a8cf-025a0803c3cc][Ubuntu Processes]]
 ******** Ubuntu                                                    :software:
 :PROPERTIES:
