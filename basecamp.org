@@ -4216,7 +4216,118 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
-# see https://stackoverflow.com/questions/7131670/make-a-bash-alias-that-takes-a-parameter
+****** Local YAS
+:PROPERTIES:
+:ID:       42e37db5-29e7-418f-a74d-e91ffc81167f
+:END:
+- bash.array.from.find
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/sh-mode/bash.array.from.find
+# -*- mode: snippet -*-
+# name: bash.array.from.find
+# key: bash.array.from.find
+# --
+${1:ARRAY NAME}=()
+while IFS=  read -r -d $'\0'; do
+    $1+=("$REPLY")
+done < <(find ${2:FIND DIR} -name ${3:FIND TERM} -print0)
+printf '%s\n' "\${$1[@]}"
+$0
+#+end_src
+- bash.function
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.function
+# -*- mode: snippet -*-
+# key: bash.function
+# expand-env: ((yas-indent-line 'fixed))
+# --
+${1:function_name}(){
+    add bash.usage here
+    $0
+}
+#+end_src
+- bash.script
+  Creates a skeleton of common internals for a bash script
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.script
+# -*- mode: snippet -*-
+# key: bash.script
+# --
+#
+###   ${1:SCRIPT NAME}   ###
+#
+
+# Notes
+# ...
+
+# Setup
+
+set -e # enable exit on error
+set -u # unset variables are errors
+set -o pipefail # failures can occur anywhere in pipeline
+
+# Variables
+
+readonly blah=$1
+blue=$(tput setaf 4)
+
+# Functions
+
+usage()
+{
+    printf "
+    ${blue}Script to do blah \n
+    usage: $0 blah\n
+"
+    exit 1
+}
+
+main()
+{
+    [[ $# -ne 2 ]] && usage
+    echo "$blah"
+    normal=$(tput sgr0)
+    printf "%40s\n" "${blue}This text is blue${normal}"
+}
+
+# Run
+
+main "$@"
+#+end_src
+- bash.usage
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.usage
+# -*- mode: snippet -*-
+# key: bash.usage
+# expand-env: ((yas-indent-line 'fixed))
+# --
+# Check for parameters, return usage if empty
+if [ $# -ne ${1:NUMBER OF VARIABLES} ];
+then
+    printf "\n usage: ${2:FUNCTION NAME} ${3: VAR 1} ${4: VAR 2}
+    \n ${5: SCRIPT FUNCTION OR PURPOSE}
+    \n $0"
+else
+#+end_src
+- [[file:~/.emacs.d/snippets/sh-mode/]]
+- [[file:~/.emacs.d/snippets/sh-mode/write.bash]]
+- insert bash code block
+  #+name: code.sh
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.sh
+# -*- mode: snippet -*-
+# key: code.sh
+# expand-env: ((yas-indent-line 'none))
+# --
+,#+begin_src bash
+#!/usr/bin/env bash
+$0
+,#+end_src
+#+end_src
+- print_array
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/shell-mode/bash.print_array
+# -*- mode: snippet -*-
+# name: bash.print_array
+# key: bash.print_array
+# --
+printf '%s\n' "${${1:ARRAY_NAME}[@]}"
+$0
+#+end_src
 ****** [[file:~/repos/basecamp-private/basecamp-private.org::*Shell and bash setup][My shell and bash setup]]
 ****** Local scripts
 - Command line script
@@ -4246,6 +4357,7 @@ fi
 :LOGBOOK:
 CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
 :END:
+- # see https://stackoverflow.com/questions/7131670/make-a-bash-alias-that-takes-a-parameter
 - bash error output to log
   -
 - https://www.google.com/search?q=bash+prevent+script+execution
@@ -4959,95 +5071,11 @@ pandoc -S $test | xclip -selection clipboard
     - https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
 - logging
   - https://stackoverflow.com/questions/18278223/method-to-write-in-log-files-in-a-shell-script
-****** Local YAS
-:PROPERTIES:
-:ID:       42e37db5-29e7-418f-a74d-e91ffc81167f
-:END:
-- insert bash code block
-  #+name: code.sh
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.sh
-# -*- mode: snippet -*-
-# key: code.sh
-# expand-env: ((yas-indent-line 'none))
-# --
-,#+begin_src bash
-#!/usr/bin/env bash
-$0
-,#+end_src
-#+end_src
-- print_array
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/shell-mode/bash.print_array
-# -*- mode: snippet -*-
-# name: bash.print_array
-# key: bash.print_array
-# --
-printf '%s\n' "${${1:ARRAY_NAME}[@]}"
-$0
-#+end_src
-- bash.array.from.find
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/sh-mode/bash.array.from.find
-# -*- mode: snippet -*-
-# name: bash.array.from.find
-# key: bash.array.from.find
-# --
-${1:ARRAY NAME}=()
-while IFS=  read -r -d $'\0'; do
-    $1+=("$REPLY")
-done < <(find ${2:FIND DIR} -name ${3:FIND TERM} -print0)
-printf '%s\n' "\${$1[@]}"
-$0
-#+end_src
-- bash.script
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.script
-# -*- mode: snippet -*-
-# key: bash.script
-# --
-#!/bin/bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-#
-### ${1:SCRIPT NAME} ###
-#
-
-# Notes
-
-# Setup
-set -euxo pipefail
-
-# Functions
-
-# Commands
-#+end_src
-- bash.function
-  #+name: bash.function
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.function
-# -*- mode: snippet -*-
-# key: bash.function
-# expand-env: ((yas-indent-line 'fixed))
-# --
-${1:function_name}(){
-    $0
-}
-#+end_src
-- bash.usage
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.usage
-# -*- mode: snippet -*-
-# key: bash.usage
-# expand-env: ((yas-indent-line 'fixed))
-# --
-# Check for parameters, return usage if empty
-if [ $# -ne ${1:NUMBER OF VARIABLES} ];
-then
-    printf "\n usage: ${2:FUNCTION NAME} ${3: VAR 1} ${4: VAR 2}
-    \n ${5: SCRIPT FUNCTION OR PURPOSE}
-    \n $0"
-else
-#+end_src
-- [[file:~/.emacs.d/snippets/sh-mode/]]
-- [[file:~/.emacs.d/snippets/sh-mode/write.bash]]
 ****** General reference
 :PROPERTIES:
 :ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
 :END:
+-
 - https://explainshell.com/explain?cmd=set+-euxo+pipefail
 - http://redsymbol.net/articles/unofficial-bash-strict-mode/
 - [[id:BDC42DA2-A632-4FB7-A586-E100B2A045DC][LINK TO UNIX-based operating systems]]
