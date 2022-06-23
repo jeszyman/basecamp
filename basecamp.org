@@ -1,4 +1,5 @@
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.smk
+
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.smk
 # -*- mode: snippet -*-
 # key: code.smk
 # expand-env: ((yas-indent-line 'none))
@@ -4296,15 +4297,15 @@ set -o pipefail # failures can occur anywhere in pipeline
 
 # Variables
 
-readonly blah=$1
-blue=$(tput setaf 4)
+readonly blah=\$1
+blue=\$(tput setaf 4)
 
 # Functions
 
 usage()
 {
     printf "
-    ${blue}Script to do blah \n
+    \${blue}Script to do blah \n
     usage: $0 blah\n
 "
     exit 1
@@ -4313,14 +4314,14 @@ usage()
 main()
 {
     [[ $# -ne 2 ]] && usage
-    echo "$blah"
+    echo "\$blah"
     normal=$(tput sgr0)
-    printf "%40s\n" "${blue}This text is blue${normal}"
+    printf "%40s\n" "\${blue}This text is blue${normal}"
 }
 
 # Run
 
-main "$@"
+main "\$@"
 #+end_src
 - bash.usage
   #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.usage
