@@ -1,3 +1,12 @@
+  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.smk
+# -*- mode: snippet -*-
+# key: code.smk
+# expand-env: ((yas-indent-line 'none))
+# --
+,#+begin_src snakemake
+$0
+,#+end_src
+#+end_src
 - [ ] need to harmonize conda installs across systems to use w/ emacs
 * Basecamp
 :PROPERTIES:
@@ -7,7 +16,11 @@
 :LOGBOOK:
 CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 :END:
+https://askubuntu.com/questions/15832/how-do-i-get-the-cpu-temperature
 - [ ] symlink to $HOME/.local/bin
+** My script tools
+*** Shell
+**** [[id:a97c46fe-8a23-4fa1-b9e2-f0edc29ec7f4][No message simple git commit to github]]
 ** Git repo scripts
 - Common
   #+name: bash_common_config
@@ -997,7 +1010,49 @@ CLOCK: [2020-07-29 Wed 11:00]--[2020-07-29 Wed 11:20] =>  0:20
 :PROPERTIES:
 :ID:       ac5c9fbe-7ce7-4092-989b-e63884fdd9df
 :END:
+#+begin_src R
+#
+# Check Packages
+##
+## Bioconductor
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+##
+packages = c(
+  "AnnotationDbi",
+  "biomaRt",
+  "circlize",
+  "ComplexHeatmap",
+  "copynumber",
+  "DESeq2",
+  "DRIMSeq",
+  "edgeR",
+  "fgsea",
+  "gage",
+  "gageData",
+  "GenomicFeatures",
+  "gplots",
+  "limma",
+  "pathview",
+  "pheatmap",
+  "PoiClaClu",
+  "SummarizedExperiment",
+  "tximport"
+)
+##
+##NOTE requires libcurl4-openssl-dev https://stackoverflow.com/questions/11471690/curl-h-no-such-file-or-directory/11471743
+package.check = lapply(
+  packages,
+  FUN = function(x) {
+    if (!require (x, character.only = T)) {
+      BiocManager::install(x, quietly =T, ask=F)
+      library(x, character.only = T)
+    }
+  }
+)
+#
 
+#+end_src
 - https://www.bioconductor.org/help/course-materials/2016/BioC2016/ConcurrentWorkshops4/Yin/bioc-workflow.html
 - [[https://bioconductor.org/packages/release/bioc/vignettes/biomaRt/inst/doc/biomaRt.html#retrieve-all-hugo-gene-symbols-of-genes-that-are-located-on-chromosomes-1720-or-y-and-are-associated-with-specific-go-terms][The biomaRt users guide]]
 *** [[LINK TO Machine Learning]]
@@ -1097,6 +1152,7 @@ CLOCK: [2022-01-24 Mon 07:30]--[2022-01-24 Mon 08:05] =>  0:35
 CLOCK: [2021-06-04 Fri 08:50]--[2021-06-04 Fri 09:53] =>  1:03
 CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 :END:
+https://www.reddit.com/r/datascience/comments/v6sv06/what_is_the_bible_of_data_science/
 https://www.rscreencasts.com/?ref=reddit
 https://nceas.github.io/sasap-training/materials/reproducible_research_in_r_fairbanks/data-modeling-tidy-data.html
 https://www.reddit.com/r/MachineLearning/comments/t55lbw/d_whats_your_favorite_unpopularforgotten_machine/
@@ -2755,6 +2811,7 @@ optimized lambda strikes balance of coeffienct bias and optimized likelihood
 :CREATED:  [2019-07-03 Wed 08:13]
 :END:
 :LOGBOOK:
+CLOCK: [2022-06-13 Mon 09:14]--[2022-06-13 Mon 09:15] =>  0:01
 CLOCK: [2022-03-21 Mon 08:27]--[2022-03-21 Mon 08:31] =>  0:04
 CLOCK: [2020-09-11 Fri 11:35]--[2020-09-11 Fri 11:51] =>  0:16
 CLOCK: [2019-02-12 Tue 11:09]--[2019-02-12 Tue 11:45] =>  0:36
@@ -4160,6 +4217,7 @@ CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
 # see https://stackoverflow.com/questions/7131670/make-a-bash-alias-that-takes-a-parameter
+****** [[file:~/repos/basecamp-private/basecamp-private.org::*Shell and bash setup][My shell and bash setup]]
 ****** Local scripts
 - Command line script
   #+name: bash_cmdline_script_preamble
@@ -4188,6 +4246,8 @@ fi
 :LOGBOOK:
 CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
 :END:
+- bash error output to log
+  -
 - https://www.google.com/search?q=bash+prevent+script+execution
 - https://www.google.com/search?q=bash+rm+use+regex
 - https://www.google.com/search?q=bash+test+before+rm
@@ -6135,6 +6195,12 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
 **** Software flat list
+***** [[id:a8b27140-4b9e-40c5-86ab-ee5afeae723f][snakemake]]
+***** SSH file transfer protocol (SFTP)
+:PROPERTIES:
+:ID:       16e5e605-ba2c-46e5-a330-8cf3e5393092
+:END:
+[[id:cd047f76-f15b-415c-9767-21692d1e4ec6][Drain WGS data transfer]]
 ***** Advanced package tool (APT)
 - processes
   -
@@ -6729,6 +6795,7 @@ https://tomd.xyz/diagrams-as-code-drawio/
   - https://www.google.com/search?q=draw.io+insert+image
 - https://github.com/jgraph/drawio-desktop/releases/tag/v16.5.1
 ***** Emacs
+https://emacs.stackexchange.com/questions/61278/tangle-org-file-containing-include-directives-and-multiple-tangle-targets
 https://www.labri.fr/perso/nrougier/GTD/index.html
 https://www.reddit.com/r/emacs/comments/v0kv5d/my_emacs_workflow_as_a_software_engineer_and/
 https://www.emacswiki.org/emacs/OneOnOneEmacs
@@ -7607,570 +7674,6 @@ singularity version
     #+end_src
 - [[id:D2FAA88D-70CC-4450-BBB3-8A446CB43AF3][Docker]]
 - https://www.google.com/search?q=singularity+check+which+docker+container
-***** snakemake                                                     :biotool:career:
-:PROPERTIES:
-:ID:       a8b27140-4b9e-40c5-86ab-ee5afeae723f
-:CREATED:  [2021-09-13 Mon 07:29]
-:END:
-:LOGBOOK:
-CLOCK: [2022-05-16 Mon 07:48]--[2022-05-16 Mon 07:54] =>  0:06
-CLOCK: [2022-04-07 Thu 07:39]--[2022-04-07 Thu 07:44] =>  0:05
-CLOCK: [2021-07-01 Thu 11:18]--[2021-07-01 Thu 11:48] =>  0:30
-:END:
-****** Scripts
-******* Draw rulegraph
-:PROPERTIES:
-:ID:       78a99954-1d5d-4e09-87a4-6690f28f4519
-:END:
-#+begin_src bash :tangle ./src/smk_draw.sh
-# Check for parameters and return usage
-if [ "$#" -ne 3 ];
-then
-    printf "\n usage: smk_dry_run.sh config_file smk_file pdf_loc
-    \n Draws the rulegraph for a snakemake file at pdf_loc
-    \n "
-else
-    # Necessary to run conda snakemake command in shell script
-    eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
-    #
-    conda activate snakemake
-    #
-    snakemake \
-        --configfile $1 \
-        --cores 1 \
-        --rulegraph \
-        --snakefile $2 | dot -Tpdf > $3
-fi
-#+end_src
-
-#+begin_src bash :tangle ./src/smk_draw.sh
-# Check for parameters, return usage if empty
-if [[ $# -eq 0 ]] ||
-       [[ $1 == "h" ]] ||
-       [[ $1 == "-h" ]] ||
-       [[ $1 == "help" ]] ;
-then
-    printf "\n usage: smk_dry_run.sh config_file smk_file pdf_loc
-\n Draws the rulegraph for a snakemake file at pdf_loc
-            \n "
-else
-eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
-
-conda activate snakemake
-
-snakemake \
-    --configfile $1 \
-    --cores 1 \
-    --rulegraph \
-    --snakefile $2 | dot -Tpdf > $3
-fi
-#+end_src
-******* Dry run
-:PROPERTIES:
-:ID:       c6c494f0-5dbe-4cc4-bf99-8bcd7b12de24
-:END:
-#+begin_src bash :tangle ./src/smk_dry_run.sh
-# Check for parameters and return usage
-if [ "$#" -ne 2 ];
-then
-    printf "\n usage: smk_dry_run.sh <SMK CONFIG YAML> <SMK FILE>
-    \n Script for snakemake dry run.
-    \n Will not test singularity container is working
-    \n "
-else
-    # Necessary to run conda snakemake command in shell script
-    eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
-    #
-    conda activate snakemake
-    #
-    snakemake \
-        --configfile $1 \
-        --cores 1 \
-        --dry-run \
-        --forceall \
-        --printshellcmds \
-        --use-singularity \
-        --snakefile $2
-fi
-#+end_src
-******* Forced run
-:PROPERTIES:
-:ID:       c2a25d2f-05bb-4eda-920f-e2d9fa768de6
-:END:
-#+begin_src bash :tangle ./src/smk_forced_run.sh
-# Check for parameters and return usage
-if [ "$#" -ne 2 ];
-then
-    printf "\n usage: smk_forced_run.sh config_file smk_file
-    \n Script to complete forced run of snakefile.
-    \n Assumes
-    - Singularity container specified in config
-    - a mount point at /mnt
-    \n "
-else
-    # Necessary to run conda snakemake command in shell script
-    eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
-    #
-    conda activate snakemake
-    #
-    snakemake \
-        --configfile $1 --cores 4 \
-        --use-singularity \
-        --singularity-args "--bind ${HOME}:${HOME} --bind /mnt:/mnt" \
-        --forceall \
-        --printshellcmds \
-        --rerun-incomplete \
-        --snakefile $2 \
-        --verbose
-fi
-#+end_src
-******* Normal run
-:PROPERTIES:
-:ID:       3adf72d3-aa35-4a3d-8eba-0df075c52e26
-:END:
-#+begin_src bash :tangle ./src/smk_run.sh
-# Check for parameters, return usage if empty
-if [ "$#" -ne 2 ];
-then
-    printf "\n usage: smk_forced_run.sh <SMK CONFIG YAML> <SMK FILE>
-    \n Script to complete an normal run of a snakefile
-    \n Assumes
-    - Singularity container specified in config
-    - a mount point at /mnt
-    \n "
-else
-    # Necessary to run conda snakemake command in shell script
-    eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
-    #
-    conda activate snakemake
-    #
-    snakemake \
-        --configfile $1 --cores 4 \
-        --use-singularity \
-        --printshellcmds \
-        --singularity-args "--bind ${HOME}:${HOME} --bind /mnt:/mnt" \
-        --rerun-incomplete \
-        --snakefile $2 \
-        --verbose
-fi
-#+end_src
-******* Dev
-#+begin_src bash
-#!/bin/bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-
-####################################
-###   Choose and Run Snakefile   ###
-####################################
-
-# Setup
-#set -euxov pipefail
-
-source config/${HOSTNAME}.sh
-echo "The following `*.smk` archives were found; select one:"
-
-# set the prompt used by select, replacing "#?"
-PS3="Use number to select an option"
-
-select filename in ./workflow/*.smk
-
-do
-    if [[ "$filename" == "" ]]
-    then
-        echo "'$REPLY' is not a valid number"
-        continue
-    fi
-    echo $filename
-    select run_option in dry_run normal force_final force_all
-    do
-        echo selected $run_option
-        case $run_option in
-            dry_run)
-                source activate snakemake
-                snakemake \
-                    --configfile config/${HOSTNAME}.yaml \
-                    --cores $threads \
-                    --directory ${repo} \
-                    --dry-run \
-                    --rerun-incomplete \
-                    --singularity-args "--bind $mntpt:$mntpt" \
-                    --use-singularity \
-                    --snakefile $filename
-                ;;
-            normal)
-                source activate snakemake
-                select nohup_option in no yes
-                do
-                    case $nohup_option in
-                        no)
-                            snakemake \
-                                --configfile config/${HOSTNAME}.yaml \
-                                --cores $threads \
-                                --directory ${repo} \
-                                --singularity-args "--bind $mntpt:$mntpt" \
-                                --use-singularity \
-                                --snakefile $filename
-                            ;;
-                        yes)
-                            nohup snakemake \
-                                  --configfile config/${HOSTNAME}.yaml \
-                                  --cores $threads \
-                                  --directory ${repo} \
-                                  --singularity-args "--bind $mntpt:$mntpt" \
-                                  --use-singularity \
-                                  --snakefile $filename
-                            ;;
-                    esac
-                done
-                ;;
-            force_final)
-                source activate snakemake
-                select nohup_option in no yes
-                do
-                    case $nohup_option in
-                        no)
-                            snakemake \
-                                --configfile config/${HOSTNAME}.yaml \
-                                --cores $threads \
-                                --directory ${repo} \
-                                --force \
-                                --singularity-args "--bind $mntpt:$mntpt" \
-                                --use-singularity \
-                                --snakefile $filename
-                            ;;
-                        yes)
-                            nohup snakemake \
-                                  --configfile config/${HOSTNAME}.yaml \
-                                  --cores $threads \
-                                  --directory ${repo} \
-                                  --force \
-                                  --singularity-args "--bind $mntpt:$mntpt" \
-                                  --use-singularity \
-                                  --snakefile $filename
-                            ;;
-                    esac
-                done
-                ;;
-            force_all)
-                source activate snakemake
-                select nohup_option in no yes
-                do
-                    case $nohup_option in
-                        no)
-
-                snakemake \
-                    --configfile config/${HOSTNAME}.yaml \
-                    --cores $threads \
-                    --directory ${repo} \
-                    -F \
-                    --singularity-args "--bind $mntpt:$mntpt" \
-                    --use-singularity \
-                    --snakefile $filename
-                                            ;;
-                        yes)
-                nohup snakemake \
-                    --configfile config/${HOSTNAME}.yaml \
-                    --cores $threads \
-                    --directory ${repo} \
-                    -F \
-                    --singularity-args "--bind $mntpt:$mntpt" \
-                    --use-singularity \
-                    --snakefile $filename
-                            ;;
-                    esac
-                done
-                ;;
-        esac
-        break
-    done
-    break
-done
-#+end_src
-
-****** Processes
-
-******* Install and setup
-  - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
-    #+begin_src bash
-conda init bash
-/bin/bash
-conda activate base
-conda install -n base -c conda-forge mamba
-y
-mamba create -c conda-forge -c bioconda -n snakemake snakemake
-y
-conda activate snakemake
-snakemake --help
-#+end_src
-  - via miniconda
-    - [[https://docs.anaconda.com/anaconda/install/multi-user/][install multi-user miniconda]]
-  - add singularity
-    -
-******* Writing snakefiles
-- Input functions
-  - https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/09-input_functions/index.html
-- [[id:f20681eb-de70-4540-a9ba-63de0c800321][Python dictionaries]]
-- https://stackoverflow.com/questions/56042158/snakemake-correct-syntax-for-accessing-dictionary-values
-- python dict for names https://stackoverflow.com/questions/50413374/glob-wildcards-on-multiple-directories-with-different-file-names
-- Run rule on all files in dir https://snakemake.readthedocs.io/en/stable/project_info/faq.html#how-do-i-run-my-rule-on-all-files-of-a-certain-directory
-- To pass character vector to R snakemake rule https://stackoverflow.com/questions/13840207/character-vector-as-an-argument-to-r-script
-- R package management in snakemake rules
-  - https://github.com/lachlandeer/snakemake-econ-r
-- https://lachlandeer.github.io/snakemake-econ-r-tutorial/logging-output-and-errors.html
-- https://stackoverflow.com/questions/69483414/unspecified-syntax-error-in-snakemake-rule
-- test workflow output- https://stackoverflow.com/questions/50198628/snakemake-confusion-on-how-to-access-config-files-properly
-- workaround for using snakemake vars in shell script https://stackoverflow.com/a/49533645/6106936
-- https://github.com/snakemake/snakemake/issues/971
-- Configuration files
-  - [[id:2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5][YAML document markup language]]
-  - Using config variables
-    - https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
-  - can do multiple config files- see https://stackoverflow.com/questions/62696099/snakemake-multiple-config-files
-******* Run
-  --lint
-  --rulegraph
-  - https://www.google.com/search?q=snakemake+run+specific+rule
-  - docker - https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html?highlight=docker#running-jobs-in-containers
-- syntax for running shell https://stackoverflow.com/questions/45553762/recommended-way-to-do-multiple-shell-commands-with-shell/49533645#49533645
-- https://stackoverflow.com/questions/17126996/emacs-mode-for-snakemake
-- check md5 https://stackoverflow.com/questions/65907256/snakemake-use-checksums-instead-of-timestamps
-****** Style
-- Configuration
-  - tabular- declare per-unit identifiers and index in snakefile preamble. /E.g./ # units = pd.read_table("bin/units_test.tsv").set_index("sample", drop=False)
-    - needs import pandas
-  - YAML files
-    - subdivide labels. /E.g./
-      ref:
-        index:
-      rather than ref_index:
-      (use as ref = config["ref"]["index"])
-    - Favor parameterizing only a main data directory and then writing subpaths directly in rules. /E.g/ config["data_dir"] + "/qc" rather than config["qc_dir"].
-    - Use boolean setters in the config.
-      - /E.g./
-        - in config: call_variants: false
-        - and in rule all:         lambda wildcards: "analysis/09a_variant_annot/all.merged.filt.PASS.snpeff.vcf.gz.tbi" if config["call_variants"] else [],
-- Externalize all scripts from workflow and allow independent script execution
-- Each rule has logfile defined in workflow directed to log_dir
-- Software generated log files are redirected to log_dir
-- Repos have MWE for each snakefile
-
-****** Local YAS (prefix smk.)
-******* Insert snakemake file org-mode tree
-#+name: smk
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk
-# -*- mode: snippet -*-
-# key: smk
-# expand-env: ((yas-indent-line 'none))
-# --
-`(make-string (org-current-level) ?*)` [[file:./workflow/$2.smk][Snakefile]]:smk:
-:PROPERTIES:
-:header-args:snakemake: :tangle ./workflow/${2: SNAKEFILE NAME}.smk
-:END:
-`(make-string (+ 1 (org-current-level)) ?*)` Smk preamble
-,#+begin_src snakemake
-
-,#+end_src
-`(make-string (+ 1 (org-current-level)) ?*)` Smk rules
-`(make-string (+ 2 (org-current-level)) ?*)` All rule
-,#+begin_src snakemake
-rule all:
-    input:
-
-,#+end_src
-- add rules with smk.rule
-`(make-string (+ 1 (org-current-level)) ?*)` Dev
-:PROPERTIES:
-:header-args:snakemake: :tangle no
-:END:
-`(make-string (+ 1 (org-current-level)) ?*)` Ideas
-:PROPERTIES:
-:header-args:snakemake: :tangle no
-:END:
-#+end_src
-******* Make Rule
-#+name: smk.rule
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule
-# -*- mode: snippet -*-
-# key: smk.rule
-# expand-env: ((yas-indent-line 'none))
-# --
-smk.rule.${1:$$(yas-choose-value '("bash" "r"))}
-#+end_src
-******* R rule
-#+name: smk.rule.r
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.r
-# -*- mode: snippet -*-
-# key: smk.rule.r
-# expand-env: ((yas-indent-line 'none))
-# --
-`(make-string (org-current-level) ?*)` ${1: RULE NAME}:smk_rule:
-- Snakemake
-  ,#+begin_src snakemake
-rule ${1:$(string-replace " " "_" (downcase yas-text))}:
-    input:
-    params:
-        script = config["repo"] + "/workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R"
-    output:
-    log:
-        config["data_dir"] + "/logs/${1:$(string-replace " " "_" (downcase yas-text))}.log"
-    shell:
-        """
-        Rscript {params.script} \
-        >& {log}
-        """
-,#+end_src
-- [[file:./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R][Base script]]
-  ,#+begin_src R :noweb yes :tangle ./workflow/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.R
-#!/usr/bin/env Rscript
-#########1#########2#########3#########4#########5#########6#########7#########8
-###
-###   ${2: SCRIPT TITLE}   ###
-###
-
-args = commandArgs(trailingOnly = TRUE)
-= args[1]
-,#+end_src
-#+end_src
-******* Bash rule
-#+name: smk.rule.bash
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.bash
-# -*- mode: snippet -*-
-# key: smk.rule.bash
-# expand-env: ((yas-indent-line 'none))
-# --
-`(make-string (org-current-level) ?*)` ${1: RULE NAME}:smk_rule:
-- Snakemake
-,#+begin_src snakemake
-rule ${1:$(string-replace " " "_" (downcase yas-text))}:
-    input:
-    output:
-    shell:
-        """
-        scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
-        """
-,#+end_src
-- [[file:./workflows/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh][Base script]]
-,  #+begin_src bash :tangle ./workflows/scripts/${1:$(string-replace " " "_" (downcase yas-text))}.sh
-#!/usr/bin/env bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-###
-###   ${2: SCRIPT TITLE}   ###
-###
-
-,#+end_src
-#+end_src
-
-****** General reference
-- https://github.com/aomlomics/tourmaline
-- https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
-- https://swcarpentry.github.io/r-novice-inflammation/05-cmdline/index.html
-- https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
-- #+PROPERTY: header-args:bash :tangle-mode (identity #o777)
-- ideas
-  `(make-string (+ 2 (org-current-level)) ?*)` Run commands
-  ,#+begin_src bash
-  conda activate snakemake
-
-  snakemake \
-    --cores $threads \
-    --printshellcmds \
-    --snakefile workflow/$1
-  ,#+end_src
-- Standards and best practice
-  - https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html#snakefiles-best-practices
-- Wildcards
-  - https://edwards.flinders.edu.au/wildcards-in-snakemake/
-- https://endrebak.gitbooks.io/the-snakemake-book/content/
-- https://academic.oup.com/bioinformatics/article/28/19/2520/290322
-- https://www.biostars.org/p/9469533/
-- https://stackoverflow.com/questions/64949149/is-it-possible-to-add-a-conditional-statement-in-snakemakes-rule-all
-- https://stackoverflow.com/questions/54400171/how-to-use-list-in-snakemake-tabular-configuration-for-describing-of-sequencing
-- https://github.com/ngs-docs/2020-ggg-201b-rnaseq/blob/latest/rnaseq-workflow.Rmd
-- https://angus.readthedocs.io/en/2019/snakemake_for_automation.html
-- https://pages.charlesreid1.com/how-do-i-snakemake/converting/
-- http://ivory.idyll.org/blog/2020-snakemake-hacks-collections-files.html
-- http://origin.research.jetbrains.org/files/material/5ec245b4e907c.pdf
-- https://f1000research.com/articles/10-33/v2
-- [ ] https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
-- https://github.com/snakemake-workflows/rna-seq-star-deseq2/blob/master/workflow/rules/diffexp.smk
-- https://github.com/csoneson/ARMOR
-- https://github.com/slowkow/snakefiles/blob/master/kallisto/Snakefile
-- https://lachlandeer.github.io/snakemake-econ-r-tutorial/initial-steps-with-snakemake.html
-- for repos, git ignore the singularity build
-- https://github.com/EnvGen/snakemake-workflows
-
-******* Tutorials and guides
-- https://reproducibility.sschmeier.com/index.html
-- a tutorial
-  #+begin_src bash
-source ~/repos/biotools/src/functions.sh
-docker_interactive
-biotools
-
-#
-mkdir -p /tmp/snakemake-tutorial
-cd /tmp/snakemake-tutorial
-#
-wget https://github.com/snakemake/snakemake-tutorial-data/archive/v5.24.1.tar.gz
-#
-tar --wildcards -xf v5.24.1.tar.gz --strip 1 "*/data" "*/environment.yaml"
-ls
-
-#
-snakemake --help
-
-snakemake -np mapped_reads/A.bam
-#+end_src
-- another tutorial
-  #+begin_src bash
-sudo apt-get install singularity-container
-
-cd ~/snakemake-tutorial/
-
-conda activate snakemake-tutorial
-
-
-snakemake -p --cores 2 sorted_reads/{A,B}.bam
-#    --dry-run \
-
-snakemake --dag calls/all.vcf | dot -Tsvg > dag.svg
-
-expand("sorted_reads/{sample}.bam", sample=SAMPLES)
-
-snakemake -p --cores 2 plots/quals.svg
-
-snakemake --cores 2 -p --dag | dot -Tsvg > dag.svg
-
-snakemake --cores 20 --forceall --summary
-
-snakemake --cores 20 --forceall
-
-conda install pygraphviz
-
-snakemake --report report.html
-
-open report.html
-
-snakemake --cores 20 --forceall
-#+end_src
-- https://snakemake.readthedocs.io/en/stable/executor_tutorial/google_lifesciences.html
-****** [[https://snakemake.readthedocs.io/en/stable/index.html][Documentation]]
-- https://snakemake-wrappers.readthedocs.io/en/stable/wrappers.html
-- [[Snakemake Tutorial][Snakemake Tutorial]]
-****** Examples
-- https://github.com/vari-bbc/rnaseq_workflow/blob/master/Snakefile
-- https://github.com/ohsu-cedar-comp-hub/cfRNA-seq-pipeline-Ngo-manuscript-2019
-- https://github.com/yztxwd/rna-seq-standard-pipeline/tree/c19a9e27216b86d3dbfdaed7228aeff59f869383
-- https://github.com/porchard/ATACseq-Snakemake/blob/master/src/Snakefile
-- https://github.com/zhxiaokang/RASflow
-- https://github.com/EthanHolleman
-- https://www.biostars.org/p/406385/
-- https://github.com/chrishah/samtools-docker/blob/master/Dockerfile
-- https://github.com/lachlandeer/snakemake-econ-r
-****** Ideas
-- parse yaml for shell https://mikefarah.gitbook.io/yq/
-- email notices
-- lock emacs buffer regions with successful run
 ***** syncthing
 - ip is http://127.0.0.1:8384
 ***** Timeshift
@@ -8733,14 +8236,30 @@ do
 done
 #
 #+end_src
-******** Repository no message commit to master
+******** No message simple git commit to github
+:PROPERTIES:
+:ID:       a97c46fe-8a23-4fa1-b9e2-f0edc29ec7f4
+:END:
 #+begin_src bash :tangle ./tools/shell/no_message_commit.sh
 #!/usr/bin/env bash
-cd ~/repos/mpnst
-git pull
-git add -A
-git commit -m.
-git push
+
+if [ $# -ne 1 ];
+then
+    printf "\n usage: no_message_commit <REPO DIR>
+    \n Performs simple stage all and commit to github function for given directory
+    \n "
+else
+    if ! [ -d $1 ];
+       then
+           echo "No repo at $1"
+    else
+        cd $1
+        git pull
+        git add -A
+        git commit -m.
+        git push
+    fi
+fi
 #+end_src
 ******* [[id:fcffb312-ca8d-4450-b837-b1945201f9c1][My git]]
 ******* Documentation and general reference
