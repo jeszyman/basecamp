@@ -6162,10 +6162,11 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
   - [[http://reasoniamhere.com/2013/09/16/awk-gtf-how-to-analyze-a-transcriptome-like-a-pro-part-1/][AWK GTF! How to Analyze a Transcriptome Like a Pro]]
 - reference
   - [[file:~/.emacs.d/snippets/org-mode/software]]
-****** grep processes
+****** grep
 :PROPERTIES:
 :ID:       024b269b-27ca-492d-981f-d8f9083a38d2
 :END:
+-
 - https://www.google.com/search?q=grep+search+in+all+text+files+in+directory
 - https://www.google.com/search?q=grep+phrase+with+space
 - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
@@ -6287,6 +6288,24 @@ https://askubuntu.com/questions/55709/how-to-select-display-to-record-in-recordm
   - my profile at /opt/cisco/anyconnect/profile/test.xml
 - https://www.google.com/search?q=launch+cisco+anyconnect+command+line&oq=launch+anyconnect+&aqs=chrome.3.69i57j0l5.7868j0j4&client=ubuntu&sourceid=chrome&ie=UTF-8
 
+***** cmake
+#+begin_src bash
+# For Ubuntu Bionic Beaver (18.04):
+# https://stackoverflow.com/questions/49859457/how-to-reinstall-the-latest-cmake-version
+sudo apt-get update
+sudo apt-get install apt-transport-https ca-certificates gnupg \
+                         software-properties-common wget
+
+wget -qO - https://apt.kitware.com/keys/kitware-archive-latest.asc |
+    sudo apt-key add -
+
+sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+sudo apt-get update
+sudo apt-get install cmake
+y
+cmake -version
+#+end_src
+
 ***** Conda and Miniconda
 :PROPERTIES:
 :ID:       b16d0202-8d35-472b-b538-87a7d6a6cef7
@@ -6390,6 +6409,7 @@ CLOCK: [2019-03-22 Fri 17:34]--[2019-03-22 Fri 20:34] =>  3:00
 CLOCK: [2017-08-29 Tue 09:38]--[2017-08-29 Tue 09:51] =>  0:13
 CLOCK: [2017-08-29 Tue 09:19]--[2017-08-29 Tue 09:37] =>  0:18
 :END:
+https://stackoverflow.com/questions/35594987/how-to-force-docker-for-a-clean-build-of-an-image
 https://stackoverflow.com/questions/39433480/dockerfile-versioning-best-practice
 - [[*singularity][singularity]]
 - always need apt update prior to gets https://askubuntu.com/questions/1159096/ubuntu-18-04-throws-404-error-while-fetching-dependencies
@@ -6855,6 +6875,7 @@ https://tomd.xyz/diagrams-as-code-drawio/
   - https://www.google.com/search?q=draw.io+insert+image
 - https://github.com/jgraph/drawio-desktop/releases/tag/v16.5.1
 ***** Emacs
+https://www.reddit.com/r/emacs/comments/vhqewj/lspbridge_is_good/
 https://emacs.stackexchange.com/questions/61278/tangle-org-file-containing-include-directives-and-multiple-tangle-targets
 https://www.labri.fr/perso/nrougier/GTD/index.html
 https://www.reddit.com/r/emacs/comments/v0kv5d/my_emacs_workflow_as_a_software_engineer_and/
