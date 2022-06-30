@@ -3069,43 +3069,43 @@ primeKeyUnique = function(df,pk){
 ****** Write [[file:docker/basecamp_Dockerfile][basecamp Dockerfile]]
 :PROPERTIES:
 :ID:       79e01a67-5ba1-4257-8353-8c5cf1ac8c4a
+:header-args:bash: :tangle ./docker/basecamp_Dockerfile
 :END:
-#+begin_src bash :tangle ./docker/basecamp_Dockerfile
-FROM ubuntu:bionic
-#########1#########2#########3#########4#########5#########6#########7#########8
+:LOGBOOK:
+CLOCK: [2022-06-23 Thu 12:41]--[2022-06-23 Thu 13:02] =>  0:21
+:END:
 
+******* Preamble
+#+begin_src bash
+FROM ubuntu:bionic
 #######################################################
 #######################################################
 ###   Dockerfile to build a basecamp docker image   ###
 #######################################################
 #######################################################
 
-#############
-### Notes ###
-#############
+#################
+###   Notes   ###
+#################
 #
 # After build, the image will be pushed to the dockerhub as
 # jeszyman/basecamp
 # (https://hub.docker.com/repository/docker/jeszyman/basecamp)
-#
-# See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
-
-FROM ubuntu:bionic
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Chicago
+#+end_src
 
-RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
-    locale-gen
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+******* Advanced package management (APT)
+#+begin_src bash
 
-###########
-### APT ###
-###########
+###############
+###   APT   ###
+###############
 
-RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
+RUN apt-get update
+
+RUN apt-get install -yq --no-install-recommends --allow-unauthenticated --fix-missing \
     build-essential \
     bzip2 \
     cifs.utils \
@@ -3118,6 +3118,10 @@ RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
     libcurl4-openssl-dev \
     libfftw3-dev \
     libgsl-dev \
+    libssl1.0.0 \
+    libssl-dev \
+    libtbb-dev \
+    libtbb2 \
     libxmu-dev \
     libxml2-dev \
     locales \
@@ -3131,18 +3135,34 @@ RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
 RUN apt-get autoremove -y && \
     apt-get autoclean -y && \
     apt-get clean
+#+end_src
+******* Locales
+#+begin_src bash
 
-#################
-### Miniconda ###
-#################
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+#+end_src
+******* Miniconda
+#+begin_src bash
+
+#####################
+###   Miniconda   ###
+#####################
 
 RUN cd /tmp && wget --no-check-certificate https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh
 RUN bash /tmp/Miniconda3-4.3.21-Linux-x86_64.sh -b -p /opt/miniconda
 ENV PATH="/opt/miniconda/bin:${PATH}"
+#+end_src
+******* R 4 and CRAN Packages
+#+begin_src bash
 
-#############################
-### R 4 and CRAN Packages ###
-#############################
+#################################
+###   R 4 and CRAN Packages   ###
+#################################
 
 RUN apt-get update -qq \
 	&& apt-get install -qq --no-install-recommends \
@@ -3195,19 +3215,12 @@ RUN apt-get update -qq \
         libxml2-dev
 
 RUN R -e "install.packages('tidyverse',repos='http://cran.rstudio.com/')"
-
-####################################
-### NON-Package manager installs ###
-####################################
-
 #+end_src
-- Ideas
-  ## Emacs Snapshot
-RUN apt-get install -qq --no-install-recommends software-properties-common
-RUN add-apt-repository ppa:ubuntu-elisp/ppa
-RUN apt-get update
-RUN apt-get install -qq --no-install-recommends emacs-snapshot
 
+******* Development
+:PROPERTIES:
+:header-args: :tangle no
+:END:
 ****** Build docker container
 :PROPERTIES:
 :ID:       32236b08-3aa2-45ed-87d1-2ee820701de5
@@ -3218,7 +3231,12 @@ user=jeszyman
 repo=basecamp
 #########1#########2#########3#########4#########5#########6#########7#########8
 cd "$buildDIR"
-docker build . --file Dockerfile --tag "${user}/${repo}"
+docker build \
+       --file Dockerfile \
+       --no-cache \
+       --pull \
+       --tag "${user}/${repo}" .
+
 docker push "${user}/${repo}"
 
 
