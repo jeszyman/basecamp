@@ -4282,46 +4282,50 @@ ${1:function_name}(){
 # -*- mode: snippet -*-
 # key: bash.script
 # --
-#
-###   ${1:SCRIPT NAME}   ###
-#
 
-# Notes
-# ...
+set -o errexit   # abort on nonzero exitstatus
+set -o nounset   # abort on unbound variable
+set -o pipefail  # don't hide errors within pipes
 
-# Setup
+print_usage(){
+    cat <<- EOF
 
-set -e # enable exit on error
-set -u # unset variables are errors
-set -o pipefail # failures can occur anywhere in pipeline
+usage: ${1:<SCRIPT NAME>} [options] <${2:<OPERANDS>}> [${3:<OPTIONAL OPERANDS>}]
 
-# Variables
+options:
+    -
 
-readonly blah=\$1
-blue=\$(tput setaf 4)
+${4:<LONG TITLE>}
+${5:<DESCRIPTION>}
+
+example: ${6:<EXAMPLE>}
+
+EOF
+}
+
+# Getops
+while getopts "${7:OPTIONS}" options;
+do
+    case "${options}" in
+        -h | --help) print_usage ;;
+        \?)
+            echoerr "Invalid option -$OPTARG"
+            print_usage
+            exit 1
+            ;;
+    esac
+done
+shift $((OPTIND -1))
+
+# Script variables
 
 # Functions
 
-usage()
-{
-    printf "
-    \${blue}Script to do blah \n
-    usage: $0 blah\n
-"
-    exit 1
-}
-
-main()
-{
-    [[ $# -ne 2 ]] && usage
-    echo "\$blah"
-    normal=$(tput sgr0)
-    printf "%40s\n" "\${blue}This text is blue${normal}"
+main(){
 }
 
 # Run
-
-main "\$@"
+main "$@"
 #+end_src
 - bash.usage
   #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.usage
@@ -4542,10 +4546,11 @@ b=( "${a[@]}" )
 - Simulate key presses
   - https://www.google.com/search?q=bash+pass+ENTER+to+script
   - https://stackoverflow.com/questions/30712126/how-to-simulate-two-consecutive-enter-key-presses-for-a-command-in-a-bash-script?noredirect=1&lq=1
-******* Writing scripts
+******* Writing bash scripts
 :PROPERTIES:
 :ID:       f54ac1df-f52d-42ee-a339-6557e7293a59
 :END:
+- https://unix.stackexchange.com/questions/313256/why-write-an-entire-bash-script-in-functions
 - best practices
   - include shebang
     - https://unix.stackexchange.com/questions/50425/shell-scripts-are-still-working-without-sha-bang-line
@@ -9232,6 +9237,7 @@ http://www.mitchchn.me/2014/os-x-terminal/
 :PROPERTIES:
 :ID:       d4c65ebf-8abd-4876-8b79-08ae9fcc50c2
 :END:
+https://en.wikipedia.org/wiki/Big_ball_of_mud
 https://engineering-shiny.org/golem.html
 - https://www.kdnuggets.com/2019/03/best-tips-agile-data-science-research.html
 - software development
