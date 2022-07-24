@@ -1645,6 +1645,9 @@ CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
 CLOCK: [2017-10-30 Mon 15:33]--[2017-10-30 Mon 15:46] =>  0:13
 CLOCK: [2017-10-30 Mon 14:55]--[2017-10-30 Mon 14:59] =>  0:04
 :END:
+https://www.reddit.com/r/dataisbeautiful/comments/vy38rz/oc_apple_income_statement_breakdown/
+https://www.reddit.com/r/learnjavascript/comments/vnbpxt/any_clue_how_can_i_go_about_creating_a_chart_like/
+https://github.com/rougier/scientific-visualization-book
 https://www.reddit.com/r/dataisbeautiful/comments/tek7e6/the_clever_people_at_nasa_have_created_this/
 - t-sne
   - https://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf
@@ -2008,6 +2011,7 @@ CLOCK: [2017-06-23 Fri 19:05]--[2017-06-23 Fri 19:35] =>  0:30
 CLOCK: [2018-06-27 Wed 11:59]--[2018-06-27 Wed 12:49] =>  0:50
 CLOCK: [2017-11-28 Tue 18:30]--[2017-11-28 Tue 19:30] =>  1:00
 :END:
+https://christophm.github.io/interpretable-ml-book/
 https://www.reddit.com/r/MachineLearning/comments/uwibp8/d_calculating_shannon_information_of_data/
 https://stats.stackexchange.com/questions/471822/are-there-any-power-calculation-formulas-for-ml-methods-beyond-logistic-regressi
 https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0224365
@@ -2821,6 +2825,7 @@ CLOCK: [2017-10-18 Wed 09:12]--[2017-10-18 Wed 09:53] =>  0:41
 CLOCK: [2017-08-16 Wed 19:13]--[2017-08-16 Wed 19:15] =>  0:02
 CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 :END:
+https://medium.com/axon-technologies/installing-a-windows-virtual-machine-in-a-linux-docker-container-c78e4c3f9ba1
 https://github.com/mbugert/dotfiles
 https://webanno.github.io/webanno/
 - https://www.freecodecamp.org/news/learn-vim-beginners-tutorial/
@@ -3540,6 +3545,7 @@ https://www.google.com/search?q=javascript+diagram&oq=Javascript+dia&aqs=chrome.
 CLOCK: [2020-06-14 Sun 19:38]--[2020-06-14 Sun 20:15] =>  0:37
 CLOCK: [2020-06-14 Sun 18:38]--[2020-06-14 Sun 18:58] =>  0:20
 :END:
+https://github.com/luism6n/finances-app
 https://www.reddit.com/r/learnjavascript/comments/twdemi/best_videobased_course_to_learn_javascript_both/
 https://www.theodinproject.com/paths/full-stack-javascript/courses/javascript
 https://www.freecodecamp.org/news/full-javascript-course-for-beginners/
@@ -6886,6 +6892,9 @@ https://tomd.xyz/diagrams-as-code-drawio/
   - https://www.google.com/search?q=draw.io+insert+image
 - https://github.com/jgraph/drawio-desktop/releases/tag/v16.5.1
 ***** Emacs
+https://www.lucacambiaghi.com/vanilla-emacs/readme.html#h:06E0EA9F-7CF4-4B99-8A4A-2C63A4F8A6B6
+https://www.reddit.com/r/emacs/comments/vs3t76/emacs_as_your_terminal_multiplexer/
+https://www.erichgrunewald.com/posts/emacs-lisp-functions-for-easy-bib-te-x-insertions/
 https://www.reddit.com/r/emacs/comments/vhqewj/lspbridge_is_good/
 https://emacs.stackexchange.com/questions/61278/tangle-org-file-containing-include-directives-and-multiple-tangle-targets
 https://www.labri.fr/perso/nrougier/GTD/index.html
@@ -7410,6 +7419,7 @@ specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]
   - [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
   - my profile at /opt/cisco/anyconnect/profile/test.xml
 ***** i3
+https://github.com/raulpenate/.dotfiles/blob/main/.config/i3/config
 [[./basecamp.org_20220526_081510.png]]
 - https://thevaluable.dev/i3-config-mouseless/
 - https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
@@ -7588,6 +7598,7 @@ q
 ***** Reference
 - https://youtube-dl.org/
 ***** Remarkable
+- https://ddvk.github.io/rmfakecloud/
 - https://www.reddit.com/r/RemarkableTablet/comments/ui4w46/remarkable2_without_connect/
 - https://www.google.com/search?q=remarkable+quick+sheets+delete
 - https://remarkablewiki.com/tech/file_transfer
@@ -8836,6 +8847,9 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+https://stackoverflow.com/questions/16956810/how-do-i-find-all-files-containing-specific-text-on-linux
+find . -type f -print0 | xargs -0 du | sort -n | tail -10 | cut -f2 | xargs -I{} du -sh {}
+
 https://www.programming-helper.com/linux
 ******** Processes- see [[id:b33a7727-70b2-4743-a8cf-025a0803c3cc][Ubuntu Processes]]
 ******** Ubuntu                                                    :software:
