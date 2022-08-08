@@ -1207,6 +1207,8 @@ CLOCK: [2022-01-24 Mon 07:30]--[2022-01-24 Mon 08:05] =>  0:35
 CLOCK: [2021-06-04 Fri 08:50]--[2021-06-04 Fri 09:53] =>  1:03
 CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 :END:
+https://www.reddit.com/r/datascience/comments/wcsx2n/data_science_best_practices/
+https://datascienceatthecommandline.com/2e/
 https://www.reddit.com/r/datascience/comments/v6sv06/what_is_the_bible_of_data_science/
 https://www.rscreencasts.com/?ref=reddit
 https://nceas.github.io/sasap-training/materials/reproducible_research_in_r_fairbanks/data-modeling-tidy-data.html
@@ -3772,7 +3774,8 @@ CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
 - https://www.google.com/search?q=python+commenting+best+practices
-****** Processes
+****** Processes :hierarchy:
+- https://www.google.com/search?q=python+change+directories
 - https://stackoverflow.com/questions/57459455/changing-the-name-of-multiple-files-based-on-an-index
 - Get variable type https://www.google.com/search?q=python+get+variable+type type()
 - Probability and statistics
@@ -4316,6 +4319,7 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+https://unix.stackexchange.com/questions/10646/repeat-a-unix-command-every-x-seconds-forever
 ****** Local YAS
 :PROPERTIES:
 :ID:       42e37db5-29e7-418f-a74d-e91ffc81167f
@@ -6343,9 +6347,9 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
-****** Git processes (hierarchies)
+****** Git processes :hierarchy:
 ******* Git push
-******* Git processes flat list
+******* Git processes :flat:
 - https://stackoverflow.com/questions/13897717/push-commits-to-another-branch
 - https://stackoverflow.com/questions/1911109/how-do-i-clone-a-specific-git-branch
 ******** Create and initialize
@@ -7465,6 +7469,8 @@ https://tomd.xyz/diagrams-as-code-drawio/
   - https://www.google.com/search?q=draw.io+insert+image
 - https://github.com/jgraph/drawio-desktop/releases/tag/v16.5.1
 ***** Emacs
+https://www.reddit.com/r/emacs/comments/wdbk34/emacss_native_templating_and_snippet_fuctionality/
+https://www.reddit.com/r/emacs/comments/wcupae/lets_share_your_top_3_packages_that_you_cant_live/
 https://alexpeits.github.io/emacs.d/#org4048a44
 simple vc push pull https://www.gnu.org/software/emacs/manual/html_node/emacs/Pulling-_002f-Pushing.html
 https://www.lucacambiaghi.com/vanilla-emacs/readme.html#h:06E0EA9F-7CF4-4B99-8A4A-2C63A4F8A6B6
@@ -8184,6 +8190,7 @@ q
 ***** Reference
 - https://youtube-dl.org/
 ***** Remarkable
+- https://www.simplykyra.com/2021/02/10/switch-out-your-remarkables-sleep-screen-plus-easily-back-it-up/
 - https://ddvk.github.io/rmfakecloud/
 - https://www.reddit.com/r/RemarkableTablet/comments/ui4w46/remarkable2_without_connect/
 - https://www.google.com/search?q=remarkable+quick+sheets+delete
