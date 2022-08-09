@@ -6332,7 +6332,10 @@ http://www.mitchchn.me/2014/os-x-terminal/
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
-**** Software flat list
+**** Software :flat:
+***** htop
+- https://www.google.com/search?q=htop+restore+default+settings
+  https://unix.stackexchange.com/questions/147885/how-can-i-set-default-settings-for-htop
 ***** Git                                                            :career:
 :PROPERTIES:
 :ID:       E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6
