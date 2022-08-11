@@ -6354,6 +6354,10 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 ******* Git push
 ******* Git processes :flat:
 - https://stackoverflow.com/questions/13897717/push-commits-to-another-branch
+
+******** clone specific branch
+git clone -b opencv-2.4 --single-branch https://github.com/Itseez/opencv.git
+
 - https://stackoverflow.com/questions/1911109/how-do-i-clone-a-specific-git-branch
 ******** Create and initialize
   - https://www.google.com/search?q=initialize+git+repo
@@ -7531,7 +7535,7 @@ sudo add-apt-repository ppa:ubuntu-elisp/ppa
 sudo apt-get update
 sudo apt-get install emacs-snapshot
 #+end_src
-****** Processes
+****** Emacs processes :hierarchy
 - bash linting - http://www.skybert.net/emacs/bash-linting-in-emacs/
 - screen shot - https://www.reddit.com/r/emacs/comments/ejef2d/screenshot_code/
 - unicode - to add special chars- http://ergoemacs.org/emacs/emacs_n_unicode.html
@@ -7569,6 +7573,10 @@ sudo apt-get install emacs-snapshot
 
 - https://www.reddit.com/r/emacs/comments/mqtwzx/creating_custom_minor_modes_learning_emacs_lisp_7/
 - https://askubuntu.com/questions/598985/how-to-upgrade-to-the-latest-emacs
+****** Emacs Processes                                                 :flat:
+- https://www.google.com/search?q=emacs+paste+line+n+times
+******* Modify write permission from within buffer w/ C-x C-q
+https://unix.stackexchange.com/questions/47724/how-to-modify-write-permission-on-current-buffer-in-emacs
 ****** Interfaces
 :PROPERTIES:
 :ID:       0c0667a7-dcb3-4ef8-98c1-8fa1b9cc3116
