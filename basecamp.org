@@ -3485,6 +3485,7 @@ docker_interactive() {
 :PROPERTIES:
 :ID:       3A02CE83-279F-4D28-A56E-A8AF1094B77B
 :END:
+https://www.freecodecamp.org/news/learn-html-and-css-order-summary-component/
 https://www.reddit.com/r/webdev/comments/r98r95/been_working_for_2_years_on_plasmic_a_visual/
 https://www.freecodecamp.org/news/learn-html-beginners-course/
 https://www.reddit.com/r/webdev/comments/r98r95/been_working_for_2_years_on_plasmic_a_visual/
@@ -3773,6 +3774,7 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
+https://www.freecodecamp.org/news/python-programming-course/
 - https://www.google.com/search?q=python+commenting+best+practices
 ****** Processes :hierarchy:
 - https://www.google.com/search?q=python+change+directories
@@ -8963,6 +8965,7 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+https://www.reddit.com/r/commandline/comments/wmtnmd/fig_ai_translate_natural_language_to_bash/
 https://stackoverflow.com/questions/16956810/how-do-i-find-all-files-containing-specific-text-on-linux
 find . -type f -print0 | xargs -0 du | sort -n | tail -10 | cut -f2 | xargs -I{} du -sh {}
 
