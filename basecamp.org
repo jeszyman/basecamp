@@ -172,6 +172,7 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
+https://bookdown.org/yihui/rmarkdown/dashboard-components.html
 #+begin_src R
 # Load configuration
 if(file.exists(paste0("./config/",as.character(Sys.info()["nodename"]),".R"))) {
@@ -1207,6 +1208,8 @@ CLOCK: [2022-01-24 Mon 07:30]--[2022-01-24 Mon 08:05] =>  0:35
 CLOCK: [2021-06-04 Fri 08:50]--[2021-06-04 Fri 09:53] =>  1:03
 CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 :END:
+https://en.wikipedia.org/wiki/Data_lineage
+https://en.wikipedia.org/wiki/ISO_8601
 https://www.reddit.com/r/datascience/comments/wcsx2n/data_science_best_practices/
 https://datascienceatthecommandline.com/2e/
 https://www.reddit.com/r/datascience/comments/v6sv06/what_is_the_bible_of_data_science/
@@ -2069,6 +2072,7 @@ CLOCK: [2017-06-23 Fri 19:05]--[2017-06-23 Fri 19:35] =>  0:30
 CLOCK: [2018-06-27 Wed 11:59]--[2018-06-27 Wed 12:49] =>  0:50
 CLOCK: [2017-11-28 Tue 18:30]--[2017-11-28 Tue 19:30] =>  1:00
 :END:
+https://github.com/edwardleardi/mle-ds-swe-cheat-sheets
 https://christophm.github.io/interpretable-ml-book/
 https://www.reddit.com/r/MachineLearning/comments/uwibp8/d_calculating_shannon_information_of_data/
 https://stats.stackexchange.com/questions/471822/are-there-any-power-calculation-formulas-for-ml-methods-beyond-logistic-regressi
@@ -3691,6 +3695,8 @@ https://mmistakes.github.io/jekyll-theme-basically-basic/recipes/chocolate-chip-
 :LOGBOOK:
 CLOCK: [2019-02-06 Wed 16:12]--[2019-02-06 Wed 17:05] =>  0:53
 :END:
+https://www.freecodecamp.org/news/learn-c-programming-classic-book-dr-chuck/
+https://www.reddit.com/r/ProgrammerHumor/comments/wqugqh/i_thought_programming_was_hard_until_i_found_this/
 https://www.freecodecamp.org/news/learn-c-with-free-31-hour-course/
 https://goalkicker.com/
 https://www.freecodecamp.org/news/rust-in-replit/
@@ -3774,12 +3780,9 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
-https://www.freecodecamp.org/news/python-programming-course/
+- https://www.freecodecamp.org/news/python-programming-course/
 - https://www.google.com/search?q=python+commenting+best+practices
 ****** Processes :hierarchy:
-- https://www.google.com/search?q=python+change+directories
-- https://stackoverflow.com/questions/57459455/changing-the-name-of-multiple-files-based-on-an-index
-- Get variable type https://www.google.com/search?q=python+get+variable+type type()
 - Probability and statistics
   - https://stackoverflow.blog/2021/02/23/level-up-mastering-statistics-with-python-part-2/?cb=1&_ga=2.59352485.940265309.1614263567-766544545.1565628865
 - Install package
@@ -3797,6 +3800,21 @@ ALLLIB.remove("lib118")
 ALLLIB.remove("lib200")
 ALLLIB.remove("lib234")
 ALLLIB.remove("lib240")
+#+end_src
+
+*******                                                                :flat:
+- https://www.google.com/search?q=python+filter+one+list+by+another+list
+- https://www.google.com/search?q=python+change+directories
+- https://stackoverflow.com/questions/57459455/changing-the-name-of-multiple-files-based-on-an-index
+- Get variable type https://www.google.com/search?q=python+get+variable+type type()
+- https://www.google.com/search?q=python+append+characters+to+each+in+list
+  https://stackoverflow.com/questions/15738267/add-a-character-to-each-item-in-a-list
+  #+begin_src python
+suits = ["h","c", "d", "s"]
+aces = ["a" + suit for suit in suits]
+aces = [suit + "a" for suit in suits]
+aces
+
 #+end_src
 ****** Local YAS
 #+name: code.py
@@ -3856,11 +3874,12 @@ $0
 - [[https://pypi.org/][Python Package Index]]
 - https://github.com/mstamy2/PyPDF2
 ******* pandas
-- Reference
-- Processes
-  - https://www.google.com/search?q=pandas+filter+column
-  - https://www.google.com/search?q=pandas+import+csv
-  - https://www.google.com/search?q=pandas+column+to+list
+******** Processes
+- https://www.google.com/search?q=pandas+export+tsv
+- https://www.google.com/search?q=pandas+filter+column
+- https://www.google.com/search?q=pandas+import+csv
+- https://www.google.com/search?q=pandas+column+to+list
+******** :ref:
 - https://towardsdatascience.com/how-to-learn-pandas-108905ab4955
 - [[https://github.com/pandas-profiling/pandas-profiling][pandas-profiling]]
 ******* [[http://www.nltk.org][NLTK]]
@@ -4460,13 +4479,14 @@ else
     echo "No bash config found. Are you running from repo main dir?"
 fi
 #+end_src
-****** Processes
+****** Processes :hierarchy:
 :PROPERTIES:
 :ID:       c3e424cd-7191-423e-815b-7e7fcb770100
 :END:
 :LOGBOOK:
 CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
 :END:
+- https://unix.stackexchange.com/questions/10646/repeat-a-unix-command-every-x-seconds-forever
 - # see https://stackoverflow.com/questions/7131670/make-a-bash-alias-that-takes-a-parameter
 - bash error output to log
   -
@@ -5302,6 +5322,7 @@ pandoc -S $test | xclip -selection clipboard
 :PROPERTIES:
 :ID:       2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5
 :END:
+https://www.educative.io/blog/advanced-yaml-syntax-cheatsheet
 - Cannot do string concatenation
   - https://stackoverflow.com/questions/5484016/how-can-i-do-string-concatenation-or-string-replacement-in-yaml
 - Processes
@@ -6336,6 +6357,8 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
 **** Software :flat:
 ***** htop
+- https://www.google.com/search?q=htop+headers+S
+  - https://peteris.rocks/blog/htop/#s-interruptible-sleep-waiting-for-an-event-to-complete
 - https://www.google.com/search?q=htop+restore+default+settings
   https://unix.stackexchange.com/questions/147885/how-can-i-set-default-settings-for-htop
 ***** Git                                                            :career:
@@ -6352,12 +6375,16 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
-****** Git processes :hierarchy:
+****** Processes                                                  :hierarchy:
+https://medium.com/analytics-vidhya/tutorial-removing-large-files-from-git-78dbf4cf83a#:~:text=To%20fix%20this%20issue%2C%20you,remove%20the%20large%20file%2C%20then
 ******* Git push
 ******* Git processes :flat:
 - https://stackoverflow.com/questions/13897717/push-commits-to-another-branch
 
 ******** clone specific branch
+#+begin_src bash
+git clone -b stable4.1 --depth 1 --single-branch git@github.com:jeszyman/cappseq
+#+end_src
 git clone -b opencv-2.4 --single-branch https://github.com/Itseez/opencv.git
 
 - https://stackoverflow.com/questions/1911109/how-do-i-clone-a-specific-git-branch
@@ -6441,6 +6468,10 @@ https://stackoverflow.com/questions/67699/how-to-clone-all-remote-branches-in-gi
 ******** Hooks
 - https://stackoverflow.com/questions/2050450/git-hooks-management
 ******** Ignore
+  #+begin_src bash
+# ignore dotfiles
+find . -type l | sed -e s'/^\.\///g' >> .gitignore
+#+end_src
 - https://www.toptal.com/developers/gitignore
 - Ignore a directory and all contents
   - https://www.google.com/search?q=git+ignore+directory
@@ -6630,14 +6661,56 @@ git remote add origin git@github.com:jeszyman/cardradbio-atac.git
 
 git push -u origin master
 #+end_src
-- Import size check hook (bash config will check this is readable)
-  #+begin_src bash :noweb yes
-<<../basecamp/basecamp.org:git_size_check_hook_wrapper()>>
-#+end_src
-  #+begin_src bash
-ln -s /home/jeszyman/repos/cardradbio-atac/config/precommit_git_hook /home/jeszyman/repos/cardradbio-atac/.git/hooks/precommit
-#+end_src
 - Size check hook
+  #+begin_src bash
+#!/bin/sh
+#########1#########2#########3#########4#########5#########6#########7#########8
+#
+# This script is imported from github.com/jeszyman/basecamp
+# See block git_size_check_hook in
+#  https://github.com/jeszyman/basecamp/blob/master/basecamp.org
+
+hard_limit=$(git config hooks.filesizehardlimit)
+soft_limit=$(git config hooks.filesizesoftlimit)
+: ${hard_limit:=10000000}
+: ${soft_limit:=500000}
+
+list_new_or_modified_files()
+{
+    git diff --staged --name-status|sed -e '/^D/ d; /^D/! s/.\s\+//'
+}
+
+unmunge()
+{
+    local result="${1#\"}"
+    result="${result%\"}"
+    env echo -e "$result"
+}
+
+check_file_size()
+{
+    n=0
+    while read -r munged_filename
+    do
+        f="$(unmunge "$munged_filename")"
+        h=$(git ls-files -s "$f"|cut -d' ' -f 2)
+        s=$(git cat-file -s "$h")
+        if [ "$s" -gt $hard_limit ]
+        then
+            env echo -E 1>&2 "ERROR: hard size limit ($hard_limit) exceeded: $munged_filename ($s)"
+            n=$((n+1))
+        elif [ "$s" -gt $soft_limit ]
+        then
+            env echo -E 1>&2 "WARNING: soft size limit ($soft_limit) exceeded: $munged_filename ($s)"
+        fi
+    done
+
+    [ $n -eq 0 ]
+}
+
+list_new_or_modified_files | check_file_size
+#+end_src
+
 
 ******* Pre-commit file size check hook
 :PROPERTIES:
@@ -7477,7 +7550,9 @@ https://tomd.xyz/diagrams-as-code-drawio/
 - Processes
   - https://www.google.com/search?q=draw.io+insert+image
 - https://github.com/jgraph/drawio-desktop/releases/tag/v16.5.1
-***** Emacs
+***** Emacs :ref:
+https://www.emacswiki.org/emacs/ComintMode
+https://xenodium.com/seamless-command-line-utils/
 https://www.reddit.com/r/emacs/comments/wdbk34/emacss_native_templating_and_snippet_fuctionality/
 https://www.reddit.com/r/emacs/comments/wcupae/lets_share_your_top_3_packages_that_you_cant_live/
 https://alexpeits.github.io/emacs.d/#org4048a44
@@ -8062,6 +8137,10 @@ https://github.com/raulpenate/.dotfiles/blob/main/.config/i3/config
 :PROPERTIES:
 :ID:       ec8355ce-7324-4ffd-ad3b-25c39edc7390
 :END:
+#+begin_src bash
+
+libreoffice --headless --convert-to pdf /tmp/GAiN_Cover_Letter.docx --outdir /tmp
+#+end_src
 - https://help.libreoffice.org/4.4/Common/List_of_Regular_Expressions
 - https://extensions.libreoffice.org/extensions
 - https://extensions.libreoffice.org/extensions
@@ -8965,6 +9044,7 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+https://askubuntu.com/questions/14155/what-to-do-when-ctrl-c-wont-kill-running-job
 https://www.reddit.com/r/commandline/comments/wmtnmd/fig_ai_translate_natural_language_to_bash/
 https://stackoverflow.com/questions/16956810/how-do-i-find-all-files-containing-specific-text-on-linux
 find . -type f -print0 | xargs -0 du | sort -n | tail -10 | cut -f2 | xargs -I{} du -sh {}
