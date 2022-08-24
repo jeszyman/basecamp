@@ -6378,9 +6378,9 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 ****** Processes                                                  :hierarchy:
 https://medium.com/analytics-vidhya/tutorial-removing-large-files-from-git-78dbf4cf83a#:~:text=To%20fix%20this%20issue%2C%20you,remove%20the%20large%20file%2C%20then
 ******* Git push
-******* Git processes :flat:
+******* :flat:
 - https://stackoverflow.com/questions/13897717/push-commits-to-another-branch
-
+- https://www.google.com/search?q=git+revert+specific+commit
 ******** clone specific branch
 #+begin_src bash
 git clone -b stable4.1 --depth 1 --single-branch git@github.com:jeszyman/cappseq
