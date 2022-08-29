@@ -1208,6 +1208,7 @@ CLOCK: [2022-01-24 Mon 07:30]--[2022-01-24 Mon 08:05] =>  0:35
 CLOCK: [2021-06-04 Fri 08:50]--[2021-06-04 Fri 09:53] =>  1:03
 CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 :END:
+https://www.reddit.com/r/datascience/comments/wy89ow/how_do_you_keep_track_of_a_data_science_project/
 https://en.wikipedia.org/wiki/Data_lineage
 https://en.wikipedia.org/wiki/ISO_8601
 https://www.reddit.com/r/datascience/comments/wcsx2n/data_science_best_practices/
@@ -6376,19 +6377,7 @@ CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
 ****** Processes                                                  :hierarchy:
-https://medium.com/analytics-vidhya/tutorial-removing-large-files-from-git-78dbf4cf83a#:~:text=To%20fix%20this%20issue%2C%20you,remove%20the%20large%20file%2C%20then
-******* Git push
-******* :flat:
-- https://stackoverflow.com/questions/13897717/push-commits-to-another-branch
-- https://www.google.com/search?q=git+revert+specific+commit
-******** clone specific branch
-#+begin_src bash
-git clone -b stable4.1 --depth 1 --single-branch git@github.com:jeszyman/cappseq
-#+end_src
-git clone -b opencv-2.4 --single-branch https://github.com/Itseez/opencv.git
-
-- https://stackoverflow.com/questions/1911109/how-do-i-clone-a-specific-git-branch
-******** Create and initialize
+******* Create and initialize
   - https://www.google.com/search?q=initialize+git+repo
   - git branch --set-upstream-to=origin/master master
 #+begin_src bash
@@ -6403,14 +6392,14 @@ git remote add origin git@github.com:jeszyman/mpnst-preprocessing.git
 git branch -M master
 git push -u origin master
 #+end_src
-******** Branches
+******* Branches
   - git branch
     - add and delete
       - -d <BRANCH NAME>
       - <BRANCH NAME>
   - git checkout <BRANCH> switch branches
 https://stackoverflow.com/questions/67699/how-to-clone-all-remote-branches-in-git
-******** Commit
+******* Commit
   - https://www.google.com/search?q=git+see+which+files+are+not+added
   - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
   - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
@@ -6422,7 +6411,7 @@ https://stackoverflow.com/questions/67699/how-to-clone-all-remote-branches-in-gi
     - git checkout -- undo last commit FOR A SPECIFIC FILE
 
 
-******** Commit messages
+******* Commit messages
 - https://semver.org/
 - https://stackoverflow.com/questions/179123/how-to-modify-existing-unpushed-commit-messages
   - hooks
@@ -6444,7 +6433,7 @@ https://stackoverflow.com/questions/67699/how-to-clone-all-remote-branches-in-gi
 - https://stackoverflow.com/questions/29933349/how-can-i-make-git-commit-messages-divide-into-multiple-lines
 - https://www.conventionalcommits.org/en/v1.0.0/#summary
 - https://www.google.com/search?q=git+generate+chage+log
-******** Errors
+******* Errors
 - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
 - https://stackoverflow.com/questions/33360043/git-error-need-to-remove-large-file
 - [[id:a3515f1b-c8c6-4c0b-bb4d-737c3edc9886][Reverting]]
@@ -6452,7 +6441,7 @@ https://stackoverflow.com/questions/67699/how-to-clone-all-remote-branches-in-gi
 - https://www.google.com/search?q=git+Not+possible+to+fast-forward+aborting
 - [[https://stackoverflow.com/questions/4254389/git-corrupt-loose-object/18238322#18238322][corrupt loose object]]
 - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
-******** Git project management processes
+******* Git project management processes
 - Project management, multiple git repos, multiple branches
   - https://stackoverflow.com/questions/816619/managing-many-git-repositories
   - https://softwareengineering.stackexchange.com/questions/206668/using-multiple-git-repositories-instead-of-a-single-one-containing-many-apps-fro
@@ -6465,9 +6454,9 @@ https://stackoverflow.com/questions/67699/how-to-clone-all-remote-branches-in-gi
 - https://www.reddit.com/r/git/comments/ukrhb1/versioning_changelogs_release_notes_squashing_and/
 - https://www.google.com/search?q=git+make+stable+version+branch
 
-******** Hooks
+******* Hooks
 - https://stackoverflow.com/questions/2050450/git-hooks-management
-******** Ignore
+******* Ignore
   #+begin_src bash
 # ignore dotfiles
 find . -type l | sed -e s'/^\.\///g' >> .gitignore
@@ -6478,9 +6467,9 @@ find . -type l | sed -e s'/^\.\///g' >> .gitignore
 - Ignore symlinks
   - https://www.google.com/search?q=git+ignore+all+symlinks
   - https://stackoverflow.com/questions/8650871/telling-git-to-ignore-symlinks
-******** Pull
+******* Pull
 - https://www.google.com/search?q=git+not+possible+to+fast-forward+aborting
-******** Removing
+******* Removing
 - Removing files
   - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
   - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
@@ -6491,7 +6480,7 @@ find . -type l | sed -e s'/^\.\///g' >> .gitignore
   - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
   - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
 - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
-******** Reverting
+******* Reverting
 :PROPERTIES:
 :ID:       a3515f1b-c8c6-4c0b-bb4d-737c3edc9886
 :END:
@@ -6504,7 +6493,7 @@ find . -type l | sed -e s'/^\.\///g' >> .gitignore
     - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]]
     - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
   - https://www.google.com/search?q=git+restore+file+as+new+name
-******** Search and view
+******* Search and view
 - File comparisons
   - https://www.freecodecamp.org/news/git-diff-command/
   - https://doc.ubuntu-fr.org/meld
@@ -6517,14 +6506,14 @@ find . -type l | sed -e s'/^\.\///g' >> .gitignore
   - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
 - Searching commits
   - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
-******** Staging (Add)
+******* Staging (Add)
   - git add 'stages' a file- makes it ready to add to repo
   - git reset unstages
   - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
   - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
 
 
-******** Submodules
+******* Submodules
 - Add
   - Add from github https://stackoverflow.com/questions/1911109/how-do-i-clone-a-specific-git-branch
   - Add specific branch with -b
@@ -6555,10 +6544,26 @@ find . -type l | sed -e s'/^\.\///g' >> .gitignore
     - # git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
     - # git submodule foreach --recursive git pull
     - # git submodule foreach --recursive git push
-******** Working with previous commits
+******* Working with previous commits
 - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
 - view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
 - https://stackoverflow.com/questions/888414/git-checkout-older-revision-of-a-file-under-a-new-name
+******* :flat:
+- https://stackoverflow.com/questions/13897717/push-commits-to-another-branch
+- https://medium.com/analytics-vidhya/tutorial-removing-large-files-from-git-78dbf4cf83a#:~:text=To%20fix%20this%20issue%2C%20you,remove%20the%20large%20file%2C%20then
+
+- https://stackoverflow.com/questions/13897717/push-commits-to-another-branch
+- https://www.google.com/search?q=git+revert+specific+commit
+******** merge branch into master
+https://stackoverflow.com/questions/5601931/how-do-i-safely-merge-a-git-branch-into-master
+
+******** clone specific branch
+#+begin_src bash
+git clone -b stable4.1 --depth 1 --single-branch git@github.com:jeszyman/cappseq
+#+end_src
+git clone -b opencv-2.4 --single-branch https://github.com/Itseez/opencv.git
+
+- https://stackoverflow.com/questions/1911109/how-do-i-clone-a-specific-git-branch
 ****** Commands
   | Action               | Command                                  |
   |----------------------+------------------------------------------|
@@ -9044,6 +9049,9 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+- https://unix.stackexchange.com/questions/10646/repeat-a-unix-command-every-x-seconds-forever
+
+https://www.reddit.com/r/commandline/comments/wwib48/good_alternatives_to_man_pages_to_learn_concise/
 https://askubuntu.com/questions/14155/what-to-do-when-ctrl-c-wont-kill-running-job
 https://www.reddit.com/r/commandline/comments/wmtnmd/fig_ai_translate_natural_language_to_bash/
 https://stackoverflow.com/questions/16956810/how-do-i-find-all-files-containing-specific-text-on-linux
