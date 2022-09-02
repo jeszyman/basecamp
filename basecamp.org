@@ -3661,6 +3661,7 @@ https://www.codecademy.com/courses/web-beginner-en-HZA3b/0/1?curriculum_id=50579
 :PROPERTIES:
 :ID:       1B7FE5C7-8E08-499B-A742-D916138193EF
 :END:
+https://www.freecodecamp.org/news/learn-css-in-11-hours/
 - https://www.freecodecamp.org/news/how-to-create-and-implement-a-design-system-with-css/
   - https://css-tricks.com/building-a-jekyll-site-part-3-of-3/
   - [[https://www.youtube.com/watch?v=yfoY53QXEnI][Traversy CSS Crash Course For Absolute Beginners]]
@@ -3781,6 +3782,7 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
+https://www.freecodecamp.org/news/20-beginner-python-projects/
 - https://www.freecodecamp.org/news/python-programming-course/
 - https://www.google.com/search?q=python+commenting+best+practices
 ****** Processes :hierarchy:
@@ -4366,7 +4368,7 @@ $0
 # expand-env: ((yas-indent-line 'fixed))
 # --
 ${1:function_name}(){
-    add bash.usage here
+    local ${2: <VARIABLE NAME> }="\${1}"
     $0
 }
 #+end_src
@@ -9055,9 +9057,11 @@ https://www.reddit.com/r/commandline/comments/wwib48/good_alternatives_to_man_pa
 https://askubuntu.com/questions/14155/what-to-do-when-ctrl-c-wont-kill-running-job
 https://www.reddit.com/r/commandline/comments/wmtnmd/fig_ai_translate_natural_language_to_bash/
 https://stackoverflow.com/questions/16956810/how-do-i-find-all-files-containing-specific-text-on-linux
-find . -type f -print0 | xargs -0 du | sort -n | tail -10 | cut -f2 | xargs -I{} du -sh {}
+
 
 https://www.programming-helper.com/linux
+******** Scripts
+
 ******** Processes- see [[id:b33a7727-70b2-4743-a8cf-025a0803c3cc][Ubuntu Processes]]
 ******** Ubuntu                                                    :software:
 :PROPERTIES:
