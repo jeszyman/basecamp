@@ -7681,6 +7681,7 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
+****** [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]]
 ****** Processes                                                  :hierarchy:
 ******* Create and initialize
   - https://www.google.com/search?q=initialize+git+repo
@@ -8230,14 +8231,16 @@ fi
 :PROPERTIES:
 :ID:       e1bbc57a-0660-4ccf-a7e7-9870b3afbff7
 :END:
+-
 - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
 - github for phi https://mail.google.com/mail/u/0/#inbox/FMfcgzGmtrSFVZLwRBfnJQJMVGLgzhJG
 - [[https://docs.github.com/en][Documentation]]
 - https://stackoverflow.com/questions/33330771/git-lfs-this-exceeds-githubs-file-size-limit-of-100-00-mb
 - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
-- [[id:E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6][Git]]
-- Processes
-  - https://www.google.com/search?q=github+new+repository
+****** Processes :flat:
+- https://www.google.com/search?q=github+new+repository
+****** [[id:E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6][Git]]
+****** General reference                                                :ref:
 - https://help.github.com/en/articles/about-project-boards
 ***** gnome-screenshot
 https://askubuntu.com/questions/1196914/gnome-screenshot-cant-copy-to-clipboard-in-ubuntu-18-04
