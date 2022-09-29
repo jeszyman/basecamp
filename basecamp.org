@@ -1,14 +1,3 @@
-
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.smk
-# -*- mode: snippet -*-
-# key: code.smk
-# expand-env: ((yas-indent-line 'none))
-# --
-,#+begin_src snakemake
-$0
-,#+end_src
-#+end_src
-- [ ] need to harmonize conda installs across systems to use w/ emacs
 * Basecamp
 :PROPERTIES:
 :header-args:bash: :tangle-mode (identity #o555)
@@ -17,138 +6,6 @@ $0
 :LOGBOOK:
 CLOCK: [2021-06-30 Wed 11:54]--[2021-06-30 Wed 12:10] =>  0:16
 :END:
-
-https://askubuntu.com/questions/15832/how-do-i-get-the-cpu-temperature
-- [ ] symlink to $HOME/.local/bin
-** R bioinformatics setup
-:PROPERTIES:
-:ID:       87b498a6-e553-4682-8038-96bbb21fda14
-:END:
-#+name: biotools_r_setup
-#+begin_src R :noweb yes
-#
-# Check Packages
-##
-## Bioconductor
-if (!requireNamespace("BiocMan
-ager", quietly = TRUE))
-    install.packages("BiocManager")
-##
-packages = c(
-  "AnnotationDbi",
-  "biomaRt",
-  "circlize",
-  "ComplexHeatmap",
-  "copynumber",
-  "DESeq2",
-  "DRIMSeq",
-  "edgeR",
-  "fgsea",
-  "gage",
-  "gageData",
-  "GenomicFeatures",
-  "gplots",
-  "limma",
-  "pathview",
-  "pheatmap",
-  "PoiClaClu",
-  "SummarizedExperiment",
-  "tximport"
-)
-##
-##NOTE requires libcurl4-openssl-dev https://stackoverflow.com/questions/11471690/curl-h-no-such-file-or-directory/11471743
-package.check = lapply(
-  packages,
-  FUN = function(x) {
-    if (!require (x, character.only = T)) {
-      BiocManager::install(x, quietly =T, ask=F)
-      library(x, character.only = T)
-    }
-  }
-)
-#
-
-#+end_src
-
-#+name: biotools_r_setup_wrapper
-#+begin_src org :noweb yes
-<<biotools_r_setup>>
-#+end_src
-
-
-** My script tools
-*** Shell
-**** [[id:a97c46fe-8a23-4fa1-b9e2-f0edc29ec7f4][No message simple git commit to github]]
-=======
-** [[id:79e01a67-5ba1-4257-8353-8c5cf1ac8c4a][Write basecamp Dockerfile]]
-
-** Git repo scripts
-- Common
-  #+name: bash_common_config
-  #+begin_src bash :noweb yes
-# Check git file hook is read-able
-if [ -r "${repo}/.git/hooks/precommit" ]; then
-   echo "Git size check is read-able"
-else
-    echo
-    "Git size check is not read-able"
-    exit 1
-fi
-
-# Check mount point
-if grep -qs $mntpt /proc/mounts; then
-    echo "RIS storage mounted."
-else
-    echo "RIS storage NOT mounted!!!"
-fi
-
-# Check local singularity build present
-if [ -r ${sif_dir}/frag.sif ]; then
-    echo "Local singularity file present"
-else
-    echo "Local singularity file not found."
-fi
-
-# Check if local singularity container is present and up-to-date
-if [ -r "${HOME}/sing_containers/biotools.sif" ]; then
-    echo "Local biotools singularity container exists"
-else
-    echo "No local biotools singularity container, attempting to fetch..."
-    mkdir -p "${HOME}/sing_containers"
-    cp /mnt/ris/aadel/jeszyman/sing_containers/biotools.sif "${HOME}/sing_containers"
-fi
-
-if [ ${HOME}/sing_containers/biotools.sif -ot /mnt/ris/aadel/jeszyman/sing_containers/biotools.sif ];
-then
-    echo "Local biotools container out of date, updating..."
-    cp /mnt/ris/aadel/jeszyman/sing_containers/biotools.sif "${HOME}/sing_containers"
-else
-    echo "Local biotools singularity container is up to date"
-fi
-
-sing_biotools() {
-    singularity shell --bind /mnt:/mnt ~/sing_containers/biotools.sif
-}
-
-launch_frag() {
-    if [ -f /.dockerenv ]; then
-        echo "shell already in docker, exiting";
-        exit 1;
-    else
-        docker run --env HOME=${HOME} --hostname ${HOSTNAME} --interactive --tty --volume /home/:/home/ --volume /tmp/:/tmp/ --volume /mnt/:/mnt/ --user $(id -u ${USER}) -w "$repo" jeszyman/frag /bin/bash;
-    fi
-}
-#+end_src
-** [[*Software flat list][Software flat list]]
-** Setup
-:PROPERTIES:
-:ID:       d08d41e0-5772-4865-96df-b0e753e66b7d
-:END:
-#+begin_src bash
-repo="/home/jeszyman/repos/basecamp"
-mkdir -p "${repo}/docker"
-mkdir -p "${repo}/resources"
-#+end_src
 ** R Statistical Computing                                           :career:
 :PROPERTIES:
 :ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
@@ -172,6 +29,9 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
+- https://stackoverflow.com/questions/15217758/remove-a-library-from-libpaths-permanently-without-rprofile-site
+
+https://stackoverflow.com/questions/57325157/function-to-rename-column-of-each-dataframe-in-a-list-to-its-dataframe-name
 https://bookdown.org/yihui/rmarkdown/dashboard-components.html
 #+begin_src R
 # Load configuration
@@ -237,29 +97,13 @@ ${1:FUNCTION NAME} = function(${2:VARIABLE LIST}){
 }
 #+end_src
 
-*** Processes
+*** R Processes :hierarchy:
 :PROPERTIES:
 :ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
 :END:
 :LOGBOOK:
 CLOCK: [2021-06-04 Fri 10:17]--[2021-06-04 Fri 10:25] =>  0:08
 :END:
-get package version with packageVersion("PACKAGENAME")
-**** Import
-:PROPERTIES:
-:ID:       8fe67560-d881-4cc3-ad0f-fea419a81023
-:END:
-  - https://stackoverflow.com/questions/23678691/converting-a-text-file-into-a-vector-in-r
-    - https://www.google.com/search?q=R+import+file+as+vector
-**** Working with system variables
-:PROPERTIES:
-:ID:       e83e96d2-1942-4913-ba3f-a9351fa99b42
-:END:
-- https://www.google.com/search?q=get+hostname+in+R
-#+begin_src R
-as.character(Sys.info()["nodename"])
-#+end_src
-
 **** Regular expressions (REGEX) in R
 :PROPERTIES:
 :ID:       af6ebe3c-92f2-4b87-8292-d5deac52bd00
@@ -306,16 +150,11 @@ CLOCK: [2019-03-19 Tue 14:35]--[2019-03-19 Tue 16:45] =>  2:10
 :PROPERTIES:
 :ID:       ae65c4a5-7fe5-474c-90e3-b8b567017ac4
 :END:
-
 **** Text
 :PROPERTIES:
 :ID:       94242006-2d2c-4615-8104-8613fd5df6d9
 :END:
 - https://www.google.com/search?q=R+lowercase+dplyr+stack
-**** [[id:7d5cda01-172e-49ee-8030-754402f3aa7d][LINK TO Data science in R]]
-:PROPERTIES:
-:ID:       ee748c37-9714-4ca6-aa81-5241061b2a61
-:END:
 **** Math in R
 :PROPERTIES:
 :ID:       1cda08a5-5e3d-49bd-96aa-c262abada15d
@@ -405,9 +244,7 @@ RUN apt-get install -yq --no-install-recommends --allow-unauthenticated \
 :PROPERTIES:
 :ID:       76DD7F99-072F-49D7-A08C-7A77F48BCDAE
 :END:
-
  shaprio.test(VECTOR)
-
  null-hypothesis of this test is that the population is normally distributed
 
 ********* QQ plot
@@ -568,10 +405,71 @@ library(ROCR)
   - http://r-pkgs.had.co.nz/
   - Referring to other packages: https://stackoverflow.com/questions/36874904/r-how-do-i-make-my-package-use-another-package
 
-**** [[id:19d01dcc-8fef-4c07-952a-da918b3dc775][LINK TO Visualizations in R including ggplot2]]
+
+**** Visualizations in R including ggplot2
 :PROPERTIES:
-:ID:       6e05325e-f80c-4aaf-a4f1-9e90b9db4ef6
+:ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
 :END:
+https://www.geeksforgeeks.org/how-to-add-image-to-ggplot2-in-r/
+- https://stackoverflow.com/questions/67459955/ggplot-font-size-and-plot-size
+- https://patchwork.data-imaginist.com/articles/guides/assembly.html
+- https://cran.r-project.org/web/packages/ggfun/vignettes/ggfun.html
+- http://rich-iannone.github.io/DiagrammeR/docs.html
+- https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html
+- [[https://gist.github.com/Rekyt/a7846af7c4c5fb5a48ea][ggplots over multiple pdf pages]]
+- https://bookdown.org/ndphillips/YaRrr/saving-plots-to-a-file-with-pdf-jpeg-and-png.html
+- tikz as graphics device for R: https://cran.r-project.org/web/packages/tikzDevice/vignettes/tikzDevice.pdf
+- https://r-graphics.org/recipe-facet-label-appearance
+- saving - use - better than ggsave: - https://rdrr.io/cran/cowplot/man/save_plot.html
+- https://www.reddit.com/r/rstats/comments/b4ol4z/unbin_data_to_make_histogram/
+- [[http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/][histogram]]
+- [[http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/#modifying-the-text-of-legend-titles-and-labels][modify ggplot2 legend text]]
+- https://cran.r-project.org/web/packages/tikzDevice/vignettes/tikzDevice.pdf
+
+
+***** Processes :flat:
+
+- [[https://gist.github.com/Rekyt/a7846af7c4c5fb5a48ea][ggplots over multiple pdf pages]]
+****** Interactive
+- [[https://www.youtube.com/watch?feature=youtu.be&v=rBp3eYHrsfo&app=desktop&t=0s][plotly interactive graphs]]
+****** Theme
+https://wilkelab.org/cowplot/articles/themes.html
+****** Facets
+- https://r-graphics.org/recipe-facet-label-appearance
+****** Significance annotations
+https://www.datanovia.com/en/blog/how-to-add-p-values-onto-a-grouped-ggplot-using-the-ggpubr-r-package/#pairwise-comparisons-against-a-reference-group
+https://www.datanovia.com/en/blog/how-to-add-p-values-onto-a-grouped-ggplot-using-the-ggpubr-r-package/#pairwise-comparisons-against-a-reference-group
+https://cran.r-project.org/web/packages/ggsignif/vignettes/intro.html
+https://crumplab.com/psyc7709_2019/book/docs/how-to-annotate-a-graph-using-gg-signif.html
+****** Labeling
+- https://r-graphics.org/recipe-facet-label-appearance
+- https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html
+- https://ggrepel.slowkow.com/articles/examples.html
+****** ER
+- er diagrams - https://rich-iannone.github.io/DiagrammeR/index.html
+****** Legend style
+- http://www.sthda.com/english/wiki/ggplot2-legend-easy-steps-to-change-the-position-and-the-appearance-of-a-graph-legend-in-r-software
+****** Venn
+- vens https://stackoverflow.com/questions/8713994/venn-diagram-proportional-and-color-shading-with-semi-transparency
+****** Pie
+- [[https://stackoverflow.com/questions/33594642/beautiful-pie-charts-with-r/33594843][pie charts]]
+****** Multi-panel
+- https://github.com/thomasp85/patchwork
+- [[http://statisticalrecipes.blogspot.com/2015/07/cowplot-arrange-ggplot2-figures-in-grid.html][Cowplot]]
+- [[https://cran.r-project.org/web/packages/cowplot/vignettes/plot_grid.html][another cowplot vignette]]
+
+- https://www.google.com/search?q=cowplot+make+inset
+****** Color scales and schemes
+- https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html
+- https://bookdown.org/rdpeng/exdata/plotting-and-color-in-r.html
+- https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
+- [[http://sape.inf.usi.ch/quick-reference/ggplot2/colour][ggplot2 color scheme]]
+***** General reference
+- https://r-charts.com/
+- https://ggplot2-book.org/index.html
+- https://www.r-graph-gallery.com/all-graphs.html
+- [[http://minimaxir.com/2017/08/ggplot2-web/][How to Make High Quality Data Visualizations for Websites With R and ggplot2]]
+- http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/
 **** Functions and programming
 :PROPERTIES:
 :ID:       479569fe-229d-4d2f-ba08-b871d3ad64ac
@@ -583,6 +481,25 @@ library(ROCR)
 - ifelse stop functions
   - see [[id:afb6af15-e984-4150-9e95-d28368ebca2e][pull in R-immutable elements and perform data checks]]
 - https://stackoverflow.com/questions/19261159/r-applying-a-function-to-a-subset-of-a-data-frame#19261262
+**** apply and for-loops
+
+**** :flat:
+- get package version with packageVersion("PACKAGENAME")
+***** Import
+:PROPERTIES:
+:ID:       8fe67560-d881-4cc3-ad0f-fea419a81023
+:END:
+  - https://stackoverflow.com/questions/23678691/converting-a-text-file-into-a-vector-in-r
+    - https://www.google.com/search?q=R+import+file+as+vector
+***** Working with system variables
+:PROPERTIES:
+:ID:       e83e96d2-1942-4913-ba3f-a9351fa99b42
+:END:
+- https://www.google.com/search?q=get+hostname+in+R
+#+begin_src R
+as.character(Sys.info()["nodename"])
+#+end_src
+
 **** Creating, Modeling, and Toy Data
 :PROPERTIES:
 :ID:       46253EF9-7B35-403F-BA1B-24F4FCA750D6
@@ -694,50 +611,6 @@ df=data.frame(accession,visit,patient,time_result,test,result)
 df
       #+END_SRC
 
-**** Visualizations in R including ggplot2
-:PROPERTIES:
-:ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
-:END:
-https://stackoverflow.com/questions/67459955/ggplot-font-size-and-plot-size
-- [[https://gist.github.com/Rekyt/a7846af7c4c5fb5a48ea][ggplots over multiple pdf pages]]
-- https://patchwork.data-imaginist.com/articles/guides/assembly.html
-- https://cran.r-project.org/web/packages/ggfun/vignettes/ggfun.html
-- http://rich-iannone.github.io/DiagrammeR/docs.html
-- https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html
-- [[https://gist.github.com/Rekyt/a7846af7c4c5fb5a48ea][ggplots over multiple pdf pages]]
-- https://bookdown.org/ndphillips/YaRrr/saving-plots-to-a-file-with-pdf-jpeg-and-png.html
-- tikz as graphics device for R: https://cran.r-project.org/web/packages/tikzDevice/vignettes/tikzDevice.pdf
-https://r-graphics.org/recipe-facet-label-appearance
-https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
-- saving - use - better than ggsave: - https://rdrr.io/cran/cowplot/man/save_plot.html
-- https://www.reddit.com/r/rstats/comments/b4ol4z/unbin_data_to_make_histogram/
-[[http://sape.inf.usi.ch/quick-reference/ggplot2/colour][ggplot2 color scheme]]
-[[http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/][histogram]]
-[[http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/#modifying-the-text-of-legend-titles-and-labels][modify ggplot2 legend text]]
-[[http://statisticalrecipes.blogspot.com/2015/07/cowplot-arrange-ggplot2-figures-in-grid.html][Cowplot]]
-[[https://cran.r-project.org/web/packages/cowplot/vignettes/plot_grid.html][another cowplot vignette]]
-- https://cran.r-project.org/web/packages/tikzDevice/vignettes/tikzDevice.pdf
-- https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html
-https://r-charts.com/
-https://r-graphics.org/recipe-facet-label-appearance
-https://wilkelab.org/cowplot/articles/themes.html
-https://ggplot2-book.org/index.html
-https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html
-- https://ggrepel.slowkow.com/articles/examples.html
-- https://github.com/thomasp85/patchwork
-- https://moodymudskipper.github.io/flow/articles/Draw-a-function.html
-- https://www.google.com/search?q=cowplot+make+inset
-- https://bookdown.org/rdpeng/exdata/plotting-and-color-in-r.html
-- - http://www.sthda.com/english/wiki/ggplot2-legend-easy-steps-to-change-the-position-and-the-appearance-of-a-graph-legend-in-r-software
-- https://www.r-graph-gallery.com/all-graphs.html
-- er diagrams - https://rich-iannone.github.io/DiagrammeR/index.html
-- visualizations
-
-  - [[http://minimaxir.com/2017/08/ggplot2-web/][How to Make High Quality Data Visualizations for Websites With R and ggplot2]]
-  - vens https://stackoverflow.com/questions/8713994/venn-diagram-proportional-and-color-shading-with-semi-transparency
-  - [[https://stackoverflow.com/questions/33594642/beautiful-pie-charts-with-r/33594843][pie charts]]
-http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/
-- [[https://www.youtube.com/watch?feature=youtu.be&v=rBp3eYHrsfo&app=desktop&t=0s][plotly interactive graphs]]
 **** [[id:a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc][LINK TO R basecamp setup]]
 :PROPERTIES:
 :ID:       218ef9c0-0a15-4984-afcf-a0b4cd1394e7
@@ -876,8 +749,6 @@ myft
 :ID:       13053897-37D7-4068-B3D0-5A6660BA0CD3
 :END:
 - https://packagemanager.rstudio.com/client/#/repos/1/overview
-- pheatmap
-  - https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/
 - https://topepo.github.io/caret/#
 - https://cran.r-project.org/web/packages/cutpointr/vignettes/cutpointr.html
 - https://old.reddit.com/r/datascience/comments/av4z50/what_are_some_very_useful_lesser_known_r_packages/
@@ -894,7 +765,9 @@ ip
 - [[http://stackoverflow.com/questions/25672974/caught-segfault-error-in-r][uninstall/install for seg faults]]
 - reshape2
   - http://seananderson.ca/2013/10/19/reshape.html
-
+**** pheatmap
+- https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/
+-
 **** Shiny
 :PROPERTIES:
 :ID:       03623477-AB96-4BD1-A504-126F1FCB3343
@@ -1199,6 +1072,135 @@ CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
     - [ ] how to stop R ESS tab complete from pinging countries?
 
 
+*** R bioinformatics setup
+:PROPERTIES:
+:ID:       87b498a6-e553-4682-8038-96bbb21fda14
+:END:
+#+name: biotools_r_setup
+#+begin_src R :noweb yes
+#
+# Check Packages
+##
+## Bioconductor
+if (!requireNamespace("BiocMan
+ager", quietly = TRUE))
+    install.packages("BiocManager")
+##
+packages = c(
+  "AnnotationDbi",
+  "biomaRt",
+  "circlize",
+  "ComplexHeatmap",
+  "copynumber",
+  "DESeq2",
+  "DRIMSeq",
+  "edgeR",
+  "fgsea",
+  "gage",
+  "gageData",
+  "GenomicFeatures",
+  "gplots",
+  "limma",
+  "pathview",
+  "pheatmap",
+  "PoiClaClu",
+  "SummarizedExperiment",
+  "tximport"
+)
+##
+##NOTE requires libcurl4-openssl-dev https://stackoverflow.com/questions/11471690/curl-h-no-such-file-or-directory/11471743
+package.check = lapply(
+  packages,
+  FUN = function(x) {
+    if (!require (x, character.only = T)) {
+      BiocManager::install(x, quietly =T, ask=F)
+      library(x, character.only = T)
+    }
+  }
+)
+#
+
+#+end_src
+
+#+name: biotools_r_setup_wrapper
+#+begin_src org :noweb yes
+<<biotools_r_setup>>
+#+end_src
+
+
+** My script tools
+*** Shell
+**** [[id:a97c46fe-8a23-4fa1-b9e2-f0edc29ec7f4][No message simple git commit to github]]
+=======
+** [[id:79e01a67-5ba1-4257-8353-8c5cf1ac8c4a][Write basecamp Dockerfile]]
+
+** Git repo scripts
+- Common
+  #+name: bash_common_config
+  #+begin_src bash :noweb yes
+# Check git file hook is read-able
+if [ -r "${repo}/.git/hooks/precommit" ]; then
+   echo "Git size check is read-able"
+else
+    echo
+    "Git size check is not read-able"
+    exit 1
+fi
+
+# Check mount point
+if grep -qs $mntpt /proc/mounts; then
+    echo "RIS storage mounted."
+else
+    echo "RIS storage NOT mounted!!!"
+fi
+
+# Check local singularity build present
+if [ -r ${sif_dir}/frag.sif ]; then
+    echo "Local singularity file present"
+else
+    echo "Local singularity file not found."
+fi
+
+# Check if local singularity container is present and up-to-date
+if [ -r "${HOME}/sing_containers/biotools.sif" ]; then
+    echo "Local biotools singularity container exists"
+else
+    echo "No local biotools singularity container, attempting to fetch..."
+    mkdir -p "${HOME}/sing_containers"
+    cp /mnt/ris/aadel/jeszyman/sing_containers/biotools.sif "${HOME}/sing_containers"
+fi
+
+if [ ${HOME}/sing_containers/biotools.sif -ot /mnt/ris/aadel/jeszyman/sing_containers/biotools.sif ];
+then
+    echo "Local biotools container out of date, updating..."
+    cp /mnt/ris/aadel/jeszyman/sing_containers/biotools.sif "${HOME}/sing_containers"
+else
+    echo "Local biotools singularity container is up to date"
+fi
+
+sing_biotools() {
+    singularity shell --bind /mnt:/mnt ~/sing_containers/biotools.sif
+}
+
+launch_frag() {
+    if [ -f /.dockerenv ]; then
+        echo "shell already in docker, exiting";
+        exit 1;
+    else
+        docker run --env HOME=${HOME} --hostname ${HOSTNAME} --interactive --tty --volume /home/:/home/ --volume /tmp/:/tmp/ --volume /mnt/:/mnt/ --user $(id -u ${USER}) -w "$repo" jeszyman/frag /bin/bash;
+    fi
+}
+#+end_src
+** [[*Software flat list][Software flat list]]
+** Setup
+:PROPERTIES:
+:ID:       d08d41e0-5772-4865-96df-b0e753e66b7d
+:END:
+#+begin_src bash
+repo="/home/jeszyman/repos/basecamp"
+mkdir -p "${repo}/docker"
+mkdir -p "${repo}/resources"
+#+end_src
 ** Information Science / Data Science :career:
 :PROPERTIES:
 :ID:       39F11977-BE11-47CF-98B1-14CE6D9B97C4
@@ -1208,6 +1210,7 @@ CLOCK: [2022-01-24 Mon 07:30]--[2022-01-24 Mon 08:05] =>  0:35
 CLOCK: [2021-06-04 Fri 08:50]--[2021-06-04 Fri 09:53] =>  1:03
 CLOCK: [2018-03-03 Sat 22:24]--[2018-03-03 Sat 22:33] =>  0:09
 :END:
+https://github.com/jokergoo/InteractiveComplexHeatmap
 https://www.reddit.com/r/datascience/comments/wy89ow/how_do_you_keep_track_of_a_data_science_project/
 https://en.wikipedia.org/wiki/Data_lineage
 https://en.wikipedia.org/wiki/ISO_8601
@@ -1731,7 +1734,6 @@ https://www.reddit.com/r/dataisbeautiful/comments/jkqbtk/oc_presidential_electio
 - https://old.reddit.com/r/orgmode/comments/jbl1ky/use_d3_js_and_graphviz_to_publish_git_dynamic/
 - [[https://vega.github.io/vega/docs/schemes/][dark2 scheme]]
     - nice color scheme https://stackoverflow.com/questions/9563711/r-color-palettes-for-many-data-classes
-
 - https://setosa.io/#/
 - https://www.datarevelations.com/resources/bans/
 - http://compbio.ucsd.edu/making-heat-maps-r/
@@ -2888,6 +2890,7 @@ CLOCK: [2017-10-18 Wed 09:12]--[2017-10-18 Wed 09:53] =>  0:41
 CLOCK: [2017-08-16 Wed 19:13]--[2017-08-16 Wed 19:15] =>  0:02
 CLOCK: [2017-04-27 Thu 10:36]--[2017-04-27 Thu 10:53] =>  0:17
 :END:
+https://community.brave.com/t/how-to-block-specific-websites/55961/8
 https://medium.com/axon-technologies/installing-a-windows-virtual-machine-in-a-linux-docker-container-c78e4c3f9ba1
 https://github.com/mbugert/dotfiles
 https://webanno.github.io/webanno/
@@ -3235,6 +3238,10 @@ RUN cd /tmp && wget --no-check-certificate https://repo.continuum.io/miniconda/M
 RUN bash /tmp/Miniconda3-4.3.21-Linux-x86_64.sh -b -p /opt/miniconda
 ENV PATH="/opt/miniconda/bin:${PATH}"
 #+end_src
+******* Conda
+#+begin_src bash
+RUN conda install -c bioconda snakemake
+#+end_src
 ******* R v4 and CRAN Packages
 #+begin_src bash
 
@@ -3297,18 +3304,11 @@ RUN apt-get update -qq \
 RUN R -e "install.packages('tidyverse',repos='http://cran.rstudio.com/')"
 #+end_src
 
-****** Ideas
-  ## Emacs Snapshot
-  - RUN apt-get install -qq --no-install-recommends software-properties-common
-  - RUN add-apt-repository ppa:ubuntu-elisp/ppa
-  - RUN apt-get update
-  - RUN apt-get install -qq --no-install-recommends emacs-snapshot
->>>>>>> e38920f37d20b14d9b45a1793c10396b5df74d07
-
-******* Development
+****** Development
 :PROPERTIES:
 :header-args: :tangle no
 :END:
+******* Ideas
 ****** Build docker container
 :PROPERTIES:
 :ID:       32236b08-3aa2-45ed-87d1-2ee820701de5
@@ -3782,6 +3782,8 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
+https://stackoverflow.com/questions/7152762/how-to-redirect-print-output-to-a-file
+https://www.freecodecamp.org/news/intro-to-algorithms-with-python/
 https://www.freecodecamp.org/news/20-beginner-python-projects/
 - https://www.freecodecamp.org/news/python-programming-course/
 - https://www.google.com/search?q=python+commenting+best+practices
@@ -4332,6 +4334,7 @@ B
 :ID:       89576FD2-F863-4220-BAD7-D4E179AEA644
 :END:
 :LOGBOOK:
+CLOCK: [2022-09-02 Fri 14:47]--[2022-09-02 Fri 14:50] =>  0:03
 CLOCK: [2020-08-19 Wed 07:43]--[2020-08-19 Wed 07:54] =>  0:11
 CLOCK: [2020-06-25 Thu 08:13]--[2020-06-25 Thu 08:25] =>  0:12
 CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
@@ -4343,8 +4346,7 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
-https://unix.stackexchange.com/questions/10646/repeat-a-unix-command-every-x-seconds-forever
-****** Local YAS
+****** Local YAS :flat:
 :PROPERTIES:
 :ID:       42e37db5-29e7-418f-a74d-e91ffc81167f
 :END:
@@ -4372,71 +4374,6 @@ ${1:function_name}(){
     $0
 }
 #+end_src
-- bash.script
-  Creates a skeleton of common internals for a bash script
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.script
-# -*- mode: snippet -*-
-# key: bash.script
-# --
-
-set -o errexit   # abort on nonzero exitstatus
-set -o nounset   # abort on unbound variable
-set -o pipefail  # don't hide errors within pipes
-
-print_usage(){
-    cat <<- EOF
-
-usage: ${1:<SCRIPT NAME>} [options] <${2:<OPERANDS>}> [${3:<OPTIONAL OPERANDS>}]
-
-options:
-    -
-
-${4:<LONG TITLE>}
-${5:<DESCRIPTION>}
-
-example: ${6:<EXAMPLE>}
-
-EOF
-}
-
-# Getops
-while getopts "${7:OPTIONS}" options;
-do
-    case "${options}" in
-        -h | --help) print_usage ;;
-        \?)
-            echoerr "Invalid option -$OPTARG"
-            print_usage
-            exit 1
-            ;;
-    esac
-done
-shift $((OPTIND -1))
-
-# Script variables
-
-# Functions
-
-main(){
-}
-
-# Run
-main "$@"
-#+end_src
-- bash.usage
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.usage
-# -*- mode: snippet -*-
-# key: bash.usage
-# expand-env: ((yas-indent-line 'fixed))
-# --
-# Check for parameters, return usage if empty
-if [ $# -ne ${1:NUMBER OF VARIABLES} ];
-then
-    printf "\n usage: ${2:FUNCTION NAME} ${3: VAR 1} ${4: VAR 2}
-    \n ${5: SCRIPT FUNCTION OR PURPOSE}
-    \n $0"
-else
-#+end_src
 - [[file:~/.emacs.d/snippets/sh-mode/]]
 - [[file:~/.emacs.d/snippets/sh-mode/write.bash]]
 - insert bash code block
@@ -4460,27 +4397,64 @@ $0
 printf '%s\n' "${${1:ARRAY_NAME}[@]}"
 $0
 #+end_src
-****** [[file:~/repos/basecamp-private/basecamp-private.org::*Shell and bash setup][My shell and bash setup]]
-****** Local scripts
-- Command line script
-  #+name: bash_cmdline_script_preamble
-  #+begin_src bash :noweb yes
+******* bash.script
+- Creates a skeleton of common internals for a bash script
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.script
+# -*- mode: snippet -*-
+# key: bash.script
+# --
 #!/usr/bin/env bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-# Notes:
-#  This script is tangled from source code in the mpnst-frag.org file
-#  Therefore any changes to this compiled file in place will likely be reverted
-#  by a subsequent tangle operation.
-#
-#  This script assumes you are running from the repository main directory in
-#  order to source the appriopriate configuation file.
+set -o errexit   # abort on nonzero exitstatus
+set -o nounset   # abort on unbound variable
+set -o pipefail  # don't hide errors within pipes
 
-# Load bash configuation
-if [ -f ./config/${HOSTNAME}.sh ]; then
-    source ./config/${HOSTNAME}.sh
-else
-    echo "No bash config found. Are you running from repo main dir?"
-fi
+main(){
+}
+
+# Script variables
+
+# Functions
+
+# Run
+main "$@"
+#+end_src
+
+******* bash.getops
+# Getops
+while getopts "${7:OPTIONS}" options;
+do
+    case "${options}" in
+        -h | --help) print_usage ;;
+        \?)
+            echoerr "Invalid option -$OPTARG"
+            print_usage
+            exit 1
+            ;;
+    esac
+done
+shift $((OPTIND -1))
+
+******* bash.usage
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.usage
+# -*- mode: snippet -*-
+# key: bash.usage
+# expand-env: ((yas-indent-line 'fixed))
+# --
+print_usage(){
+    cat <<- EOF
+
+usage: ${1:<SCRIPT NAME>} [options] <${2:<OPERANDS>}> [${3:<OPTIONAL OPERANDS>}]
+
+options:
+    -
+
+${4:<LONG TITLE>}
+${5:<DESCRIPTION>}
+
+example: ${6:<EXAMPLE>}
+
+EOF
+}
 #+end_src
 ****** Processes :hierarchy:
 :PROPERTIES:
@@ -4489,80 +4463,39 @@ fi
 :LOGBOOK:
 CLOCK: [2021-08-11 Wed 10:30]--[2021-08-11 Wed 12:35] =>  2:05
 :END:
-- https://unix.stackexchange.com/questions/10646/repeat-a-unix-command-every-x-seconds-forever
-- # see https://stackoverflow.com/questions/7131670/make-a-bash-alias-that-takes-a-parameter
-- bash error output to log
-  -
-- https://www.google.com/search?q=bash+prevent+script+execution
-- https://www.google.com/search?q=bash+rm+use+regex
-- https://www.google.com/search?q=bash+test+before+rm
-- https://stackoverflow.com/questions/169511/how-do-i-iterate-over-a-range-of-numbers-defined-by-variables-in-bash
-- [[https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script][Meaning of exit 0, exit 1 and exit 2 in a bash script]]
-- [[https://www.cyberciti.biz/faq/linux-unix-formatting-dates-for-display/][formatting dates for display]]
-
-- https://stackoverflow.com/questions/22962591/how-to-prevent-direct-bash-script-execution-and-allow-only-usage-from-other-scri
-
-******* Setup
-:PROPERTIES:
-:ID:       12419776-9b0e-42e9-8392-8f17dc89a63f
-:END:
-- bashrc
-  - https://www.google.com/search?q=alias+function+bashrc
-  - https://www.reddit.com/r/commandline/comments/9md3pp/a_very_useful_bashrc_file/
-- themes- https://github.com/ohmybash/oh-my-bash
-******* Output
-- https://www.google.com/search?q=bash+redirect+to+logfile
-- output direction
-  - - 1 & 2 https://stackoverflow.com/questions/10508843/what-is-dev-null-21
-******* Input
-https://www.google.com/search?q=bash+read+csv
-******* Sysadmin
-- see [[id:25e57644-f710-41ba-8bf4-d6ee9cc2c9c6][Linux sysadmin]]
-******* Text file manipulations
-- https://www.google.com/search?q=command+line+remove+first+line+of+text+file
-******* TUI
-- tui
-  - https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
-******* Open files based on type
-:PROPERTIES:
-:ID:       53e79bac-0644-464e-a28b-cd582cadaa5c
-:END:
-#+name: open_choose
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/open_choose
-# -*- mode: snippet -*-
-# key: open_choose
-# expand-env: ((yas-indent-line 'fixed))
-# --
-,#+begin_src bash
-
-,#+end_src
-#+END_SRC
-
-******* Resource use control
-:PROPERTIES:
-:ID:       069254a6-95ec-48dd-a5ce-802687ec99eb
-:END:
-  - https://linuxhint.com/limit_cpu_usage_process_linux/
-  - https://stackoverflow.com/questions/4651234/how-to-determine-the-process-memory-limit-in-linux
-  - https://unix.stackexchange.com/questions/52313/how-to-get-execution-time-of-a-script-effectively
-  - setting local resource limits
-    - http://coldattic.info/post/40/
-- multi threading
-  - https://duckduckgo.com/?q=multithread+grep&ia=qa
-  - https://stackoverflow.com/questions/1455695/forking-multi-threaded-processes-bash
-
-******* Variables
-:PROPERTIES:
-:ID:       f824de5e-ecce-4f4e-aa25-1daf675577a6
-:END:
-- [[id:9cbffcad-49c3-4936-9111-d2472d40276c][Arrays]]
-- [[https://stackoverflow.com/questions/91368/checking-from-shell-script-if-a-directory-contains-files][use globbing in variables with shopt]]
-- General reference
-  - [[https://data36.com/variables-if-statements-while-loops-bash-data-science/][variables for if statements and while loops]]
 ******* Arrays
 :PROPERTIES:
 :ID:       9cbffcad-49c3-4936-9111-d2472d40276c
 :END:
+- pull in find command results as array
+  #+begin_src bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+#
+# Script variables
+##
+## For run
+raw_fastq_dir=/mnt/ris/jschwarz/cardiac-radiobiology/Rentschler_s0820_MGI003
+trim_fastq_dir=$data_dir}/fastq
+##
+## For test
+raw_fastq_dir=/mnt/ris/jschwarz/cardiac-radiobiology/atac/test/raw_fastq
+trim_fastq_dir=/mnt/ris/jschwarz/cardiac-radiobiology/atac/test/trim_fastq
+
+#chmod -R 777 $trim_fastq_dir
+
+# Create array of raw read 1 fastqs
+read1list=()
+while IFS=  read -r -d $'\0'; do
+    read1list+=("$REPLY")
+done < <(find $raw_fastq_dir -name "*_R1.fastq.gz" -print0)
+printf '%s\n' "$read1list[@]}"
+
+#
+for read1 in "$read1list[@]}";
+do
+    flexbar_atac $read1 $trim_fastq_dir 8
+done
+#+end_src
 - [[https://stackoverflow.com/questions/18921350/shell-script-correct-way-to-declare-an-empty-array][declare]]
 - populate
   - from list of variables
@@ -4580,9 +4513,7 @@ https://www.google.com/search?q=bash+read+csv
       - https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
     - https://www.google.com/search?q=pass+cat+output+to+array+variable
     - command output https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
-- make associative array
-  - https://www.google.com/search?q=bash+make+associative+array
-  - https://www.google.com/search?q=bash+symlink+associatve+array
+
 - [[https://unix.stackexchange.com/questions/125632/printing-an-array-to-a-file-with-each-element-of-the-array-in-a-new-line-in-bash][print array with line breaks]]
 - https://www.google.com/search?q=bash+create+array
 - https://www.google.com/search?q=bash+pass+array+to+for+loop
@@ -4600,9 +4531,121 @@ EOT
 a=('a' 'b' 'c')
 b=( "${a[@]}" )
 #+end_src
+******** Make a bash associative array
+- https://www.google.com/search?q=bash+make+associative+array
+- https://www.google.com/search?q=bash+symlink+associatve+array
 
+#+begin_src bash
 
+#+end_src
+******* Checkers
+:PROPERTIES:
+:ID:       5efce201-5375-42a8-a8d0-827a0325a7bf
+:END:
+- https://www.google.com/search?q=bash+if+function+completes+without+error+then+do+next
+- https://stackoverflow.com/questions/26675681/how-to-check-the-exit-status-using-an-if-statement
+- if readable
+  - https://www.google.com/search?q=bash+check+if+file+is+readable
+- if exists
+  - https://www.google.com/search?q=bash+check+if+variable+is+defined
+  - [[https://stackoverflow.com/questions/592620/how-can-i-check-if-a-program-exists-from-a-bash-script][check if program exists]]
+  - [[https://stackoverflow.com/questions/59838/how-can-i-check-if-a-directory-exists-in-a-bash-shell-script][check if dir exists]]
+- https://www.google.com/search?q=bash+check+if+on+vpn
+- -z string is True if string is null, e.g.     if [ -z "$1" ] || [[ $1 == -h ]] || [[ $1 == --help ]];
+  - variables
+    #+name:
+    #+begin_src bash :tangle no
+  # Check if variable is set
+  if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; fi
+  #+end_src
+- https://www.google.com/search?q=bash+variable+file+name+with+spaces
+- [[https://unix.stackexchange.com/questions/322817/how-to-find-the-file-where-a-bash-function-is-defined][check were function is called from]]
+- [[https://askubuntu.com/questions/102093/how-to-see-the-command-attached-to-a-bash-alias][check where alias goes w/ type]]
+- https://theterminallife.com/check-if-file-exists-and-is-not-empty/
+- links
+  - https://stackoverflow.com/questions/5767062/how-to-check-if-a-symlink-exists
+- file and directory metadata
+  - https://superuser.com/questions/120078/unix-files-starting-with-a-dash
+  - https://www.google.com/search?q=bash+compare+files+by+date
+    - https://unix.stackexchange.com/questions/372857/compare-two-file-modification-dates
+        #+begin_src bash
+    cd /tmp/
+    rm file1
+    rm file2
+    touch file2; sleep 2; touch file1
+    if [ file1 -nt file2 ]; then
+        echo "yes"
+    fi
+        #+end_src
+    - https://unix.stackexchange.com/questions/88525/need-to-move-files-to-different-folder-based-on-the-creation-date
+  - https://www.google.com/search?q=bash+check+file+size
+  - https://www.google.com/search?q=bash+list+directory+sizes
+  - https://www.google.com/search?q=bash+add+date+to+file+name
+  - https://www.google.com/search?q=bash+bulk+rename+files
+- # Declare variable if currently empty
+  if [ -z ${repo+x} ]; then repo=~/repos/bergom_rna; fi
+- https://stackoverflow.com/questions/33297857/how-to-check-dependency-in-bash-script
+- globbing
+  - https://stackoverflow.com/questions/2937407/test-whether-a-glob-has-any-matches-in-bash?noredirect=1&lq=1
+******* Flat                                                           :flat:
+- # see https://stackoverflow.com/questions/7131670/make-a-bash-alias-that-takes-a-parameter
+- bash error output to log
+  -
+- https://www.google.com/search?q=bash+prevent+script+execution
+- https://www.google.com/search?q=bash+rm+use+regex
+- https://www.google.com/search?q=bash+test+before+rm
+- https://stackoverflow.com/questions/169511/how-do-i-iterate-over-a-range-of-numbers-defined-by-variables-in-bash
+- [[https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script][Meaning of exit 0, exit 1 and exit 2 in a bash script]]
+- [[https://www.cyberciti.biz/faq/linux-unix-formatting-dates-for-display/][formatting dates for display]]
+- https://stackoverflow.com/questions/22962591/how-to-prevent-direct-bash-script-execution-and-allow-only-usage-from-other-scri
+- https://unix.stackexchange.com/questions/10646/repeat-a-unix-command-every-x-seconds-forever
+******* Input
+https://www.google.com/search?q=bash+read+csv
+******* Linting and debugging
+:PROPERTIES:
+:ID:       df3acc6f-0a6c-4199-9061-474a80cff9b2
+:END:
+  - http://www.skybert.net/emacs/bash-linting-in-emacs/
+  - https://github.com/koalaman/shellcheck#in-your-editor
+  - https://stackoverflow.com/questions/171924/how-do-i-syntax-check-a-bash-script-without-running-it#171932
+  - http://www.skybert.net/emacs/bash-linting-in-emacs/
+  - http://www.skybert.net/emacs/bash-linting-in-emacs/
+- https://zwischenzugs.com/2018/10/09/learn-bash-debugging-techniques-the-hard-way/
+******* Open files based on type
+:PROPERTIES:
+:ID:       53e79bac-0644-464e-a28b-cd582cadaa5c
+:END:
+#+name: open_choose
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/open_choose
+# -*- mode: snippet -*-
+# key: open_choose
+# expand-env: ((yas-indent-line 'fixed))
+# --
+,#+begin_src bash
 
+,#+end_src
+#+END_SRC
+
+******* Output
+- https://www.google.com/search?q=bash+redirect+to+logfile
+- output direction
+  - - 1 & 2 https://stackoverflow.com/questions/10508843/what-is-dev-null-21
+******* Outputs
+:PROPERTIES:
+:ID:       e9bddd31-2395-40cd-a993-44c56b17faef
+:END:
+- Error outputs and exits
+  - traps
+  - set -e
+    - http://mywiki.wooledge.org/BashFAQ/105
+- exits
+  - https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script#:~:text=All%20by%20itself%2C%20exit%20implies,successful%20completion%20of%20your%20script.&text=However%20by%20specifying%20the%201,exited%20with%20an%20error%20condition.
+- https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
+- Printing outputs
+  - printing across terminal width
+    - https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
+- logging
+  - https://stackoverflow.com/questions/18278223/method-to-write-in-log-files-in-a-shell-script
 ******* Pattern matching
 :PROPERTIES:
 :ID:       ccff4529-a532-4111-9ac3-e8df91ec50fa
@@ -4617,6 +4660,34 @@ b=( "${a[@]}" )
 :END:
 - pipe
   - https://www.google.com/search?q=pipe+store+output+as+variable
+******* Resource use control
+:PROPERTIES:
+:ID:       069254a6-95ec-48dd-a5ce-802687ec99eb
+:END:
+  - https://linuxhint.com/limit_cpu_usage_process_linux/
+  - https://stackoverflow.com/questions/4651234/how-to-determine-the-process-memory-limit-in-linux
+  - https://unix.stackexchange.com/questions/52313/how-to-get-execution-time-of-a-script-effectively
+  - setting local resource limits
+    - http://coldattic.info/post/40/
+- multi threading
+  - https://duckduckgo.com/?q=multithread+grep&ia=qa
+  - https://stackoverflow.com/questions/1455695/forking-multi-threaded-processes-bash
+
+******* Setup
+:PROPERTIES:
+:ID:       12419776-9b0e-42e9-8392-8f17dc89a63f
+:END:
+- bashrc
+  - https://www.google.com/search?q=alias+function+bashrc
+  - https://www.reddit.com/r/commandline/comments/9md3pp/a_very_useful_bashrc_file/
+- themes- https://github.com/ohmybash/oh-my-bash
+******* Sysadmin
+- see [[id:25e57644-f710-41ba-8bf4-d6ee9cc2c9c6][Linux sysadmin]]
+******* Text file manipulations
+- https://www.google.com/search?q=command+line+remove+first+line+of+text+file
+******* TUI
+- tui
+  - https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
 ******* User inputs
 :PROPERTIES:
 :ID:       17707f3f-aee6-4eab-9d79-de07c975a3d5
@@ -4643,6 +4714,14 @@ b=( "${a[@]}" )
 - Simulate key presses
   - https://www.google.com/search?q=bash+pass+ENTER+to+script
   - https://stackoverflow.com/questions/30712126/how-to-simulate-two-consecutive-enter-key-presses-for-a-command-in-a-bash-script?noredirect=1&lq=1
+******* Variables
+:PROPERTIES:
+:ID:       f824de5e-ecce-4f4e-aa25-1daf675577a6
+:END:
+- [[id:9cbffcad-49c3-4936-9111-d2472d40276c][Arrays]]
+- [[https://stackoverflow.com/questions/91368/checking-from-shell-script-if-a-directory-contains-files][use globbing in variables with shopt]]
+- General reference
+  - [[https://data36.com/variables-if-statements-while-loops-bash-data-science/][variables for if statements and while loops]]
 ******* Writing bash scripts
 :PROPERTIES:
 :ID:       f54ac1df-f52d-42ee-a339-6557e7293a59
@@ -5130,85 +5209,164 @@ pandoc -S $test | xclip -selection clipboard
 
 #+end_src
 
-******* Linting and debugging
-:PROPERTIES:
-:ID:       df3acc6f-0a6c-4199-9061-474a80cff9b2
-:END:
-  - http://www.skybert.net/emacs/bash-linting-in-emacs/
-  - https://github.com/koalaman/shellcheck#in-your-editor
-  - https://stackoverflow.com/questions/171924/how-do-i-syntax-check-a-bash-script-without-running-it#171932
-  - http://www.skybert.net/emacs/bash-linting-in-emacs/
-  - http://www.skybert.net/emacs/bash-linting-in-emacs/
-- https://zwischenzugs.com/2018/10/09/learn-bash-debugging-techniques-the-hard-way/
-******* Checkers
-:PROPERTIES:
-:ID:       5efce201-5375-42a8-a8d0-827a0325a7bf
-:END:
-- https://www.google.com/search?q=bash+if+function+completes+without+error+then+do+next
-- https://stackoverflow.com/questions/26675681/how-to-check-the-exit-status-using-an-if-statement
-- if readable
-  - https://www.google.com/search?q=bash+check+if+file+is+readable
-- if exists
-  - https://www.google.com/search?q=bash+check+if+variable+is+defined
-  - [[https://stackoverflow.com/questions/592620/how-can-i-check-if-a-program-exists-from-a-bash-script][check if program exists]]
-  - [[https://stackoverflow.com/questions/59838/how-can-i-check-if-a-directory-exists-in-a-bash-shell-script][check if dir exists]]
-- https://www.google.com/search?q=bash+check+if+on+vpn
-- -z string is True if string is null, e.g.     if [ -z "$1" ] || [[ $1 == -h ]] || [[ $1 == --help ]];
-  - variables
-    #+name:
-    #+begin_src bash :tangle no
-  # Check if variable is set
-  if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; fi
-  #+end_src
-- https://www.google.com/search?q=bash+variable+file+name+with+spaces
-- [[https://unix.stackexchange.com/questions/322817/how-to-find-the-file-where-a-bash-function-is-defined][check were function is called from]]
-- [[https://askubuntu.com/questions/102093/how-to-see-the-command-attached-to-a-bash-alias][check where alias goes w/ type]]
-- https://theterminallife.com/check-if-file-exists-and-is-not-empty/
-- links
-  - https://stackoverflow.com/questions/5767062/how-to-check-if-a-symlink-exists
-- file and directory metadata
-  - https://superuser.com/questions/120078/unix-files-starting-with-a-dash
-  - https://www.google.com/search?q=bash+compare+files+by+date
-    - https://unix.stackexchange.com/questions/372857/compare-two-file-modification-dates
-        #+begin_src bash
-    cd /tmp/
-    rm file1
-    rm file2
-    touch file2; sleep 2; touch file1
-    if [ file1 -nt file2 ]; then
-        echo "yes"
+****** [[file:~/repos/basecamp-private/basecamp-private.org::*Shell and bash setup][My shell and bash setup]]
+****** Local scripts
+#+begin_src bash
+#!/bin/bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+
+####################################
+###   Choose and Run Snakefile   ###
+####################################
+
+# Setup
+#set -euxov pipefail
+
+source config/${HOSTNAME}.sh
+echo "The following `*.smk` archives were found; select one:"
+
+# set the prompt used by select, replacing "#?"
+PS3="Use number to select an option"
+
+select filename in ./workflow/*.smk
+
+do
+    if [[ "$filename" == "" ]]
+    then
+        echo "'$REPLY' is not a valid number"
+        continue
     fi
-        #+end_src
-    - https://unix.stackexchange.com/questions/88525/need-to-move-files-to-different-folder-based-on-the-creation-date
-  - https://www.google.com/search?q=bash+check+file+size
-  - https://www.google.com/search?q=bash+list+directory+sizes
-  - https://www.google.com/search?q=bash+add+date+to+file+name
-  - https://www.google.com/search?q=bash+bulk+rename+files
-- # Declare variable if currently empty
-  if [ -z ${repo+x} ]; then repo=~/repos/bergom_rna; fi
-- https://stackoverflow.com/questions/33297857/how-to-check-dependency-in-bash-script
-- globbing
-  - https://stackoverflow.com/questions/2937407/test-whether-a-glob-has-any-matches-in-bash?noredirect=1&lq=1
-******* Outputs
-:PROPERTIES:
-:ID:       e9bddd31-2395-40cd-a993-44c56b17faef
-:END:
-- Error outputs and exits
-  - traps
-  - set -e
-    - http://mywiki.wooledge.org/BashFAQ/105
-- exits
-  - https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script#:~:text=All%20by%20itself%2C%20exit%20implies,successful%20completion%20of%20your%20script.&text=However%20by%20specifying%20the%201,exited%20with%20an%20error%20condition.
-- https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
-- Printing outputs
-  - printing across terminal width
-    - https://www.reddit.com/r/commandline/comments/d9x9m2/formatting_script_output/
-- logging
-  - https://stackoverflow.com/questions/18278223/method-to-write-in-log-files-in-a-shell-script
+    echo $filename
+    select run_option in dry_run normal force_final force_all
+    do
+        echo selected $run_option
+        case $run_option in
+            dry_run)
+                source activate snakemake
+                snakemake \
+                    --configfile config/${HOSTNAME}.yaml \
+                    --cores $threads \
+                    --directory ${repo} \
+                    --dry-run \
+                    --rerun-incomplete \
+                    --singularity-args "--bind $mntpt:$mntpt" \
+                    --use-singularity \
+                    --snakefile $filename
+                ;;
+            normal)
+                source activate snakemake
+                select nohup_option in no yes
+                do
+                    case $nohup_option in
+                        no)
+                            snakemake \
+                                --configfile config/${HOSTNAME}.yaml \
+                                --cores $threads \
+                                --directory ${repo} \
+                                --singularity-args "--bind $mntpt:$mntpt" \
+                                --use-singularity \
+                                --snakefile $filename
+                            ;;
+                        yes)
+                            nohup snakemake \
+                                  --configfile config/${HOSTNAME}.yaml \
+                                  --cores $threads \
+                                  --directory ${repo} \
+                                  --singularity-args "--bind $mntpt:$mntpt" \
+                                  --use-singularity \
+                                  --snakefile $filename
+                            ;;
+                    esac
+                done
+                ;;
+            force_final)
+                source activate snakemake
+                select nohup_option in no yes
+                do
+                    case $nohup_option in
+                        no)
+                            snakemake \
+                                --configfile config/${HOSTNAME}.yaml \
+                                --cores $threads \
+                                --directory ${repo} \
+                                --force \
+                                --singularity-args "--bind $mntpt:$mntpt" \
+                                --use-singularity \
+                                --snakefile $filename
+                            ;;
+                        yes)
+                            nohup snakemake \
+                                  --configfile config/${HOSTNAME}.yaml \
+                                  --cores $threads \
+                                  --directory ${repo} \
+                                  --force \
+                                  --singularity-args "--bind $mntpt:$mntpt" \
+                                  --use-singularity \
+                                  --snakefile $filename
+                            ;;
+                    esac
+                done
+                ;;
+            force_all)
+                source activate snakemake
+                select nohup_option in no yes
+                do
+                    case $nohup_option in
+                        no)
+
+                snakemake \
+                    --configfile config/${HOSTNAME}.yaml \
+                    --cores $threads \
+                    --directory ${repo} \
+                    -F \
+                    --singularity-args "--bind $mntpt:$mntpt" \
+                    --use-singularity \
+                    --snakefile $filename
+                                            ;;
+                        yes)
+                nohup snakemake \
+                    --configfile config/${HOSTNAME}.yaml \
+                    --cores $threads \
+                    --directory ${repo} \
+                    -F \
+                    --singularity-args "--bind $mntpt:$mntpt" \
+                    --use-singularity \
+                    --snakefile $filename
+                            ;;
+                    esac
+                done
+                ;;
+        esac
+        break
+    done
+    break
+done
+#+end_src
+- Command line script
+  #+name: bash_cmdline_script_preamble
+  #+begin_src bash :noweb yes
+#!/usr/bin/env bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+# Notes:
+#  This script is tangled from source code in the mpnst-frag.org file
+#  Therefore any changes to this compiled file in place will likely be reverted
+#  by a subsequent tangle operation.
+#
+#  This script assumes you are running from the repository main directory in
+#  order to source the appriopriate configuation file.
+
+# Load bash configuation
+if [ -f ./config/${HOSTNAME}.sh ]; then
+    source ./config/${HOSTNAME}.sh
+else
+    echo "No bash config found. Are you running from repo main dir?"
+fi
+#+end_src
 ****** General reference
 :PROPERTIES:
 :ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
 :END:
+- https://www.reddit.com/r/emacs/comments/x2mmfc/from_vanilla_emacs_to_bash_ide_in_17_minutes/
 -
 - https://explainshell.com/explain?cmd=set+-euxo+pipefail
 - http://redsymbol.net/articles/unofficial-bash-strict-mode/
@@ -5305,6 +5463,7 @@ pandoc -S $test | xclip -selection clipboard
 :PROPERTIES:
 :ID:       0ab13eb3-64dc-4696-888a-0caf1e7997dc
 :END:
+- https://www.reddit.com/r/emacs/comments/x2mmfc/from_vanilla_emacs_to_bash_ide_in_17_minutes/
 - check and set file permissions as best practice
 - ideas for function development protocol-
   - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
@@ -6061,8 +6220,7 @@ CLOCK: [2021-08-25 Wed 08:33]--[2021-08-25 Wed 09:13] =>  0:40
 
 - account management
   - https://www.google.com/search?q=unix+create+user
-- Makefiles
-  - see make in [[id:76c4836c-fe3f-4948-86dd-25d8df38d1af][GNU and GNU tools]]
+
 ***** general
 :PROPERTIES:
 :ID:       b387cb19-73dd-4783-8e57-8da47837e129
@@ -6185,6 +6343,7 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :PROPERTIES:
 :ID:       76c4836c-fe3f-4948-86dd-25d8df38d1af
 :END:
+- sort and uniq
 - gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
 - [[https://www.gnu.org/prep/standards/standards.html][GNU Coding Standards]]
 - diff
@@ -6213,6 +6372,28 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
   - https://www.biostars.org/p/216905/
   - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
 ******* [[elisp:(with-minibuffer-input (call-interactively 'woman) "wget")][wget]]
+#+begin_src bash :tangle ./src/gtac_wget.sh
+# Check for parameters, return usage if empty
+if [ $# -ne 2 ]; then
+    printf "\n usage: gtac_wget.sh <DIR PREFIX> <GTAC HTML>
+           \n wget wrapper for WUSTL GTAC downloads
+           \n"
+elif [[ ! -r $1 ]]; then
+    echo "Directory prefix at $1 is not readable."
+else
+    wget \
+        --continue \
+        --directory-prefix $1 \
+        --execute robots=off \
+        --force-directories \
+        --no-host-directories \
+        --no-parent \
+        --recursive \
+        --reject="index.html*" \
+        --timestamping \
+        $2
+fi
+#+end_src
 - [[id:a8415f7e-36e1-4641-b909-565b73f79e1b][Chaudhuri medgenome wget]]
 - [[https://www.tecmint.com/commandline-download-accelerators-for-linux/amp/][pass list to]]
 - [[https://superuser.com/questions/283481/how-do-i-properly-set-wget-to-download-only-new-files][download only on server side change]]
@@ -6228,7 +6409,6 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
   - configure, make, install
     - https://www.tldp.org/HOWTO/Software-Building-HOWTO-3.html
     - https://superuser.com/questions/360178/what-does-make-install-do
-    - often Makefile will install to created ./bin/ sub-directory
   - https://stackoverflow.com/questions/10961439/why-always-configure-make-make-install-as-3-separate-steps
 - tutorial https://github.com/kyclark/make-tutorial
 - http://blog.byronjsmith.com/makefile-shortcuts.html
@@ -6236,6 +6416,12 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :PROPERTIES:
 :ID:       ec6a8328-2003-48ce-b8d0-fd11252d75cd
 :END:
+- Add a column in middle
+  - https://stackoverflow.com/questions/11950641/add-column-to-middle-of-tab-delimited-file-sed-awk-whatever
+- output as tsv
+  awk -v FS='\t' -v OFS='\t' ...
+  - https://stackoverflow.com/questions/5374239/tab-separated-values-in-awk
+- https://www.google.com/search?q=awk+filter+duplicates+by+column&oq=awk+filter+duplicates+by+column&aqs=chrome..69i57.7808j0j1&sourceid=chrome&ie=UTF-8
 - awk
 - [[https://stackoverflow.com/questions/47091464/print-for-loop-input-filename-on-piped-awk-output][file name as variable]]
 - commands
@@ -6269,6 +6455,10 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :PROPERTIES:
 :ID:       024b269b-27ca-492d-981f-d8f9083a38d2
 :END:
+- grep through subdirectories
+  grep -rl "string" /path
+  - https://askubuntu.com/questions/55325/how-to-use-grep-command-to-find-text-including-subdirectories
+- grep quotes
 -
 - https://www.google.com/search?q=grep+search+in+all+text+files+in+directory
 - https://www.google.com/search?q=grep+phrase+with+space
@@ -6359,578 +6549,6 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
 **** Software :flat:
-***** htop
-- https://www.google.com/search?q=htop+headers+S
-  - https://peteris.rocks/blog/htop/#s-interruptible-sleep-waiting-for-an-event-to-complete
-- https://www.google.com/search?q=htop+restore+default+settings
-  https://unix.stackexchange.com/questions/147885/how-can-i-set-default-settings-for-htop
-***** Git                                                            :career:
-:PROPERTIES:
-:ID:       E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6
-:END:
-:LOGBOOK:
-CLOCK: [2022-05-04 Wed 09:42]--[2022-05-04 Wed 10:06] =>  0:24
-CLOCK: [2021-12-21 Tue 09:59]--[2021-12-21 Tue 10:29] =>  0:30
-CLOCK: [2018-08-10 Fri 16:03]--[2018-08-10 Fri 16:13] =>  0:10
-CLOCK: [2017-11-29 Wed 19:30]--[2017-11-29 Wed 19:51] =>  0:21
-CLOCK: [2017-11-29 Wed 19:05]--[2017-11-29 Wed 19:25] =>  0:20
-CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
-CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
-CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
-:END:
-****** Processes                                                  :hierarchy:
-******* Create and initialize
-  - https://www.google.com/search?q=initialize+git+repo
-  - git branch --set-upstream-to=origin/master master
-#+begin_src bash
-repo=/home/jeszyman/repos/mpnst-preprocessing
-cd $repo
-
-git init
-git add -A
-git commit -m "first commit"
-
-git remote add origin git@github.com:jeszyman/mpnst-preprocessing.git
-git branch -M master
-git push -u origin master
-#+end_src
-******* Branches
-  - git branch
-    - add and delete
-      - -d <BRANCH NAME>
-      - <BRANCH NAME>
-  - git checkout <BRANCH> switch branches
-https://stackoverflow.com/questions/67699/how-to-clone-all-remote-branches-in-git
-******* Commit
-  - https://www.google.com/search?q=git+see+which+files+are+not+added
-  - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
-  - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
-  - File comparisons
-    - https://doc.ubuntu-fr.org/meld
-  - git checkout -- undo last commit FOR A SPECIFIC FILE
-  - Changing within branch
-    - git commit- add changes WITHIN branch- full repo (not just a file) within branch
-    - git checkout -- undo last commit FOR A SPECIFIC FILE
-
-
-******* Commit messages
-- https://semver.org/
-- https://stackoverflow.com/questions/179123/how-to-modify-existing-unpushed-commit-messages
-  - hooks
-    - beautiful file size limit pre-commit hook
-      - https://stackoverflow.com/questions/39576257/how-to-limit-file-size-on-commit
-    - to test, simply run as bash script
-  - gitignore
-    - loading changes -
-      - git rm -r --cached .
-      - git add .
-      - commit
-    - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
-    - https://labs.consol.de/development/git/2017/02/22/gitignore.html
-  - gitignore
-    - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
-    - https://labs.consol.de/development/git/2017/02/22/gitignore.html
-  - Hooks
-    - file size limit hook
-- https://stackoverflow.com/questions/29933349/how-can-i-make-git-commit-messages-divide-into-multiple-lines
-- https://www.conventionalcommits.org/en/v1.0.0/#summary
-- https://www.google.com/search?q=git+generate+chage+log
-******* Errors
-- [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
-- https://stackoverflow.com/questions/33360043/git-error-need-to-remove-large-file
-- [[id:a3515f1b-c8c6-4c0b-bb4d-737c3edc9886][Reverting]]
-- [[https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git][undo]]
-- https://www.google.com/search?q=git+Not+possible+to+fast-forward+aborting
-- [[https://stackoverflow.com/questions/4254389/git-corrupt-loose-object/18238322#18238322][corrupt loose object]]
-- [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
-******* Git project management processes
-- Project management, multiple git repos, multiple branches
-  - https://stackoverflow.com/questions/816619/managing-many-git-repositories
-  - https://softwareengineering.stackexchange.com/questions/206668/using-multiple-git-repositories-instead-of-a-single-one-containing-many-apps-fro
-  - https://stackoverflow.com/questions/11852982/can-i-arrange-repositories-into-folders-on-github#:~:text=On%20GitHub%20itself%2C%20you%20cannot,a%20nested%20team%20organization%20structure.
-  - https://stackoverflow.com/questions/28357350/two-git-repositories-share-common-code
-  - https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-symlinks-to-a-single-clone-locally
-  - https://www.bitsnbites.eu/a-stable-mainline-branching-model-for-git/
-- git merge- FIRST navigate to master, then git merge <BRANCH TO PULL>
-- [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]]
-- https://www.reddit.com/r/git/comments/ukrhb1/versioning_changelogs_release_notes_squashing_and/
-- https://www.google.com/search?q=git+make+stable+version+branch
-
-******* Hooks
-- https://stackoverflow.com/questions/2050450/git-hooks-management
-******* Ignore
-  #+begin_src bash
-# ignore dotfiles
-find . -type l | sed -e s'/^\.\///g' >> .gitignore
-#+end_src
-- https://www.toptal.com/developers/gitignore
-- Ignore a directory and all contents
-  - https://www.google.com/search?q=git+ignore+directory
-- Ignore symlinks
-  - https://www.google.com/search?q=git+ignore+all+symlinks
-  - https://stackoverflow.com/questions/8650871/telling-git-to-ignore-symlinks
-******* Pull
-- https://www.google.com/search?q=git+not+possible+to+fast-forward+aborting
-******* Removing
-- Removing files
-  - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
-  - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
-- Remove repository
-  - https://www.google.com/search?q=git+remove+repository
-  - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
-- removing files
-  - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
-  - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
-- [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
-******* Reverting
-:PROPERTIES:
-:ID:       a3515f1b-c8c6-4c0b-bb4d-737c3edc9886
-:END:
-  - reverting a specific file
-    1. find the commit hash with =git log=
-    2. revert with =git checkout <COMMIT HASH> -- <FILE>=
-  - [[http://stackoverflow.com/questions/4114095/how-to-revert-git-repository-to-a-previous-commit][reverting to previous commit]]
-  - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: Is there a quick git command to see an old version of a file?]]
-  - reverting
-    - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]]
-    - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
-  - https://www.google.com/search?q=git+restore+file+as+new+name
-******* Search and view
-- File comparisons
-  - https://www.freecodecamp.org/news/git-diff-command/
-  - https://doc.ubuntu-fr.org/meld
-- [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
-- https://stackoverflow.com/questions/7663451/view-a-specific-git-commit
-- https://stackoverflow.com/questions/2364147/how-to-get-just-one-file-from-another-branch
-- searching for deleted files https://www.google.com/search?q=git+search+deleted+files
-  - https://stackoverflow.com/questions/7203515/how-to-find-a-deleted-file-in-the-project-commit-history
-- searching within commits
-  - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
-- Searching commits
-  - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
-******* Staging (Add)
-  - git add 'stages' a file- makes it ready to add to repo
-  - git reset unstages
-  - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
-  - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
-
-
-******* Submodules
-- Add
-  - Add from github https://stackoverflow.com/questions/1911109/how-do-i-clone-a-specific-git-branch
-  - Add specific branch with -b
-  - git submodule add <SUBMODULE>
-- Initialize git submodule update --recursive --init
-- Pull
-  -
-  - https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin
-  - https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
-  - push and pull submodules
-    - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
-- Remove https://stackoverflow.com/questions/12898278/issue-with-adding-common-code-as-git-submodule-already-exists-in-the-index
-- Commit
-  - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
-- Push
-  - https://stackoverflow.com/questions/5814319/git-submodule-push
-- Remove
-- General reference
-  - https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407
-  - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
-  - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
-  - https://stackoverflow.com/questions/19728933/continue-looping-over-submodules-with-the-git-submodule-foreach-command-after
-  - https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-symlinks-to-a-single-clone-locally
-  - https://www.google.com/search?q=private+git+submodules
-    - https://stackoverflow.com/questions/37638034/private-folder-submodule-in-a-public-repo
-  - submodule commands
-    - # git submodule foreach --recursive git checkout master
-    - # git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
-    - # git submodule foreach --recursive git pull
-    - # git submodule foreach --recursive git push
-******* Working with previous commits
-- [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
-- view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
-- https://stackoverflow.com/questions/888414/git-checkout-older-revision-of-a-file-under-a-new-name
-******* :flat:
-- https://stackoverflow.com/questions/13897717/push-commits-to-another-branch
-- https://medium.com/analytics-vidhya/tutorial-removing-large-files-from-git-78dbf4cf83a#:~:text=To%20fix%20this%20issue%2C%20you,remove%20the%20large%20file%2C%20then
-
-- https://stackoverflow.com/questions/13897717/push-commits-to-another-branch
-- https://www.google.com/search?q=git+revert+specific+commit
-******** merge branch into master
-https://stackoverflow.com/questions/5601931/how-do-i-safely-merge-a-git-branch-into-master
-
-******** clone specific branch
-#+begin_src bash
-git clone -b stable4.1 --depth 1 --single-branch git@github.com:jeszyman/cappseq
-#+end_src
-git clone -b opencv-2.4 --single-branch https://github.com/Itseez/opencv.git
-
-- https://stackoverflow.com/questions/1911109/how-do-i-clone-a-specific-git-branch
-****** Commands
-  | Action               | Command                                  |
-  |----------------------+------------------------------------------|
-  | <30>                 | <35>                                     |
-  | Create repo          | git init                                 |
-  | Ignore files         | touch .gitignore                         |
-  | Add (stage) file     | git add                                  |
-  | Add recursive        | git add --all                            |
-  | Remove (unstage)     | git reset                                |
-  | Last update          | git log --name-status HEAD^..HEAD        |
-  | To be commited       | git status                               |
-  | List untracked       | git ls-files --others --exclude-standard |
-  | List tracked         | git ls-tree -r master --name-only        |
-  | Stop tracking repo   | rm -rf .git/                             |
-  | View list of commits | git log                                  |
-  | View file changes    | git diff - HEAD --staged                 |
-****** Scripts
-#+begin_src bash
-git add -A
-git commit -m "stable3.0.0"
-git push
-git push origin stable3.0.0
-#+end_src
-#+begin_src bash :tangle no
-#!/bin/bash
-date=$(date +%Y-%m-%d)
-
-git add -A && \
-    git  commit -a -m "$date" && \
-    git push
-
-    && \
-    git submodule foreach --recursive git add -A && git commit -am "$date" && \
-    git submodule foreach --recursive git push
-
-
-#!/bin/bash
-date=$(date +%Y-%m-%d)
-for d in $HOME/repos/*
-do
-#	[[ ! -d "$d" ]] && continue
-	echo "$d"
-	cd "$d"
-	git add -A && \
-        git commit -a -m "$date" && \
-        git push && \
-        git submodule foreach --recursive git checkout master &&\
-        git submodule foreach --recursive git add -A && git commit -am "$date" && \
-        git submodule foreach --recursive git push
-done
-
-git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
-git submodule foreach --recursive git push
-git submodule foreach --recursive git pull
-
-cd $repo
-git submodule foreach --recursive git checkout master
-
-
-git submodule foreach --recursive git pull
-
-
-
-done
-
-#+end_src
-- Push all
-  #+begin_src bash :tangle ./tools/shell/git_push_all.sh
-#!/usr/bin/env bash
-d=$(date +%Y-%m-%d)
-for d in $HOME/repos/*
-do
-	[[ ! -d "$d" ]] && continue
-	echo "$d"
-	cd "$d"
-        git pull
-	git add -A && git commit -m.
-        git push
-done
-
-#+end_src
-- Setup submodules
-  #+begin_src bash
-git submodule add git@github.com:jeszyman/latex
-git submodule update --recursive --init
-#+end_src
-- Setup link to github
-  #+begin_src bash
-if [ -d /home/jeszyman/repos/cardradbio-atac ]; then
-    cd /home/jeszyman/repos/cardradbio-atac
-fi
-
-git add -A
-
-git commit -am "First commit"
-
-git branch -M master
-
-git remote add origin git@github.com:jeszyman/cardradbio-atac.git
-
-git push -u origin master
-#+end_src
-- Size check hook
-  #+begin_src bash
-#!/bin/sh
-#########1#########2#########3#########4#########5#########6#########7#########8
-#
-# This script is imported from github.com/jeszyman/basecamp
-# See block git_size_check_hook in
-#  https://github.com/jeszyman/basecamp/blob/master/basecamp.org
-
-hard_limit=$(git config hooks.filesizehardlimit)
-soft_limit=$(git config hooks.filesizesoftlimit)
-: ${hard_limit:=10000000}
-: ${soft_limit:=500000}
-
-list_new_or_modified_files()
-{
-    git diff --staged --name-status|sed -e '/^D/ d; /^D/! s/.\s\+//'
-}
-
-unmunge()
-{
-    local result="${1#\"}"
-    result="${result%\"}"
-    env echo -e "$result"
-}
-
-check_file_size()
-{
-    n=0
-    while read -r munged_filename
-    do
-        f="$(unmunge "$munged_filename")"
-        h=$(git ls-files -s "$f"|cut -d' ' -f 2)
-        s=$(git cat-file -s "$h")
-        if [ "$s" -gt $hard_limit ]
-        then
-            env echo -E 1>&2 "ERROR: hard size limit ($hard_limit) exceeded: $munged_filename ($s)"
-            n=$((n+1))
-        elif [ "$s" -gt $soft_limit ]
-        then
-            env echo -E 1>&2 "WARNING: soft size limit ($soft_limit) exceeded: $munged_filename ($s)"
-        fi
-    done
-
-    [ $n -eq 0 ]
-}
-
-list_new_or_modified_files | check_file_size
-#+end_src
-
-
-******* Pre-commit file size check hook
-:PROPERTIES:
-:ID:       669a5d96-0bea-4d56-ae7e-11151fbfe4a4
-:END:
-#+begin_src bash :tangle ./tools/git/pre-commit
-#!/usr/bin/env bash
-
-# Notes:
-#  - Adapted from https://stackoverflow.com/a/39578014/6106936
-#  - Currently set to almost 100 mb, the limit for github
-#  - Save to .git/hooks/pre-commit and enable execution
-
-hard_limit=$(git config hooks.filesizehardlimit)
-soft_limit=$(git config hooks.filesizesoftlimit)
-: ${hard_limit:=990000000}
-: ${soft_limit:=90000000}
-
-list_new_or_modified_files()
-{
-    git diff --staged --name-status|sed -e '/^D/ d; /^D/! s/.\s\+//'
-}
-
-unmunge()
-{
-    local result="${1#\"}"
-    result="${result%\"}"
-    env echo -e "$result"
-}
-
-check_file_size()
-{
-    n=0
-    while read -r munged_filename
-    do
-        f="$(unmunge "$munged_filename")"
-        h=$(git ls-files -s "$f"|cut -d' ' -f 2)
-        s=$(git cat-file -s "$h")
-        if [ "$s" -gt $hard_limit ]
-        then
-            env echo -E 1>&2 "ERROR: hard size limit ($hard_limit) exceeded: $munged_filename ($s)"
-            n=$((n+1))
-        elif [ "$s" -gt $soft_limit ]
-        then
-            env echo -E 1>&2 "WARNING: soft size limit ($soft_limit) exceeded: $munged_filename ($s)"
-        fi
-    done
-
-    [ $n -eq 0 ]
-}
-
-list_new_or_modified_files | check_file_size
-
-#+end_src
-
-******* Code tangle
-
-- sync
-    #+name:
-    #+begin_src bash :tangle ~/repos/basecamp/src/daily_git_commit.sh
-#!/bin/bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-#                                                                              #
-#                       Script to automate git pulls                           #
-#             from a set of repositories within the same root dir              #
-#                                                                              #
-#########1#########2#########3#########4#########5#########6#########7#########8
-#
-date_today=$(date +%F)
-# 1. Script Checks
-#
-## Check if git exist
-command -v git >/dev/null 2>&1 # stop if git not found
-if [ $? -eq 1 ]; then
-    echo "Git not found"
-    exit 1; fi
-##
-## Check if any repos exist
-shopt -s nullglob
-repo_dirs=(~/repos/*)
-if [ ${#repo_dirs[@]} -eq 0 ]; then
-    echo "No repos at ~/repos/"
-    exit 1; fi
-shopt -u nullglob
-##
-# 2. Pull Function
-#
-for d in $HOME/repos/*
-do
-    [[ ! -d "$d" ]] && continue
-    echo "$d" &&
-    cd "$d" &&
-    git add -A &&
-    git commit -am $date_today &&
-    git pull &&
-    git submodule update --recursive &&
-    git submodule update --remote &&
-    git push
-    cd "$OLDPWD"
-done
-#
-#+end_src
-******* No message simple git commit to github
-:PROPERTIES:
-:ID:       a97c46fe-8a23-4fa1-b9e2-f0edc29ec7f4
-:END:
-#+begin_src bash :tangle ./tools/shell/no_message_commit.sh
-#!/usr/bin/env bash
-
-if [ $# -ne 1 ];
-then
-    printf "\n usage: no_message_commit <REPO DIR>
-    \n Performs simple stage all and commit to github function for given directory
-    \n "
-else
-    if ! [ -d $1 ];
-       then
-           echo "No repo at $1"
-    else
-        cd $1
-        git pull
-        git add -A
-        git commit -m.
-        git push
-    fi
-fi
-#+end_src
-****** [[id:fcffb312-ca8d-4450-b837-b1945201f9c1][My git]]
-****** Documentation and general reference
-- Repository directory structure
-  - https://medium.com/code-factory-berlin/github-repository-structure-best-practices-248e6effc405
-  - https://softwareengineering.stackexchange.com/questions/86914/whats-the-best-structure-for-a-repository
-  - https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html
-- https://www.reddit.com/r/webdev/comments/udod9z/git_makes_me_want_to_pull_my_hair_out/
-- Documentation and general reference
-  - [[https://git-scm.com/][git website]]
-    - [[https://git-scm.com/doc][documentation]]
-  - Basic concepts
-    - Repository
-    - Branching- the different versions of the repository
-      - Branches
-        - master
-        - feature- a new branch
-      - Branching creates a snapshot of master
-    - Encorporating changes
-      - WITHIN a branch: Commit- changes to any branch, not necessarily master
-        - commits can have comments, but this is not necessary
-      - FROM ONE BRANCH TO ANOTHER: Pull request- to pull you changes INTO a branch
-    - Distributed version control (no canonical, distributed version 'sync' via patch
-  - Educational Resources
-    - [[https://try.github.io/levels/1/challenges/1][Command line tutorial]]
-    - [[https://www.git-tower.com/learn/git/ebook/en/command-line/introduction#start][Tower: Learn Version Control with Git]]
-  - [[https://stackoverflow.com/questions/954560/how-does-git-handle-symbolic-links][How does Git handle symbolic links?]]
-  - Reference
-    - https://github.com/UW-Madison-DataScience
-    - GUIs- https://www.sourcetreeapp.com/
-- Commit
-- [[https://git-scm.com/][git website]]
-  - [[https://git-scm.com/doc][documentation]]
-- Basic concepts
-  - Repository
-  - Branching- the different versions of the repository
-    - Branches
-      - master
-      - feature- a new branch
-    - Branching creates a snapshot of master
-  - Encorporating changes
-    - WITHIN a branch: Commit- changes to any branch, not necessarily master
-      - commits can have comments, but this is not necessary
-    - FROM ONE BRANCH TO ANOTHER: Pull request- to pull you changes INTO a branch
-  - Distributed version control (no canonical, distributed version 'sync' via patch
-- Educational Resources
-  - [[https://try.github.io/levels/1/challenges/1][Command line tutorial]]
-  - [[https://www.git-tower.com/learn/git/ebook/en/command-line/introduction#start][Tower: Learn Version Control with Git]]
-- [[https://stackoverflow.com/questions/954560/how-does-git-handle-symbolic-links][How does Git handle symbolic links?]]
-- Best practices
-  - https://github.com/elsewhencode/project-guidelines
-  - for git repos, use submodules to push common code up - https://git-scm.com/book/en/v2/Git-Tools-Submodules
-******* Interfaces
-- Git repository hosting services
-  - [[https://about.gitlab.com/][GitLab]]
-  - [[https://github.com/][GitHub]]
-    - https://www.reddit.com/r/programming/comments/7deyx8/introducing_security_alerts_on_github_with_your/
-    - [X] [2017-10-19 Thu] Have [[https://mail.google.com/mail/u/0/#inbox/15f3634fd86f200a][student dev pack!]]
-    - Primarily for using git with other people- the advantage is pull requests
-    - Documentation
-    - [[https://help.github.com/articles/cloning-a-repository/][Cloning a repository]] via url: git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
-    - [[https://guides.github.com/][Guides]]
-      - [[https://guides.github.com/features/mastering-markdown/][Markdown]]
-  - https://guides.github.com/introduction/flow/
-  - GitHub
-    - https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push
-    - https://github.com/settings/keys
-    - [[https://education.github.com/?utm_source=newsletter&utm_medium=email&utm_campaign=student-survey-050818][github: educational tools]]
-    - [[https://guides.github.com/features/pages/][Getting Started with GitHub Pages]]
-    - [[https://education.github.com/pack?utm_source=announcement&utm_medium=email&utm_campaign=education-201806019][GitHub related tools]]
-    - [[https://github.com/trending/r?since=monthly][GitHub trending]]
-    - ideas
-      - https://stackoverflow.com/questions/11852982/can-i-arrange-repositories-into-folders-on-github/11859027#11859027
-    - https://github.com/features/actions
-    - https://lab.github.com/courses?utm_source=newsletter&utm_medium=email&utm_campaign=student-newsletter-120818
-- GUIs- https://www.sourcetreeapp.com/
-******** [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]]
-******* Ideas
-- Changelog via gitcliff and org- https://www.reddit.com/r/commandline/comments/uaub3o/new_version_of_gitcliff_is_out/
-***** [[https://vimium.github.io/][vimium]]
-- save link with "yf"
-***** [[id:a8b27140-4b9e-40c5-86ab-ee5afeae723f][snakemake]]
-***** SSH file transfer protocol (SFTP)
-:PROPERTIES:
-:ID:       16e5e605-ba2c-46e5-a330-8cf3e5393092
-:END:
-[[id:cd047f76-f15b-415c-9767-21692d1e4ec6][Drain WGS data transfer]]
 ***** Advanced package tool (APT)
 - processes
   -
@@ -7558,6 +7176,10 @@ https://tomd.xyz/diagrams-as-code-drawio/
   - https://www.google.com/search?q=draw.io+insert+image
 - https://github.com/jgraph/drawio-desktop/releases/tag/v16.5.1
 ***** Emacs :ref:
+- https://emacs.stackexchange.com/questions/59979/elpy-configuration-setting-up-a-virtual-environment-and-pip-conflic-with-conda
+https://www.reddit.com/r/emacs/comments/x2mmfc/from_vanilla_emacs_to_bash_ide_in_17_minutes/
+https://karthinks.com/software/batteries-included-with-emacs/
+https://alhassy.github.io/emacs.d/
 https://www.emacswiki.org/emacs/ComintMode
 https://xenodium.com/seamless-command-line-utils/
 https://www.reddit.com/r/emacs/comments/wdbk34/emacss_native_templating_and_snippet_fuctionality/
@@ -7587,6 +7209,130 @@ https://www.emacswiki.org/emacs/OneOnOneEmacs
 
 - [[https://www.reddit.com/r/emacs/comments/60nb8b/favorite_builtin_emacs_commands/][reddit: favorite emacs command]]
 ****** Packages
+******* YASnippets
+:PROPERTIES:
+:ID:       6b9ba5dd-0ec7-4dbe-aee8-d9e56f0dc6b3
+:END:
+
+******** Reference
+         :PROPERTIES:
+         :ID:       5ce55261-edae-4205-9a93-35328f678925
+         :END:
+- [[http://howardism.org/Technical/Emacs/templates-tutorial.html][Having Emacs Type for You]]
+- Examples of snippet syntax and use case
+    - [[http://karl-voit.at/2016/12/18/org-depend/][Advanced Usage of Dependencies Between Tasks Using Org-mode]]
+    - Yankpad- an alternative or compliment
+- - https://emacs.stackexchange.com/questions/27158/insert-current-date-with-yasnippet
+******** Local YAS
+         :PROPERTIES:
+         :ID:       8ae59292-b129-4eca-995b-4d275fced3f7
+         :END:
+
+#+begin_src fundamental
+# -*- mode: snippet -*-
+# key: yas.block
+# expand-env: ((yas-indent-line 'none))
+# --
+,#+begin_src fundamental
+# -*- mode: snippet -*-
+# key: $1
+# expand-env: ((yas-indent-line 'none))
+# --
+$0
+,#+end_src
+#+end_src
+
+#+name: yas.org.header
+#+begin_src fundamental
+# -*- mode: snippet -*-
+# key: yas.org.header
+# expand-env: ((yas-indent-line 'fixed))
+# --
+\`(make-string (1+ (org-current-level)) ?*)` ${1:HEADER}
+#+END_SRC
+
+#+name: code.fundamental
+#+begin_src fundamental
+# -*- mode: snippet -*-
+# key: code.fundamental
+# expand-env: ((yas-indent-line 'none))
+# --
+#+begin_src fundamental
+$0
+,#+end_src
+#+end_src
+
+
+- Snippets
+  #+begin_src fundamental
+# -*- mode: snippet -*-
+# name: 80
+# key: 80
+# --
+;;;;;;;;;1;;;;;;;;;2;;;;;;;;;3;;;;;;;;;4;;;;;;;;;5;;;;;;;;;6;;;;;;;;;7;;;;;;;;;8
+#+end_src
+  #+begin_src fundamental
+# -*- mode: snippet -*-
+# name: software
+# key: software
+# --
+- Processes and commands
+- Standards and best practice
+- Documentation
+- Applications
+- Reference
+  - [[EA056C38-9DE6-47EE-A75B-0FCBAE62372B][YASnippets]]
+#+end_src
+******** [[http://joaotavora.github.io/yasnippet][documentation]]
+         :PROPERTIES:
+         :ID:       75bb5fc8-29fd-4a7d-85bd-5ed761fa3216
+         :END:
+  - Directory (yas-snippet-dirs) is ("~/.emacs.d/snippets" "/path/to/some/collection/" "/path/to/yasnippet/yasmate/snippets" "/path/to/yasnippet/snippets")
+  - [[https://github.com/joaotavora/yasnippet][github]]
+
+
+
+******** Processes :hierarchy:
+:PROPERTIES:
+:ID:       61811c73-973c-40af-bc2c-00576eaa82b6
+:END:
+********* :flat:
+- Write snippet
+  - shift to plaintext in babel blocks
+  - https://www.google.com/search?q=yasnippet+escape+variable
+  - [[https://emacs.stackexchange.com/questions/48201/how-to-tell-yasnippet-to-ignore-placeholder][How to tell YASnippet to ignore placeholder?]]
+  - can insert org blocks with ,#+end_src
+- Create sub-choices in the snippet
+  - https://github.com/joaotavora/yasnippet/issues/830
+
+
+#+begin_src fundamental
+# -*- mode: snippet -*-
+# key: test
+# expand-env: ((yas-indent-line 'none))
+# --
+#+BEGIN_${1:$$(let ((type (yas-choose-value '("SRC" "EXAMPLE" "QUOTE" "VERSE" "CENTER" "LaTeX" "HTML" "ASCII"))))
+               (if type (concat type (if (equal type "SRC")
+                                         (concat " " (yas-choose-value '("C" "C++" "emacs-lisp" "lisp" "latex" "python" "sh" "sqlite" "css" "haskell" "js" "plantuml" "ruby" "sql" "clojure")))))))}
+$0
+#+END_${1:$(car (split-string yas-text))}
+#+end_src
+
+#+BEGIN_SRC C++
+
+#+END_SRC
+- https://www.google.com/search?q=yasnippet+extra+line
+- http://emacs.stackexchange.com/questions/10960/one-yasnippet-snippet-for-multiple-modes
+- http://emacsblog.org/2009/07/27/yasnippet-updated-supports-nested-placeholders-and-more/
+- https://github.com/joaotavora/yasnippet/issues/830
+- [[http://emacs.stackexchange.com/questions/3968/yasnippet-prompt-when-using-commands-interactively][use YAS prompt for commands]]
+- https://emacs.stackexchange.com/questions/35372/how-do-you-make-an-optional-field-and-comma-in-a-yasnippet
+- https://www.google.com/search?q=yasnippet+org-mode+header+level
+- https://www.google.com/search?q=yasnippet+elisp+literal
+- https://www.google.com/search?q=yas+include+org+header+at+level
+- https://joaotavora.github.io/yasnippet/snippet-development.html#org844d0b2 https://www.google.com/search?q=yasnippet+include+option
+- to invoke a shell: - https://superuser.com/questions/841178/directly-open-remote-shell-with-tramp-in-emacs
+
 ******* Org-mode
 ******** Processes :hierarchy:
 ********* Processes :flat:
@@ -7646,21 +7392,24 @@ sudo apt-get install emacs-snapshot
 
 - Selection
   - https://www.google.com/search?q=emacs+rectangle+paste
-- Text
-  - auto indent after written https://unix.stackexchange.com/questions/162057/can-i-have-emacs-automatically-indent-my-whole-code-after-it-is-all-written
-  - https://www.google.com/search?q=emacs+remove+line+breaks
-  - https://www.google.com/search?q=emacs+paste+without+line+breaks
-  - https://www.google.com/search?q=emacs+replace+multiple+spaces+with+one
-  - https://www.google.com/search?q=emacs+replace+regex+double+space
-  - select word at cursor https://emacs.stackexchange.com/questions/35069/best-way-to-select-a-word
 - https://www.google.com/search?q=emacs+change+keybinding
-
 - https://www.reddit.com/r/emacs/comments/mqtwzx/creating_custom_minor_modes_learning_emacs_lisp_7/
 - https://askubuntu.com/questions/598985/how-to-upgrade-to-the-latest-emacs
-****** Emacs Processes                                                 :flat:
+******* Text
+- cut whole line <C-S-backspace> runs the command kill-whole-line
+- auto indent after written https://unix.stackexchange.com/questions/162057/can-i-have-emacs-automatically-indent-my-whole-code-after-it-is-all-written
+- https://www.google.com/search?q=emacs+remove+line+breaks
+- https://www.google.com/search?q=emacs+paste+without+line+breaks
+- https://www.google.com/search?q=emacs+replace+multiple+spaces+with+one
+- https://www.google.com/search?q=emacs+replace+regex+double+space
+- select word at cursor https://emacs.stackexchange.com/questions/35069/best-way-to-select-a-word
+******* Emacs Processes                                                :flat:
 - https://www.google.com/search?q=emacs+paste+line+n+times
-******* Modify write permission from within buffer w/ C-x C-q
+******** Modify write permission from within buffer w/ C-x C-q
 https://unix.stackexchange.com/questions/47724/how-to-modify-write-permission-on-current-buffer-in-emacs
+****** Rectangle commands
+http://xahlee.info/emacs/emacs/emacs_string-rectangle_ascii-art.html
+
 ****** Interfaces
 :PROPERTIES:
 :ID:       0c0667a7-dcb3-4ef8-98c1-8fa1b9cc3116
@@ -7897,6 +7646,9 @@ https://github.com/politza/pdf-tools
 - how to autoupdate packages?
 - https://github.com/emacs-tw/awesome-emacs
 - https://tuhdo.github.io/emacs-tutor3.html
+***** Excel for the web
+- Access edit cell from keyboard F2
+- new line in cell Alt
 ***** gimp
 :PROPERTIES:
 :ID:       9ecdf234-2e25-486f-926d-ee71a7179a96
@@ -7915,6 +7667,565 @@ https://github.com/politza/pdf-tools
 - applications
 - reference
   - [[file:~/.emacs.d/snippets/org-mode/software]]
+***** Git                                                            :career:
+:PROPERTIES:
+:ID:       E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6
+:END:
+:LOGBOOK:
+CLOCK: [2022-05-04 Wed 09:42]--[2022-05-04 Wed 10:06] =>  0:24
+CLOCK: [2021-12-21 Tue 09:59]--[2021-12-21 Tue 10:29] =>  0:30
+CLOCK: [2018-08-10 Fri 16:03]--[2018-08-10 Fri 16:13] =>  0:10
+CLOCK: [2017-11-29 Wed 19:30]--[2017-11-29 Wed 19:51] =>  0:21
+CLOCK: [2017-11-29 Wed 19:05]--[2017-11-29 Wed 19:25] =>  0:20
+CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
+CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
+CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
+:END:
+****** Processes                                                  :hierarchy:
+******* Create and initialize
+  - https://www.google.com/search?q=initialize+git+repo
+  - git branch --set-upstream-to=origin/master master
+#+begin_src bash
+repo=/home/jeszyman/repos/mpnst-preprocessing
+cd $repo
+
+git init
+git add -A
+git commit -m "first commit"
+
+git remote add origin git@github.com:jeszyman/mpnst-preprocessing.git
+git branch -M master
+git push -u origin master
+#+end_src
+******* Branches
+  - git branch
+    - add and delete
+      - -d <BRANCH NAME>
+      - <BRANCH NAME>
+  - git checkout <BRANCH> switch branches
+https://stackoverflow.com/questions/67699/how-to-clone-all-remote-branches-in-git
+******* Commit
+  - https://www.google.com/search?q=git+see+which+files+are+not+added
+  - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
+  - [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
+  - File comparisons
+    - https://doc.ubuntu-fr.org/meld
+  - git checkout -- undo last commit FOR A SPECIFIC FILE
+  - Changing within branch
+    - git commit- add changes WITHIN branch- full repo (not just a file) within branch
+    - git checkout -- undo last commit FOR A SPECIFIC FILE
+
+
+******* Commit messages
+- https://semver.org/
+- https://stackoverflow.com/questions/179123/how-to-modify-existing-unpushed-commit-messages
+  - hooks
+    - beautiful file size limit pre-commit hook
+      - https://stackoverflow.com/questions/39576257/how-to-limit-file-size-on-commit
+    - to test, simply run as bash script
+  - gitignore
+    - loading changes -
+      - git rm -r --cached .
+      - git add .
+      - commit
+    - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
+    - https://labs.consol.de/development/git/2017/02/22/gitignore.html
+  - gitignore
+    - https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
+    - https://labs.consol.de/development/git/2017/02/22/gitignore.html
+  - Hooks
+    - file size limit hook
+- https://stackoverflow.com/questions/29933349/how-can-i-make-git-commit-messages-divide-into-multiple-lines
+- https://www.conventionalcommits.org/en/v1.0.0/#summary
+- https://www.google.com/search?q=git+generate+chage+log
+******* Errors
+- [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
+- https://stackoverflow.com/questions/33360043/git-error-need-to-remove-large-file
+- [[id:a3515f1b-c8c6-4c0b-bb4d-737c3edc9886][Reverting]]
+- [[https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git][undo]]
+- https://www.google.com/search?q=git+Not+possible+to+fast-forward+aborting
+- [[https://stackoverflow.com/questions/4254389/git-corrupt-loose-object/18238322#18238322][corrupt loose object]]
+- [[https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/][resolve confilcts workflow]]
+******* Git project management processes
+- Project management, multiple git repos, multiple branches
+  - https://stackoverflow.com/questions/816619/managing-many-git-repositories
+  - https://softwareengineering.stackexchange.com/questions/206668/using-multiple-git-repositories-instead-of-a-single-one-containing-many-apps-fro
+  - https://stackoverflow.com/questions/11852982/can-i-arrange-repositories-into-folders-on-github#:~:text=On%20GitHub%20itself%2C%20you%20cannot,a%20nested%20team%20organization%20structure.
+  - https://stackoverflow.com/questions/28357350/two-git-repositories-share-common-code
+  - https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-symlinks-to-a-single-clone-locally
+  - https://www.bitsnbites.eu/a-stable-mainline-branching-model-for-git/
+- git merge- FIRST navigate to master, then git merge <BRANCH TO PULL>
+- [[https://stackoverflow.com/questions/2116778/reduce-git-repository-size][reduce repo size]]
+- https://www.reddit.com/r/git/comments/ukrhb1/versioning_changelogs_release_notes_squashing_and/
+- https://www.google.com/search?q=git+make+stable+version+branch
+
+******* Hooks
+- https://stackoverflow.com/questions/2050450/git-hooks-management
+******* Ignore
+  #+begin_src bash
+# ignore dotfiles
+find . -type l | sed -e s'/^\.\///g' >> .gitignore
+#+end_src
+- https://www.toptal.com/developers/gitignore
+- Ignore a directory and all contents
+  - https://www.google.com/search?q=git+ignore+directory
+- Ignore symlinks
+  - https://www.google.com/search?q=git+ignore+all+symlinks
+  - https://stackoverflow.com/questions/8650871/telling-git-to-ignore-symlinks
+******* Pull
+- https://www.google.com/search?q=git+not+possible+to+fast-forward+aborting
+******* Removing
+- Removing files
+  - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
+  - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
+- Remove repository
+  - https://www.google.com/search?q=git+remove+repository
+  - [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
+- removing files
+  - b/c file exceeds github file size limits:  https://thomas-cokelaer.info/blog/2018/02/git-how-to-remove-a-big-file-wrongly-committed/
+  - https://help.github.com/en/articles/removing-files-from-a-repositorys-history
+- [[https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project/36945328][stack: remove git tracking]]
+******* Reverting
+:PROPERTIES:
+:ID:       a3515f1b-c8c6-4c0b-bb4d-737c3edc9886
+:END:
+  - reverting a specific file
+    1. find the commit hash with =git log=
+    2. revert with =git checkout <COMMIT HASH> -- <FILE>=
+  - [[http://stackoverflow.com/questions/4114095/how-to-revert-git-repository-to-a-previous-commit][reverting to previous commit]]
+  - [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: Is there a quick git command to see an old version of a file?]]
+  - reverting
+    - [[https://stackoverflow.com/questions/215718/how-can-i-reset-or-revert-a-file-to-a-specific-revision][reverting spcific files]]
+    - https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git
+  - https://www.google.com/search?q=git+restore+file+as+new+name
+******* Search and view
+- File comparisons
+  - https://www.freecodecamp.org/news/git-diff-command/
+  - https://doc.ubuntu-fr.org/meld
+- [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
+- https://stackoverflow.com/questions/7663451/view-a-specific-git-commit
+- https://stackoverflow.com/questions/2364147/how-to-get-just-one-file-from-another-branch
+- searching for deleted files https://www.google.com/search?q=git+search+deleted+files
+  - https://stackoverflow.com/questions/7203515/how-to-find-a-deleted-file-in-the-project-commit-history
+- searching within commits
+  - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
+- Searching commits
+  - https://stackoverflow.com/questions/2928584/how-to-grep-search-committed-code-in-the-git-history
+******* Staging (Add)
+  - git add 'stages' a file- makes it ready to add to repo
+  - git reset unstages
+  - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
+  - [[https://stackoverflow.com/questions/2855140/recursively-add-files-by-pattern?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Recursively add files by pattern]]
+
+
+******* Submodules
+- Add
+  - Add from github https://stackoverflow.com/questions/1911109/how-do-i-clone-a-specific-git-branch
+  - Add specific branch with -b
+  - git submodule add <SUBMODULE>
+- Initialize git submodule update --recursive --init
+- Pull
+  -
+  - https://stackoverflow.com/questions/5828324/update-git-submodule-to-latest-commit-on-origin
+  - https://stackoverflow.com/questions/4611512/is-there-a-way-to-make-git-pull-automatically-update-submodules
+  - push and pull submodules
+    - 2nd answer https://stackoverflow.com/questions/1030169/easy-way-to-pull-latest-of-all-git-submodules
+- Remove https://stackoverflow.com/questions/12898278/issue-with-adding-common-code-as-git-submodule-already-exists-in-the-index
+- Commit
+  - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
+- Push
+  - https://stackoverflow.com/questions/5814319/git-submodule-push
+- Remove
+- General reference
+  - https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407
+  - https://medium.com/faun/git-submodule-cheatsheet-29a3bfe443c3
+  - to use all included functions, clone submodules - https://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules
+  - https://stackoverflow.com/questions/19728933/continue-looping-over-submodules-with-the-git-submodule-foreach-command-after
+  - https://stackoverflow.com/questions/21077493/how-to-use-submodules-publicly-but-symlinks-to-a-single-clone-locally
+  - https://www.google.com/search?q=private+git+submodules
+    - https://stackoverflow.com/questions/37638034/private-folder-submodule-in-a-public-repo
+  - submodule commands
+    - # git submodule foreach --recursive git checkout master
+    - # git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
+    - # git submodule foreach --recursive git pull
+    - # git submodule foreach --recursive git push
+******* Working with previous commits
+- [[https://stackoverflow.com/questions/338436/is-there-a-quick-git-command-to-see-an-old-version-of-a-file][stack: view previous version of a file]]
+- view previous version of specific file https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git
+- https://stackoverflow.com/questions/888414/git-checkout-older-revision-of-a-file-under-a-new-name
+******* :flat:
+- https://stackoverflow.com/questions/13897717/push-commits-to-another-branch
+- https://medium.com/analytics-vidhya/tutorial-removing-large-files-from-git-78dbf4cf83a#:~:text=To%20fix%20this%20issue%2C%20you,remove%20the%20large%20file%2C%20then
+
+- https://stackoverflow.com/questions/13897717/push-commits-to-another-branch
+- https://www.google.com/search?q=git+revert+specific+commit
+******** merge branch into master
+https://stackoverflow.com/questions/5601931/how-do-i-safely-merge-a-git-branch-into-master
+
+******** clone specific branch
+#+begin_src bash
+git clone -b stable4.1 --depth 1 --single-branch git@github.com:jeszyman/cappseq
+#+end_src
+git clone -b opencv-2.4 --single-branch https://github.com/Itseez/opencv.git
+
+- https://stackoverflow.com/questions/1911109/how-do-i-clone-a-specific-git-branch
+****** Commands
+  | Action               | Command                                  |
+  |----------------------+------------------------------------------|
+  | <30>                 | <35>                                     |
+  | Create repo          | git init                                 |
+  | Ignore files         | touch .gitignore                         |
+  | Add (stage) file     | git add                                  |
+  | Add recursive        | git add --all                            |
+  | Remove (unstage)     | git reset                                |
+  | Last update          | git log --name-status HEAD^..HEAD        |
+  | To be commited       | git status                               |
+  | List untracked       | git ls-files --others --exclude-standard |
+  | List tracked         | git ls-tree -r master --name-only        |
+  | Stop tracking repo   | rm -rf .git/                             |
+  | View list of commits | git log                                  |
+  | View file changes    | git diff - HEAD --staged                 |
+****** Scripts
+#+begin_src bash
+git add -A
+git commit -m "stable3.0.0"
+git push
+git push origin stable3.0.0
+#+end_src
+#+begin_src bash :tangle no
+#!/bin/bash
+date=$(date +%Y-%m-%d)
+
+git add -A && \
+    git  commit -a -m "$date" && \
+    git push
+
+    && \
+    git submodule foreach --recursive git add -A && git commit -am "$date" && \
+    git submodule foreach --recursive git push
+
+
+#!/bin/bash
+date=$(date +%Y-%m-%d)
+for d in $HOME/repos/*
+do
+#	[[ ! -d "$d" ]] && continue
+	echo "$d"
+	cd "$d"
+	git add -A && \
+        git commit -a -m "$date" && \
+        git push && \
+        git submodule foreach --recursive git checkout master &&\
+        git submodule foreach --recursive git add -A && git commit -am "$date" && \
+        git submodule foreach --recursive git push
+done
+
+git submodule foreach --recursive git add -A && git commit -am "2020-12-16"
+git submodule foreach --recursive git push
+git submodule foreach --recursive git pull
+
+cd $repo
+git submodule foreach --recursive git checkout master
+
+
+git submodule foreach --recursive git pull
+
+
+
+done
+
+#+end_src
+- Push all
+  #+begin_src bash :tangle ./tools/shell/git_push_all.sh
+#!/usr/bin/env bash
+d=$(date +%Y-%m-%d)
+for d in $HOME/repos/*
+do
+	[[ ! -d "$d" ]] && continue
+	echo "$d"
+	cd "$d"
+        git pull
+	git add -A && git commit -m.
+        git push
+done
+
+#+end_src
+- Setup submodules
+  #+begin_src bash
+git submodule add git@github.com:jeszyman/latex
+git submodule update --recursive --init
+#+end_src
+- Setup link to github
+  #+begin_src bash
+if [ -d /home/jeszyman/repos/cardradbio-atac ]; then
+    cd /home/jeszyman/repos/cardradbio-atac
+fi
+
+git add -A
+
+git commit -am "First commit"
+
+git branch -M master
+
+git remote add origin git@github.com:jeszyman/cardradbio-atac.git
+
+git push -u origin master
+#+end_src
+- Size check hook
+  #+begin_src bash
+#!/bin/sh
+#########1#########2#########3#########4#########5#########6#########7#########8
+#
+# This script is imported from github.com/jeszyman/basecamp
+# See block git_size_check_hook in
+#  https://github.com/jeszyman/basecamp/blob/master/basecamp.org
+
+hard_limit=$(git config hooks.filesizehardlimit)
+soft_limit=$(git config hooks.filesizesoftlimit)
+: ${hard_limit:=10000000}
+: ${soft_limit:=500000}
+
+list_new_or_modified_files()
+{
+    git diff --staged --name-status|sed -e '/^D/ d; /^D/! s/.\s\+//'
+}
+
+unmunge()
+{
+    local result="${1#\"}"
+    result="${result%\"}"
+    env echo -e "$result"
+}
+
+check_file_size()
+{
+    n=0
+    while read -r munged_filename
+    do
+        f="$(unmunge "$munged_filename")"
+        h=$(git ls-files -s "$f"|cut -d' ' -f 2)
+        s=$(git cat-file -s "$h")
+        if [ "$s" -gt $hard_limit ]
+        then
+            env echo -E 1>&2 "ERROR: hard size limit ($hard_limit) exceeded: $munged_filename ($s)"
+            n=$((n+1))
+        elif [ "$s" -gt $soft_limit ]
+        then
+            env echo -E 1>&2 "WARNING: soft size limit ($soft_limit) exceeded: $munged_filename ($s)"
+        fi
+    done
+
+    [ $n -eq 0 ]
+}
+
+list_new_or_modified_files | check_file_size
+#+end_src
+
+
+******* Pre-commit file size check hook
+:PROPERTIES:
+:ID:       669a5d96-0bea-4d56-ae7e-11151fbfe4a4
+:END:
+#+begin_src bash :tangle ./tools/git/pre-commit
+#!/usr/bin/env bash
+
+# Notes:
+#  - Adapted from https://stackoverflow.com/a/39578014/6106936
+#  - Currently set to almost 100 mb, the limit for github
+#  - Save to .git/hooks/pre-commit and enable execution
+
+hard_limit=$(git config hooks.filesizehardlimit)
+soft_limit=$(git config hooks.filesizesoftlimit)
+: ${hard_limit:=990000000}
+: ${soft_limit:=90000000}
+
+list_new_or_modified_files()
+{
+    git diff --staged --name-status|sed -e '/^D/ d; /^D/! s/.\s\+//'
+}
+
+unmunge()
+{
+    local result="${1#\"}"
+    result="${result%\"}"
+    env echo -e "$result"
+}
+
+check_file_size()
+{
+    n=0
+    while read -r munged_filename
+    do
+        f="$(unmunge "$munged_filename")"
+        h=$(git ls-files -s "$f"|cut -d' ' -f 2)
+        s=$(git cat-file -s "$h")
+        if [ "$s" -gt $hard_limit ]
+        then
+            env echo -E 1>&2 "ERROR: hard size limit ($hard_limit) exceeded: $munged_filename ($s)"
+            n=$((n+1))
+        elif [ "$s" -gt $soft_limit ]
+        then
+            env echo -E 1>&2 "WARNING: soft size limit ($soft_limit) exceeded: $munged_filename ($s)"
+        fi
+    done
+
+    [ $n -eq 0 ]
+}
+
+list_new_or_modified_files | check_file_size
+
+#+end_src
+
+******* Code tangle
+
+- sync
+    #+name:
+    #+begin_src bash :tangle ~/repos/basecamp/src/daily_git_commit.sh
+#!/bin/bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+#                                                                              #
+#                       Script to automate git pulls                           #
+#             from a set of repositories within the same root dir              #
+#                                                                              #
+#########1#########2#########3#########4#########5#########6#########7#########8
+#
+date_today=$(date +%F)
+# 1. Script Checks
+#
+## Check if git exist
+command -v git >/dev/null 2>&1 # stop if git not found
+if [ $? -eq 1 ]; then
+    echo "Git not found"
+    exit 1; fi
+##
+## Check if any repos exist
+shopt -s nullglob
+repo_dirs=(~/repos/*)
+if [ ${#repo_dirs[@]} -eq 0 ]; then
+    echo "No repos at ~/repos/"
+    exit 1; fi
+shopt -u nullglob
+##
+# 2. Pull Function
+#
+for d in $HOME/repos/*
+do
+    [[ ! -d "$d" ]] && continue
+    echo "$d" &&
+    cd "$d" &&
+    git add -A &&
+    git commit -am $date_today &&
+    git pull &&
+    git submodule update --recursive &&
+    git submodule update --remote &&
+    git push
+    cd "$OLDPWD"
+done
+#
+#+end_src
+******* No message simple git commit to github
+:PROPERTIES:
+:ID:       a97c46fe-8a23-4fa1-b9e2-f0edc29ec7f4
+:END:
+#+begin_src bash :tangle ./tools/shell/no_message_commit.sh
+#!/usr/bin/env bash
+
+if [ $# -ne 1 ];
+then
+    printf "\n usage: no_message_commit <REPO DIR>
+    \n Performs simple stage all and commit to github function for given directory
+    \n "
+else
+    if ! [ -d $1 ];
+       then
+           echo "No repo at $1"
+    else
+        cd $1
+        git pull
+        git add -A
+        git commit -m.
+        git push
+    fi
+fi
+#+end_src
+****** [[id:fcffb312-ca8d-4450-b837-b1945201f9c1][My git]]
+****** Documentation and general reference
+- Repository directory structure
+  - https://medium.com/code-factory-berlin/github-repository-structure-best-practices-248e6effc405
+  - https://softwareengineering.stackexchange.com/questions/86914/whats-the-best-structure-for-a-repository
+  - https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html
+- https://www.reddit.com/r/webdev/comments/udod9z/git_makes_me_want_to_pull_my_hair_out/
+- Documentation and general reference
+  - [[https://git-scm.com/][git website]]
+    - [[https://git-scm.com/doc][documentation]]
+  - Basic concepts
+    - Repository
+    - Branching- the different versions of the repository
+      - Branches
+        - master
+        - feature- a new branch
+      - Branching creates a snapshot of master
+    - Encorporating changes
+      - WITHIN a branch: Commit- changes to any branch, not necessarily master
+        - commits can have comments, but this is not necessary
+      - FROM ONE BRANCH TO ANOTHER: Pull request- to pull you changes INTO a branch
+    - Distributed version control (no canonical, distributed version 'sync' via patch
+  - Educational Resources
+    - [[https://try.github.io/levels/1/challenges/1][Command line tutorial]]
+    - [[https://www.git-tower.com/learn/git/ebook/en/command-line/introduction#start][Tower: Learn Version Control with Git]]
+  - [[https://stackoverflow.com/questions/954560/how-does-git-handle-symbolic-links][How does Git handle symbolic links?]]
+  - Reference
+    - https://github.com/UW-Madison-DataScience
+    - GUIs- https://www.sourcetreeapp.com/
+- Commit
+- [[https://git-scm.com/][git website]]
+  - [[https://git-scm.com/doc][documentation]]
+- Basic concepts
+  - Repository
+  - Branching- the different versions of the repository
+    - Branches
+      - master
+      - feature- a new branch
+    - Branching creates a snapshot of master
+  - Encorporating changes
+    - WITHIN a branch: Commit- changes to any branch, not necessarily master
+      - commits can have comments, but this is not necessary
+    - FROM ONE BRANCH TO ANOTHER: Pull request- to pull you changes INTO a branch
+  - Distributed version control (no canonical, distributed version 'sync' via patch
+- Educational Resources
+  - [[https://try.github.io/levels/1/challenges/1][Command line tutorial]]
+  - [[https://www.git-tower.com/learn/git/ebook/en/command-line/introduction#start][Tower: Learn Version Control with Git]]
+- [[https://stackoverflow.com/questions/954560/how-does-git-handle-symbolic-links][How does Git handle symbolic links?]]
+- Best practices
+  - https://github.com/elsewhencode/project-guidelines
+  - for git repos, use submodules to push common code up - https://git-scm.com/book/en/v2/Git-Tools-Submodules
+******* Interfaces
+- Git repository hosting services
+  - [[https://about.gitlab.com/][GitLab]]
+  - [[https://github.com/][GitHub]]
+    - https://www.reddit.com/r/programming/comments/7deyx8/introducing_security_alerts_on_github_with_your/
+    - [X] [2017-10-19 Thu] Have [[https://mail.google.com/mail/u/0/#inbox/15f3634fd86f200a][student dev pack!]]
+    - Primarily for using git with other people- the advantage is pull requests
+    - Documentation
+    - [[https://help.github.com/articles/cloning-a-repository/][Cloning a repository]] via url: git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
+    - [[https://guides.github.com/][Guides]]
+      - [[https://guides.github.com/features/mastering-markdown/][Markdown]]
+  - https://guides.github.com/introduction/flow/
+  - GitHub
+    - https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push
+    - https://github.com/settings/keys
+    - [[https://education.github.com/?utm_source=newsletter&utm_medium=email&utm_campaign=student-survey-050818][github: educational tools]]
+    - [[https://guides.github.com/features/pages/][Getting Started with GitHub Pages]]
+    - [[https://education.github.com/pack?utm_source=announcement&utm_medium=email&utm_campaign=education-201806019][GitHub related tools]]
+    - [[https://github.com/trending/r?since=monthly][GitHub trending]]
+    - ideas
+      - https://stackoverflow.com/questions/11852982/can-i-arrange-repositories-into-folders-on-github/11859027#11859027
+    - https://github.com/features/actions
+    - https://lab.github.com/courses?utm_source=newsletter&utm_medium=email&utm_campaign=student-newsletter-120818
+- GUIs- https://www.sourcetreeapp.com/
+******** [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]]
+******* Ideas
+- Changelog via gitcliff and org- https://www.reddit.com/r/commandline/comments/uaub3o/new_version_of_gitcliff_is_out/
 ***** github
 :PROPERTIES:
 :ID:       e1bbc57a-0660-4ccf-a7e7-9870b3afbff7
@@ -7928,6 +8239,9 @@ https://github.com/politza/pdf-tools
 - Processes
   - https://www.google.com/search?q=github+new+repository
 - https://help.github.com/en/articles/about-project-boards
+***** gnome-screenshot
+https://askubuntu.com/questions/1196914/gnome-screenshot-cant-copy-to-clipboard-in-ubuntu-18-04
+
 ***** gnome-terminal
 - gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
 ***** Google
@@ -8101,6 +8415,11 @@ specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]
 - Cisco AnyConect
   - [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
   - my profile at /opt/cisco/anyconnect/profile/test.xml
+***** htop
+- https://www.google.com/search?q=htop+headers+S
+  - https://peteris.rocks/blog/htop/#s-interruptible-sleep-waiting-for-an-event-to-complete
+- https://www.google.com/search?q=htop+restore+default+settings
+  https://unix.stackexchange.com/questions/147885/how-can-i-set-default-settings-for-htop
 ***** i3
 https://github.com/raulpenate/.dotfiles/blob/main/.config/i3/config
 [[./basecamp.org_20220526_081510.png]]
@@ -8239,9 +8558,13 @@ https://unix.stackexchange.com/questions/420594/why-process-killed-with-nohup
 - orgzly event reminders occur at time of event https://github.com/orgzly/orgzly-android/issues/664
 ***** Outlook on the web :software:
 - can get permalink urls to specific emails via send to OneNote
-***** Excel for the web
-- Access edit cell from keyboard F2
-- new line in cell Alt
+***** pandoc
+#+begin_src bash
+pandoc -o /home/jeszyman/repos/mpnst-data/readme.docx -f markdown -t docx /home/jeszyman/repos/mpnst-data/readme.md
+#+end_src
+#+begin_src bash
+pandoc -o /home/jeszyman/repos/mpnst-data/readme.pdf -f markdown -t latex /home/jeszyman/repos/mpnst-data/readme.md
+#+end_src
 ***** rclone
 :PROPERTIES:
 :ID:       be76a873-d2fe-447f-a43c-b84c52a8e77b
@@ -8289,6 +8612,7 @@ q
 ***** Reference
 - https://youtube-dl.org/
 ***** Remarkable
+https://www.reddit.com/r/RemarkableTablet/comments/wzu1ci/latest_version_on_remarkable_on_ubuntu_with_wine/
 - https://www.simplykyra.com/2021/02/10/switch-out-your-remarkables-sleep-screen-plus-easily-back-it-up/
 - https://ddvk.github.io/rmfakecloud/
 - https://www.reddit.com/r/RemarkableTablet/comments/ui4w46/remarkable2_without_connect/
@@ -8469,6 +8793,12 @@ singularity version
     #+end_src
 - [[id:D2FAA88D-70CC-4450-BBB3-8A446CB43AF3][Docker]]
 - https://www.google.com/search?q=singularity+check+which+docker+container
+***** [[id:a8b27140-4b9e-40c5-86ab-ee5afeae723f][snakemake]]
+***** SSH file transfer protocol (SFTP)
+:PROPERTIES:
+:ID:       16e5e605-ba2c-46e5-a330-8cf3e5393092
+:END:
+[[id:cd047f76-f15b-415c-9767-21692d1e4ec6][Drain WGS data transfer]]
 ***** syncthing
 - ip is http://127.0.0.1:8384
 ***** Timeshift
@@ -8478,6 +8808,8 @@ singularity version
 https://www.google.com/search?q=emacs+waiting+for+prompts+from+shell&oq=emacs+waiting+for+prompts+from+shell+&aqs=chrome..69i57.47179j0j1&sourceid=chrome&ie=UTF-8
   - [currently not working] to goodle drive- - https://www.gnu.org/software/tramp/#Using-Google-Drive
 ***** trash http://hasseg.org/trash/
+***** [[https://vimium.github.io/][vimium]]
+- save link with "yf"
 ***** virtualbox
 :PROPERTIES:
 :ID:       147fb935-7526-497f-ab84-2b7903ea996e
@@ -9051,6 +9383,17 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :LOGBOOK:
 CLOCK: [2020-07-13 Mon 08:52]--[2020-07-13 Mon 09:04] =>  0:12
 :END:
+- https://askubuntu.com/questions/15832/how-do-i-get-the-cpu-temperature
+
+# Check mount point
+if grep -qs $mntpt /proc/mounts; then
+    echo "RIS storage mounted."
+else
+    echo "RIS storage NOT mounted, exiting."
+    exit 1
+fi
+
+- [[http://varunbpatil.github.io/2013/09/20/xmonad/#.Vu2d0t9ytOA][this xmonad guide]]
 - https://unix.stackexchange.com/questions/10646/repeat-a-unix-command-every-x-seconds-forever
 
 https://www.reddit.com/r/commandline/comments/wwib48/good_alternatives_to_man_pages_to_learn_concise/
@@ -9209,6 +9552,8 @@ cp /etc/skel/.bashrc ${HOME}/.bashrc
 
 - https://www.google.com/search?q=ubuntu+see+disk+space
 ********* General reference
+- https://support.displaylink.com/knowledgebase/articles/675136-how-to-configure-displaylink-displays-on-ubuntu
+
 - structure
   - df disks
     - spaces for RAM
