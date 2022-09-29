@@ -3233,14 +3233,17 @@ RUN echo "LANG=en_US.UTF-8" > /etc/locale.conf
 #####################
 ###   Miniconda   ###
 #####################
-
-RUN cd /tmp && wget --no-check-certificate https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh
-RUN bash /tmp/Miniconda3-4.3.21-Linux-x86_64.sh -b -p /opt/miniconda
+RUN cd /tmp && wget --no-check-certificate https://repo.anaconda.com/miniconda/Miniconda3-py39_4.12.0-Linux-x86_64.sh
+RUN bash /tmp/Miniconda3-py39_4.12.0-Linux-x86_64.sh -b -p /opt/miniconda
 ENV PATH="/opt/miniconda/bin:${PATH}"
+RUN conda update conda
 #+end_src
 ******* Conda
 #+begin_src bash
-RUN conda install -c bioconda snakemake
+RUN conda install -n base -c conda-forge mamba
+RUN conda install -c bioconda -c conda-forge snakemake
+
+RUN conda install numpy
 #+end_src
 ******* R v4 and CRAN Packages
 #+begin_src bash
@@ -3269,10 +3272,12 @@ RUN echo 'local({r <- getOption("repos"); r["CRAN"] <- "http://cran.r-project.or
 # R CRAN Installs
 RUN R -e "install.packages(c('caret', \
                              'circularize', \
+                             'ComplexUpset', \
                              'cowplot', \
                              'cutpointr', \
                              'data.table', \
                              'devtools', \
+                             'elrm', \
                              'FSA', \
                              'ggplot2', \
                              'ggpval', \
@@ -3280,9 +3285,11 @@ RUN R -e "install.packages(c('caret', \
                              'ggsci', \
                              'ggvenn', \
                              'ggrepel', \
+                             'ggsignif', \
                              'git2r', \
                              'grid', \
                              'gridExtra', \
+                             'hexbin', \
                              'Hmisc', \
                              'kableExtra', \
                              'naniar', \
@@ -3290,6 +3297,9 @@ RUN R -e "install.packages(c('caret', \
                              'pheatmap', \
                              'plyr', \
                              'RColorBrewer', \
+                             'rlang', \
+                             'rstatix', \
+                             'scales', \
                              'statmod', \
                              'stringr', \
                              'tidyverse', \
@@ -3303,6 +3313,10 @@ RUN apt-get update -qq \
 
 RUN R -e "install.packages('tidyverse',repos='http://cran.rstudio.com/')"
 #+end_src
+******* HOLD
+:PROPERTIES:
+:header-args:bash: :tangle no
+:END:
 
 ****** Development
 :PROPERTIES:
