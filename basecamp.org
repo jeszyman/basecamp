@@ -7754,7 +7754,7 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 ******* My gitignore template
 :PROPERTIES:
 :ID:       e7a5778b-3f3a-4e88-bdc6-fbac135c9c67
-:header-args:bash: :tangle ./tools/git/jeszyman_basecamp_gitignore_2022-10-26
+:header-args:bash: :tangle ./resources/git/jeszyman_basecamp_gitignore_2022-10-26 :mkdirp yes
 :END:
 ******** Preamble
 #+begin_src bash
