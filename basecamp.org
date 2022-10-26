@@ -29,6 +29,7 @@ CLOCK: [2017-07-11 Tue 16:16]--[2017-07-11 Tue 16:40] =>  0:24
 CLOCK: [2017-01-26 Thu 13:26]--[2017-01-26 Thu 13:30] =>  0:04
 CLOCK: [2017-07-11 Tue 16:40]--[2017-07-11 Tue 19:11] =>  2:31
 :END:
+#if(system("echo $HOSTNAME",intern=T)!="radonc-cancerbio")  stop("Need to be on radonc-cancerbio for this step")}
 - https://stackoverflow.com/questions/15217758/remove-a-library-from-libpaths-permanently-without-rprofile-site
 
 https://stackoverflow.com/questions/57325157/function-to-rename-column-of-each-dataframe-in-a-list-to-its-dataframe-name
@@ -748,6 +749,7 @@ myft
 :PROPERTIES:
 :ID:       13053897-37D7-4068-B3D0-5A6660BA0CD3
 :END:
+https://cran.r-project.org/web/packages/ROCR/vignettes/ROCR.html
 - https://packagemanager.rstudio.com/client/#/repos/1/overview
 - https://topepo.github.io/caret/#
 - https://cran.r-project.org/web/packages/cutpointr/vignettes/cutpointr.html
@@ -1135,6 +1137,7 @@ package.check = lapply(
 ** [[id:79e01a67-5ba1-4257-8353-8c5cf1ac8c4a][Write basecamp Dockerfile]]
 
 ** Git repo scripts
+[[id:E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6][Git]]
 - Common
   #+name: bash_common_config
   #+begin_src bash :noweb yes
@@ -3243,7 +3246,6 @@ RUN conda update conda
 RUN conda install -n base -c conda-forge mamba
 RUN conda install -c bioconda -c conda-forge snakemake
 
-RUN conda install numpy
 #+end_src
 ******* R v4 and CRAN Packages
 #+begin_src bash
@@ -3796,12 +3798,9 @@ CLOCK: [2017-05-02 Tue 12:51]--[2017-05-02 Tue 12:52] =>  0:01
 CLOCK: [2017-05-02 Tue 10:50]--[2017-05-02 Tue 11:02] =>  0:12
 CLOCK: [2016-04-27 Wed 10:11]--[2016-04-27 Wed 10:18] =>  0:07
 :END:
-https://stackoverflow.com/questions/7152762/how-to-redirect-print-output-to-a-file
-https://www.freecodecamp.org/news/intro-to-algorithms-with-python/
-https://www.freecodecamp.org/news/20-beginner-python-projects/
-- https://www.freecodecamp.org/news/python-programming-course/
-- https://www.google.com/search?q=python+commenting+best+practices
+https://www.reddit.com/r/bioinformatics/comments/y9vy90/good_resources_to_use_for_learning_bioinformatics/
 ****** Processes :hierarchy:
+- https://stackoverflow.com/questions/7152762/how-to-redirect-print-output-to-a-file
 - Probability and statistics
   - https://stackoverflow.blog/2021/02/23/level-up-mastering-statistics-with-python-part-2/?cb=1&_ga=2.59352485.940265309.1614263567-766544545.1565628865
 - Install package
@@ -3835,6 +3834,8 @@ aces = [suit + "a" for suit in suits]
 aces
 
 #+end_src
+******* Good practice
+- https://www.google.com/search?q=python+commenting+best+practices
 ****** Local YAS
 #+name: code.py
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.py
@@ -3892,8 +3893,12 @@ $0
 - Get list of installed packages with pip freeze
 - [[https://pypi.org/][Python Package Index]]
 - https://github.com/mstamy2/PyPDF2
+******* pytorch
+- https://www.freecodecamp.org/news/learn-pytorch-for-deep-learning-in-day/
 ******* pandas
 ******** Processes
+- https://www.google.com/search?q=pandas+re.sub+change+character+string+in+column
+- https://www.google.com/search?q=pandas+filter+by+multiple+criteria
 - https://www.google.com/search?q=pandas+export+tsv
 - https://www.google.com/search?q=pandas+filter+column
 - https://www.google.com/search?q=pandas+import+csv
@@ -3931,7 +3936,10 @@ CLOCK: [2019-02-19 Tue 11:04]--[2019-02-19 Tue 11:25] =>  0:21
 13. Managing Linguistic Data (minor fixes still required)
 14. Afterword: Facing the Language Challenge
 
-****** Reference
+****** General reference
+- https://www.freecodecamp.org/news/20-beginner-python-projects/
+- https://www.freecodecamp.org/news/python-programming-course/
+- https://www.freecodecamp.org/news/intro-to-algorithms-with-python/
 - https://www.freecodecamp.org/news/how-to-automate-things-using-python/
 - Examples
   - Python notebook projects
@@ -4360,6 +4368,7 @@ CLOCK: [2019-06-25 Tue 13:47]--[2019-06-25 Tue 14:18] =>  0:31
 CLOCK: [2019-06-05 Wed 17:45]--[2019-06-05 Wed 18:03] =>  0:18
 CLOCK: [2018-10-29 Mon 14:46]--[2018-10-29 Mon 15:17] =>  0:31
 :END:
+https://www.reddit.com/r/bash/comments/xt40e2/bgit_the_beginners_git_script/
 ****** Local YAS :flat:
 :PROPERTIES:
 :ID:       42e37db5-29e7-418f-a74d-e91ffc81167f
@@ -4422,12 +4431,14 @@ set -o errexit   # abort on nonzero exitstatus
 set -o nounset   # abort on unbound variable
 set -o pipefail  # don't hide errors within pipes
 
-main(){
-}
-
 # Script variables
 
+$0="\${1}"
+
 # Functions
+
+main(){
+}
 
 # Run
 main "$@"
@@ -4527,7 +4538,6 @@ done
       - https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
     - https://www.google.com/search?q=pass+cat+output+to+array+variable
     - command output https://stackoverflow.com/questions/9449417/how-do-i-assign-the-output-of-a-command-into-an-array
-
 - [[https://unix.stackexchange.com/questions/125632/printing-an-array-to-a-file-with-each-element-of-the-array-in-a-new-line-in-bash][print array with line breaks]]
 - https://www.google.com/search?q=bash+create+array
 - https://www.google.com/search?q=bash+pass+array+to+for+loop
@@ -5498,11 +5508,12 @@ fi
 :PROPERTIES:
 :ID:       2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5
 :END:
+******* General reference
 https://www.educative.io/blog/advanced-yaml-syntax-cheatsheet
+******* Processes
 - Cannot do string concatenation
   - https://stackoverflow.com/questions/5484016/how-can-i-do-string-concatenation-or-string-replacement-in-yaml
-- Processes
-  - https://www.google.com/search?q=yaml+make+value+from+other+values
+- https://www.google.com/search?q=yaml+make+value+from+other+values
 **** JSON JavaScript Object Notation
 :PROPERTIES:
 :ID:       9E10CCC0-BC92-4C96-BBF2-99B54E88143D
@@ -6563,6 +6574,8 @@ CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 CLOCK: [2019-02-17 Sun 08:45]--[2019-02-17 Sun 09:35] =>  0:50
 :END:
 **** Software :flat:
+***** Slack
+- https://github.com/hikalium/slack-tui
 ***** Advanced package tool (APT)
 - processes
   -
@@ -6611,6 +6624,8 @@ cmake -version
 :PROPERTIES:
 :ID:       b16d0202-8d35-472b-b538-87a7d6a6cef7
 :END:
+https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf
+https://stackoverflow.com/questions/71392511/multiple-versions-of-same-python-package-in-same-conda
 - Processes
   - Install
     - Conda/mamba/mambaforge install
@@ -7190,6 +7205,12 @@ https://tomd.xyz/diagrams-as-code-drawio/
   - https://www.google.com/search?q=draw.io+insert+image
 - https://github.com/jgraph/drawio-desktop/releases/tag/v16.5.1
 ***** Emacs :ref:
+https://www.reddit.com/r/emacs/comments/y36uf2/replicating_zoteroconnector_functionality_in/
+https://www.youtube.com/watch?app=desktop&v=P02FD63gGco&ab_channel=DmitryM
+https://www.youtube.com/watch?app=desktop&v=D3FzMPZm7vY&ab_channel=DistroTube
+https://superuser.com/questions/1698921/how-to-step-through-a-shell-script-line-by-line-and-send-each-line-to-the-termin
+https://www.reddit.com/r/emacs/comments/y0i0wz/shortdoc_is_fantasti/
+https://www.reddit.com/user/mickeyp/submitted/
 - https://emacs.stackexchange.com/questions/59979/elpy-configuration-setting-up-a-virtual-environment-and-pip-conflic-with-conda
 https://www.reddit.com/r/emacs/comments/x2mmfc/from_vanilla_emacs_to_bash_ide_in_17_minutes/
 https://karthinks.com/software/batteries-included-with-emacs/
@@ -7310,12 +7331,13 @@ $0
 :PROPERTIES:
 :ID:       61811c73-973c-40af-bc2c-00576eaa82b6
 :END:
-********* :flat:
 - Write snippet
   - shift to plaintext in babel blocks
   - https://www.google.com/search?q=yasnippet+escape+variable
   - [[https://emacs.stackexchange.com/questions/48201/how-to-tell-yasnippet-to-ignore-placeholder][How to tell YASnippet to ignore placeholder?]]
   - can insert org blocks with ,#+end_src
+********* :flat:
+
 - Create sub-choices in the snippet
   - https://github.com/joaotavora/yasnippet/issues/830
 
@@ -7346,13 +7368,46 @@ $0
 - https://www.google.com/search?q=yas+include+org+header+at+level
 - https://joaotavora.github.io/yasnippet/snippet-development.html#org844d0b2 https://www.google.com/search?q=yasnippet+include+option
 - to invoke a shell: - https://superuser.com/questions/841178/directly-open-remote-shell-with-tramp-in-emacs
-
 ******* Org-mode
+https://emacs.stackexchange.com/questions/54497/how-to-set-tab-behavior-in-org-mode-source-blocks-when-the-language-isnt-suppor
+https://www.reddit.com/r/emacs/comments/y9udc6/looking_for_html_and_latex_templates_for_orgmode/
+https://olmon.gitlab.io/org-themes/
+******** Command-line org table export to tsv
+
+#+begin_src emacs-lisp :tangle ./tools/lisp/org_tsv_export.el
+(require 'org)
+
+(defun my-tbl-export (name path)
+"Search for table named `NAME` and export."
+(interactive "s")
+(show-all)
+(let ((case-fold-search t))
+  (if (search-forward-regexp (concat "#\\+NAME: +" name) nil t)
+  (progn
+    (next-line)
+    (org-table-export (format "%s/%s.tsv" path name) "orgtbl-to-tsv")))))
+#+end_src
+
 ******** Processes :hierarchy:
 ********* Processes :flat:
+********** Tangle from other files
+- [[https://stackoverflow.com/a/61580716/6106936][use org-mode noweb to tangle blocks from multiple files]]
+- https://emacs.stackexchange.com/questions/17091/including-code-block-in-a-another-file
+********** Tangle formating
+- https://emacs.stackexchange.com/questions/61108/make-tangle-dont-add-a-newline-at-the-end-of-the-file
+- https://emacs.stackexchange.com/questions/60047/org-mode-and-babel-export-setting-tangled-exported-files-as-readonly
+- Add directories on tangle with mkdirp yes https://orgmode.org/manual/Extracting-Source-Code.html
 ********** Export options
+- https://www.reddit.com/r/orgmode/comments/lzsygs/perfect_org_mode_exports_to_latex_easy_extensible/
+  https://emacs.stackexchange.com/questions/tagged/org-export+org-mode+latex
+- no orgmode footnotes export - #+OPTIONS: f:nil
 - https://emacs.stackexchange.com/questions/21066/hide-author-date-and-title-when-exporting-to-pdf-with-org-latex-export-to-p
-
+******** General reference
+- https://www.reddit.com/r/emacs/comments/xyo2fo/orgmode_vterm_tmux/
+******** By Documentation
+********* Working with source code
+- Using org properties in source code block tangle- looks like complicated, no easy fix for now, maybe transclude?
+- https://gitlab.com/mtekman/org-tanglesync.el
 ****** Init file examples
 - https://gitlab.com/Kaligule/emacs-config/-/blob/master/config.org
 - https://github.com/wasamasa/dotemacs/blob/master/init.org
@@ -7695,7 +7750,384 @@ CLOCK: [2017-11-06 Mon 12:26]--[2017-11-06 Mon 12:47] =>  0:21
 CLOCK: [2017-04-27 Thu 12:26]--[2017-04-27 Thu 12:51] =>  0:25
 CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 :END:
-****** [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]]
+****** Templates
+******* My gitignore template
+:PROPERTIES:
+:ID:       e7a5778b-3f3a-4e88-bdc6-fbac135c9c67
+:header-args:bash: :tangle ./tools/git/jeszyman_basecamp_gitignore_2022-10-26
+:END:
+******** Preamble
+#+begin_src bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+#                                                                              #
+#                         Universal gitignore template                         #
+#                                                                              #
+# Author:        Jeff Szymanski#
+# Last updated:  2022-10-16#
+# Url:
+##
+#########1#########2#########3#########4#########5#########6#########7#########8
+#+end_src
+******** Shell and miscellaneous
+#+begin_src bash
+# Shell and miscellaneous
+
+nohup.out
+#+end_src
+******** Snakemake
+#+begin_src bash
+# Snakemake
+# Taken from https://github.com/jeszyman/biotools on 2022-06-08
+# Ignore hidden directories
+./snake*
+,**/.snakemake
+,**/.cache
+,**/.config
+,**/.java
+
+### elisp ###
+# Compiled
+,*.elc
+
+# Packaging
+.cask
+
+# Backup files
+,*~
+
+# Undo-tree save-files
+,*.~undo-tree
+
+### Python ###
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+### R ###
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
+.RDataTmp
+
+# R Environment Variables
+.Renviron
+
+### TeX ###
+## Core latex/pdflatex auxiliary files:
+,*.aux
+,*.lof
+,*.log
+,*.lot
+,*.fls
+,*.out
+,*.toc
+,*.fmt
+,*.fot
+,*.cb
+,*.cb2
+.*.lb
+
+## Intermediate documents:
+,*.dvi
+,*.xdv
+,*-converted-to.*
+# these rules might exclude image files for figures etc.
+# *.ps
+# *.eps
+# *.pdf
+
+## Generated if empty string is given at "Please type another file name for output:"
+.pdf
+
+## Bibliography auxiliary files (bibtex/biblatex/biber):
+,*.bbl
+,*.bcf
+,*.blg
+,*-blx.aux
+,*-blx.bib
+,*.run.xml
+
+## Build tool auxiliary files:
+,*.fdb_latexmk
+,*.synctex
+,*.synctex(busy)
+,*.synctex.gz
+,*.synctex.gz(busy)
+,*.pdfsync
+
+## Build tool directories for auxiliary files
+# latexrun
+latex.out/
+
+## Auxiliary and intermediate files from other packages:
+# algorithms
+,*.alg
+,*.loa
+
+# achemso
+acs-*.bib
+
+# amsthm
+,*.thm
+
+# beamer
+,*.nav
+,*.pre
+,*.snm
+,*.vrb
+
+# changes
+,*.soc
+
+# comment
+,*.cut
+
+# cprotect
+,*.cpt
+
+# elsarticle (documentclass of Elsevier journals)
+,*.spl
+
+# endnotes
+,*.ent
+
+# fixme
+,*.lox
+
+# feynmf/feynmp
+,*.mf
+,*.mp
+,*.t[1-9]
+,*.t[1-9][0-9]
+,*.tfm
+
+#(r)(e)ledmac/(r)(e)ledpar
+,*.end
+,*.?end
+,*.[1-9]
+,*.[1-9][0-9]
+,*.[1-9][0-9][0-9]
+,*.[1-9]R
+,*.[1-9][0-9]R
+,*.[1-9][0-9][0-9]R
+,*.eledsec[1-9]
+,*.eledsec[1-9]R
+,*.eledsec[1-9][0-9]
+,*.eledsec[1-9][0-9]R
+,*.eledsec[1-9][0-9][0-9]
+,*.eledsec[1-9][0-9][0-9]R
+
+# glossaries
+,*.acn
+,*.acr
+,*.glg
+,*.glo
+,*.gls
+,*.glsdefs
+,*.lzo
+,*.lzs
+,*.slg
+,*.slo
+,*.sls
+
+# uncomment this for glossaries-extra (will ignore makeindex's style files!)
+# *.ist
+
+# gnuplot
+,*.gnuplot
+,*.table
+
+# gnuplottex
+,*-gnuplottex-*
+
+# gregoriotex
+,*.gaux
+,*.glog
+,*.gtex
+
+# htlatex
+,*.4ct
+,*.4tc
+,*.idv
+,*.lg
+,*.trc
+,*.xref
+
+# hyperref
+,*.brf
+
+# knitr
+,*-concordance.tex
+# TODO Uncomment the next line if you use knitr and want to ignore its generated tikz files
+# *.tikz
+,*-tikzDictionary
+
+# listings
+,*.lol
+
+# luatexja-ruby
+,*.ltjruby
+
+# makeidx
+,*.idx
+,*.ilg
+,*.ind
+
+# minitoc
+,*.maf
+,*.mlf
+,*.mlt
+,*.mtc[0-9]*
+,*.slf[0-9]*
+,*.slt[0-9]*
+,*.stc[0-9]*
+
+# minted
+_minted*
+,*.pyg
+
+# morewrites
+,*.mw
+
+# newpax
+,*.newpax
+
+# nomencl
+,*.nlg
+,*.nlo
+,*.nls
+
+# pax
+,*.pax
+
+# pdfpcnotes
+,*.pdfpc
+
+# sagetex
+,*.sagetex.sage
+,*.sagetex.py
+,*.sagetex.scmd
+
+# scrwfile
+,*.wrt
+
+# svg
+svg-inkscape/
+
+# sympy
+,*.sout
+,*.sympy
+sympy-plots-for-*.tex/
+
+# pdfcomment
+,*.upa
+,*.upb
+
+# pythontex
+,*.pytxcode
+pythontex-files-*/
+
+# tcolorbox
+,*.listing
+
+# thmtools
+,*.loe
+
+# TikZ & PGF
+,*.dpth
+,*.md5
+,*.auxlock
+
+# titletoc
+,*.ptc
+
+# todonotes
+,*.tdo
+
+# vhistory
+,*.hst
+,*.ver
+
+# easy-todo
+,*.lod
+
+# xcolor
+,*.xcp
+
+# xmpincl
+,*.xmpi
+
+# xindy
+,*.xdy
+
+# xypic precompiled matrices and outlines
+,*.xyc
+,*.xyd
+
+# endfloat
+,*.ttt
+,*.fff
+
+# Latexian
+TSWLatexianTemp*
+
+## Editors:
+# WinEdt
+,*.bak
+,*.sav
+
+# Texpad
+.texpadtmp
+
+# LyX
+,*.lyx~
+
+# Kile
+,*.backup
+
+# gummi
+.*.swp
+
+# KBibTeX
+,*~[0-9]*
+
+# TeXnicCenter
+,*.tps
+
+# auto folder when using emacs and auctex
+./auto/*
+,*.el
+
+# expex forward references with \gathertags
+,*-tags.tex
+
+# standalone packages
+,*.sta
+
+# Makeindex log files
+,*.lpz
+
+# xwatermark package
+,*.xwm
+
+# REVTeX puts footnotes in the bibliography by default, unless the nofootinbib
+# option is specified. Footnotes are the stored in a file with suffix Notes.bib.
+# Uncomment the next line to have this generated file ignored.
+#*Notes.bib
+#+end_src
 ****** Processes                                                  :hierarchy:
 ******* Create and initialize
   - https://www.google.com/search?q=initialize+git+repo
@@ -7712,13 +8144,19 @@ git remote add origin git@github.com:jeszyman/mpnst-preprocessing.git
 git branch -M master
 git push -u origin master
 #+end_src
+******* Clone
+- [[id:e23d21ba-c964-4f88-a787-03673900cd76][clone specific branch]]
 ******* Branches
-  - git branch
-    - add and delete
-      - -d <BRANCH NAME>
-      - <BRANCH NAME>
-  - git checkout <BRANCH> switch branches
+- [[id:e23d21ba-c964-4f88-a787-03673900cd76][clone specific branch]]
+- [[id:c5c8f4e6-692a-44ca-b010-34824df09dcb][Push commits to another branch]]
+- delete branch https://stackoverflow.com/questions/2003505/how-do-i-delete-a-git-branch-locally-and-remotely
+- git branch
+  - add and delete
+    - -d <BRANCH NAME>
+    - <BRANCH NAME>
+- git checkout <BRANCH> switch branches
 https://stackoverflow.com/questions/67699/how-to-clone-all-remote-branches-in-git
+- [[*merge branch into master][merge branch into master]]
 ******* Commit
   - https://www.google.com/search?q=git+see+which+files+are+not+added
   - [[https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files][force overwrite]]
@@ -7776,12 +8214,15 @@ https://stackoverflow.com/questions/67699/how-to-clone-all-remote-branches-in-gi
 
 ******* Hooks
 - https://stackoverflow.com/questions/2050450/git-hooks-management
-******* Ignore
+******* Write ignore file (gitignore)
+- [[id:e7a5778b-3f3a-4e88-bdc6-fbac135c9c67][My gitignore template]]
+- https://www.toptal.com/developers/gitignore
+- https://github.com/github/gitignore
+- build from find
   #+begin_src bash
 # ignore dotfiles
 find . -type l | sed -e s'/^\.\///g' >> .gitignore
 #+end_src
-- https://www.toptal.com/developers/gitignore
 - Ignore a directory and all contents
   - https://www.google.com/search?q=git+ignore+directory
 - Ignore symlinks
@@ -7874,10 +8315,20 @@ find . -type l | sed -e s'/^\.\///g' >> .gitignore
 
 - https://stackoverflow.com/questions/13897717/push-commits-to-another-branch
 - https://www.google.com/search?q=git+revert+specific+commit
+******** Push commits to another branch
+:PROPERTIES:
+:ID:       c5c8f4e6-692a-44ca-b010-34824df09dcb
+:END:
+git push <remote> <source branch>:<dest branch>
+https://stackoverflow.com/questions/13897717/push-commits-to-another-branch
 ******** merge branch into master
 https://stackoverflow.com/questions/5601931/how-do-i-safely-merge-a-git-branch-into-master
 
 ******** clone specific branch
+:PROPERTIES:
+:ID:       e23d21ba-c964-4f88-a787-03673900cd76
+:END:
+git clone -b stable1.0.0 --single-branch git@github.com:jeszyman/exrna exrna-stable1.0.0
 #+begin_src bash
 git clone -b stable4.1 --depth 1 --single-branch git@github.com:jeszyman/cappseq
 #+end_src
@@ -8163,7 +8614,6 @@ else
     fi
 fi
 #+end_src
-****** [[id:fcffb312-ca8d-4450-b837-b1945201f9c1][My git]]
 ****** Documentation and general reference
 - Repository directory structure
   - https://medium.com/code-factory-berlin/github-repository-structure-best-practices-248e6effc405
@@ -8241,6 +8691,8 @@ fi
 ******** [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]]
 ******* Ideas
 - Changelog via gitcliff and org- https://www.reddit.com/r/commandline/comments/uaub3o/new_version_of_gitcliff_is_out/
+****** [[id:fcffb312-ca8d-4450-b837-b1945201f9c1][My git]]
+****** [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]]
 ***** github
 :PROPERTIES:
 :ID:       e1bbc57a-0660-4ccf-a7e7-9870b3afbff7
@@ -8457,17 +8909,14 @@ https://github.com/raulpenate/.dotfiles/blob/main/.config/i3/config
 :CREATED:  [2020-10-04 Sun 10:05]
 :ID:       e68592b2-5e86-48c9-a2c2-5983e53d34f8
 :END:
+- https://www.google.com/search?q=inkscape+remove+media+box
+  - https://inkscape.org/forums/questions/can-someone-please-tell-me-how-to-get-rid-of-this-box-on-my-screen-please/
+  - File -> Document Properties -> Show page border
+- https://www.google.com/search?q=inkscape+import+replace+PDF+fonts
 - arial and other std fonts  https://www.google.com/search?q=inkscape+arial https://askubuntu.com/questions/651441/how-to-install-arial-font-and-other-windows-fonts-in-ubuntu
 - https://stackoverflow.com/questions/15710673/inkscape-too-slow-when-importing-r-plots
 - https://inkscape.org/forums/questions/line-spacing/
-***** inkscape
-:PROPERTIES:
-:CREATED:  [2020-10-04 Sun 10:05]
-:ID:       e68592b2-5e86-48c9-a2c2-5983e53d34f8
-:END:
-- https://www.google.com/search?q=inkscape+import+replace+PDF+fonts
-- https://stackoverflow.com/questions/15710673/inkscape-too-slow-when-importing-r-plots
-- https://inkscape.org/forums/questions/line-spacing/
+
 ***** isync
 - Google drive sync via insync
   - [ ] document start process, systemd
@@ -8550,6 +8999,7 @@ https://unix.stackexchange.com/questions/420594/why-process-killed-with-nohup
 :PROPERTIES:
 :ID:       569921c4-c8fe-4037-a2be-3c3f7844cd86
 :END:
+https://superuser.com/questions/1483434/how-can-i-jump-to-a-specific-page-number-in-presentation-mode-in-okular#:~:text=The%20'Full%20Screen%20Mode%20(Ctrl,(Ctrl%2BG)'.
     - okular
       - https://docs.kde.org/trunk5/en/kdegraphics/okular/okular.pdf
       - https://www.google.com/search?q=okular+remap+keyboard+shortcuts
@@ -8582,6 +9032,8 @@ pandoc -o /home/jeszyman/repos/mpnst-data/readme.docx -f markdown -t docx /home/
 #+begin_src bash
 pandoc -o /home/jeszyman/repos/mpnst-data/readme.pdf -f markdown -t latex /home/jeszyman/repos/mpnst-data/readme.md
 #+end_src
+***** pdftk
+https://stackoverflow.com/questions/17776582/split-a-pdf-in-two
 ***** rclone
 :PROPERTIES:
 :ID:       be76a873-d2fe-447f-a43c-b84c52a8e77b
@@ -9830,6 +10282,7 @@ http://www.mitchchn.me/2014/os-x-terminal/
 :PROPERTIES:
 :ID:       d4c65ebf-8abd-4876-8b79-08ae9fcc50c2
 :END:
+- https://simonwillison.net/2022/Oct/1/software-engineering-practices/
 https://en.wikipedia.org/wiki/Big_ball_of_mud
 https://engineering-shiny.org/golem.html
 - https://www.kdnuggets.com/2019/03/best-tips-agile-data-science-research.html
@@ -9866,6 +10319,7 @@ https://engineering-shiny.org/golem.html
 :PROPERTIES:
 :ID:       9df4eaea-272d-414e-a2b2-589025889290
 :END:
+- https://www.reddit.com/r/commandline/comments/xt0b1i/awesome_tui_tools/
 - - https://github.com/eudaldgr/youtube-dl
 - yaml cannot do variable placeholders- https://stackoverflow.com/questions/41620674/use-placeholders-in-yaml/41620747#41620747
   - some workarounds https://stackoverflow.com/questions/2063616/how-to-reference-a-yaml-setting-from-elsewhere-in-the-same-yaml-file
