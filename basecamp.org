@@ -7754,19 +7754,58 @@ CLOCK: [2017-04-27 Thu 10:53]--[2017-04-27 Thu 11:23] =>  0:30
 ******* My gitignore template
 :PROPERTIES:
 :ID:       e7a5778b-3f3a-4e88-bdc6-fbac135c9c67
-:header-args:bash: :tangle ./resources/git/jeszyman_basecamp_gitignore_2022-10-26 :mkdirp yes
+:header-args:bash: :tangle ./resources/git/jeszyman_gitignore :mkdirp yes
 :END:
+[[file:resources/git/jeszyman_basecamp_gitignore]]
 ******** Preamble
 #+begin_src bash
 #########1#########2#########3#########4#########5#########6#########7#########8
 #                                                                              #
 #                         Universal gitignore template                         #
 #                                                                              #
-# Author:        Jeff Szymanski#
-# Last updated:  2022-10-16#
-# Url:
-##
+# Author:        Jeff Szymanski                                                #
+# Last updated:  2022-10-16                                                    #
+# URL:           https://github.com/jeszyman/basecamp/blob/master/resources/   #
+# git/jeszyman_gitignore                                                       #
+#                                                                              #
 #########1#########2#########3#########4#########5#########6#########7#########8
+#+end_src
+******** Elisp
+#+begin_src bash
+# Elisp
+*.elc
+.cask
+*~
+*.~undo-tree
+#+end_src
+******** R
+#+begin_src bash
+# R
+.Rhistory
+.Rapp.history
+.RData
+.RDataTmp
+.Renviron
+
+#+end_src
+******** Python
+#+begin_src bash
+# Python ###
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+
 #+end_src
 ******** Shell and miscellaneous
 #+begin_src bash
@@ -7784,66 +7823,28 @@ nohup.out
 ,**/.cache
 ,**/.config
 ,**/.java
+#+end_src
+******** TeX
+#+begin_src bash
+# TeX
 
-### elisp ###
-# Compiled
-,*.elc
-
-# Packaging
-.cask
-
-# Backup files
-,*~
-
-# Undo-tree save-files
-,*.~undo-tree
-
-### Python ###
-
-# PyBuilder
-.pybuilder/
-target/
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-### R ###
-# History files
-.Rhistory
-.Rapp.history
-
-# Session Data files
-.RData
-.RDataTmp
-
-# R Environment Variables
-.Renviron
-
-### TeX ###
-## Core latex/pdflatex auxiliary files:
-,*.aux
-,*.lof
-,*.log
-,*.lot
-,*.fls
-,*.out
-,*.toc
-,*.fmt
-,*.fot
-,*.cb
-,*.cb2
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
 .*.lb
 
 ## Intermediate documents:
-,*.dvi
-,*.xdv
-,*-converted-to.*
+*.dvi
+*.xdv
+*-converted-to.*
 # these rules might exclude image files for figures etc.
 # *.ps
 # *.eps
@@ -7853,20 +7854,20 @@ venv.bak/
 .pdf
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
-,*.bbl
-,*.bcf
-,*.blg
-,*-blx.aux
-,*-blx.bib
-,*.run.xml
+*.bbl
+*.bcf
+*.blg
+*-blx.aux
+*-blx.bib
+*.run.xml
 
 ## Build tool auxiliary files:
-,*.fdb_latexmk
-,*.synctex
-,*.synctex(busy)
-,*.synctex.gz
-,*.synctex.gz(busy)
-,*.pdfsync
+*.fdb_latexmk
+*.synctex
+*.synctex(busy)
+*.synctex.gz
+*.synctex.gz(busy)
+*.pdfsync
 
 ## Build tool directories for auxiliary files
 # latexrun
@@ -7874,259 +7875,260 @@ latex.out/
 
 ## Auxiliary and intermediate files from other packages:
 # algorithms
-,*.alg
-,*.loa
+*.alg
+*.loa
 
 # achemso
 acs-*.bib
 
 # amsthm
-,*.thm
+*.thm
 
 # beamer
-,*.nav
-,*.pre
-,*.snm
-,*.vrb
+*.nav
+*.pre
+*.snm
+*.vrb
 
 # changes
-,*.soc
+*.soc
 
 # comment
-,*.cut
+*.cut
 
 # cprotect
-,*.cpt
+*.cpt
 
 # elsarticle (documentclass of Elsevier journals)
-,*.spl
+*.spl
 
 # endnotes
-,*.ent
+*.ent
 
 # fixme
-,*.lox
+*.lox
 
 # feynmf/feynmp
-,*.mf
-,*.mp
-,*.t[1-9]
-,*.t[1-9][0-9]
-,*.tfm
+*.mf
+*.mp
+*.t[1-9]
+*.t[1-9][0-9]
+*.tfm
 
 #(r)(e)ledmac/(r)(e)ledpar
-,*.end
-,*.?end
-,*.[1-9]
-,*.[1-9][0-9]
-,*.[1-9][0-9][0-9]
-,*.[1-9]R
-,*.[1-9][0-9]R
-,*.[1-9][0-9][0-9]R
-,*.eledsec[1-9]
-,*.eledsec[1-9]R
-,*.eledsec[1-9][0-9]
-,*.eledsec[1-9][0-9]R
-,*.eledsec[1-9][0-9][0-9]
-,*.eledsec[1-9][0-9][0-9]R
+*.end
+*.?end
+*.[1-9]
+*.[1-9][0-9]
+*.[1-9][0-9][0-9]
+*.[1-9]R
+*.[1-9][0-9]R
+*.[1-9][0-9][0-9]R
+*.eledsec[1-9]
+*.eledsec[1-9]R
+*.eledsec[1-9][0-9]
+*.eledsec[1-9][0-9]R
+*.eledsec[1-9][0-9][0-9]
+*.eledsec[1-9][0-9][0-9]R
 
 # glossaries
-,*.acn
-,*.acr
-,*.glg
-,*.glo
-,*.gls
-,*.glsdefs
-,*.lzo
-,*.lzs
-,*.slg
-,*.slo
-,*.sls
+*.acn
+*.acr
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.lzo
+*.lzs
+*.slg
+*.slo
+*.sls
 
 # uncomment this for glossaries-extra (will ignore makeindex's style files!)
 # *.ist
 
 # gnuplot
-,*.gnuplot
-,*.table
+*.gnuplot
+*.table
 
 # gnuplottex
-,*-gnuplottex-*
+*-gnuplottex-*
 
 # gregoriotex
-,*.gaux
-,*.glog
-,*.gtex
+*.gaux
+*.glog
+*.gtex
 
 # htlatex
-,*.4ct
-,*.4tc
-,*.idv
-,*.lg
-,*.trc
-,*.xref
+*.4ct
+*.4tc
+*.idv
+*.lg
+*.trc
+*.xref
 
 # hyperref
-,*.brf
+*.brf
 
 # knitr
-,*-concordance.tex
+*-concordance.tex
 # TODO Uncomment the next line if you use knitr and want to ignore its generated tikz files
 # *.tikz
-,*-tikzDictionary
+*-tikzDictionary
 
 # listings
-,*.lol
+*.lol
 
 # luatexja-ruby
-,*.ltjruby
+*.ltjruby
 
 # makeidx
-,*.idx
-,*.ilg
-,*.ind
+*.idx
+*.ilg
+*.ind
 
 # minitoc
-,*.maf
-,*.mlf
-,*.mlt
-,*.mtc[0-9]*
-,*.slf[0-9]*
-,*.slt[0-9]*
-,*.stc[0-9]*
+*.maf
+*.mlf
+*.mlt
+*.mtc[0-9]*
+*.slf[0-9]*
+*.slt[0-9]*
+*.stc[0-9]*
 
 # minted
 _minted*
-,*.pyg
+*.pyg
 
 # morewrites
-,*.mw
+*.mw
 
 # newpax
-,*.newpax
+*.newpax
 
 # nomencl
-,*.nlg
-,*.nlo
-,*.nls
+*.nlg
+*.nlo
+*.nls
 
 # pax
-,*.pax
+*.pax
 
 # pdfpcnotes
-,*.pdfpc
+*.pdfpc
 
 # sagetex
-,*.sagetex.sage
-,*.sagetex.py
-,*.sagetex.scmd
+*.sagetex.sage
+*.sagetex.py
+*.sagetex.scmd
 
 # scrwfile
-,*.wrt
+*.wrt
 
 # svg
 svg-inkscape/
 
 # sympy
-,*.sout
-,*.sympy
+*.sout
+*.sympy
 sympy-plots-for-*.tex/
 
 # pdfcomment
-,*.upa
-,*.upb
+*.upa
+*.upb
 
 # pythontex
-,*.pytxcode
+*.pytxcode
 pythontex-files-*/
 
 # tcolorbox
-,*.listing
+*.listing
 
 # thmtools
-,*.loe
+*.loe
 
 # TikZ & PGF
-,*.dpth
-,*.md5
-,*.auxlock
+*.dpth
+*.md5
+*.auxlock
 
 # titletoc
-,*.ptc
+*.ptc
 
 # todonotes
-,*.tdo
+*.tdo
 
 # vhistory
-,*.hst
-,*.ver
+*.hst
+*.ver
 
 # easy-todo
-,*.lod
+*.lod
 
 # xcolor
-,*.xcp
+*.xcp
 
 # xmpincl
-,*.xmpi
+*.xmpi
 
 # xindy
-,*.xdy
+*.xdy
 
 # xypic precompiled matrices and outlines
-,*.xyc
-,*.xyd
+*.xyc
+*.xyd
 
 # endfloat
-,*.ttt
-,*.fff
+*.ttt
+*.fff
 
 # Latexian
 TSWLatexianTemp*
 
 ## Editors:
 # WinEdt
-,*.bak
-,*.sav
+*.bak
+*.sav
 
 # Texpad
 .texpadtmp
 
 # LyX
-,*.lyx~
+*.lyx~
 
 # Kile
-,*.backup
+*.backup
 
 # gummi
 .*.swp
 
 # KBibTeX
-,*~[0-9]*
+*~[0-9]*
 
 # TeXnicCenter
-,*.tps
+*.tps
 
 # auto folder when using emacs and auctex
 ./auto/*
-,*.el
+*.el
 
 # expex forward references with \gathertags
-,*-tags.tex
+*-tags.tex
 
 # standalone packages
-,*.sta
+*.sta
 
 # Makeindex log files
-,*.lpz
+*.lpz
 
 # xwatermark package
-,*.xwm
+*.xwm
 
 # REVTeX puts footnotes in the bibliography by default, unless the nofootinbib
 # option is specified. Footnotes are the stored in a file with suffix Notes.bib.
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
+
 #+end_src
 ****** Processes                                                  :hierarchy:
 ******* Create and initialize
