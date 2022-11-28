@@ -4,31 +4,27 @@
 #                                                                              #
 # Author:        Jeff Szymanski                                                #
 # Last updated:  2022-10-16                                                    #
-# URL:           https://github.com/jeszyman/basecamp/blob/master/resources/   #
-# git/jeszyman_gitignore                                                       #
 #                                                                              #
 #########1#########2#########3#########4#########5#########6#########7#########8
 
-# Elisp
+# URL: https://github.com/jeszyman/basecamp/blob/master/resources/git/jeszyman_gitignore
+
+###   Elisp   ###
 *.elc
 .cask
 *~
 *.~undo-tree
 
-# R
+###   R   ###
 .Rhistory
 .Rapp.history
 .RData
 .RDataTmp
 .Renviron
 
-# Python ###
-
-# PyBuilder
+###   Python   ###
 .pybuilder/
 target/
-
-# Environments
 .env
 .venv
 env/
@@ -37,21 +33,17 @@ ENV/
 env.bak/
 venv.bak/
 
-# Shell and miscellaneous
-
+###   Shell and miscellaneous   ###
 nohup.out
 
-# Snakemake
-# Taken from https://github.com/jeszyman/biotools on 2022-06-08
-# Ignore hidden directories
+###   Snakemake  ###
 ./snake*
 **/.snakemake
 **/.cache
 **/.config
 **/.java
 
-# TeX
-
+###   TeX   ###
 *.aux
 *.lof
 *.log
