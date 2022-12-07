@@ -2464,6 +2464,27 @@ git log --pretty="- %s"
 
 #+end_src
 ******** Python
+#+begin_src python
+# For unit testing
+# import pandas as pd
+# import re
+# import numpy as np
+#
+# milreads=["20", "30", "100"]
+#
+# min_mil = 1000000*int(min(milreads))
+#
+# read_qc = pd.read_table("/mnt/ris/aadel/Active/mpnst/analysis/qc/cfdna_wgs_read_qc.tsv")
+#
+# lib_list = read_qc.library[read_qc.reads_mapped_and_paired_filt > min_mil].tolist()
+
+def get_ds_candidates(wildcards):
+    min_mil = 1000000*int(min(MILREADS))
+    read_qc = pd.read_table(checkpoints.cfdna_wgs_make_qc_tsv.get().output[0])
+    lib_list = read_qc.library[read_qc.reads_mapped_and_paired_filt > min_mil].tolist()
+    return lib_list
+
+#+end_src
 [[id:CA21AAC9-F147-4086-A24C-64451EE349F3][Python]]
 - https://towardsdatascience.com/the-zen-of-python-write-beautiful-code-e36844381ee6?gi=8af56a5aeac4
 
@@ -3778,6 +3799,7 @@ y
 y
 q
 #+end_src
+- no option to work by path ID [2022-11-28 Mon]
 - [[https://rclone.org/][rclone]]
 #+begin_src bash
 rclone config
@@ -5057,6 +5079,9 @@ http://www.mitchchn.me/2014/os-x-terminal/
 :PROPERTIES:
 :ID:       a49abc44-8e71-4a1a-bd35-a77849427c94
 :END:
+https://github.com/minad/vertico
+https://github.com/joshpetit?tab=repositories
+https://www.reddit.com/r/orgmode/comments/z9ysi0/examples_of_good_org_mode_styling/
 https://lchsk.com/launching-applications-from-emacs
 https://www.reddit.com/r/emacs/comments/yzgfas/autocorrect_the_ign_ing_typo/
 ***** Emacs processes :hierarchy
@@ -6132,6 +6157,8 @@ https://github.com/politza/pdf-tools
   - http://howardism.org/Technical/Emacs/literate-devops.html
 **** Web annotations
 - https://webanno.github.io/webanno/
+**** Downloading
+https://github.com/axel-download-accelerator/axel
 **** PDF file processes
 :PROPERTIES:
 :ID:       670ed8f4-bb93-4d93-b9ea-a142a599169f
@@ -9667,15 +9694,15 @@ fi
 :PROPERTIES:
 :ID:       024b269b-27ca-492d-981f-d8f9083a38d2
 :END:
-- grep through subdirectories
-  grep -rl "string" /path
-  - https://askubuntu.com/questions/55325/how-to-use-grep-command-to-find-text-including-subdirectories
-- grep quotes
--
-- https://www.google.com/search?q=grep+search+in+all+text+files+in+directory
-- https://www.google.com/search?q=grep+phrase+with+space
-- https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
-- grep -r --unclude \*.R "as.Date" ~/
+- Processes
+  - https://www.google.com/search?q=grep+or
+  - grep through subdirectories
+    grep -rl "string" /path
+    - https://askubuntu.com/questions/55325/how-to-use-grep-command-to-find-text-including-subdirectories
+  - https://www.google.com/search?q=grep+search+in+all+text+files+in+directory
+  - https://www.google.com/search?q=grep+phrase+with+space
+  - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
+  - grep -r --unclude \*.R "as.Date" ~/
 - [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
 ****** [[https://www.gnu.org/software/sed/][sed]]
 :PROPERTIES:
@@ -9758,122 +9785,40 @@ http://www.mitchchn.me/2014/os-x-terminal/
 :PROPERTIES:
 :ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
 :END:
-**** R scripts
-***** R bioinformatics setup
-:PROPERTIES:
-:ID:       87b498a6-e553-4682-8038-96bbb21fda14
-:END:
-#+name: biotools_r_setup
-#+begin_src R :noweb yes
-#
-# Check Packages
-##
-## Bioconductor
-if (!requireNamespace("BiocMan
-ager", quietly = TRUE))
-    install.packages("BiocManager")
-##
-packages = c(
-  "AnnotationDbi",
-  "biomaRt",
-  "circlize",
-  "ComplexHeatmap",
-  "copynumber",
-  "DESeq2",
-  "DRIMSeq",
-  "edgeR",
-  "fgsea",
-  "gage",
-  "gageData",
-  "GenomicFeatures",
-  "gplots",
-  "limma",
-  "pathview",
-  "pheatmap",
-  "PoiClaClu",
-  "SummarizedExperiment",
-  "tximport"
-)
-##
-##NOTE requires libcurl4-openssl-dev https://stackoverflow.com/questions/11471690/curl-h-no-such-file-or-directory/11471743
-package.check = lapply(
-  packages,
-  FUN = function(x) {
-    if (!require (x, character.only = T)) {
-      BiocManager::install(x, quietly =T, ask=F)
-      library(x, character.only = T)
-    }
-  }
-)
-#
-
-#+end_src
-
-#+name: biotools_r_setup_wrapper
-#+begin_src org :noweb yes
-<<biotools_r_setup>>
-#+end_src
-
-**** Local YAS
-:PROPERTIES:
-:ID:       d013547e-3e14-4510-948a-4b24de6a2e62
-:END:
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.r
-# -*- mode: snippet -*-
-# key: code.r
-# expand-env: ((yas-indent-line 'none))
-# --
-,#+begin_src R
-$0
-,#+end_src
-#+end_src
-
-
-#+name: r.script
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/r.script
-# -*- mode: snippet -*-
-# key: r.script
-# expand-env: ((yas-indent-line 'fixed))
-# --
-#!/usr/bin/env Rscript
-#########1#########2#########3#########4#########5#########6#########7#########8
-#
-### ${1:SCRIPT NAME} ###
-#
-
-# Notes
-
-# Functions
-
-# Commands
-#+end_src
-
-#+name: r.function
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/r.function
-# -*- mode: snippet -*-
-# key: r.function
-# expand-env: ((yas-indent-line 'fixed))
-# --
-${1:FUNCTION NAME} = function(${2:VARIABLE LIST}){
-  # ${3:DESCRIPTION}
-  $0
-}
-#+end_src
-
 **** R Processes                                                  :hierarchy:
 :PROPERTIES:
 :ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
 :END:
-:LOGBOOK:
-CLOCK: [2021-06-04 Fri 10:17]--[2021-06-04 Fri 10:25] =>  0:08
+***** External Files
+****** Writing to files
+https://www.geeksforgeeks.org/reading-and-writing-excel-files-with-r-using-readxl-and-writexl/
+****** Working with input files
+https://stackoverflow.com/questions/32129687/list-files-all-files-in-directory-and-subdirectories
+***** Regular expressions (REGEX) in R
+:PROPERTIES:
+:ID:       af6ebe3c-92f2-4b87-8292-d5deac52bd00
 :END:
+- escape chars https://stackoverflow.com/questions/27721008/how-do-i-deal-with-special-characters-like-in-my-regex
+- [[https://www.rdocumentation.org/packages/base/versions/3.5.1/topics/regex][documentation]]
+- [[http://www.endmemo.com/program/R/gsub.php][Simplified syntax]]
+- [[https://stackoverflow.com/questions/2973436/regex-lookahead-lookbehind-and-atomic-groups][Look around examples]]
+- [[https://www.rdocumentation.org/packages/stringi/versions/1.1.6/topics/stringi-search-regex#l_details][Operators]]
+- https://www.google.com/search?q=gsub+find+last+instance
+***** R Processes :flat:
+****** Make HTML table
+https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+https://rdrr.io/cran/kableExtra/man/save_kable.html
 ***** Power calculations
 ***** System administration
 - https://stackoverflow.com/questions/15217758/remove-a-library-from-libpaths-permanently-without-rprofile-site
+****** Install R 4
+https://genomespot.blogspot.com/2020/06/installing-r-40-on-ubuntu-1804.html
+https://www.digitalocean.com/community/tutorials/how-to-install-r-on-ubuntu-18-04-quickstart
 ***** Rscripts
 - #if(system("echo $HOSTNAME",intern=T)!="radonc-cancerbio")  stop("Need to be on radonc-cancerbio for this step")}
 ***** Working with tabular data in tidyverse
-https://stackoverflow.com/questions/57325157/function-to-rename-column-of-each-dataframe-in-a-list-to-its-dataframe-name
+- merge list of dataframes https://dplyr.tidyverse.org/reference/bind.html
+- https://stackoverflow.com/questions/57325157/function-to-rename-column-of-each-dataframe-in-a-list-to-its-dataframe-name
 
 ***** Dashboard
 - dashboad https://bookdown.org/yihui/rmarkdown/dashboard-components.html
@@ -9889,14 +9834,6 @@ if(file.exists(paste0("./config/",as.character(Sys.info()["nodename"]),".R"))) {
 #+end_src
 
 - https://stackoverflow.com/questions/20934103/if-file-exists-in-folder-read-it-else-skip-the-processing-part
-***** Regular expressions (REGEX) in R
-:PROPERTIES:
-:ID:       af6ebe3c-92f2-4b87-8292-d5deac52bd00
-:END:
-  - [[https://www.rdocumentation.org/packages/base/versions/3.5.1/topics/regex][documentation]]
-  - [[http://www.endmemo.com/program/R/gsub.php][Simplified syntax]]
-  - [[https://stackoverflow.com/questions/2973436/regex-lookahead-lookbehind-and-atomic-groups][Look around examples]]
-  - [[https://www.rdocumentation.org/packages/stringi/versions/1.1.6/topics/stringi-search-regex#l_details][Operators]]
 ***** Data science in R
 :PROPERTIES:
 :ID:       7d5cda01-172e-49ee-8030-754402f3aa7d
@@ -10416,6 +10353,108 @@ df
 #+begin_src R
 as.character(Sys.info()["nodename"])
 #+end_src
+**** R scripts
+***** R bioinformatics setup
+:PROPERTIES:
+:ID:       87b498a6-e553-4682-8038-96bbb21fda14
+:END:
+#+name: biotools_r_setup
+#+begin_src R :noweb yes
+#
+# Check Packages
+##
+## Bioconductor
+if (!requireNamespace("BiocMan
+ager", quietly = TRUE))
+    install.packages("BiocManager")
+##
+packages = c(
+  "AnnotationDbi",
+  "biomaRt",
+  "circlize",
+  "ComplexHeatmap",
+  "copynumber",
+  "DESeq2",
+  "DRIMSeq",
+  "edgeR",
+  "fgsea",
+  "gage",
+  "gageData",
+  "GenomicFeatures",
+  "gplots",
+  "limma",
+  "pathview",
+  "pheatmap",
+  "PoiClaClu",
+  "SummarizedExperiment",
+  "tximport"
+)
+##
+##NOTE requires libcurl4-openssl-dev https://stackoverflow.com/questions/11471690/curl-h-no-such-file-or-directory/11471743
+package.check = lapply(
+  packages,
+  FUN = function(x) {
+    if (!require (x, character.only = T)) {
+      BiocManager::install(x, quietly =T, ask=F)
+      library(x, character.only = T)
+    }
+  }
+)
+#
+
+#+end_src
+
+#+name: biotools_r_setup_wrapper
+#+begin_src org :noweb yes
+<<biotools_r_setup>>
+#+end_src
+
+**** Local YAS
+:PROPERTIES:
+:ID:       d013547e-3e14-4510-948a-4b24de6a2e62
+:END:
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.r
+# -*- mode: snippet -*-
+# key: code.r
+# expand-env: ((yas-indent-line 'none))
+# --
+,#+begin_src R
+$0
+,#+end_src
+#+end_src
+
+
+#+name: r.script
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/r.script
+# -*- mode: snippet -*-
+# key: r.script
+# expand-env: ((yas-indent-line 'fixed))
+# --
+#!/usr/bin/env Rscript
+#########1#########2#########3#########4#########5#########6#########7#########8
+#
+### ${1:SCRIPT NAME} ###
+#
+
+# Notes
+
+# Functions
+
+# Commands
+#+end_src
+
+#+name: r.function
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/r.function
+# -*- mode: snippet -*-
+# key: r.function
+# expand-env: ((yas-indent-line 'fixed))
+# --
+${1:FUNCTION NAME} = function(${2:VARIABLE LIST}){
+  # ${3:DESCRIPTION}
+  $0
+}
+#+end_src
+
 **** Best practices, style
 :PROPERTIES:
 :ID:       419ba6f0-4977-4eed-9d25-93a45933ad56
