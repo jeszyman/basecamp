@@ -1,0 +1,51 @@
+name: basecamp
+channels:
+  - bioconda
+  - conda-forge
+  - dloewenstein
+
+dependencies:
+
+#################
+###   Conda   ###
+#################
+  - snakemake
+
+#############
+###   R   ###
+#############
+  - r-tidyverse
+  - r-caret
+  - r-circlize
+  - r-ComplexUpset
+  - r-cowplot
+  - r-cutpointr
+  - r-data.table
+  - r-devtools
+  - r-elrm
+  - r-FSA
+  - r-ggplot2
+  - r-ggpval
+  - r-ggpubr
+  - r-ggsci
+  - r-ggvenn
+  - r-ggrepel
+  - r-ggsignif
+  - r-git2r
+  - r-gridExtra
+  - r-hexbin
+  - r-Hmisc
+  - r-kableExtra
+  - r-naniar
+  - r-optparse
+  - r-pheatmap
+  - r-plyr
+  - r-RColorBrewer
+  - r-rlang
+  - r-rstatix
+  - r-scales
+  - r-statmod
+  - r-stringr
+  - r-tidyverse
+  - r-UpSetR
+  - r-viridis
