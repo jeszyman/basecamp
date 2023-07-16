@@ -1,3 +1,5 @@
+# Update environment from yaml
+
 #!/bin/bash
 
 yaml="${1}"

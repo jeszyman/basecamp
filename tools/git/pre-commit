@@ -1,14 +1,8 @@
-#!/usr/bin/env bash
-
-# Notes:
-#  - Adapted from https://stackoverflow.com/a/39578014/6106936
-#  - Currently set to almost 100 mb, the limit for github
-#  - Save to .git/hooks/pre-commit and enable execution
-
+#!/bin/sh
 hard_limit=$(git config hooks.filesizehardlimit)
 soft_limit=$(git config hooks.filesizesoftlimit)
-: ${hard_limit:=990000000}
-: ${soft_limit:=90000000}
+: ${hard_limit:=10000000}
+: ${soft_limit:=500000}
 
 list_new_or_modified_files()
 {

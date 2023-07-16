@@ -1,8 +1,20 @@
 * Basecamp
 :PROPERTIES:
-:header-args: :tangle-mode (identity #o555) :mkdirp yes :noweb yes :comments org
+:header-args: tangle-mode (identity #o555) :mkdirp yes
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
+#+begin_src R
+ggplot.scatter
+#+end_src
+#+begin_src R
+ggplot.scatter
+h2
+#+end_src
+#+begin_src bash
+doc.fun
+
+#+end_src
+
 ** Save emacs via server
 #+begin_src bash
 function save_emacs_via_server() {
@@ -24,9 +36,8 @@ emacsclient -e "(progn (find-file \"$1\") \
 ** org_latex_export.sh
 :PROPERTIES:
 :ID:       c62cf1fd-36bd-4555-8e8a-4030aedf6f06
-:header-args: tangle-mode (identity #o755) :mkdirp yes
 :END:
-#+begin_src bash :tangle ./tools/shell/org_latex_export.sh :tangle-mode (identity #o755)
+#+begin_src bash :tangle ./tools/shell/org_latex_export.sh
 #!/bin/sh
 
 if [ $# -ne 2 ]; then
@@ -965,7 +976,6 @@ https://stats.stackexchange.com/questions/26271/comparing-two-classifier-accurac
 :PROPERTIES:
 :ID:       48e06b9b-c3ba-4d84-bfd4-ba64e482be70
 :END:
-https://www.reddit.com/r/statistics/comments/14n7inh/pca_tsne_and_umap_terminology_q/
 - https://stats.stackexchange.com/questions/238538/are-there-cases-where-pca-is-more-suitable-than-t-sne
 - https://stats.stackexchange.com/questions/14002/whats-the-difference-between-principal-component-analysis-and-multidimensional#:~:text=PCA%20is%20just%20a%20method,MDS%20is%20only%20a%20mapping.&text=One%20definition%20is%20that%20CMDS%20is%20a%20synonym%20of%20Torgerson's%20metric%20MDS
 
@@ -1788,28 +1798,6 @@ cmake -version
 :PROPERTIES:
 :ID:       b16d0202-8d35-472b-b538-87a7d6a6cef7
 :END:
-****** Functions
-:PROPERTIES:
-:header-args:bash: :tangle ./lib/conda_functions.sh
-:END:
-#+begin_src bash
-function conda_update() {
-      [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
-    cat <<EOF
-Usage: conda_update <ENV YAML>
-Updates a conda environment yaml file using mamba
-EOF
-    return
-      }
-      local file="${1}"
-      source /opt/miniconda3/etc/profile.d/conda.sh
-      conda activate base
-      mamba env update --file $1
-      echo "$1 Environment updated successfully!"
-}
-
-#+end_src
-
 ****** Documentation
 ****** General
 - - https://autobencoder.com/2020-08-24-conda-actions/
@@ -2985,11 +2973,6 @@ https://stackoverflow.com/questions/10215197/git-search-for-string-in-a-single-f
 cd $repo
 git submodule add <SUBMODULE>
 #+end_src
-******** Act on submodules in bulk
-:PROPERTIES:
-:ID:       516164be-cefe-4a58-a45f-6e48a23c8b0d
-:END:
-git submodule foreach --recursive 'git ...'
 ******** Remove submodule
 https://stackoverflow.com/questions/1260748/how-do-i-remove-a-submodule
 ******** Remove large files
@@ -3230,11 +3213,17 @@ git log --pretty="- %s"
 :ID:       669a5d96-0bea-4d56-ae7e-11151fbfe4a4
 :END:
 #+begin_src bash :tangle ./tools/git/pre-commit
-#!/bin/sh
+#!/usr/bin/env bash
+
+# Notes:
+#  - Adapted from https://stackoverflow.com/a/39578014/6106936
+#  - Currently set to almost 100 mb, the limit for github
+#  - Save to .git/hooks/pre-commit and enable execution
+
 hard_limit=$(git config hooks.filesizehardlimit)
 soft_limit=$(git config hooks.filesizesoftlimit)
-: ${hard_limit:=10000000}
-: ${soft_limit:=500000}
+: ${hard_limit:=990000000}
+: ${soft_limit:=90000000}
 
 list_new_or_modified_files()
 {
@@ -3270,9 +3259,8 @@ check_file_size()
 }
 
 list_new_or_modified_files | check_file_size
+
 #+end_src
-
-
 
 ******* Code tangle
 
@@ -4203,15 +4191,12 @@ singularity version
 :CREATED:  [2021-09-13 Mon 07:29]
 :END:
 ******* Processes                                                 :hierarchy:
-:PROPERTIES:
-:ID:       6cb6dc7d-29ad-4dda-8ede-1454bedc2dc7
-:END:
-******** 0 Flat                                                        :flat:
-********* [[https://www.google.com/search?q=snakemake+prevent+empty+output+files][google:snakemake prevent empty output files]]
+******** Make rulegraph DAG
+- https://stackoverflow.com/questions/57530914/snakemake-forceall-dag-results-in-mysterius-error-stdin-syntax-error-in/57531183#57531183
 
-********* - [[https://www.google.com/search?q=snakemake+load+multiple+configuration+yamls][google:snakemake load multiple configuration yamls]]
-********* Fix slow execution on big dags
--
+******** 0 Flat                                                        :flat:
+- [[https://www.google.com/search?q=snakemake+load+multiple+configuration+yamls][google:snakemake load multiple configuration yamls]]
+- slow execution on big dags
   - https://stackoverflow.com/questions/54922713/snakemake-processing-large-workflow-slow-due-to-lengthy-sequential-checking-of-j
   - https://www.reddit.com/r/bioinformatics/comments/jsglgt/snakemake_slow_execution_due_to_complex_pipeline/
 ********* Writing config files
@@ -4304,37 +4289,6 @@ rule scatter_copy_head_collect:
         cat {input} > {output.combined}
         '''
 #+end_src
-******** Benchmark aggregation
-- Snakemake
-  #+begin_src snakemake
-
-###   Benchmark   ###
-#+begin_src snakemake
-
-onsuccess:
-    shell("""
-        bash {cfdna_wgs_scriptdir}/agg_bench.sh {benchdir} {qcdir}/agg_bench.tsv
-        """)
-#+end_src
-
-#+begin_src bash :tangle ./scripts/agg_bench.sh
-# For unit testing
-indir="test/benchmark"
-output="test/analysis/qc/bench_agg.tsv"
-
-if [ -f $output ]; then rm $output; fi
-
-for file in $indir/*
-do
-    base=$(basename $file)
-    cat $file | awk -v OFS='\t' -v var=$base 'NR>1 {print var,$0}' >> $output
-done
-
-sed -i '1i\process\tfloat_sec\trun_time\tmax_rss\tmax_vms\tmax_uss\tmax_pss\tio_in\tio_out\tmean_load\tcpu_time' $output
-
-#+end_src
-
-
 ******** Install and setup
   - via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
     #+begin_src bash
@@ -4352,34 +4306,10 @@ snakemake --help
     - [[https://docs.anaconda.com/anaconda/install/multi-user/][install multi-user miniconda]]
   - add singularity
     -
-******** Make rulegraph DAG
-- https://stackoverflow.com/questions/57530914/snakemake-forceall-dag-results-in-mysterius-error-stdin-syntax-error-in/57531183#57531183
-
 ******** Optimization
 - https://www.embl.org/groups/bioinformatics-rome/blog/2022/05/snakemake-profile-5-handling-memory-and-timeout-errors/
 - https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/09-performance/index.html
 - note snakemake bug in versions <7- can't do resources call from command line like
-******** Rename by dict                                            :smk_rule:
-
-- Snakemake
-#+begin_src snakemake
-rule rename:
-    params:
-        old_sample_id=lambda wcs: sampledict[wcs.f],
-    output:
-        read1=config["fq_symlink_dir"] + "/{f}_R1.fastq.gz",
-        read2=config["fq_symlink_dir"] + "/{f}_R2.fastq.gz",
-    shell:
-        """
-        if [ -f {output.read1} ]; then \\rm {output.read1}; fi
-        if [ -f {output.read2} ]; then \\rm {output.read2}; fi
-        ln -s --relative "{config[raw_fq_dir]}/{params.old_sample_id}_R1.fastq.gz" {output.read1}
-        ln -s --relative "{config[raw_fq_dir]}/{params.old_sample_id}_R2.fastq.gz" {output.read2}
-        """
-#+end_src
-
-
-
 ******** Resource restriction
 - https://stackoverflow.com/questions/51977436/restrict-number-of-jobs-by-a-rule-in-snakemake
 - https://github.com/snakemake/snakemake/issues/1069
@@ -4391,152 +4321,11 @@ rule rename:
 - syntax for running shell https://stackoverflow.com/questions/45553762/recommended-way-to-do-multiple-shell-commands-with-shell/49533645#49533645
 - https://stackoverflow.com/questions/17126996/emacs-mode-for-snakemake
 - check md5 https://stackoverflow.com/questions/65907256/snakemake-use-checksums-instead-of-timestamps
-******** Run menu
-:PROPERTIES:
-:ID:       24dc829c-1027-47e0-b9b1-af51f533906c
-:header-args:python: :tangle ./tools/python/menu.py
-:END:
-#+begin_src python
-#!/usr/bin/env python3
-import os
-import sp
-import yaml
-
-def call_shell_function(function_name, repo_dir):
-    script_path = f"{repo_dir}/tools/shell/source.sh"
-    command = f'source {script_path}; {function_name}'
-    sp.run(command, shell=True, executable='/bin/bash')
-
-# Load the configuration from the YAML file
-with open('config.yaml', 'r') as f:
-    config = yaml.safe_load(f)
-
-# Get the repo_dir from the configuration
-repo_dir = config['repo_dir']
-
-
-def shell_while_loop():
-    command = ('while sleep 2; do /usr/bin/emacs --batch -l org -eval '
-               '\'(org-babel-tangle-file "card-rad-bio.org")\' && '
-               'snakemake --dry-run --configfile config/${HOSTNAME}.yaml '
-               '--cores 1 --snakefile workflow/int.smk; done')
-    try:
-        sp.run(command, shell=True, executable='/bin/bash', check=True)
-    except KeyboardInterrupt:
-        print("\nLoop interrupted. Returning to menu.")
-
-def submenu():
-    while True:
-        print("\nSubmenu")
-        print("1. Option 1")
-        print("2. Option 2")
-        print("b. Back to main menu")
-
-        choice = input("Enter number of choice: ")
-
-        if choice == '1':
-            print("Executing option 1 in submenu")
-        elif choice == '2':
-            print("Executing option 2 in submenu")
-        elif choice.lower() == 'b':
-            print("Returning to main menu")
-            break
-        else:
-            print("Invalid choice")
-
-def main():
-    while True:
-        print("\nMPNST Repo Menu")
-        print("1. Update conda")
-        print("2. Execute function two")
-        print("3. Open submenu")
-        print("e Exit")
-
-        choice = input("Enter number of choice: ")
-
-        if choice == '1':
-            call_shell_function('conda_update')
-        elif choice == '2':
-            call_shell_function('function_two')
-        elif choice == '3':
-            submenu()
-        elif choice.lower() == 'e':
-            print("Exiting.")
-            break
-        else:
-            print("Invalid choice")
-
-if __name__ == '__main__':
-    main()
-
-#+end_src
-
-
-******** Snakemake install and setup
-
-- via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
-  #+begin_src bash
-conda init bash
-/bin/bash
-conda activate base
-conda install -n base -c conda-forge mamba
-y
-mamba create -c conda-forge -c bioconda -n snakemake snakemake
-y
-conda activate snakemake
-snakemake --help
-#+end_src
-- via miniconda
-  - [[https://docs.anaconda.com/anaconda/install/multi-user/][install multi-user miniconda]]
-- add singularity
-  -
-
-
-******** Symlink input fastqs
-#+begin_src snakemake
-rule symlink_inputs:
-    container: default_container,
-    input:
-        lambda wildcards: cfdna_wgs_lib_dict[wildcards.library],
-    output:
-        read1 = cfdna_wgs_fastqs + "/{library}_raw_R1.fastq.gz",
-        read2 = cfdna_wgs_fastqs + "/{library}_raw_R2.fastq.gz",
-    params:
-        outdir = cfdna_wgs_fastqs,
-        script = cfdna_wgs_scriptdir + "/symlink.sh",
-    shell:
-        """
-        {params.script} \
-        {input} \
-        {output.read1} \
-        {output.read2} \
-        {params.outdir}
-        """
-#+end_src
-#+begin_src bash :tangle ./scripts/symlink.sh
-#!/usr/bin/env bash
-set -o errexit   # abort on nonzero exitstatus
-set -o nounset   # abort on unbound variable
-set -o pipefail  # don't hide errors within pipes
-
-# Script variables
-input_read1="${1}"
-output_read1="${2}"
-output_read2="${3}"
-outdir="${4}"
-
-mkdir -p $outdir
-
-input_read2="$(echo $input_read1 | sed "s/_R1/_R2/g")"
-
-ln -sf --relative ${input_read1} ${output_read1}
-ln -sf --relative ${input_read2} ${output_read2}
-#+end_src
-
-
-
 ******** Writing snakefiles
-
+- Wildcards
+  - https://edwards.flinders.edu.au/wildcards-in-snakemake/
+- wildcard_constraints:
+    read_id='|'.join([re.escape(x) for x in sampledict.keys()]),
 https://stackoverflow.com/questions/50413374/glob-wildcards-on-multiple-directories-with-different-file-names
 - Input functions
   - https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/09-input_functions/index.html
@@ -4552,13 +4341,7 @@ https://stackoverflow.com/questions/50413374/glob-wildcards-on-multiple-director
 - test workflow output- https://stackoverflow.com/questions/50198628/snakemake-confusion-on-how-to-access-config-files-properly
 - workaround for using snakemake vars in shell script https://stackoverflow.com/a/49533645/6106936
 - https://github.com/snakemake/snakemake/issues/971
-- Configuration files
-  - [[id:2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5][YAML document markup language]]
-  - Using config variables
-    - https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
-  - can do multiple config files- see https://stackoverflow.com/questions/62696099/snakemake-multiple-config-files
-
-
+- [[id:2f7170c8-cac6-4a89-9709-7e3034b5d63e][Writing config files]]
 ******* Demo :demo
 
 ******** Development
@@ -4587,166 +4370,6 @@ https://stackoverflow.com/questions/50413374/glob-wildcards-on-multiple-director
 - Repos have MWE for each snakefile
 
 ******* Local YAS (prefix smk.)
-:PROPERTIES:
-:ID:       44d21b98-0a61-43db-937f-65ff5a5d27d3
-:END:
-******** Operating snakemake file org-mode tree (YAS)
-:PROPERTIES:
-:ID:       8a7cdf48-a132-45e9-a5da-18e2d5fad643
-:CUSTOM_ID: 8a7cdf48-a132-45e9-a5da-18e2d5fad643
-:END:
-#+name: smk
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk
-# -*- mode: snippet -*-
-# key: smk
-# expand-env: ((yas-indent-line 'none))
-# --
-`(make-string (org-current-level) ?*)` [[file:./workflow/$2.smk][Snakefile]]:smk:
-:PROPERTIES:
-:header-args:snakemake: :tangle ./workflow/${2: SNAKEFILE NAME}.smk
-:END:
-`(make-string (+ 1 (org-current-level)) ?*)` Smk preamble
-,#+begin_src snakemake
-
-,#+end_src
-`(make-string (+ 1 (org-current-level)) ?*)` Smk rules
-`(make-string (+ 2 (org-current-level)) ?*)` All rule
-,#+begin_src snakemake
-rule all:
-    input:
-
-,#+end_src
-- add rules with smk.rule
-`(make-string (+ 1 (org-current-level)) ?*)` Dev
-:PROPERTIES:
-:header-args:snakemake: :tangle no
-:END:
-`(make-string (+ 2 (org-current-level)) ?*)` Ideas
-:PROPERTIES:
-:header-args:snakemake: :tangle no
-:END:
-#+end_src
-******** Integration testing
-
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk_int
-# -*- mode: snippet -*-
-# key: smk_int
-# expand-env: ((yas-indent-line 'none))
-# --
-`(make-string (org-current-level) ?*)` [[file:./workflow/int_test.smk][Snakefile]]:smk:
-:PROPERTIES:
-:header-args:snakemake: :tangle ./workflow/int_test.smk
-:END:
-`(make-string (+ 1 (org-current-level)) ?*)` Preamble
-,#+begin_src snakemake
-# Python setup
-import numpy as np
-import pandas as pd
-import re
-,#+end_src
-`(make-string (+ 1 (org-current-level)) ?*)` All rule
-`(make-string (+ 1 (org-current-level)) ?*)` Symlink fastqs
-`(make-string (+ 1 (org-current-level)) ?*)` Includes statements
-#+end_src
-******** Bash rule smk.rule.bash
-:PROPERTIES:
-:ID:       5ac79198-801a-4ab9-82df-88402cb63e4d
-:CUSTOM_ID: 5ac79198-801a-4ab9-82df-88402cb63e4d
-:END:
-#+name: smk.rule.bash
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.bash
-# -*- mode: snippet -*-
-# key: smk.rule.bash
-# expand-env: ((yas-indent-line 'none))
-# --
-,#+begin_src snakemake
-rule ${1:$$(downcase(replace-regexp-in-string " " "_" yas-text))}:
-    input: ${2: <INPUT>},
-    log: f"{log_dir}/$1.log",
-    output: ${3: <OUTPUT>},
-    params: script = f"{${3:$$(replace-regexp-in-string " " "_" yas-text)}}/$1.sh",
-    shell:
-        """
-        {params.script} {input} {output} > {log} 2>&1
-        """
-,#+end_src
-
-#+begin_src bash :tangle ./scripts/$1.sh
-#!/usr/bin/env bash
-,#+end_src
-#+end_src
-#+begin_src fundamental :tangle no
-# -*- mode: snippet -*-
-# key: smk.rule.bash
-# expand-env: ((yas-indent-line 'none))
-# --
-`(make-string (org-current-level) ?*)` ${12: <RULE DESCRIPTIVE ORG NAME>}    :smk_rule:
-- [[./workflow/${1: <SNAKEFILE BASENAME>}.smk::rule $3_$4][Snakemake] $0
-  ,#+begin_src snakemake
-# ${2:<DESCRIPTIVE COMMENT>}
-rule ${3: <SNAKEFILE ID>}_${4:<RULE WORKFLOW NAME>}:
-    benchmark: logdir + "/{$7}_$3_$4.benchmark.txt",
-    container: $3_container,
-    input: ${5: <INPUT PATH PARAMETER>} + "/${6: <INPUT PATH PREFIX>}/{${7: <UNIT ID>}}_${8:<INPUT SUFFIX}",
-    log: logdir + "/{$7}_$3_$4.log",
-    output: ${9: <OUTPUT PATH PARAMETER>} + "/${10: <OUTPUT PATH PREFIX>}/{$7}_${11:<OUTPUT SUFFIX}",
-    params:
-        script = $3_scriptdir + "/$4.sh",
-        threads = $3_threads,
-    shell:
-        """
-        {params.script} \
-        {input} \
-        {output} &> {log}
-        """
-,#+end_src
-- [[file:./scripts/${4:$(downcase yas-text)}.sh][Shell script]]
-  ,#+begin_src bash :tangle ./scripts/${4:$(downcase yas-text)}.sh
-#!/usr/bin/env bash
-input=\$1
-output=\$2
-,#+end_src
-#+end_src
-******** Make Rule
-
-#+name: smk.rule
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule
-# -*- mode: snippet -*-
-# key: smk.rule
-# expand-env: ((yas-indent-line 'none))
-# --
-smk.rule.${1:$$(yas-choose-value '("bash" "r"))}
-#+end_src
-
-******** R rule smk.rule.r
-:PROPERTIES:
-:ID:       928c57a9-dd2b-427b-b1c4-191e6321d133
-:CUSTOM_ID: 928c57a9-dd2b-427b-b1c4-191e6321d133
-:END:
-#+name: smk.rule.r
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.r
-# -*- mode: snippet -*-
-# key: smk.rule.r
-# expand-env: ((yas-indent-line 'none))
-# --
-,#+begin_src snakemake
-rule ${1:$$(replace-regexp-in-string " " "_" yas-text)}:
-    input: ${2: <INPUT>},
-    log: f"{log_dir}/$1.log",
-    output: ${3: <OUTPUT>},
-    params: script = f"{${3:$$(replace-regexp-in-string " " "_" yas-text)}}/$1.R",
-    shell:
-        """
-        Rscript {params.script} \
-        {input} \
-        {output} \
-        > {log} 2>&1
-        """
-,#+end_src
-#+end_src
-
-
-
 ******** Insert snakemake file org-mode tree
 :PROPERTIES:
 :ID:       46270062-e3f4-46c9-9d71-5868376e495b
@@ -6042,8 +5665,6 @@ https://abseil.io/resources/swe-book
 :PROPERTIES:
 :ID:       a49abc44-8e71-4a1a-bd35-a77849427c94
 :END:
-https://www.reddit.com/r/datascience/comments/13wkkdv/which_is_the_best_editor_for_python_in_your/jmcj7f1/
-https://www.reddit.com/r/emacs/comments/13y4gg0/nano_modeline_10_now_with_buttons/
 https://www.reddit.com/r/emacs/comments/13qmo1u/jupyter_in_the_emacs_universe/
 https://www.reddit.com/r/emacs/comments/1459elk/llm_pal_ai_inside_emacs_via_lsp_locally_hosted/
 https://plantarum.ca/2021/10/03/emacs-tutorial-rmarkdown/
@@ -6239,7 +5860,6 @@ https://daryl.wakatara.com/emacs-gtd-flow-evolved/#structure---para
 - tramp gdrive
   - [currently not working] to goodle drive- https://www.gnu.org/software/tramp/#Using-Google-Drive
 ****** Programming
-- https://www.youtube.com/c/arjancodes
 - https://abseil.io/resources/swe-book/html/ch02.html#blameless_postmortem_culture
 - https://processing.org/
 - https://blog.calebjay.com/posts/my-emacs-environment/#on-programming-in-emacs
@@ -6503,7 +6123,6 @@ https://github.com/alphapapa/org-ql
 :PROPERTIES:
 :ID:       d7d54139-64d0-4cfe-ab3a-879b3617b226
 :END:
-https://www.reddit.com/r/orgmode/comments/147ofmi/what_element_type_is_the_colon/
 https://orgmode.org/worg/dev/org-element-api.html
 https://www.reddit.com/r/emacs/comments/13y4gg0/nano_modeline_10_now_with_buttons/
 ******** Org manual input table export to csv
@@ -6591,41 +6210,6 @@ done
     (next-line)
     (org-table-export (format "%s/%s.tsv" path name) "orgtbl-to-tsv")))))
 #+end_src
-- bulk org-table export
-  #+begin_src emacs-lisp :tangle ./src/org_tbl_export.el
-(require 'org)
-
-(defun my-tbl-export (name)
-  "Search for table named `NAME` and export."
-  (interactive "s")
-  (show-all)
-  (let ((case-fold-search t))
-    (if (search-forward-regexp (concat "#\\+NAME: +" name) nil t)
-    (progn
-      (next-line)
-      (org-table-export (format "./data/inputs/%s.csv" name) "orgtbl-to-csv")))))
-#+end_src
-  #+begin_src bash
-org_tables=()
-org_tables=("experiments"
-            "cohorts"
-            "subjects"
-            "specimens"
-            "isolates"
-            "seq_runs"
-            "libraries"
-            "tarbase_targeting_gja1"
-            "lit_targeting_gja1"
-            "mirdb_targeting_human_gja1"
-            "mirdb_targeting_mouse_gja1"
-            "notch_rentschler")
-
-for table in "${org_tables[@]}";
-do
-    /usr/bin/emacs-snapshot --batch ./card-rad-bio.org -l ./src/org_tbl_export.el --eval '(my-tbl-export "'"$table"'")'
-done
-#+end_src
-  - https://emacs.stackexchange.com/questions/16640/can-i-export-a-specific-table-in-an-org-file-to-csv-from-the-command-line
 ********** Command line tangle
 ********** exclude specific headline from agenda index
 - use comment structure
@@ -8336,51 +7920,52 @@ https://mmistakes.github.io/jekyll-theme-basically-basic/recipes/chocolate-chip-
 :PROPERTIES:
 :ID:       CBD1C9BA-44CB-4510-8ACD-F12CEF7E3402
 :END:
+:LOGBOOK:
+CLOCK: [2019-02-06 Wed 16:12]--[2019-02-06 Wed 17:05] =>  0:53
+:END:
+- https://www.technig.com/best-github-repositories-every-programmer/
+- https://missing.csail.mit.edu/
+  - https://www.reddit.com/r/programming/comments/eyagcd/the_missing_semester_of_your_cs_education_mit/
+https://www.freecodecamp.org/news/learn-c-programming-classic-book-dr-chuck/
+https://www.reddit.com/r/ProgrammerHumor/comments/wqugqh/i_thought_programming_was_hard_until_i_found_this/
+https://www.freecodecamp.org/news/learn-c-with-free-31-hour-course/
+https://goalkicker.com/
+https://www.freecodecamp.org/news/rust-in-replit/
+- https://www.reddit.com/r/bioinformatics/comments/qpuhn5/which_programming_languages_should_i_learn/hjx3ocg/
+- https://krisbogdanov.com/personal-projects-before-first-internship/?fbclid=IwAR1hna-buWCrhA7pd2qRp-NkNXGEN0pUrUNoll8peSpOK6F3H-ceeevkcNE
+
+- object oriented
+  - http://fredhutchio.github.io/intro-bioinformatics/06-python-oop.html#/now-lets-add-some-functionality
+- [[https://www.gnu.org/prep/standards/standards.html][GNU Coding Standards]]
+- https://x-team.com/blog/programming-best-practices/
+**** General reference
+:PROPERTIES:
+:ID:       48dfc684-aa60-4222-8641-d1646b3451be
+:END:
+- miscellaneous
+  - - https://www.reddit.com/r/ProgrammerHumor/comments/f4dbmj/saw_this_on_dank_memes/
+- https://www.reddit.com/r/programming/comments/f9ut5f/the_most_recommended_programming_books_of_alltime/
+- https://stackoverflow.com/questions/1711/what-is-the-single-most-influential-book-every-programmer-should-read
+- https://altbulletin.com/how-to-code-like-the-top-programmers-at-nasa-10-critical-rules/
+- principles and philosophy
+  - [[https://en.wikipedia.org/wiki/Robustness_(computer_science)][robustness]]
+  - transparency
+  - reproducibility
+- paradigms
+  - object-oriented programming
+    - inheritance
+    -
+    - objects relate to real-world entities
+    - 'bottom-up'
+    - class: logical grouping specifying components of specific objects
+      - class variable: shared by all instances
+      - instance variable: unique to each instance=object in class
+      - data member: holds data associated with class and its objects
+    -
+  - procedure-oriented- sequence of actions is more important to data
+    - 'top down'
 **** Local YAS
-******* head3                                                           :yas:
-:PROPERTIES:
-:ID:       2870f5de-4af4-4d76-a8bc-89823e4e09a0
-:END:
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/head3
-# -*- mode: snippet -*-
-# key: head3
-# expand-env: ((yas-indent-line 'none))
-# --
-## ---   ${1:$$(capitalize yas-text)}   --- ##
-## ${1:$(make-string (+ (string-width yas-text) 12) ?\-)} ##
-$0
-#+end_src
-******* head2 :yas:
-:PROPERTIES:
-:ID:       fcd48576-a658-44c4-8a98-9d9404366c1b
-:END:
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/head2
-# -*- mode: snippet -*-
-# key: head2
-# expand-env: ((yas-indent-line 'none))
-# --
-# ---   ${1:$$(capitalize yas-text)}   --- #
-# ${1:$(make-string (+ (string-width yas-text) 12) ?\-)} #
-$0
-#+end_src
-
-
-***** head3                                                             :yas:
-:PROPERTIES:
-:ID:       1b86754e-15fd-4b7b-8b4d-675208aa8d89
-:END:
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/head4
-# -*- mode: snippet -*-
-# key: head4
-# expand-env: ((yas-indent-line 'none))
-# --
-### ---   ${1:$$(capitalize yas-text)}   --- ###
-### ${1:$(make-string (+ (string-width yas-text) 12) ?\-)} ###
-$0
-#+end_src
-
-
-***** code.header                                                       :yas:
+**** code.header :yas:
 :PROPERTIES:
 :ID:       506b0a68-44e2-4709-a021-fbdb1f97f5cd
 :END:
@@ -8398,8 +7983,8 @@ ${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
 :PROPERTIES:
 :ID:       b9145567-7654-45d7-abb9-4418d3f12b90
 :END:
-- https://www.reddit.com/r/bioinformatics/comments/qpuhn5/which_programming_languages_should_i_learn/hjx3ocg/
-https://www.freecodecamp.org/news/rust-in-replit/
+
+
 ***** [[https://en.wikipedia.org/wiki/MUMPS][MUMPS]]
   - https://en.wikipedia.org/wiki/GT.M
 ***** AppScript
@@ -8414,9 +7999,7 @@ https://www.freecodecamp.org/news/rust-in-replit/
   - AutoHotKey
     - [[https://autohotkey.com/docs/AutoHotkey.htm][Documentation]]
     - [[https://autohotkey.com/boards/viewtopic.php?t=9806][AutoHotKey-like resources on UNIX-based]]
-***** C-based
-- https://www.freecodecamp.org/news/learn-c-with-free-31-hour-course/
-****** C++
+***** C++
   - https://www.freecodecamp.org/news/learn-object-oriented-programming-oop-in-c-full-video-course/
   - http://www.seqan.de/
   - https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/
@@ -9057,14 +8640,14 @@ B
 :PROPERTIES:
 :ID:       89576FD2-F863-4220-BAD7-D4E179AEA644
 :END:
+- https://www.reddit.com/r/bash/comments/12bptfj/are_there_any_quality_of_life_improvements_that/
+- https://www.reddit.com/r/bash/comments/yp8afm/some_scripts_that_might_be_useful/
+- https://www.reddit.com/r/commandline/comments/zigu22/in_dept_guide_how_to_create_a_shell_script_to/
 ****** Local YAS                                                       :flat:
 :PROPERTIES:
 :ID:       42e37db5-29e7-418f-a74d-e91ffc81167f
 :END:
-Uses sh-mode
-******* [[id:1b86754e-15fd-4b7b-8b4d-675208aa8d89][head4]]
-******* [[id:fcd48576-a658-44c4-8a98-9d9404366c1b][head2]]
-******* [[id:2870f5de-4af4-4d76-a8bc-89823e4e09a0][head3]]
+Used sh-mode
 ******* bash.var :yas:
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.var
 # -*- mode: snippet -*-
@@ -9073,6 +8656,7 @@ Uses sh-mode
 # --
 $1="$\{$2}"$0
 #+end_src
+
 ******* doc.fun                                                         :yas:
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/sh-mode/doc.fun
 # -*- mode: snippet --*
@@ -9245,71 +8829,6 @@ $0
 - [[https://www.cyberciti.biz/faq/linux-unix-formatting-dates-for-display/][formatting dates for display]]
 - https://stackoverflow.com/questions/22962591/how-to-prevent-direct-bash-script-execution-and-allow-only-usage-from-other-scri
 - https://unix.stackexchange.com/questions/10646/repeat-a-unix-command-every-x-seconds-forever
-******** case esac
-- eg
-  #+begin_src bash :tangle no
-readonly project=cbergom-congenic
-# Host-local variables
-case $HOSTNAME in
- (jeff-server) \
-     readonly all_repo=/home/jeszyman/repos \
-             readonly data_dir=/mnt/ris/cbergom \
-             readonly mntpt=/mnt/ris/cbergom \
-             readonly repo=/home/jeszyman/repos/"${project}";;
- (jeszyman-work) \
-     readonly all_repo=/home/jeszyman/repos \
-             readonly data_dir=/mnt/ris/cbergom \
-             readonly mntpt=/mnt/ris/cbergom \
-             readonly repo=/home/jeszyman/repos/"${project}";;
- (jeff-mac-book) \
-     readonly all_repo=/home/jeszyman/repos \
-             readonly data_dir=/mnt/ris/cbergom \
-             readonly mntpt=/mnt/ris/cbergom \
-             readonly repo=/home/jeszyman/repos/"${project}";;
- (radonc-cancerbio) \
-     readonly all_repo=/home/jeszyman/repos \
-             readonly data_dir=/mnt/ris/cbergom \
-             readonly mntpt=/mnt/ris/cbergom \
-             readonly ref_dir=/mnt/users/jeszyman/data/ref \
-             readonly repo=/home/jeszyman/repos/"${project}";;
- (*) echo "Host not recognized" && exit 1;;
-esac
-
-# Check mount active
-if grep -qs $mntpt /proc/mounts; then
- echo "RIS storage mounted."
-else
- echo "RIS storage NOT mounted, exiting." && exit 1
-fi
-
-# Source functions
-cd $repo
-## submodule or symlinked repos functions
-source ./basecamp/src/functions.sh
-source ./biotools/src/functions.sh
-## repo-local functions
-source ./src/functions.sh
-
-#
-#source ./src/functions.sh
-
-#
-# Ensure repo structure
-mkdir -p $repo/config
-mkdir -p $repo/data
-mkdir -p $repo/imgs
-mkdir -p $repo/pubs
-mkdir -p $repo/reports
-mkdir -p $repo/src
-mkdir -p $repo/test/fastq
-mkdir -p $repo/test/qc
-chmod 444 $repo/data/chr3_congenic.bed
-chmod 444 $repo/data/samples.csv
-chmod 444 $repo/data/strains.csv
-
-#
-echo "Bergom RNA setup complete for $HOSTNAME"
-#+end_src
 ******** Provide per-function documentation
 https://unix.stackexchange.com/questions/295022/displaying-usage-comments-in-functions-intended-to-be-used-interactively
 
@@ -10129,9 +9648,6 @@ fi
 :PROPERTIES:
 :ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
 :END:
-- https://www.reddit.com/r/bash/comments/yp8afm/some_scripts_that_might_be_useful/
-- https://www.reddit.com/r/commandline/comments/zigu22/in_dept_guide_how_to_create_a_shell_script_to/
-- https://www.reddit.com/r/bash/comments/12bptfj/are_there_any_quality_of_life_improvements_that/
 - https://getaido.app/
 - https://github.com/awesome-lists/awesome-bash
 - https://github.com/TheR1D/shell_gpt
@@ -10447,44 +9963,6 @@ http://howardism.org/Technical/Emacs/literate-devops.html
 - https://github.com/alhassy/emacs.d/blob/master/README.org#what-does-literate-programming-look-like
 
 
-**** General reference
-:PROPERTIES:
-:ID:       48dfc684-aa60-4222-8641-d1646b3451be
-:END:
-- https://www.freecodecamp.org/news/learn-c-programming-classic-book-dr-chuck/
-- https://www.technig.com/best-github-repositories-every-programmer/
-- https://missing.csail.mit.edu/
-  - https://www.reddit.com/r/programming/comments/eyagcd/the_missing_semester_of_your_cs_education_mit/
-- https://www.reddit.com/r/ProgrammerHumor/comments/wqugqh/i_thought_programming_was_hard_until_i_found_this/
-- https://goalkicker.com/
-- https://krisbogdanov.com/personal-projects-before-first-internship/?fbclid=IwAR1hna-buWCrhA7pd2qRp-NkNXGEN0pUrUNoll8peSpOK6F3H-ceeevkcNE
-- [[https://www.gnu.org/prep/standards/standards.html][GNU Coding Standards]]
-- object oriented
-  - http://fredhutchio.github.io/intro-bioinformatics/06-python-oop.html#/now-lets-add-some-functionality
-- good software practices
-  - https://x-team.com/blog/programming-best-practices/
-- miscellaneous
-  - - https://www.reddit.com/r/ProgrammerHumor/comments/f4dbmj/saw_this_on_dank_memes/
-- https://www.reddit.com/r/programming/comments/f9ut5f/the_most_recommended_programming_books_of_alltime/
-- https://stackoverflow.com/questions/1711/what-is-the-single-most-influential-book-every-programmer-should-read
-- https://altbulletin.com/how-to-code-like-the-top-programmers-at-nasa-10-critical-rules/
-- principles and philosophy
-  - [[https://en.wikipedia.org/wiki/Robustness_(computer_science)][robustness]]
-  - transparency
-  - reproducibility
-- paradigms
-  - object-oriented programming
-    - inheritance
-    -
-    - objects relate to real-world entities
-    - 'bottom-up'
-    - class: logical grouping specifying components of specific objects
-      - class variable: shared by all instances
-      - instance variable: unique to each instance=object in class
-      - data member: holds data associated with class and its objects
-    -
-  - procedure-oriented- sequence of actions is more important to data
-    - 'top down'
 
 *** Hardware
 :PROPERTIES:
@@ -11312,12 +10790,6 @@ CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
 :PROPERTIES:
 :ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
 :END:
-
-# RIS mount location
-if(Sys.info()["nodename"] %in%
-   c("jeszyman-work","jeff-mac-book","jeff-mac-book","jeff-server"))
-  (data_dir = file.path("/mnt/ris/cbergom"))
-
 ***** R Processes :flat:
 
 - function with named vector output
@@ -12043,13 +11515,12 @@ $0
 #+end_src
 #+begin_src R
 # ========== Erk Sdf  ========= #
-#########1#########2#########3#########4#########5#########6#########7#########8
+80
 :::::::::
-h2
 
 #+end_src
 #+begin_src bash
-bash.file.size
+
 #+end_src
 
 # ========== Level 2: Data Cleaning ========= #
