@@ -3,6 +3,32 @@
 :header-args: :tangle-mode (identity #o555) :mkdirp yes :noweb yes :comments org
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
+** Basecamp conda environment
+#+begin_src bash :tangle ./basecamp_env.yaml
+name: basecamp
+
+channels:
+  - conda-forge
+  - bioconda
+
+dependencies:
+  - openpyxl
+  - pandas
+  - parallel
+  - r-magick
+  - r-ggrepel
+  - r-ggextra
+  - r-ggsci
+  - r-writexl
+  - r-rstatix
+  - r-ggpattern
+  - r-svglite
+  - r-tidyverse
+  - r-yaml
+  - snakemake
+
+#+end_src
+
 ** Save emacs via server
 #+begin_src bash
 function save_emacs_via_server() {
@@ -916,6 +942,7 @@ algorithm properties
 :PROPERTIES:
 :ID:       CFACF7AD-30FC-4200-92FE-3710B5DC5E9E
 :END:
+https://www.reddit.com/r/datascience/comments/150dyrf/xgboost_to_learn_insights_in_data/
 https://distill.pub/
 - cite:james2021
 -
@@ -1724,6 +1751,7 @@ optimized lambda strikes balance of coeffienct bias and optimized likelihood
 :ID:       A91BF233-F14E-4E91-A1E9-B39802A9ED2D
 :CREATED:  [2019-07-03 Wed 08:13]
 :END:
+https://addyosmani.com/blog/boring-architecture/
 *** Software
 :PROPERTIES:
 :ID:       9E19E626-9D6C-4296-BEDB-80033A846CF4
@@ -2971,7 +2999,9 @@ TSWLatexianTemp*
 #+end_src
 ****** Processes                                                  :hierarchy:
 ******* 0 Flat                                                         :flat:
+******** git file names beginning w/ hyphen
 - https://stackoverflow.com/questions/29192642/how-can-i-get-git-to-delete-a-file-whose-name-begins-with-hyphens
+
 ******** Grep a single file's commit hx
 https://stackoverflow.com/questions/10215197/git-search-for-string-in-a-single-files-history
 ******** Add a submodule to an existing repo
@@ -4207,6 +4237,9 @@ singularity version
 :ID:       6cb6dc7d-29ad-4dda-8ede-1454bedc2dc7
 :END:
 ******** 0 Flat                                                        :flat:
+********* Print at cmd line safe for draw
+use logger.info
+https://stackoverflow.com/questions/57530914/snakemake-forceall-dag-results-in-mysterius-error-stdin-syntax-error-in
 ********* [[https://www.google.com/search?q=snakemake+prevent+empty+output+files][google:snakemake prevent empty output files]]
 
 ********* - [[https://www.google.com/search?q=snakemake+load+multiple+configuration+yamls][google:snakemake load multiple configuration yamls]]
@@ -4737,15 +4770,14 @@ rule ${1:$$(replace-regexp-in-string " " "_" yas-text)}:
     params: script = f"{${3:$$(replace-regexp-in-string " " "_" yas-text)}}/$1.R",
     shell:
         """
-        Rscript {params.script} \
-        {input} \
-        {output} \
-        > {log} 2>&1
+        Rscript {params.script} {input} {output} > {log} 2>&1
         """
 ,#+end_src
+
+#+begin_src R :tangle ./scripts/$1.R
+,#+end_src
+
 #+end_src
-
-
 
 ******** Insert snakemake file org-mode tree
 :PROPERTIES:
@@ -8336,6 +8368,7 @@ https://mmistakes.github.io/jekyll-theme-basically-basic/recipes/chocolate-chip-
 :PROPERTIES:
 :ID:       CBD1C9BA-44CB-4510-8ACD-F12CEF7E3402
 :END:
+https://www.reddit.com/r/programming/comments/150sr0g/walter_bright_programming_language_ideas_that/
 **** Local YAS
 ******* head3                                                           :yas:
 :PROPERTIES:
@@ -9207,9 +9240,9 @@ EOF
 #+end_src
 ******* [[file:~/.emacs.d/snippets/sh-mode/]]
 
-******* insert bash code block
-  #+name: code.sh
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.sh
+******* code.sh
+#+name: code.sh
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.sh
 # -*- mode: snippet -*-
 # key: code.sh
 # expand-env: ((yas-indent-line 'none))
@@ -9218,6 +9251,18 @@ EOF
 $0
 ,#+end_src
 #+end_src
+******* code.bash
+#+name: code.sh
+#+begin_src bash :tangle ~/repos/emacs.d/snippets/org-mode/code.bash
+# -*- mode: snippet -*-
+# key: code.sh
+# expand-env: ((yas-indent-line 'none))
+# --
+,#+begin_src bash
+$0
+,#+end_src
+#+end_src
+
 ******* print_array
   #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/shell-mode/bash.print_array
 # -*- mode: snippet -*-
@@ -11982,12 +12027,19 @@ package.check = lapply(
 $0
 ,#+end_src
 #+end_src
-
-***** r.script                                                          :yas:
-#+name: r.script
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/r.script
+***** var :yas:
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/ess-mode/var
 # -*- mode: snippet -*-
-# key: r.script
+# key: var
+# expand-env: ((yas-indent-line 'none))
+# --
+$1 = args[$2]
+#+end_src
+***** script                                                            :yas:
+#+name: script
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/ess-mode/script
+# -*- mode: snippet -*-
+# key: script
 # expand-env: ((yas-indent-line 'fixed))
 # --
 #!/usr/bin/env Rscript
@@ -11996,11 +12048,9 @@ ${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
 ###   ${1:$$(capitalize yas-text)}   ###
 ${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
 
-$0
-
 # Command line arguements
 args = commandArgs(trailingOnly = TRUE)
-= args[1]
+$0 = args[1]
 
 # Load required packages, data, and functions
 #+end_src

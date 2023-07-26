@@ -1,0 +1,23 @@
+# Basecamp conda environment
+
+name: basecamp
+
+channels:
+  - conda-forge
+  - bioconda
+
+dependencies:
+  - openpyxl
+  - pandas
+  - parallel
+  - r-magick
+  - r-ggrepel
+  - r-ggextra
+  - r-ggsci
+  - r-writexl
+  - r-rstatix
+  - r-ggpattern
+  - r-svglite
+  - r-tidyverse
+  - r-yaml
+  - snakemake

@@ -1,3 +1,5 @@
+# [[elisp:(with-minibuffer-input (call-interactively 'woman) "wget")][wget]]
+
 # Check for parameters, return usage if empty
 if [ $# -ne 2 ]; then
     printf "\n usage: gtac_wget.sh <DIR PREFIX> <GTAC HTML>

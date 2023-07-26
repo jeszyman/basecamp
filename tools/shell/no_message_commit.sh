@@ -1,3 +1,8 @@
+# No message simple git commit to github
+# :PROPERTIES:
+# :ID:       a97c46fe-8a23-4fa1-b9e2-f0edc29ec7f4
+# :END:
+
 #!/usr/bin/env bash
 
 if [ $# -ne 1 ];

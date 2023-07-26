@@ -1,3 +1,5 @@
+# Command line org table export
+
 #!/usr/bin/env bash
 
 # Script variables

@@ -1,3 +1,6 @@
+
+# - Bash non-interactive emacs function
+
 source config/${HOSTNAME}.sh
 
 org_tables=()
@@ -10,6 +13,9 @@ do
 done
 
 /usr/bin/emacs-snapshot --batch "${repo}/mpnst.org" -l "${repo}/src/org_master_input_tbl_export.el" --eval '(my-tbl-export "'"input"'")'
+
+
+# - Bash to make the csvs
 
 org_tables=()
 org_tables=("experiments"

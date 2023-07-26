@@ -15,5 +15,5 @@ EOF
       source /opt/miniconda3/etc/profile.d/conda.sh
       conda activate base
       mamba env update --file $1
-      echo "Environment updated successfully!"
+      echo "$1 Environment updated successfully!"
 }
