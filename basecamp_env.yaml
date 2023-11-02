@@ -1,5 +1,3 @@
-# Basecamp conda environment
-
 name: basecamp
 
 channels:
@@ -7,17 +5,31 @@ channels:
   - bioconda
 
 dependencies:
+  - r-svglite
+  - r-colorramps
+  - r-devtools
+  - r-ggpubr
+  - r-multcomp
+  - r-patchwork
+  - r-pheatmap
+  - r-readxl
+  - r-rlang
+  - r-rstatix
+  - r-tidyverse
+  - scikit-learn
+  - numpy
+  - pandas
   - openpyxl
   - pandas
   - parallel
-  - r-magick
-  - r-ggrepel
   - r-ggextra
-  - r-ggsci
-  - r-writexl
-  - r-rstatix
   - r-ggpattern
+  - r-ggrepel
+  - r-ggsci
+  - r-magick
+  - r-rstatix
   - r-svglite
   - r-tidyverse
+  - r-writexl
   - r-yaml
   - snakemake

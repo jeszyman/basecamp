@@ -1,5 +1,3 @@
-# Preamble
-
 #########1#########2#########3#########4#########5#########6#########7#########8
 #                                                                              #
 #                         Universal gitignore template                         #
@@ -11,15 +9,11 @@
 
 # URL: https://github.com/jeszyman/basecamp/blob/master/resources/git/jeszyman_gitignore
 
-# Elisp
-
 ###   Elisp   ###
 *.elc
 .cask
 *~
 *.~undo-tree
-
-# R
 
 ###   R   ###
 .Rhistory
@@ -27,15 +21,6 @@
 .RData
 .RDataTmp
 .Renviron
-
-
-# - [[id:CA21AAC9-F147-4086-A24C-64451EE349F3][Python in programming languages]]
-# - https://towardsdatascience.com/the-zen-of-python-write-beautiful-code-e36844381ee6?gi=8af56a5aeac4
-
-# - python in browser with colab https://colab.research.google.com/notebooks/intro.ipynb#scrollTo=P-H6Lw1vyNNd
-# - https://erikbern.com/2019/10/16/buffet-lines-are-terrible.html
-# - https://blog.dominodatalab.com/lesser-known-ways-of-using-notebooks/
-
 
 ###   Python   ###
 .pybuilder/
@@ -48,12 +33,8 @@ ENV/
 env.bak/
 venv.bak/
 
-# Shell and miscellaneous
-
 ###   Shell and miscellaneous   ###
 nohup.out
-
-# Snakemake
 
 ###   Snakemake  ###
 ./snake*
@@ -61,8 +42,6 @@ nohup.out
 **/.cache
 **/.config
 **/.java
-
-# TeX
 
 ###   TeX   ###
 *.aux

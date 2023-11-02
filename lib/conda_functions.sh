@@ -1,8 +1,3 @@
-# Functions
-# :PROPERTIES:
-# :header-args:bash: :tangle ./lib/conda_functions.sh
-# :END:
-
 function conda_update() {
       [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF

@@ -1,9 +1,3 @@
-# run docker interactively
-# :PROPERTIES:
-# :ID:       cff4499e-b420-4ae7-8a30-cbe04013db60
-# :END:
-#   #+name: docker_interactive
-
 docker_interactive() {
     if [ -f /.dockerenv ]; then
         echo "shell already in docker, exiting"
@@ -57,17 +51,6 @@ docker_interactive() {
     fi
 }
 
-
-# # Check setup exit status
-# if [ "$?" != "0" ]; then
-#     echo "setup error" 1>&2
-#     exit 1
-# else
-#     echo "Setup completed successfully"
-# fi
-
-# #+name: docker_check
-
 # Check for docker environment
 docker_check() {
 if [ -f /.dockerenv ]; then
@@ -75,10 +58,6 @@ if [ -f /.dockerenv ]; then
     exit 1
 fi
 }
-
-
-
-# #+name:check_software_dependencies
 
 #########1#########2#########3#########4#########5#########6#########7#########8
 function check_dependencies {
@@ -100,13 +79,6 @@ function check_dependencies {
         done
     fi
 }
-
-
-
-
-# - bash functions
-#   - docker interactive
-#   #+name:
 
 docker_interactive() {
     if [ -f /.dockerenv ]; then
@@ -160,13 +132,6 @@ docker_interactive() {
     fi
 }
 
-# [[file:~/repos/basecamp/src/shell/functions.sh][Common Process Functions]]
-# :PROPERTIES:
-# :CREATED:  [2020-04-14 Tue 09:05]
-# :ID:       15071151-f519-4c7f-b21f-997d6d7b6bc5
-# :END:
-# #+name: check_local_software
-
 check_local_software(){
     if [[ $# -eq 0 ]] ; then
         printf "\n check_local_software
@@ -190,3 +155,39 @@ check_local_software(){
 # unit test
 #softwarecheck=(bash git)
 #check_local_software $softwarecheck
+
+#
+######################
+### symlink-by-csv ###
+######################
+#
+# Purpose: generates symbolic links in bulk from a csv file
+#
+# Input:
+# A .csv file of two columns,
+#  Column 1 with source file paths
+#  Column 2 with destination symbolic link paths
+#
+# Function:
+symlink_by_csv(){
+    # Set internal field separator
+    export IFS=","
+    # Take csv and pass to while/read
+    cat $1 | while read a b; do
+        ln -s $a $b; done
+}
+#
+# Example:
+# cd /tmp
+# mkdir -p csv-symlink-test
+# cd csv-symlink-test
+# touch csv-for-links.csv
+# touch file-to-link-from.txt
+# echo "file-to-link-from.txt,path-to-link-to.txt" >> csv-for-links.csv
+# echo "test link" > file-to-link-from.txt
+# export IFS=","
+# cat csv-for-links.csv | while read a b; do
+#     ln -s $a $b ; done
+# cat path-to-link-to.txt
+# cd ../
+# rm -rf csv-symlink-test

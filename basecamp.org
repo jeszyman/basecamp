@@ -1,9 +1,315 @@
 * Basecamp
 :PROPERTIES:
-:header-args: :tangle-mode (identity #o555) :mkdirp yes :noweb yes :comments org
+:header-args: :tangle-mode (identity #o555) :mkdirp yes :noweb yes
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
+** lib
+*** General shell functions
+:PROPERTIES:
+:header-args: :tangle ./lib/basecamp_function.sh :tangle-mode (identity #o555) :mkdirp yes :noweb yes :comments org
+:ID:       cb3c499d-ed2f-4ee3-9965-ca3e1af81178
+:END:
+**** [[id:a9f97cde-27bc-4777-bb12-164ac4cb421d][Shell functions in basecamp-private]]
+**** check_mnt() Check if mount is active
+#+begin_src bash
+
+check_mnt(){
+  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+    cat <<EOF
+Usage: check_mnt <DIRECTORY>
+Checks if directory is a mount point (must be top directory of mtn).
+EOF
+    return
+  }
+    local directory="${1}"
+    if mountpoint -q "$directory"; then
+        echo "The directory $directory is a mountpoint."
+    else
+        echo "The directory $directory is not a mountpoint."
+    fi
+}
+
+#+end_src
+
+**** Emacs
+***** emacs-save()
+#+begin_src bash
+
+emacs-save(){
+    [[ "$1" =~ (-h|--help) ]] && {
+    cat <<EOF
+Usage: emacs-save
+Invokes emacsclient --eval '(save-some-buffers t)' to save all open buffers.
+EOF
+    return
+      }
+    emacsclient --eval '(save-some-buffers t)'
+}
+
+#+end_src
+
+***** tangle() Invoke emacs batch to tangle a file
+#+begin_src bash
+tangle() {
+  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+    cat <<EOF
+Usage: tangle <ORG FILE>
+Tangle's org-mode file code using a non-interactive emacs batch instance
+EOF
+    return
+  }
+    local org_file="$1"
+    /usr/bin/emacs --batch -l ~/.emacs.d/tangle.el -l org -eval "(org-babel-tangle-file \"$org_file\")"
+}
+#+end_src
+**** convert_pdf_to_png()
+#+begin_src bash
+
+convert_pdf_to_png() {
+    local input_file="$1"
+
+    if [ -z "$input_file" ]; then
+        cat <<- EOF
+        usage: convert_pdf_to_png <input-file.pdf>
+
+        Converts a PDF to a PNG with a white background.
+
+        example: convert_pdf_to_png input.pdf
+
+        Notes:
+        - /etc/ImageMagick-6/policy.xml policy change allows work with PDF
+        - allows file overwrite
+        - works from /tmp
+        - set to 600 dpi
+EOF
+        return 1
+    fi
+
+    local output_file=$(echo "$input_file" | sed 's/\.pdf$/.png/')
+    convert -density 600 -background white -flatten "$input_file" "$output_file"
+
+    echo "Conversion complete. Output saved to $output_file"
+}
+
+# Uncomment below line to use the function with the first script argument
+# convert_pdf_to_png "$1"
+
+#+end_src
+**** convert_pdf_to_svg()
+#+begin_src bash
+
+convert_pdf_to_svg() {
+    local input_file="$1"
+
+    if [ -z "$input_file" ]; then
+        cat <<- EOF
+        usage: convert_pdf_to_svg <input-file.pdf>
+
+        Converts a PDF to an SVG with a white background.
+
+        example: convert_pdf_to_svg input.pdf
+
+        Notes:
+        - Uses pdf2svg for conversion
+        - Allows file overwrite
+        - Works from /tmp
+EOF
+        return 1
+    fi
+
+    local output_file=$(echo "$input_file" | sed 's/\.pdf$/.svg/')
+    pdf2svg "$input_file" "$output_file"
+
+    # Add a white background rectangle at the beginning of the SVG content
+    sed -i '/<svg/a <rect width="100%" height="100%" fill="white"/>' "$output_file"
+
+    echo "Conversion complete. Output saved to $output_file with a white background."
+}
+
+#+end_src
+**** find_in_files()
+
+#+begin_src bash
+find_in_files(){
+    print_usage(){
+        cat <<- EOF
+
+usage: find_in_files <TERM> [<DIRECTORY>]
+
+Use grep to search a term throughout text files of a directory. Searches current directory by default or specify.
+
+examples:
+find_in_files test
+find_in_files test /path/to/dir
+
+EOF
+    }
+
+    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
+        print_usage
+        return
+    fi
+
+    local term="$1"
+    local dir="${2:-.}" # Default to current directory if not provided
+
+    grep -rnw "${dir}" -e "${term}"
+}
+
+#+end_src
+**** open()
+#+begin_src bash
+open(){
+    print_usage(){
+	cat <<- EOF
+
+usage: open <FILE>
+
+Open files with specific applications based on file extension. Defaults to xdg-open. Runs open in background using &.
+
+example: test.pdf
+
+EOF
+    }
+
+    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
+        print_usage
+        return
+    fi
+
+    case "${1##*.}" in
+	pdf)   nohup okular "$1" >/dev/null 2>&1 & ;;
+	docx)  nohup libreoffice "$1" >/dev/null 2>&1 & ;;
+	,*)     nohup xdg-open "$1" >/dev/null 2>&1 & ;;
+    esac
+
+}
+
+#+end_src
+**** cpout()
+#+begin_src bash
+cpout() {
+    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
+        cat <<EOF
+
+Usage: cpout <COMMAND>
+
+Copies command stdout and stderr to clipboad using xclip.
+
+EOF
+        return
+    fi
+    "$@" 2>&1 | tee >(xclip -selection clipboard)
+}
+#+end_src
+
+BLAH
+*** Snakemake
+**** smk_draw() Draw a rulegraph
+#+begin_src bash
+smk_draw(){
+  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+    cat <<EOF
+Usage: smk_draw <CONFIG FILE> <SNAKEFILE>
+Implements snakemake's rulegraph to make a DAG. DAG is saved in ./resources/<SNAKEFILE BASENAME>.pdf and .png
+EOF
+    return
+  }
+    local snakefile="${1}"
+    local snakefile_basename="$(basename "$snakefile")"
+    local out_pdf="./resources/${snakefile_basename%.*}_smk.pdf"
+    local out_png="${out_pdf%.*}.png"
+    snakemake --configfile ./config/${HOSTNAME}.yaml \
+              --snakefile "$snakefile" \
+              --cores 1 \
+              --rerun-incomplete \
+              --dry-run \
+              --quiet \
+              --rulegraph | tee >(dot -Tpdf > "$out_pdf") | dot -Tpng > "$out_png"
+}
+
+
+#+end_src
+
+**** smk_dry()Dry run
+#+begin_src bash
+smk_dry(){
+    local snakefile="${1}"
+    snakemake \
+        --configfile ./config/${HOSTNAME}.yaml \
+        --cores 4 \
+        --dry-run \
+        --rerun-incomplete \
+        --snakefile $snakefile
+}
+
+#+end_src
+
+**** smk_forced() Forced run
+#+begin_src bash
+smk_forced(){
+    local snakefile="${1}"
+    local cores=$(nproc)
+    snakemake \
+        --configfile ./config/${HOSTNAME}.yaml \
+        --cores "$cores" \
+        --forceall \
+        --rerun-incomplete \
+        --snakefile "$snakefile"
+}
+#+end_src
+
+**** smk_run() Normal run
+#+begin_src bash
+smk_run(){
+  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+    cat <<EOF
+Usage: smk_run <CONFIGFILE> <SNAKEFILE>
+Launches a snakemake run with common parameters
+(keep-going, rerun-incomplete, use all available cores)
+EOF
+    return
+  }
+    local snakefile="${1}"
+    local cores=$(nproc)
+    snakemake \
+        --configfile ./config/${HOSTNAME}.yaml \
+        --cores "$cores" \
+        --keep-going \
+        --rerun-incomplete \
+        --snakefile "$snakefile"
+}
+
+#+end_src
+
+*** Conda functions
+:PROPERTIES:
+:header-args:bash: :tangle ./lib/conda_functions.sh
+:ID:       fb5f258b-cf75-46d1-9196-adc80d1ff6ff
+:END:
+**** conda_update()
+#+begin_src bash
+function conda_update() {
+      [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+    cat <<EOF
+Usage: conda_update <ENV YAML>
+Updates a conda environment yaml file using mamba
+EOF
+    return
+      }
+      local file="${1}"
+      source /opt/miniconda3/etc/profile.d/conda.sh
+      conda activate base
+      mamba env update --file $1
+      echo "$1 Environment updated successfully!"
+}
+
+#+end_src
+
 ** Basecamp conda environment
+:PROPERTIES:
+:ID:       76a6e083-f569-42a9-b551-4b9ccc770834
+:END:
 #+begin_src bash :tangle ./basecamp_env.yaml
 name: basecamp
 
@@ -12,66 +318,38 @@ channels:
   - bioconda
 
 dependencies:
+  - r-svglite
+  - r-colorramps
+  - r-devtools
+  - r-ggpubr
+  - r-multcomp
+  - r-patchwork
+  - r-pheatmap
+  - r-readxl
+  - r-rlang
+  - r-rstatix
+  - r-tidyverse
+  - scikit-learn
+  - numpy
+  - pandas
   - openpyxl
   - pandas
   - parallel
-  - r-magick
-  - r-ggrepel
   - r-ggextra
-  - r-ggsci
-  - r-writexl
-  - r-rstatix
   - r-ggpattern
+  - r-ggrepel
+  - r-ggsci
+  - r-magick
+  - r-rstatix
   - r-svglite
   - r-tidyverse
+  - r-writexl
   - r-yaml
   - snakemake
 
 #+end_src
-
-** Save emacs via server
-#+begin_src bash
-function save_emacs_via_server() {
-    local org_file="$1"
-    emacsclient --eval "(with-current-buffer (find-buffer-visiting \"$org_file\") (save-buffer))"
-}
-
-#+end_src
-
 ** Processes
-*** Software development
-
-** org_export_to_beamer.sh
-#+begin_src bash :tangle ./tools/shell/org_export_to_beamer.sh
-emacsclient -e "(progn (find-file \"$1\") \
-                       (org-id-goto \"$2\") \
-                       (org-beamer-export-to-pdf nil t))"
-#+end_src
-** org_latex_export.sh
-:PROPERTIES:
-:ID:       c62cf1fd-36bd-4555-8e8a-4030aedf6f06
-:header-args: tangle-mode (identity #o755) :mkdirp yes
-:END:
-#+begin_src bash :tangle ./tools/shell/org_latex_export.sh :tangle-mode (identity #o755)
-#!/bin/sh
-
-if [ $# -ne 2 ]; then
-    echo "Usage: $0 <file> <org-id>"
-    exit 1
-fi
-
-FILE="$1"
-ORG_ID="$2"
-
-emacs --batch -l ~/.emacs.d/lisp/latex.el --eval "(progn
-                        (require 'org)
-                        (require 'org-id)
-                        (setq org-confirm-babel-evaluate nil)
-                        (find-file \"$FILE\")
-                        (org-id-goto \"$ORG_ID\")
-                        (org-latex-export-to-pdf nil t)
-                        (kill-emacs))"
-#+end_src
+*** 0 Flat
 ** [[id:9E19E626-9D6C-4296-BEDB-80033A846CF4][Software]]
 ** [[id:cd560390-aa1e-4c9e-8317-08610e5de42a][Linux]]
 :PROPERTIES:
@@ -85,6 +363,11 @@ emacs --batch -l ~/.emacs.d/lisp/latex.el --eval "(progn
 https://www.reddit.com/r/datascience/comments/1385fge/sigmoid_academy_leetcode_for_data_science/
 https://old.reddit.com/r/datascience/comments/rap2m2/9_distance_measures_in_data_science/
 https://github.com/WHOexcessc19/Codebase
+*** Digital data repositories
+:PROPERTIES:
+:ID:       d043f43d-77cb-4afa-a798-4d5afb0692f5
+:END:
+- TRUST Principles for digital repositories [[cite:&lin2020]]
 *** Bibliometrics
 - http://www.nature.com/news/fewer-numbers-better-science-1.20858
 *** [[id:F80F3FAF-1D79-40F5-934B-F74D19143DBD][Probability and Statistics]]
@@ -574,7 +857,7 @@ CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
 :PROPERTIES:
 :ID:       eca4f279-86ee-40ea-a78b-3cddb00b6c67
 :END:
-*** Data Visualization :hierarchy:
+*** Data Visualization
 :PROPERTIES:
 :ID:       1DA3ABC0-79B0-4CED-B926-22B37840379D
 :END:
@@ -604,7 +887,7 @@ CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
     -
 **** Examples
 - https://www.reddit.com/r/lifehacks/comments/bcc14q/ill_leave_this_here_for_anyone_else_writing/
-
+- https://www.reddit.com/r/dataisbeautiful/comments/16v95ae/oc_percent_of_recipes_including/
 - https://www.reddit.com/r/coolguides/comments/h8pzmp/real_proportions_of_all_land_masses_revealing/
 - https://jku-vds-lab.at/
 - https://www.reddit.com/r/datascience/comments/8haezl/python_google_sheets_api_tableau_public_full/
@@ -619,11 +902,11 @@ CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
 - https://observablehq.com/@petulla/statistical-power-explorable
   - - http://www.shorttails.io/interactive-map-of-reddit-and-subreddit-similarity-calculator/
 - https://www.reddit.com/r/dataisbeautiful/comments/7b7aa0/visualizing_the_depthfirst_search_recursive/dpfr49n/
-- - https://beno.org.uk/metromapcreator/
-- - http://www.besthealthdegrees.com/health-risks/
+- https://beno.org.uk/metromapcreator/
+- http://www.besthealthdegrees.com/health-risks/
 - https://github.com/USGS-VIZLAB/hurricane-irma
-- - http://www.visualcapitalist.com/wp-content/uploads/2017/09/cognitive-bias-infographic.html
-- - [[http://flowingdata.com/2017/01/24/one-dataset-visualized-25-ways/][One Dataset, Visualized 25 Ways]]
+- http://www.visualcapitalist.com/wp-content/uploads/2017/09/cognitive-bias-infographic.html
+- [[http://flowingdata.com/2017/01/24/one-dataset-visualized-25-ways/][One Dataset, Visualized 25 Ways]]
 - [[https://www.reddit.com/r/dataisbeautiful/comments/6m0wo7/peak_time_for_sports_and_leisure_oc/][Peak time for sports and leisure {OC}]]
 - https://pudding.cool/2017/03/film-dialogue/index.html
 - https://pudding.cool/2017/05/song-repetition/
@@ -673,6 +956,7 @@ https://streamlit.io/
 - https://pbs.twimg.com/media/C0NSXNuXAAIpUgN.jpg:large
 - [[https://www.shipmap.org/]]
 ***** Networks and graphs
+- https://www.reddit.com/r/datascience/comments/17212yf/why_are_there_no_good_graph_visualisation_programs/
 - https://www.reddit.com/r/dataisbeautiful/comments/9yg8w9/googles_autocomplete_visualized_like_a_graph_link/
 - https://www.reddit.com/r/dataisbeautiful/comments/9kg9ym/oc_recent_philosophy_visualized/
 - http://www.hiveplot.com/
@@ -1751,7 +2035,6 @@ optimized lambda strikes balance of coeffienct bias and optimized likelihood
 :ID:       A91BF233-F14E-4E91-A1E9-B39802A9ED2D
 :CREATED:  [2019-07-03 Wed 08:13]
 :END:
-https://addyosmani.com/blog/boring-architecture/
 *** Software
 :PROPERTIES:
 :ID:       9E19E626-9D6C-4296-BEDB-80033A846CF4
@@ -1812,97 +2095,23 @@ y
 cmake -version
 #+end_src
 
-***** Conda and Miniconda
+***** Conda and Miniconda :software:
 :PROPERTIES:
 :ID:       b16d0202-8d35-472b-b538-87a7d6a6cef7
 :END:
-****** Functions
-:PROPERTIES:
-:header-args:bash: :tangle ./lib/conda_functions.sh
-:END:
-#+begin_src bash
-function conda_update() {
-      [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
-    cat <<EOF
-Usage: conda_update <ENV YAML>
-Updates a conda environment yaml file using mamba
-EOF
-    return
-      }
-      local file="${1}"
-      source /opt/miniconda3/etc/profile.d/conda.sh
-      conda activate base
-      mamba env update --file $1
-      echo "$1 Environment updated successfully!"
-}
-
-#+end_src
-
-****** Documentation
-****** General
-- - https://autobencoder.com/2020-08-24-conda-actions/
-- https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf
-
-****** Reference
-  - [[EA056C38-9DE6-47EE-A75B-0FCBAE62372B][YASnippets]]
+https://chat.openai.com/c/73c00b0b-4dfd-4241-ae7c-af96ac84bdb2
+****** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
 ****** Processes
 ******* 0 Flat
+******** Build environment from multiple yamls
+https://stackoverflow.com/questions/48158137/conda-importing-one-environment-yml-into-another
+https://stackoverflow.com/questions/65668913/can-i-create-a-conda-environment-from-multiple-yaml-files
+https://github.com/conda/conda/issues/5821
 ******** Inherit from another environment - can't be done https://stackoverflow.com/questions/54682742/inheritance-model-in-conda-environments
-******** Update environment from yaml
-#+begin_src bash :tangle ./tools/shell/conda_from_yaml.sh :tangle-mode (identity #o555) :mkdirp yes
-#!/bin/bash
-
-yaml="${1}"
-
-# Name of the Conda environment
-env_name=$(cat $yaml | grep name: | sed 's/^.*\ //g')
-
-# Check if the environment already exists
-if conda env list | grep -q "^$env_name\s"; then
-    # Update the existing environment
-    mamba env update --name "$env_name" --file "$yaml" --prune
-else
-    # Create a new environment
-    mamba env create -n "$env_name" -f "$yaml"
-fi
-
-#+end_src
-
-- update existing env from yaml conda env update --name myenv --file local.yml --prune
-******* [[https://www.google.com/search?q=Activate+environment+referenced+as+yaml][google:Activate environment referenced as yaml]]
-#+begin_src bash
-  conda install -n base -c conda-forge mamba
-
-  conda activate base
-
-  # First create it
-  mamba env create -f ~/repos/rna-seq/config/rna_env.yaml
-  conda env create -f ~/repos/rna-seq/config/rna_env.yaml
-
-  # Then activate
-  mamba activate env
-#+end_src
-******* https://stackoverflow.com/questions/71392511/multiple-versions-of-same-python-package-in-same-conda
-******* Install
-******** Conda/mamba/mambaforge install
-#+begin_src bash
-    cd ~/
-    wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
-
-    sudo bash Mambaforge-Linux-x86_64.sh
-
-
-    echo -e "\n"
-    echo -e "\n"
-    yes
-
-    /opt/mambaforge
-
-    yes
-
-    #########1#########2#########3#########4#########5#########6#########7#########8
-#+end_src
 ******** Miniconda install
+:PROPERTIES:
+:ID:       89e9b0a1-5157-46e6-9004-755136b291d1
+:END:
 #+begin_src bash
     cd /tmp
 
@@ -1927,8 +2136,30 @@ fi
     sudo chgrp -R condagroup /opt/miniconda3
     sudo chmod 770 -R /opt/miniconda3
 #+end_src
-******* Create environment
-******** [[https://www.google.com/search?q=conda+create+environment+from+yaml][google:conda create environment from yaml]]
+******** Conda/mamba/mambaforge install
+:PROPERTIES:
+:ID:       9066090d-28df-4d7b-84a6-a3611bdc8386
+:END:
+#+begin_src bash
+    cd ~/
+    wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
+
+    sudo bash Mambaforge-Linux-x86_64.sh
+
+
+    echo -e "\n"
+    echo -e "\n"
+    yes
+
+    /opt/mambaforge
+
+    yes
+
+    #########1#########2#########3#########4#########5#########6#########7#########8
+#+end_src
+******* Install
+******** [[id:9066090d-28df-4d7b-84a6-a3611bdc8386][Conda/mamba/mambaforge install]]
+******** [[id:89e9b0a1-5157-46e6-9004-755136b291d1][Miniconda install]]
 ******* Add channel
 ******** https://stackoverflow.com/questions/62497037/why-would-one-add-a-channel-to-a-conda-environment
 ******* Install package
@@ -1963,18 +2194,15 @@ fi
 ******* list package versions
 ******** https://stackoverflow.com/questions/43222407/how-to-list-package-versions-available-with-conda
 ******* [[https://www.google.com/search?q=conda+install+multiple+versions+of+package][google:conda install multiple versions of package]]
-******* install
-#+begin_src bash
-  conda install mamba -n base -c conda-forge
-
-  conda create --name py
-
-  conda install -n py -c conda-forge python-docx
-
-  mamba install -n py -c conda-forge python-docx
-#+end_src
 ******* Remove environment - conda env remove -n ENV_NAME
+****** [[id:fb5f258b-cf75-46d1-9196-adc80d1ff6ff][Functions]]
+****** Documentation
+****** General
+- - https://autobencoder.com/2020-08-24-conda-actions/
+- https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf
 
+****** Reference
+  - [[EA056C38-9DE6-47EE-A75B-0FCBAE62372B][YASnippets]]
 ****** Conda environment yamls
 ******* Basecamp
 #+begin_src bash :tangle ./resources/conda/basecamp_env.yaml :mkdirp yes
@@ -2107,7 +2335,7 @@ https://stackoverflow.com/questions/39433480/dockerfile-versioning-best-practice
 CLOCK: [2021-08-26 Thu 07:31]--[2021-08-26 Thu 08:01] =>  0:30
 :END:
 #+name: launch.docker.interactive
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/launch.docker.interactive
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/launch.docker.interactive :comments no
 # -*- mode: snippet -*-
 # key: launch.docker.interactive
 # expand-env: ((yas-indent-line 'fixed))
@@ -4232,6 +4460,79 @@ singularity version
 :ID:       a8b27140-4b9e-40c5-86ab-ee5afeae723f
 :CREATED:  [2021-09-13 Mon 07:29]
 :END:
+# logger.info("Mouse heart RNA-seq library count: " + str(len(raw_ms_hrt_rna_df['library'].tolist())))
+# logger.info(f"\nRAW mouse heart RNA-seq libraries: {RAW_MS_HRT_RNA_LIBS}")
+
+# raw_ms_nuc_rna_df = process_list(ms_nuc_rna_list)
+# RAW_MS_NUC_RNA_LIBS = raw_ms_nuc_rna_df['library'].tolist()
+
+# logger.info("Mouse heart RNA-seq library count: " + str(len(raw_ms_nuc_rna_df['library'].tolist())))
+# logger.info(f"\nRAW mouse heart RNA-seq libraries: {RAW_MS_NUC_RNA_LIBS}")
+
+# raw_hs_cell_rna_df = process_list(hs_cell_rna_list)
+# RAW_HS_CELL_RNA_LIBS = raw_hs_cell_rna_df['library'].tolist()
+
+# logger.info("Mouse heart RNA-seq library count: " + str(len(raw_hs_cell_rna_df['library'].tolist())))
+# logger.info(f"\nRAW mouse heart RNA-seq libraries: {RAW_HS_CELL_RNA_LIBS}")
+
+# raw_hs_plasma_rna_df = process_list(hs_plasma_rna_list)
+# RAW_HS_PLASMA_RNA_LIBS = raw_hs_plasma_rna_df['library'].tolist()
+
+# logger.info("Mouse heart RNA-seq library count: " + str(len(raw_hs_plasma_rna_df['library'].tolist())))
+# logger.info(f"\nRAW mouse heart RNA-seq libraries: {RAW_HS_PLASMA_RNA_LIBS}")
+
+# atac_df = process_list(atac_list)
+# RAW_ATAC_LIBS = atac_df['library'].tolist()
+
+# logger.info("Total raw ATAC-seq library count: " + str(len(atac_df['library'].tolist())))
+# logger.info(f"\nRaw ATAC-seq libraries: {RAW_ATAC_LIBS}")
+
+# raw_human_atac_df = pd.read_table(atac_list)
+# raw_human_atac_df = raw_human_atac_df[(raw_human_atac_df["include"] == True)
+#     ]
+# RAW_HUMAN_ATAC_LIBS = raw_human_atac_df.loc[raw_human_atac_df['species'] == 'human', 'library'].tolist()
+# logger.info("\nRaw Human ATAC-seq library count: " + str(len(RAW_HUMAN_ATAC_LIBS)))
+# logger.info(f"\nRaw Human ATAC-seq libraries: {RAW_HUMAN_ATAC_LIBS}")
+
+# raw_mouse_atac_df = pd.read_table(atac_list)
+# raw_mouse_atac_df = raw_mouse_atac_df[(raw_mouse_atac_df["include"] == True)
+#     ]
+# RAW_MOUSE_ATAC_LIBS = raw_mouse_atac_df.loc[raw_mouse_atac_df['species'] == 'mouse', 'library'].tolist()
+# logger.info("\nRaw Mouse ATAC-seq library count: " + str(len(RAW_MOUSE_ATAC_LIBS)))
+# logger.info(f"\nRaw Mouse ATAC-seq libraries: {RAW_MOUSE_ATAC_LIBS}")
+
+
+# raw_ms_hrt_smrna_df = process_list(ms_hrt_smrna_list)
+# RAW_MS_HRT_SMRNA_LIBS = raw_ms_hrt_smrna_df['library'].tolist()
+
+# logger.info("Mouse heart small RNA-seq library count: " + str(len(raw_ms_hrt_smrna_df['library'].tolist())))
+# logger.info(f"\nRAW mouse heart small RNA-seq libraries: {RAW_MS_HRT_SMRNA_LIBS}")
+
+
+# FILT_MOUSE_ATAC_LIBS = []
+# FILT_HUMAN_ATAC_LIBS = []
+
+# raw_atac_paths = atac_df['path'].tolist()
+# raw_atac_dict = dict(zip(RAW_ATAC_LIBS,raw_atac_paths))
+
+
+# # raw_pe_rna_paths = raw_ms_hrt_rna_df['fq_path'].tolist() + raw_ms_nuc_rna_df['fq_path'].tolist()
+# # RAW_PE_RNA_LIBS = raw_ms_hrt_rna_df['library'].tolist() + raw_ms_nuc_rna_df['library'].tolist()
+# # raw_pe_rna_dict = dict(zip(RAW_PE_RNA_LIBS,raw_pe_rna_paths))
+# # logger.info(f"\nRAW PE RNA-seq libraries: {RAW_PE_RNA_LIBS}")
+# # logger.info(f"\nRAW PE RNA-seq libraries: {raw_pe_rna_paths}")
+
+# # raw_se_rna_paths = raw_ms_hrt_smrna_df['fq_path'].tolist() + raw_hs_plasma_rna_df['fq_path'].tolist()
+# # RAW_SE_RNA_LIBS = raw_ms_hrt_smrna_df['library'].tolist() + raw_hs_plasma_rna_df['library'].tolist()
+# # raw_pe_rna_dict = dict(zip(RAW_SE_RNA_LIBS,raw_pe_rna_paths))
+
+# raw_pe_rna_paths = raw_ms_hrt_rna_df['fq_path'].tolist() + raw_ms_nuc_rna_df['fq_path'].tolist()
+# RAW_PE_RNA_LIBS = raw_ms_hrt_rna_df['library'].tolist() + raw_ms_nuc_rna_df['library'].tolist()
+# raw_pe_rna_dict = dict(zip(RAW_PE_RNA_LIBS,raw_pe_rna_paths))
+
+# logger.info(f"\nRAW PE RNA-seq libraries: {RAW_PE_RNA_LIBS}")
+# logger.info(f"\nRAW PE RNA-seq libraries: {raw_pe_rna_paths}")
+
 ******* Processes                                                 :hierarchy:
 :PROPERTIES:
 :ID:       6cb6dc7d-29ad-4dda-8ede-1454bedc2dc7
@@ -4626,9 +4927,7 @@ https://stackoverflow.com/questions/50413374/glob-wildcards-on-multiple-director
 ******** Operating snakemake file org-mode tree (YAS)
 :PROPERTIES:
 :ID:       8a7cdf48-a132-45e9-a5da-18e2d5fad643
-:CUSTOM_ID: 8a7cdf48-a132-45e9-a5da-18e2d5fad643
 :END:
-#+name: smk
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk
 # -*- mode: snippet -*-
 # key: smk
@@ -4684,7 +4983,6 @@ import re
 ******** Bash rule smk.rule.bash
 :PROPERTIES:
 :ID:       5ac79198-801a-4ab9-82df-88402cb63e4d
-:CUSTOM_ID: 5ac79198-801a-4ab9-82df-88402cb63e4d
 :END:
 #+name: smk.rule.bash
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.bash
@@ -4754,7 +5052,6 @@ smk.rule.${1:$$(yas-choose-value '("bash" "r"))}
 ******** R rule smk.rule.r
 :PROPERTIES:
 :ID:       928c57a9-dd2b-427b-b1c4-191e6321d133
-:CUSTOM_ID: 928c57a9-dd2b-427b-b1c4-191e6321d133
 :END:
 #+name: smk.rule.r
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.r
@@ -5046,6 +5343,7 @@ https://www.google.com/search?q=emacs+waiting+for+prompts+from+shell&oq=emacs+wa
 sudo apt update
 #+end_src
 ***** xdg-utils
+- Don't do e.g. alias libreoffice='libreoffice & exit' as this prevents xdg-open from working
 - "desktop" entries
   - ~/.local/share/applications
   - /usr/share/applications
@@ -5334,15 +5632,15 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 :PROPERTIES:
 :ID:       56b7a8f4-25d7-41a2-a0b5-cdb8a86481cc
 :END:
-  |----------------------+-------------------------------------|
-  | function             | command                             |
-  |----------------------+-------------------------------------|
-  | mount partition      | udisksctl mount -b /dev/<PARTITION> |
-  |                      |                                     |
-  | unzip .bz2           | tar --bzip2 -xvf <FILE>             |
-  | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]]                               |
-  | see systemd services | systemctl list-units --type=service |
-  | see ubuntu version   | lsb_release -a                      |
+  |----------------------+--------------------------------------------------------------|
+  | function             | command                                                      |
+  |----------------------+--------------------------------------------------------------|
+  | mount partition      | udisksctl mount -b /dev/<PARTITION>                          |
+  |                      |                                                              |
+  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                      |
+  | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]] |
+  | see systemd services | systemctl list-units --type=service                          |
+  | see ubuntu version   | lsb_release -a                                               |
 - https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
 ******* X Window System
 :PROPERTIES:
@@ -5417,15 +5715,15 @@ sudo python setup.py install
 :PROPERTIES:
 :ID:       6cf0206e-fe85-44bb-a84b-b6c63c3adf6c
 :END:
-  |----------------------+-------------------------------------|
-  | function             | command                             |
-  |----------------------+-------------------------------------|
-  | mount partition      | udisksctl mount -b /dev/<PARTITION> |
-  |                      |                                     |
-  | unzip .bz2           | tar --bzip2 -xvf <FILE>             |
-  | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]]                               |
-  | see systemd services | systemctl list-units --type=service |
-  | see ubuntu version   | lsb_release -a                      |
+  |----------------------+--------------------------------------------------------------|
+  | function             | command                                                      |
+  |----------------------+--------------------------------------------------------------|
+  | mount partition      | udisksctl mount -b /dev/<PARTITION>                          |
+  |                      |                                                              |
+  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                      |
+  | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]] |
+  | see systemd services | systemctl list-units --type=service                          |
+  | see ubuntu version   | lsb_release -a                                               |
 - https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
 - find large files sudo du -a /home | sort -n -r | head -n 10
 ******* ideas
@@ -5948,12 +6246,12 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
 - https://www.howtogeek.com/312755/what-is-the-process-windowserver-and-why-is-it-running-on-my-mac/
 - [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][How to allow install of non app store or identified developers on MacOS Sierra]]
 - Command Table
-  | Function             | Command                   | Notes                                                                                                               |
-  |----------------------+---------------------------+---------------------------------------------------------------------------------------------------------------------|
-  |                      |                           | <20>                                                                                                                |
+  | Function             | Command                   | Notes                                                        |
+  |----------------------+---------------------------+--------------------------------------------------------------|
+  |                      |                           | <20>                                                         |
   | List process to kill | ps -A\ grep -m1 <PROCESS> | https://stackoverflow.com/questions/11546765/how-to-get-the-pid-of-a-process-by-giving-the-process-name-in-mac-os-x |
-  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                                               |
-  |                      |                           |                                                                                                                     |
+  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/        |
+  |                      |                           |                                                              |
 - https://stackoverflow.com/questions/17935301/how-to-force-mac-os-to-open-search-with-google-in-chrome
 - Window management
   - Default layouts
@@ -6074,30 +6372,39 @@ https://abseil.io/resources/swe-book
 :PROPERTIES:
 :ID:       a49abc44-8e71-4a1a-bd35-a77849427c94
 :END:
-https://www.reddit.com/r/datascience/comments/13wkkdv/which_is_the_best_editor_for_python_in_your/jmcj7f1/
-https://www.reddit.com/r/emacs/comments/13y4gg0/nano_modeline_10_now_with_buttons/
-https://www.reddit.com/r/emacs/comments/13qmo1u/jupyter_in_the_emacs_universe/
-https://www.reddit.com/r/emacs/comments/1459elk/llm_pal_ai_inside_emacs_via_lsp_locally_hosted/
-https://plantarum.ca/2021/10/03/emacs-tutorial-rmarkdown/
-https://melpa.org/#/chatgpt-shell
-https://github.com/rougier/nano-emacs
-https://xenodium.com/my-emacs-eye-candy/
-https://emacsdocs.org/
-https://randomgeekery.org/config/emacs/nano/
-https://www.reddit.com/r/emacs/comments/onpv90/emacs_as_shell_script_ide/
-https://www.reddit.com/r/emacs/comments/1n5s5g/perhaps_a_stupid_question_enforcing_a_line_width/
 
-https://www.reddit.com/r/emacs/comments/10l2glx/is_there_a_way_to_keep_backup_files_without/
-
-
-https://www.youtube.com/watch?app=desktop&time_continue=781&v=JkI-sdgpOoA&embeds_euri=https%3A%2F%2Fwww.reddit.com%2F&source_ve_path=MjM4NTE&feature=emb_title&ab_channel=lxsameer&themeRefresh=1
+- https://github.com/Izder456/Emacs-Config
+- https://github.com/ahyatt/llm
+- https://docs.khoj.dev/#/emacs
+- https://www.reddit.com/r/emacs/comments/15lad2v/extending_emacs_29_sqlitemode_cell_navigation_edit/
+- https://www.reddit.com/r/datascience/comments/13wkkdv/which_is_the_best_editor_for_python_in_your/jmcj7f1/
+- https://www.reddit.com/r/emacs/comments/13y4gg0/nano_modeline_10_now_with_buttons/
+- https://www.reddit.com/r/emacs/comments/13qmo1u/jupyter_in_the_emacs_universe/
+- https://www.reddit.com/r/emacs/comments/1459elk/llm_pal_ai_inside_emacs_via_lsp_locally_hosted/
+- https://plantarum.ca/2021/10/03/emacs-tutorial-rmarkdown/
+- https://melpa.org/#/chatgpt-shell
+- https://github.com/rougier/nano-emacs
+- https://xenodium.com/my-emacs-eye-candy/
+- https://emacsdocs.org/
+- https://randomgeekery.org/config/emacs/nano/
+- https://www.reddit.com/r/emacs/comments/onpv90/emacs_as_shell_script_ide/
+- https://www.reddit.com/r/emacs/comments/1n5s5g/perhaps_a_stupid_question_enforcing_a_line_width/
+- https://www.reddit.com/r/emacs/comments/10l2glx/is_there_a_way_to_keep_backup_files_without/
+-
+- https://www.youtube.com/watch?app=desktop&time_continue=781&v=JkI-sdgpOoA&embeds_euri=https%3A%2F%2Fwww.reddit.com%2F&source_ve_path=MjM4NTE&feature=emb_title&ab_channel=lxsameer&themeRefresh=1
+***** org_export_to_beamer.sh
+#+begin_src bash :tangle ./tools/shell/org_export_to_beamer.sh
+emacsclient -e "(progn (find-file \"$1\") \
+                       (org-id-goto \"$2\") \
+                       (org-beamer-export-to-pdf nil t))"
+#+end_src
 ***** pandoc-mode
 :PROPERTIES:
 :ID:       da49373a-63e4-445d-842b-8d4ea02d16f0
 :END:
 - [[https://github.com/joostkremers/pandoc-mode][github]]
 - http://joostkremers.github.io/pandoc-mode/
-***** Processes :hierarchy
+***** Processes
 ****** 0 Flat                                 :flat:
 ******* Syntax highlighting
 https://wilkesley.org/~ian/xah/emacs/elisp_syntax_coloring.html
@@ -6143,8 +6450,13 @@ https://github.com/yilkalargaw/org-auto-tangle/blob/master/org-auto-tangle.el
 - https://www.google.com/search?q=r+linting+in+emacs&sxsrf=ALiCzsZVGCOPi3tH5qIIUWdvxCGB6HalWw%3A1661434268625&ei=nHkHY6zsJbyD0PEP7Lm8kAM&oq=r+linting+in+emacs&gs_lcp=ChNtb2JpbGUtZ3dzLXdpei1zZXJwEAMyBwgAEB4QogQyBQgAEKIEOgcIABBHELADSgQIQRgAUI0SWN4dYP0laAFwAXgAgAGwAYgB2waSAQMwLjeYAQCgAQHIAQjAAQE&sclient=mobile-gws-wiz-serp
 ******* Modify write permission from within buffer w/ C-x C-q
 https://unix.stackexchange.com/questions/47724/how-to-modify-write-permission-on-current-buffer-in-emacs
-****** Emacs as an IDEa
-[[id:340af0cc-4211-4ae2-8bb2-4acdb1e2de2b][Show or identify whitespace]]
+****** Window and frame management
+https://www.reddit.com/r/emacs/comments/179t67l/window_management_share_your_displaybufferalist/
+****** Emacs as a genreal IDE
+https://emacsrocks.com/e13.html
+https://www.reddit.com/r/emacs/comments/17gqjsy/using_ruff_format_with_emacs_to_reformat_python/
+- https://github.com/alhassy/repl-driven-development
+- [[id:340af0cc-4211-4ae2-8bb2-4acdb1e2de2b][Show or identify whitespace]]
 ****** Appearance
 [[id:5510fe9b-8878-4ac6-86be-6035043b31f3][Set fringe color]]
 - https://github.com/Likhon-baRoy/.emacs.d
@@ -6271,6 +6583,7 @@ https://daryl.wakatara.com/emacs-gtd-flow-evolved/#structure---para
 - tramp gdrive
   - [currently not working] to goodle drive- https://www.gnu.org/software/tramp/#Using-Google-Drive
 ****** Programming
+- https://www.val.town/
 - https://www.youtube.com/c/arjancodes
 - https://abseil.io/resources/swe-book/html/ch02.html#blameless_postmortem_culture
 - https://processing.org/
@@ -6373,7 +6686,6 @@ $0
 ******* org-pomodoro
           :PROPERTIES:
           :ID:       4eed8eb4-1343-4d7c-80d3-c7a213135b14
-          :CUSTOM_ID: 4eed8eb4-1343-4d7c-80d3-c7a213135b14
           :END:
 - org-pomodoro
   - https://github.com/marcinkoziej/org-pomodoro/issues
@@ -6523,21 +6835,28 @@ https://www.google.com/search?client=ubuntu&hs=vZc&sxsrf=ALeKk03r2GUTR1rKBPenicU
 [[id:222ed471-b1b1-4c4a-b815-0fa01123ea64][My ispell setup]]
 ******* openwith
 [[id:07b21f19-4c71-44da-97e2-65b5b43b8678][My openwith setup]]
-******* Org-gcal
+
 ******* org-notify
 :PROPERTIES:
 :ID:       5280a4b7-eb7f-4591-a41d-8032cd07bef8
 :END:
 https://elpa.gnu.org/packages/org-notify.html
 ******* Org-ql
+:PROPERTIES:
+:ID:       fefb0b7c-5645-488e-9885-1baa263bb3e6
+:END:
 https://github.com/alphapapa/org-ql
 ******* Org-mode
 :PROPERTIES:
 :ID:       d7d54139-64d0-4cfe-ab3a-879b3617b226
 :END:
-https://www.reddit.com/r/orgmode/comments/147ofmi/what_element_type_is_the_colon/
-https://orgmode.org/worg/dev/org-element-api.html
-https://www.reddit.com/r/emacs/comments/13y4gg0/nano_modeline_10_now_with_buttons/
+- https://www.reddit.com/r/emacs/comments/17hvcsi/ellama_moved_to_llm_library_and_now_supports/
+- https://github.com/mpedramfar/zotra
+- https://200ok.ch/posts/2022-02-13_integrating_org_mode_agenda_into_other_calendar_apps.html
+- https://www.reddit.com/r/orgmode/comments/147ofmi/what_element_type_is_the_colon/
+- https://orgmode.org/worg/dev/org-element-api.html
+- https://www.reddit.com/r/emacs/comments/13y4gg0/nano_modeline_10_now_with_buttons/
+- https://www.reddit.com/r/emacs/comments/16u4lvk/is_there_a_way_to_design_an_org_block_that_acts/
 ******** Org manual input table export to csv
 :PROPERTIES:
 :ID:       655164a2-53ee-40aa-8120-286b55f164b5
@@ -6742,6 +7061,17 @@ C-u-c-s
 ********* Appearance
 - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Visual-Line-Mode.html][default visual line mode]]
 https://lepisma.xyz/2017/10/28/ricing-org-mode/
+- Themes
+  - https://github.com/minad/org-modern
+- Code blocks
+  #+begin_src emacs-lisp
+;(use-package org-modern-indent
+;  :load-path "~/code/emacs/org-modern-indent/"
+  ; or
+  ; :straight (org-modern-indent :type git :host github :repo "jdtsmith/org-modern-indent"))
+;  :config ; add late to hook
+;  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
+#+end_src
 ********* Calendar sync
 https://www.reddit.com/r/orgmode/comments/ux9f78/a_python_script_to_sync_from_google_calendar_to/
 - to do ics import to org
@@ -6991,6 +7321,7 @@ https://emacs.stackexchange.com/questions/54497/how-to-set-tab-behavior-in-org-m
 ********** [[id:3ef77d8f-3642-4ae5-b8f6-7fe2c017524c][Tangle source code from another org file using noweb]]
 ********** [[id:72d6c025-d799-473a-b8bc-979f4bd1d0b4][Header arguements]]
 ******** Local YAS
+********* [[id:5c2e54cf-797e-4ccb-b12e-2167d06ce7a4][code.sh]]
 ********* code.prop :yas:
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.prop
 # -*- mode: snippet -*-
@@ -7021,8 +7352,9 @@ $0
 # --
 [[https://www.google.com/search?q=${1:$(replace-regexp-in-string " " "+" yas-text)}][google:$1]]$0
 #+end_src
-
-******** [[id:a5717be7-afe9-4db2-8b4d-b797c7631466][orgzly]]
+******** Interfaces
+https://www.reddit.com/r/orgmode/comments/x2e90r/there_really_needs_to_be_a_better_mobile_app_for/
+********* [[id:a5717be7-afe9-4db2-8b4d-b797c7631466][orgzly]]
 ******** Ideas
 linting like https://github.com/loeffel-io/ls-lint
 ******** General reference
@@ -7069,7 +7401,6 @@ linting like https://github.com/loeffel-io/ls-lint
 ********* Worg Guides
          :PROPERTIES:
          :ID:       5AE57F83-36DB-41F7-B10A-DE5A6C15009F
-         :CUSTOM_ID: 5AE57F83-36DB-41F7-B10A-DE5A6C15009F
          :END:
 
 
@@ -7256,7 +7587,6 @@ $0
 ******** Reference
          :PROPERTIES:
          :ID:       5ce55261-edae-4205-9a93-35328f678925
-         :CUSTOM_ID: 5ce55261-edae-4205-9a93-35328f678925
          :END:
 - [[http://howardism.org/Technical/Emacs/templates-tutorial.html][Having Emacs Type for You]]
 - Examples of snippet syntax and use case
@@ -7266,7 +7596,6 @@ $0
 ********* [[http://joaotavora.github.io/yasnippet][documentation]]
          :PROPERTIES:
          :ID:       75bb5fc8-29fd-4a7d-85bd-5ed761fa3216
-         :CUSTOM_ID: 75bb5fc8-29fd-4a7d-85bd-5ed761fa3216
          :END:
   - Directory (yas-snippet-dirs) is ("~/.emacs.d/snippets" "/path/to/some/collection/" "/path/to/yasnippet/yasmate/snippets" "/path/to/yasnippet/snippets")
   - [[https://github.com/joaotavora/yasnippet][github]]
@@ -7662,6 +7991,7 @@ https://github.com/politza/pdf-tools
   - https://github.com/ffevotte/isend-mode.el
 
 *** Processes
+**** 0 Flat
 - ocr
   - https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
   - [[https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux][optical character recognition in linux]]
@@ -7672,6 +8002,91 @@ https://github.com/politza/pdf-tools
 - https://www.google.com/search?q=calibre+convert+epub+to+pdf
 - devops
   - http://howardism.org/Technical/Emacs/literate-devops.html
+
+***** Convert pdf image to png
+#+begin_src bash :tangle ./scripts/pdf_to_png.sh
+#!/usr/bin/env bash
+
+# /etc/ImageMagick-6/policy.xml policy change allows work with PDF
+# allows file overwrite
+
+print_usage(){
+    cat <<- EOF
+
+    usage: $0 <input-file.pdf>
+
+    Converts a PDF to a PNG with a white background.
+
+    example: $0 input.pdf
+
+    Notes:
+    - /etc/ImageMagick-6/policy.xml policy change allows work with PDF
+    - allows file overwrite
+    - works from /tmp
+    - set to 600 dpi
+EOF
+}
+
+# Check for input file
+if [ -z "$1" ]; then
+  print_usage
+  exit 1
+fi
+
+# Input file
+input_file="$1"
+
+# Output file based on input file
+output_file=$(echo "$input_file" | sed 's/\.pdf$/.png/')
+
+convert -density 600 -background white -flatten "$input_file" "$output_file"
+
+echo "Conversion complete. Output saved to $output_file"
+
+#+end_src
+
+***** Convert pdf image to svg
+#+begin_src bash :tangle ./scripts/pdf_to_png.sh
+#!/usr/bin/env bash
+
+# /etc/ImageMagick-6/policy.xml policy change allows work with PDF
+# allows file overwrite
+
+print_usage(){
+    cat <<- EOF
+
+    usage: $0 <input-file.pdf>
+
+    Converts a PDF to a PNG with a white background.
+
+    example: $0 input.pdf
+
+    Notes:
+    - /etc/ImageMagick-6/policy.xml policy change allows work with PDF
+    - allows file overwrite
+    - works from /tmp
+    - set to 600 dpi
+EOF
+}
+
+# Check for input file
+if [ -z "$1" ]; then
+  print_usage
+  exit 1
+fi
+
+# Input file
+input_file="$1"
+
+# Output file based on input file
+output_file=$(echo "$input_file" | sed 's/\.pdf$/.png/')
+
+convert -density 600 -background white -flatten "$input_file" "$output_file"
+
+echo "Conversion complete. Output saved to $output_file"
+
+#+end_src
+
 **** Web annotations
 - https://webanno.github.io/webanno/
 **** Downloading
@@ -8126,6 +8541,10 @@ docker_interactive() {
 :ID:       3fe8d3cd-e9aa-466a-8293-7aaf487556f9
 :END:
   - [[https://www.reddit.com/r/IWantToLearn/comments/7s7q32/computer_networking/][reddit: computer networking]]
+
+**** Application programming interface (API)
+- APIs
+  - https://www.reddit.com/r/programming/comments/5zbzpu/windows_hacks_creative_and_unusual_things_that/
   - <<<Application programming interface>>> (<<<API>>>)
     - <<<Representational state transfer>>> (<<<REST>>> or <<<RESTful>>>) API
       - - http://www.restapitutorial.com/
@@ -8368,7 +8787,6 @@ https://mmistakes.github.io/jekyll-theme-basically-basic/recipes/chocolate-chip-
 :PROPERTIES:
 :ID:       CBD1C9BA-44CB-4510-8ACD-F12CEF7E3402
 :END:
-https://www.reddit.com/r/programming/comments/150sr0g/walter_bright_programming_language_ideas_that/
 **** Local YAS
 ******* head3                                                           :yas:
 :PROPERTIES:
@@ -8427,10 +8845,12 @@ ${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
 ${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
 #+end_src
 
-**** Languages
+**** Programming languages
 :PROPERTIES:
 :ID:       b9145567-7654-45d7-abb9-4418d3f12b90
 :END:
+- domain-specific
+  - SQL
 - https://www.reddit.com/r/bioinformatics/comments/qpuhn5/which_programming_languages_should_i_learn/hjx3ocg/
 https://www.freecodecamp.org/news/rust-in-replit/
 ***** [[https://en.wikipedia.org/wiki/MUMPS][MUMPS]]
@@ -8506,6 +8926,7 @@ print(most_common_word_pairs(text))
 - Install package
   - https://www.google.com/search?q=python+install+pandas
 ******* Probability and statistics
+https://allendowney.blogspot.com/2016/06/there-is-still-only-one-test.html?m=1
 https://www.reddit.com/r/statistics/comments/12slcf6/d_ive_just_ordered_drunkards_walk_can_you/
 - https://stackoverflow.blog/2021/02/23/level-up-mastering-statistics-with-python-part-2/?cb=1&_ga=2.59352485.940265309.1614263567-766544545.1565628865
 ******* General
@@ -8822,76 +9243,25 @@ rx_dict = {
 :PROPERTIES:
 :ID:       BF9D824A-02EF-4580-97A1-B887299AD461
 :END:
-https://www.reddit.com/r/emacs/comments/zniyfi/advent_of_code_but_in_elisp/
-- elisp
-  - https://www.gnu.org/software/emacs/manual/html_mono/elisp.html
-  - https://www.gnu.org/software/emacs/manual/html_node/eintr/index.html
-  - https://exercism.org/tracks/emacs-lisp
-  - https://old.reddit.com/r/emacs/comments/qcr432/elispemacs_tutorialbook_with_real_world_projects/
-- https://lgmoneda.github.io/2017/03/15/elisp-summary.html
-- https://learnxinyminutes.com/docs/elisp/
-- https://www.google.com/search?q=lisp+for+loop
-- https://www.murilopereira.com/a-rabbit-hole-full-of-lisp/
-https://www.emacswiki.org/emacs/ElispCookbook
-#+name: block-1
-#+BEGIN_SRC emacs-lisp :results replace
-(list "cons" "newelt" "balsh")
-#+END_SRC
-https://www.reddit.com/r/emacs/comments/kt3mvf/introduction_to_emacs_lisp_fundamentals_live_18/
-#+RESULTS[bbf62e487081f8e947ef5d004eb0bf97f38c1537]: block-1
-| cons | newelt | balsh |
-
-- functions
-  - functions ending in -p are predicate, meaning they are a yes/no checker
-- http://landoflisp.com/
-- [[https://www.gnu.org/software/emacs/manual/eintr.html][An Introduction to Programming in Emacs Lisp]]
-  1. List Processing
-     1. Lisp Lists
-        #+BEGIN_SRC emacs-lisp
-        '(this is a list(with a list inside of it "and another by quotes"))
-        #+END_SRC
-
-        #+RESULTS:
-        | this | is | a | list | (with a list inside of it and another by quotes) |
-
-        - Words = atoms (indivisible)
-        - All amounts of whitespace are equivalent
-     2. Run a Program
-        - List are programs that do 1 of 3 things:
-          1. Do nothing except return to you the list itself
-          2. Send you an error message
-          3. Treat the first symbol in the list as a command to do something
-     3. Debugger!
-     4.
-     5. Byte-complied code can be created and is stored as .elc instead of .el
-     6.
-     7. Variables
-        - Note, something like fill-column is NOT a function, it's a variable
-        - Arguments can be variables such as fill column
-     8.
-        - The message function and message variables
-           #+BEGIN_SRC emacs-lisp
-  (message "The name of this buffer is: %s." (buffer-name))
- #+END_SRC
-     9. Setting the value of a variable with set/setq/let
-        - setq is just set<PLUS>a single quote to set value of var
-  2. Practicing Evaluation
-- [[http://www.gnu.org/software/emacs/manual/html_mono/elisp.html#Simple-Macro][Emacs Lisp Manual]]
-  - Introduction
-- [[https://github.com/hypernumbers/learn_elisp_the_hard_way/tree/master/contents][Learn e-lisp the hard way]]
-- http://sarabander.github.io/sicp/html/Chapter-1.xhtml#Chapter-1
-- [[https://www.youtube.com/watch?v=XYKRVNQ_MqE&app=desktop][Lisp course]]
-- https://www.reddit.com/r/emacs/comments/60tl6o/tips_on_reading_dense_emacs_lisp_code/
-- https://www.reddit.com/r/emacs/comments/62ykc9/i_guess_i_need_to_learn_elisp/
-- http://stackoverflow.com/questions/1614724/is-learning-lisp-useful-at-all-these-days
-- [[http://www.fincher.org/tips/Languages/Emacs.shtml][lisp guide]]
-- http://emacslife.com/how-to-read-emacs-lisp.html
-- https://www.gnu.org/software/emacs/manual/html_node/eintr/
-- https://www.youtube.com/watch?v=XYKRVNQ_MqE&app=desktop
-- https://www.google.com/search?q=youtube+introduction+to+lisp&rlz=1C9BKJA_enUS678US679&oq=youtube+introduction+to+lisp&aqs=chrome..69i57.9485j0j7&hl=en-US&sourceid=chrome-mobile&ie=UTF-8
-- https://www.gnu.org/software/emacs/manual/html_node/elisp/index.html#SEC_Contents
-- http://cl-cookbook.sourceforge.net/files.html
 ****** Processes
+******* 0 Flat
+******** Open a vterm window
+
+#+begin_src emacs-lisp :tangle ./lib/lisp_functions.el
+(defun open-vterm-in-new-frame ()
+  "Open a new vterm buffer in a new frame."
+  (interactive)
+  (let* ((current-prefix-arg '(4))  ; simulate pressing C-u
+         (timestamp (format-time-string "%Y%m%d%H%M%S")) ; timestamp generated
+         (buffer-name (concat "TEST-" timestamp)) ; buffer-name created
+         (new-frame (make-frame))) ; create new frame
+    (select-frame-set-input-focus new-frame) ; focus the new frame
+    (call-interactively 'vterm)    ; execute M-x vterm
+    ;; Rename the buffer.
+    (rename-buffer buffer-name t)))  ; The t parameter forces the renaming even if a buffer named "TEST-<timestamp>" already exists.
+
+#+end_src
+
 ******* Launch program
 #+begin_src emacs-lisp
 (start-process "my-chrome-process" nil "google-chrome")
@@ -9018,15 +9388,67 @@ done
 
 #+end_src
 
-****** MIT Structure and Interpretation of Computer Programs
+****** :ref:
+- https://old.reddit.com/r/emacs/comments/qcr432/elispemacs_tutorialbook_with_real_world_projects/
+- https://lgmoneda.github.io/2017/03/15/elisp-summary.html
+- https://learnxinyminutes.com/docs/elisp/
+- https://www.murilopereira.com/a-rabbit-hole-full-of-lisp/
+- https://www.reddit.com/r/emacs/comments/kt3mvf/introduction_to_emacs_lisp_fundamentals_live_18/
+- http://landoflisp.com/
+- http://sarabander.github.io/sicp/html/Chapter-1.xhtml#Chapter-1
+- [[https://www.youtube.com/watch?v=XYKRVNQ_MqE&app=desktop][Lisp course]]
+- [[https://github.com/hypernumbers/learn_elisp_the_hard_way/tree/master/contents][Learn e-lisp the hard way]]
+- https://www.reddit.com/r/emacs/comments/60tl6o/tips_on_reading_dense_emacs_lisp_code/
+- https://www.reddit.com/r/emacs/comments/62ykc9/i_guess_i_need_to_learn_elisp/
+- http://stackoverflow.com/questions/1614724/is-learning-lisp-useful-at-all-these-days
+- [[http://www.fincher.org/tips/Languages/Emacs.shtml][lisp guide]]
+- http://emacslife.com/how-to-read-emacs-lisp.html
+******* [[https://www.gnu.org/software/emacs/manual/html_node/elisp/index.html][GNU Emacs Lisp documentation]]
+- https://www.gnu.org/software/emacs/manual/html_node/eintr/
+- [[http://www.gnu.org/software/emacs/manual/html_mono/elisp.html#Simple-Macro][Emacs Lisp Manual]]
+  - Introduction
+  1. List Processing
+     1. Lisp Lists
+        #+BEGIN_SRC emacs-lisp
+        '(this is a list(with a list inside of it "and another by quotes"))
+        #+END_SRC
+
+        #+RESULTS:
+        | this | is | a | list | (with a list inside of it and another by quotes) |
+
+        - Words = atoms (indivisible)
+        - All amounts of whitespace are equivalent
+     2. Run a Program
+        - List are programs that do 1 of 3 things:
+          1. Do nothing except return to you the list itself
+          2. Send you an error message
+          3. Treat the first symbol in the list as a command to do something
+     3. Debugger!
+     4.
+     5. Byte-complied code can be created and is stored as .elc instead of .el
+     6.
+     7. Variables
+        - Note, something like fill-column is NOT a function, it's a variable
+        - Arguments can be variables such as fill column
+     8.
+        - The message function and message variables
+           #+BEGIN_SRC emacs-lisp
+  (message "The name of this buffer is: %s." (buffer-name))
+ #+END_SRC
+     9. Setting the value of a variable with set/setq/let
+        - setq is just set<PLUS>a single quote to set value of var
+  2. Practicing Evaluation
+
+******* [[http://cl-cookbook.sourceforge.net/files.html][The common lisp cookbook]]
+******* MIT Structure and Interpretation of Computer Programs
 :PROPERTIES:
 :ID:       22A808FB-8D3E-4E04-B0FA-FE0AB698F4A2
 :END:
-
+- https://www.youtube.com/watch?v=XYKRVNQ_MqE&app=desktop
 - [[https://mitpress.mit.edu/sicp/][Course Website]]
 - [[https://mitpress.mit.edu/sicp/full-text/book/book-Z-H-4.html#%_toc_start][Course Textbook]]
 
-******* 1A: Overview: Introduction to Lisp
+******** 1A: Overview: Introduction to Lisp
 :PROPERTIES:
 :ID:       CEFCF31D-513F-44BD-A4FB-29B1B8A7A17F
 :END:
@@ -9094,18 +9516,20 @@ B
 :PROPERTIES:
 :ID:       42e37db5-29e7-418f-a74d-e91ffc81167f
 :END:
-Uses sh-mode
+- Uses sh-mode
 ******* [[id:1b86754e-15fd-4b7b-8b4d-675208aa8d89][head4]]
 ******* [[id:fcd48576-a658-44c4-8a98-9d9404366c1b][head2]]
 ******* [[id:2870f5de-4af4-4d76-a8bc-89823e4e09a0][head3]]
-******* bash.var :yas:
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.var
+******* var                                                             :yas:
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/sh-mode/var
 # -*- mode: snippet -*-
-# key: bash.var
+# key: var
 # expand-env: ((yas-indent-line 'none))
 # --
 $1="$\{$2}"$0
 #+end_src
+
+
 ******* doc.fun                                                         :yas:
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/sh-mode/doc.fun
 # -*- mode: snippet --*
@@ -9122,11 +9546,11 @@ EOF
 
 #+end_src
 
-******* bash.array.from.find
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/sh-mode/bash.array.from.find
+******* array.from.find
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/sh-mode/array.from.find
 # -*- mode: snippet -*-
-# name: bash.array.from.find
-# key: bash.array.from.find
+# name: array.from.find
+# key: array.from.find
 # --
 ${1:ARRAY NAME}=()
 while IFS=  read -r -d $'\0'; do
@@ -9135,36 +9559,22 @@ done < <(find ${2:FIND DIR} -name ${3:FIND TERM} -print0)
 printf '%s\n' "\${$1[@]}"
 $0
 #+end_src
-******* bash.function
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.function
+******* function
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/sh-mode/function
 # -*- mode: snippet -*-
-# key: bash.function
+# key: function
 # expand-env: ((yas-indent-line 'fixed))
 # --
-${1:function_name}(){
+${1:$$(replace-regexp-in-string " " "_" yas-text)}(){
     local ${2: <VARIABLE NAME> }="\${1}"
     $0
 }
-#+end_src
-******* bash.getops
-# Getops
-while getopts "${7:OPTIONS}" options;
-do
-    case "${options}" in
-        -h | --help) print_usage ;;
-        \?)
-            echoerr "Invalid option -$OPTARG"
-            print_usage
-            exit 1
-            ;;
-    esac
-done
-shift $((OPTIND -1))
 
-******* bash.script
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/sh-mode/bash.script
+#+end_src
+******* script
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/sh-mode/script
 # -*- mode: snippet -*-
-# key: bash.script
+# key: script
 # --
 #!/usr/bin/env bash
 
@@ -9172,21 +9582,6 @@ code.header
 
 block.comment
 
-bash.usage
-#+end_src
-
-******* bash.script.org
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/bash.script.org
-# -*- mode: snippet -*-
-# key: bash.script.org
-# --
-`(make-string (org-current-level) ?*)` ${3: <DESCRIPTIVE TITLE>}:bashscript:
-:PROPERTIES:
-:header-args:bash: :tangle ${1: <TANGLE DIR>}/${2: <SCRIPT NAME>}.sh
-:END:
-[[file:$1/$2.sh]]
-,#+begin_src bash
-#!/usr/bin/env bash
 set -o errexit   # abort on nonzero exitstatus
 set -o nounset   # abort on unbound variable
 set -o pipefail  # don't hide errors within pipes
@@ -9199,29 +9594,23 @@ main(){
     variables
 }
 
+
+bash.usage
 usage(){}
 
 [ "/$1" = -h ] && print_usage && exit 1
+
 main "$@"
-,#+end_src
-#+end_src
 
 
-******* bash.unit
-******* bash.unit :yas:
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.unit
-# -*- mode: snippet -*-
-# key: bash.unit
-# expand-env: ((yas-indent-line 'none))
-# --
-# For unit testing:
 #+end_src
-******* bash.usage
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/bash.usage
+******* usage
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/sh-mode/usage
 # -*- mode: snippet -*-
-# key: bash.usage
+# key: usage
 # expand-env: ((yas-indent-line 'fixed))
 # --
+
 print_usage(){
     cat <<- EOF
 
@@ -9236,11 +9625,19 @@ ${5:<DESCRIPTION>}
 example: ${6:<EXAMPLE>}
 
 EOF
+
+    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
+        print_usage
+        return
+    fi
+
 }
 #+end_src
-******* [[file:~/.emacs.d/snippets/sh-mode/]]
 
 ******* code.sh
+:PROPERTIES:
+:ID:       5c2e54cf-797e-4ccb-b12e-2167d06ce7a4
+:END:
 #+name: code.sh
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.sh
 # -*- mode: snippet -*-
@@ -9251,27 +9648,38 @@ EOF
 $0
 ,#+end_src
 #+end_src
-******* code.bash
-#+name: code.sh
-#+begin_src bash :tangle ~/repos/emacs.d/snippets/org-mode/code.bash
-# -*- mode: snippet -*-
-# key: code.sh
-# expand-env: ((yas-indent-line 'none))
-# --
-,#+begin_src bash
-$0
-,#+end_src
-#+end_src
 
 ******* print_array
-  #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/shell-mode/bash.print_array
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/shell-mode/print_array
 # -*- mode: snippet -*-
-# name: bash.print_array
-# key: bash.print_array
+# name: print_array
+# key: print_array
 # --
 printf '%s\n' "${${1:ARRAY_NAME}[@]}"
 $0
 #+end_src
+
+******* Development :dev:
+:PROPERTIES:
+:header-args: :tangle no
+:END:
+
+******** getops
+# Getops
+while getopts "${7:OPTIONS}" options;
+do
+    case "${options}" in
+        -h | --help) print_usage ;;
+        \?)
+            echoerr "Invalid option -$OPTARG"
+            print_usage
+            exit 1
+            ;;
+    esac
+done
+shift $((OPTIND -1))
+
+
 ****** Processes
 :PROPERTIES:
 :ID:       c3e424cd-7191-423e-815b-7e7fcb770100
@@ -10310,7 +10718,7 @@ https://codebeautify.org/yaml-validator
 - Cannot do string concatenation
   - https://stackoverflow.com/questions/5484016/how-can-i-do-string-concatenation-or-string-replacement-in-yaml
 - https://www.google.com/search?q=yaml+make+value+from+other+values
-**** JSON JavaScript Object Notation
+***** JSON JavaScript Object Notation
 :PROPERTIES:
 :ID:       9E10CCC0-BC92-4C96-BBF2-99B54E88143D
 :END:
@@ -10321,60 +10729,7 @@ https://github.com/antonmedv/fx/blob/master/DOCS.md
 - JSON is text, and we can convert any JavaScript object into JSON, and send JSON to the server.
 -
 
-**** Computer Languages / Code
-:PROPERTIES:
-:ID:       AB71833F-DB71-4C67-B56E-472489B0916C
-:END:
-:LOGBOOK:
-CLOCK: [2019-01-06 Sun 19:57]--[2019-01-06 Sun 20:10] =>  0:13
-CLOCK: [2018-11-07 Wed 10:50]--[2018-11-07 Wed 11:15] =>  0:25
-:END:
-- https://www.reddit.com/r/programming/comments/axt97a/ghidra_nsas_reverse_engineering_tool_is_now/
-- https://github.com/nas5w/100-days-of-code-frontend/blob/master/README.md
-- education, tutorials, cheatsheats, theory
-  - one-off programming projects
-    - https://www.reddit.com/r/programming/comments/aajb7r/how_doom_fire_was_done/
-    - https://www.madewithcode.com/projects/marypoppinsreturns?utm_source=made%20with%20code
-  - https://julien.danjou.info/
-  - cheatsheets
-    - https://github.com/chubin/cheat.sh
-  - Educational resources
-    - [[https://mail.google.com/mail/u/0/#inbox/15e112cb4784f88f][email: new udemy courses]]
-      - python mega course
-      - iOS 10 & Swift3
-      - NLTK
-    - Challenges, integrated, educational, fun
-      - [[https://www.youtube.com/user/shiffman?app=desktop][Shiffman creative coding video tutorials]]
-      - [[http://upskillcourses.com/p/essential-web-developer-course][Upskill web development course]]
-      - https://code.org/minecraft
-      - https://asciinema.org/browse/featured
-    - https://flatironschool.com/
-    - https://github.com/sindresorhus/awesome
-    - https://leetcode.com/
-    - Cool example application builds
-      - https://redditblog.com/2017/04/13/how-we-built-rplace/
-      - https://tallys.github.io/color-theory/
-    - https://www.reddit.com/r/programming/comments/7rgz78/a_lot_of_free_pdfs_about_programming_from_stack/
-    - https://www.syncfusion.com/resources/techportal/ebooks
-    - [[https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-00sc-introduction-to-computer-science-and-programming-spring-2011/][MIT Intro to computer science and programming 2011]]
-    - [[http://www.russpoldrack.org/2016/05/advice-for-learning-to-code-from-scratch.html?m=1][Poldrack learn to code]]
-  - General and theory
-    - cite:abelson1996
-  - Literate programming
-    - declare defaults when important for a process or workflow
-- platform
-  - IDEs
-    - Visual Studio
-      - https://code.visualstudio.com/blogs/2017/11/15/live-share
-      - https://www.reddit.com/r/programming/comments/6g498w/visual_studio_code_may_2017/
-    - https://eclipse.org/ide/
-- APIs
-  - https://www.reddit.com/r/programming/comments/5zbzpu/windows_hacks_creative_and_unusual_things_that/
-- domain-specific
-  - SQL
-- [[https://ronjeffries.com/articles/016-0607/yaks/][Yaks]]
-
-***** markup languages
+***** Markup languages
 :PROPERTIES:
 :ID:       817CE006-4FD6-4F53-8A62-9D2D86E237EE
 :END:
@@ -10421,7 +10776,7 @@ cite:yasini2012guideline
 - http://creately.com/blog/diagrams/part-2-what-type-of-uml-diagram-should-you-be-using/
 - http://creately.com/blog/diagrams/uml-diagram-types-examples/
 
-***** standards and formats
+**** Standards and formats
 :PROPERTIES:
 :ID:       95011C22-8436-481A-B512-B0E82648B50C
 :END:
@@ -10434,7 +10789,7 @@ cite:yasini2012guideline
     - https://www.dwitter.net/top
     - https://codepen.io/sdras/pen/waXKPw
 
-****** <<<Regular Expressions>>> and text parsing
+***** <<<Regular Expressions>>> and text parsing
 :PROPERTIES:
 :ID:       673D5E8D-64C5-4E9F-A664-612C2A6B1770
 :END:
@@ -10476,12 +10831,7 @@ cite:yasini2012guideline
       - non-whitespace is \S
       - non-digit is \D
 
-***** Ideas
-:PROPERTIES:
-:ID:       47C83191-1387-4161-9E0C-A5F7EC1A8914
-:END:
-
-***** literate programming
+**** Literate programming
 :PROPERTIES:
 :ID:       10af5937-004b-46f8-818d-b81d30462164
 :END:
@@ -10496,6 +10846,43 @@ http://howardism.org/Technical/Emacs/literate-devops.html
 :PROPERTIES:
 :ID:       48dfc684-aa60-4222-8641-d1646b3451be
 :END:
+- https://carlosschults.net/en/fivel-levels-readable-code/
+- https://www.reddit.com/r/programming/comments/axt97a/ghidra_nsas_reverse_engineering_tool_is_now/
+- https://github.com/nas5w/100-days-of-code-frontend/blob/master/README.md
+
+- education, tutorials, cheatsheats, theory
+  - one-off programming projects
+    - https://www.reddit.com/r/programming/comments/aajb7r/how_doom_fire_was_done/
+    - https://www.madewithcode.com/projects/marypoppinsreturns?utm_source=made%20with%20code
+  - https://julien.danjou.info/
+  - cheatsheets
+    - https://github.com/chubin/cheat.sh
+  - Educational resources
+    - [[https://mail.google.com/mail/u/0/#inbox/15e112cb4784f88f][email: new udemy courses]]
+      - python mega course
+      - iOS 10 & Swift3
+      - NLTK
+    - Challenges, integrated, educational, fun
+      - [[https://www.youtube.com/user/shiffman?app=desktop][Shiffman creative coding video tutorials]]
+      - [[http://upskillcourses.com/p/essential-web-developer-course][Upskill web development course]]
+      - https://code.org/minecraft
+      - https://asciinema.org/browse/featured
+    - https://flatironschool.com/
+    - https://github.com/sindresorhus/awesome
+    - https://leetcode.com/
+    - Cool example application builds
+      - https://redditblog.com/2017/04/13/how-we-built-rplace/
+      - https://tallys.github.io/color-theory/
+    - https://www.reddit.com/r/programming/comments/7rgz78/a_lot_of_free_pdfs_about_programming_from_stack/
+    - https://www.syncfusion.com/resources/techportal/ebooks
+    - [[https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-00sc-introduction-to-computer-science-and-programming-spring-2011/][MIT Intro to computer science and programming 2011]]
+    - [[http://www.russpoldrack.org/2016/05/advice-for-learning-to-code-from-scratch.html?m=1][Poldrack learn to code]]
+  - General and theory
+    - cite:abelson1996
+  - Literate programming
+    - declare defaults when important for a process or workflow
+- [[https://ronjeffries.com/articles/016-0607/yaks/][Yaks]]
+- https://www.reddit.com/r/programming/comments/150sr0g/walter_bright_programming_language_ideas_that/
 - https://www.freecodecamp.org/news/learn-c-programming-classic-book-dr-chuck/
 - https://www.technig.com/best-github-repositories-every-programmer/
 - https://missing.csail.mit.edu/
@@ -10530,6 +10917,11 @@ http://howardism.org/Technical/Emacs/literate-devops.html
     -
   - procedure-oriented- sequence of actions is more important to data
     - 'top down'
+**** Ideas
+:PROPERTIES:
+:ID:       47C83191-1387-4161-9E0C-A5F7EC1A8914
+:END:
+
 
 *** Hardware
 :PROPERTIES:
@@ -10821,7 +11213,7 @@ print 'The square of your number is: ' + str(userNumber)
 
  efficient scripting philosophy- first get something that works, then reduce any step done more than twice
 
- [[http://research.stowers-institute.org/efg/R/Math/VennDiagram.htm][
+
  http://bioconnector.org/workshops/lessons/r/r-intro/
  [[https://stackoverflow.com/questions/13656699/update-r-using-rstudio/17625368#17625368][when bioconductor moves to new R]]
  to install bioconductor packages, use biocite:
@@ -10997,8 +11389,8 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 :LOGBOOK:
 CLOCK: [2021-08-25 Wed 08:33]--[2021-08-25 Wed 09:13] =>  0:40
 :END:
-  | du -shc . | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]]                       |
-  | l         | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\(' |
+  | du -shc . | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]] |
+  | l         | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\('              |
 
   | change password                     | passwd                      |
   | disk usage, top level               | du -h --summarize           |
@@ -11306,12 +11698,12 @@ chmod 600 ~/.ssh/id_rsa.pub
 - https://www.howtogeek.com/312755/what-is-the-process-windowserver-and-why-is-it-running-on-my-mac/
 - [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][How to allow install of non app store or identified developers on MacOS Sierra]]
 - Command Table
-  | Function             | Command                   | Notes                                                                                                               |
-  |----------------------+---------------------------+---------------------------------------------------------------------------------------------------------------------|
-  |                      |                           | <20>                                                                                                                |
+  | Function             | Command                   | Notes                                                        |
+  |----------------------+---------------------------+--------------------------------------------------------------|
+  |                      |                           | <20>                                                         |
   | List process to kill | ps -A\ grep -m1 <PROCESS> | https://stackoverflow.com/questions/11546765/how-to-get-the-pid-of-a-process-by-giving-the-process-name-in-mac-os-x |
-  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                                               |
-  |                      |                           |                                                                                                                     |
+  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/        |
+  |                      |                           |                                                              |
 - https://stackoverflow.com/questions/17935301/how-to-force-mac-os-to-open-search-with-google-in-chrome
 - Window management
   - Default layouts
@@ -11746,37 +12138,40 @@ https://github.com/thomasp85/patchwork/issues/136
 ******* geoms
 ******* Processes                                                      :flat:
 
-- [[https://gist.github.com/Rekyt/a7846af7c4c5fb5a48ea][ggplots over multiple pdf pages]]
-******** Interactive
+
+******** 0 Flat
+********* - [[https://gist.github.com/Rekyt/a7846af7c4c5fb5a48ea][ggplots over multiple pdf pages]]
+********* Interactive
 - [[https://www.youtube.com/watch?feature=youtu.be&v=rBp3eYHrsfo&app=desktop&t=0s][plotly interactive graphs]]
-******** Theme
+********* Theme
 https://wilkelab.org/cowplot/articles/themes.html
-******** Facets
+********* Facets
 - https://r-graphics.org/recipe-facet-label-appearance
-******** Significance annotations
+********* Significance annotations
 https://www.datanovia.com/en/blog/how-to-add-p-values-onto-a-grouped-ggplot-using-the-ggpubr-r-package/#pairwise-comparisons-against-a-reference-group
 https://www.datanovia.com/en/blog/how-to-add-p-values-onto-a-grouped-ggplot-using-the-ggpubr-r-package/#pairwise-comparisons-against-a-reference-group
 https://cran.r-project.org/web/packages/ggsignif/vignettes/intro.html
 https://crumplab.com/psyc7709_2019/book/docs/how-to-annotate-a-graph-using-gg-signif.html
-******** Labeling
+********* Labeling
 - https://r-graphics.org/recipe-facet-label-appearance
 - https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html
 - https://ggrepel.slowkow.com/articles/examples.html
-******** ER
+********* ER
 - er diagrams - https://rich-iannone.github.io/DiagrammeR/index.html
-******** Legend style
+********* Legend style
 - http://www.sthda.com/english/wiki/ggplot2-legend-easy-steps-to-change-the-position-and-the-appearance-of-a-graph-legend-in-r-software
-******** Venn
-- vens https://stackoverflow.com/questions/8713994/venn-diagram-proportional-and-color-shading-with-semi-transparency
-******** Pie
+********* Venn
+- [[https://stackoverflow.com/questions/8713994/venn-diagram-proportional-and-color-shading-with-semi-transparency][venn R packages]]
+- [[cite:&jia2021]]
+********* Pie
 - [[https://stackoverflow.com/questions/33594642/beautiful-pie-charts-with-r/33594843][pie charts]]
-******** Multi-panel
+********* Multi-panel
 - https://github.com/thomasp85/patchwork
 - [[http://statisticalrecipes.blogspot.com/2015/07/cowplot-arrange-ggplot2-figures-in-grid.html][Cowplot]]
 - [[https://cran.r-project.org/web/packages/cowplot/vignettes/plot_grid.html][another cowplot vignette]]
 
 - https://www.google.com/search?q=cowplot+make+inset
-******** Color scales and schemes
+********* Color scales and schemes
 - https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html
 - https://bookdown.org/rdpeng/exdata/plotting-and-color-in-r.html
 - https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
@@ -12065,11 +12460,11 @@ $0=args[1]
 =args[2]
 
 #+end_src
-***** r.function                                                        :yas:
-#+name: r.function
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/r.function
+***** function                                                          :yas:
+#+name: function
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/ess-mode/function
 # -*- mode: snippet -*-
-# key: r.function
+# key: function
 # expand-env: ((yas-indent-line 'fixed))
 # --
 ${1:FUNCTION NAME} = function(${2:VARIABLE LIST}){
@@ -12551,6 +12946,11 @@ myft
 :ID:       aa3f8528-0603-42b4-9e1e-8a27b9aaf8b3
 :END:
 *** Integrated development environments
+  - IDEs
+    - Visual Studio
+      - https://code.visualstudio.com/blogs/2017/11/15/live-share
+      - https://www.reddit.com/r/programming/comments/6g498w/visual_studio_code_may_2017/
+    - https://eclipse.org/ide/
 - https://github.com/codespaces
 *** General reference, guides, and tutorials
 :PROPERTIES:
@@ -12608,57 +13008,11 @@ CLOCK: [2017-10-19 Thu 14:01]--[2017-10-19 Thu 15:01] =>  1:00
 :END:
 - https://missing.csail.mit.edu/
   - https://www.reddit.com/r/programming/comments/eyagcd/the_missing_semester_of_your_cs_education_mit/
-*** Ideas
+*** [[id:b3c4c653-9584-4084-9e0e-abf16f95ac52][Ideas]]
+
 :PROPERTIES:
 :ID:       D2ABA474-BA09-4A1D-BFDE-C8404DD8AD0A
 :END:
-- ipad setup for command line
-  - shell http://osxdaily.com/2018/12/11/ish-linux-shell-ios/
-  - [X] ssh- https://techwiser.com/best-ssh-client-ios/
-    - ideas- cloud instance - https://lightsail.aws.amazon.com/ls/webapp/create/instance?region=us-east-2
-- ideas
-  - [[https://www.google.com/search?q=learn+full+stack+javascript&rlz=1C9BKJA_enUS772US773&oq=learn+full+stack+javascript&aqs=chrome..69i57j0l3.10188j0j7&hl=en-US&sourceid=chrome-mobile&ie=UTF-8][google: learn full stack javascript]]
-    - [[https://en.wikipedia.org/wiki/MEAN_(software_bundle)][MEAN full javascript web stack]]
-- http://jasperproject.github.io/
-- http://www.instructables.com/id/Raspberry-Pi-Sous-Vide/
-- https://9to5google.com/2016/12/26/how-to-use-chrome-remote-desktop-family-assistance/
-- http://imgur.com/gallery/hfG6e
-- http://nengo.ca/build-a-brain/spaunvideos
-- [[https://aws.amazon.com/websites/?sc_channel=PS&sc_campaign=acquisition_US&sc_publisher=google&sc_medium=websites_webapps_nb&sc_content=web_hosting_e&sc_detail=free%20web%20hosting&sc_category=websites_webapps&sc_segment=96578640642&sc_matchtype=e&sc_country=US&s_kwcid=AL!4422!3!96578640642!e!!g!!free%20web%20hosting&ef_id=WENUqgAAAV2Dp9Ql:20170209002051:s][Amazon web hosting]]
-- https://aws.amazon.com/getting-started/tutorials/launch-a-virtual-machine/
-
-**** App development
-:PROPERTIES:
-:ID:       DFF98A32-3864-46E0-AF88-BC3105D8A8D5
-:END:
-
-https://www.reddit.com/r/IWantToLearn/comments/5bfegh/iwtl_how_to_make_a_very_simple_free_app_with_ads/
-
-**** Web Form Macros
-:PROPERTIES:
-:ID:       230A6BFC-79C5-4C93-A423-E08CD7FA0D7E
-:END:
-
-***** iMacros
-:PROPERTIES:
-:ID:       2A6B8809-0CA7-4C9F-BDAD-54008351F020
-:END:
-
-- http://www.howtogeek.com/113789/how-to-automate-repetitive-web-browser-tasks-with-imacros/
-- http://imacros.net/browser/cr/welcome
-- https://www.youtube.com/channel/UCxAl1C4SfrznEhBpyBcXGOg
-- http://forum.imacros.net/viewforum.php?f=11
-- http://imacros.net/support/resources
-
-****** Setup
-:PROPERTIES:
-:ID:       33FC8135-9A4E-48EE-95A0-35919A0FE8CB
-:END:
-
-- chrome extension
-- downloaded file access installer
-  -
-- used in [[id:BEEE4717-ED5A-4C0D-A546-B53E35E342D0][data and information maintenance]]
 ** Development :dev:
 :PROPERTIES:
 :header-args: :tangle no
@@ -12680,7 +13034,74 @@ git_setup:
 
 #+end_src
 ** Ideas                                                              :ideas:
+:PROPERTIES:
+:ID:       b3c4c653-9584-4084-9e0e-abf16f95ac52
+:END:
+- http://jasperproject.github.io/
+- http://www.instructables.com/id/Raspberry-Pi-Sous-Vide/
+- https://9to5google.com/2016/12/26/how-to-use-chrome-remote-desktop-family-assistance/
+- http://imgur.com/gallery/hfG6e
+- http://nengo.ca/build-a-brain/spaunvideos
+- [[https://aws.amazon.com/websites/?sc_channel=PS&sc_campaign=acquisition_US&sc_publisher=google&sc_medium=websites_webapps_nb&sc_content=web_hosting_e&sc_detail=free%20web%20hosting&sc_category=websites_webapps&sc_segment=96578640642&sc_matchtype=e&sc_country=US&s_kwcid=AL!4422!3!96578640642!e!!g!!free%20web%20hosting&ef_id=WENUqgAAAV2Dp9Ql:20170209002051:s][Amazon web hosting]]
+- https://aws.amazon.com/getting-started/tutorials/launch-a-virtual-machine/
+*** App development
+:PROPERTIES:
+:ID:       DFF98A32-3864-46E0-AF88-BC3105D8A8D5
+:END:
 
+https://www.reddit.com/r/IWantToLearn/comments/5bfegh/iwtl_how_to_make_a_very_simple_free_app_with_ads/
+
+*** Web Form Macros
+:PROPERTIES:
+:ID:       230A6BFC-79C5-4C93-A423-E08CD7FA0D7E
+:END:
+
+**** iMacros
+:PROPERTIES:
+:ID:       2A6B8809-0CA7-4C9F-BDAD-54008351F020
+:END:
+
+- http://www.howtogeek.com/113789/how-to-automate-repetitive-web-browser-tasks-with-imacros/
+- http://imacros.net/browser/cr/welcome
+- https://www.youtube.com/channel/UCxAl1C4SfrznEhBpyBcXGOg
+- http://forum.imacros.net/viewforum.php?f=11
+- http://imacros.net/support/resources
+
+***** Setup
+:PROPERTIES:
+:ID:       33FC8135-9A4E-48EE-95A0-35919A0FE8CB
+:END:
+
+- chrome extension
+- downloaded file access installer
+  -
+- used in [[id:BEEE4717-ED5A-4C0D-A546-B53E35E342D0][data and information maintenance]]
+******* Scripts
+******** org_latex_export.sh
+:PROPERTIES:
+:ID:       c62cf1fd-36bd-4555-8e8a-4030aedf6f06
+:header-args: tangle-mode (identity #o755) :mkdirp yes
+:END:
+#+begin_src bash :tangle ./tools/shell/org_latex_export.sh :tangle-mode (identity #o755)
+#!/bin/sh
+
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <file> <org-id>"
+    exit 1
+fi
+
+FILE="$1"
+ORG_ID="$2"
+
+emacs --batch -l ~/.emacs.d/lisp/latex.el --eval "(progn
+                        (require 'org)
+                        (require 'org-id)
+                        (setq org-confirm-babel-evaluate nil)
+                        (find-file \"$FILE\")
+                        (org-id-goto \"$ORG_ID\")
+                        (org-latex-export-to-pdf nil t)
+                        (kill-emacs))"
+#+end_src
 *** Ideas
 :PROPERTIES:
 :ID:       58cecae5-0126-4608-b079-c0cb5c1835c8

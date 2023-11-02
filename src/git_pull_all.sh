@@ -1,12 +1,3 @@
-# My bash functions
-# :PROPERTIES:
-# :ID:       569d1afa-e991-47b7-be15-3dd6364f5258
-# :END:
-# - http://mywiki.wooledge.org/BashGuide
-# - [[file:~/repos/dotfiles/bashrc]]
-# - Git pull all repos
-#   #+name: git_pull_all
-
 #!/bin/bash
 #########1#########2#########3#########4#########5#########6#########7#########8
 #                                                                              #
@@ -44,10 +35,6 @@ do
     cd "$OLDPWD"
 done
 #
-
-
-
-# #+name: git_pull_all
 
 #!/bin/bash
 #########1#########2#########3#########4#########5#########6#########7#########8

@@ -1,10 +1,3 @@
-# Initialize github-linked repository                      :bashscript:
-# :PROPERTIES:
-# :header-args:bash: :tangle ./tools/git/github_init.sh :mkdirp yes
-# :ID:       5bd05481-a646-4a4b-bb93-2c1a44c346e9
-# :END:
-# [[file:./tools/git/github_init.sh]]
-
 #!/usr/bin/env bash
 set -o errexit   # abort on nonzero exitstatus
 set -o nounset   # abort on unbound variable
