@@ -3,13 +3,42 @@
 :header-args: :tangle-mode (identity #o555) :mkdirp yes :noweb yes
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
+Basecamp snakefile md5s, aymlinks,
+Note archived
+
+
+** [[id:00656e3d-e62c-4ace-a27c-252b56010fe0][Scientific Project Template]]
 ** lib
+*** [[id:a9f97cde-27bc-4777-bb12-164ac4cb421d][Shell functions in basecamp-private]] more_bashrc
 *** General shell functions
 :PROPERTIES:
 :header-args: :tangle ./lib/basecamp_function.sh :tangle-mode (identity #o555) :mkdirp yes :noweb yes :comments org
 :ID:       cb3c499d-ed2f-4ee3-9965-ca3e1af81178
 :END:
 **** [[id:a9f97cde-27bc-4777-bb12-164ac4cb421d][Shell functions in basecamp-private]]
+**** docx_to_pdf()
+#+begin_src bash
+docx_to_pdf() {
+    local in_docx="$1"
+
+    if [ -z "$in_docx" ]; then
+	cat <<- EOF
+	usage: docx_to_pdf <INPUT DOCX FILE>
+
+	Converts a docx file to a pdf
+
+	example: docx_to_pdf /tmp/test.docx
+EOF
+	return 1
+    fi
+
+    local out_pdf=$(echo "$in_docx" | sed 's/\.docx$/.pdf/')
+    libreoffice --headless --convert-to pdf:writer_pdf_Export "$in_docx" --outdir $(dirname "$in_docx")
+
+    echo "Conversion complete"
+}
+#+end_src
+
 **** check_mnt() Check if mount is active
 #+begin_src bash
 
@@ -289,36 +318,120 @@ EOF
 :END:
 **** conda_update()
 #+begin_src bash
+
 function conda_update() {
-      [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
-    cat <<EOF
+    if [[ "$1" =~ ^(-h|--help)$ ]] || [[ -z "$1" ]]; then
+        cat <<EOF
 Usage: conda_update <ENV YAML>
 Updates a conda environment yaml file using mamba
 EOF
-    return
-      }
-      local file="${1}"
-      source /opt/miniconda3/etc/profile.d/conda.sh
-      conda activate base
-      mamba env update --file $1
-      echo "$1 Environment updated successfully!"
+        return
+    fi
+    local file="$1"
+    source /opt/miniconda3/etc/profile.d/conda.sh
+    conda activate base || { echo "Failed to activate base conda environment."; return; }
+    if command -v mamba >/dev/null 2>&1; then
+        mamba env update --file "$file" && echo "Environment updated successfully with $file!"
+    else
+        echo "Mamba is not installed. Install mamba or use conda instead."
+    fi
+}
+
+function conda_update() {
+    if [[ "$1" =~ ^(-h|--help)$ ]] || [[ -z "$1" ]]; then
+        cat <<EOF
+Usage: conda_update <ENV YAML> [ENV NAME]
+Updates a conda environment yaml file using mamba. Optionally updates a specific named environment.
+EOF
+        return
+    fi
+    local file="$1"
+    local env_name="${2:-}" # If $2 is not provided, env_name will be empty
+    source /opt/miniconda3/etc/profile.d/conda.sh
+    conda activate base || { echo "Failed to activate base conda environment."; return; }
+    if command -v mamba >/dev/null 2>&1; then
+        if [[ -n "$env_name" ]]; then
+            mamba env update -n "$env_name" --file "$file" && echo "Environment '$env_name' updated successfully with $file!"
+        else
+            mamba env update --file "$file" && echo "Environment updated successfully with $file!"
+        fi
+    else
+        echo "Mamba is not installed. Install mamba or use conda instead."
+    fi
+    conda deactivate
 }
 
 #+end_src
+** Org-mode literate programming for devops :tutorial:
+:PROPERTIES:
+:header-args: :results replace :session testsesh :cache no
+:END:
+- https://www.youtube.com/watch?v=dljNabciEGg&ab_channel=HowardAbrams
+- [[elisp:(switch-to-buffer "testsesh")][Go to testsesh buffer]]
+- you can line-by-line to the session or enter commands directly there
+- Results block moved
+  #+RESULTS: thedate
+  : Thu Nov  9 09:05:42 CST 2023
 
+#+name: thedate
+#+begin_src bash :results replace
+date
+#+end_src
+
+
+#+name: makecsv
+#+begin_src bash :results table
+rm -rf /tmp/test.csv
+echo -e "title,author\nthe sun also rises,hemmingway\nwaldon,thoreau" > /tmp/test.csv
+cat /tmp/test.csv
+#+end_src
+
+#+RESULTS: makecsv
+| title              | author     |
+| the sun also rises | hemmingway |
+| waldon             | thoreau    |
+
+
+#+begin_src bash :var tabcell=makecsv[1,1] :post column1(data=*this*)
+echo $tabcell
+#+end_src
+
+#+RESULTS:
+: Hemmingway
+
+#+name: column1
+#+begin_src emacs-lisp :var data="" :results value
+(capitalize data)
+#+end_src
+
+
+#+begin_src bash :dir /ssh:localhost
+hostname --long
+#+end_src
+
+#+RESULTS:
+: jeszyman-work
+
+- piped link for sudo files [[/ssh:localhost|sudo:localhost:/etc/group]]
 ** Basecamp conda environment
 :PROPERTIES:
 :ID:       76a6e083-f569-42a9-b551-4b9ccc770834
 :END:
 #+begin_src bash :tangle ./basecamp_env.yaml
 name: basecamp
+#########1#########2#########3#########4#########5#########6#########7#########8
+# To build, see basecamp/lib/conda_functions.sh
+# To incorporate into another conda env,
 
+#########1#########2#########3#########4#########5#########6#########7#########8
 channels:
   - conda-forge
   - bioconda
 
-dependencies:
-  - r-svglite
+#########1#########2#########3#########4#########5#########6#########7#########8
+dependencies:                                                                  #
+  - r-lintr=3.1                                                 # Linting tool #
+  - r-svglite                                   # Provides svg graphics output #
   - r-colorramps
   - r-devtools
   - r-ggpubr
@@ -331,6 +444,7 @@ dependencies:
   - r-tidyverse
   - scikit-learn
   - numpy
+  - black
   - pandas
   - openpyxl
   - pandas
@@ -360,6 +474,9 @@ dependencies:
 :PROPERTIES:
 :ID:       39F11977-BE11-47CF-98B1-14CE6D9B97C4
 :END:
+https://www.reddit.com/r/datascience/comments/17zshma/what_do_you_do_with_highly_correlated_features/
+https://rosalind.info/problems/locations/
+https://www.reddit.com/r/datascience/comments/17t04cn/chatgpt_becomes_a_serious_contender_for/
 https://www.reddit.com/r/datascience/comments/1385fge/sigmoid_academy_leetcode_for_data_science/
 https://old.reddit.com/r/datascience/comments/rap2m2/9_distance_measures_in_data_science/
 https://github.com/WHOexcessc19/Codebase
@@ -861,6 +978,8 @@ CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
 :PROPERTIES:
 :ID:       1DA3ABC0-79B0-4CED-B926-22B37840379D
 :END:
+http://www.sthda.com/english/wiki/the-elements-of-choosing-colors-for-great-data-visualization-in-r#complementary-color-scheme
+https://rstudio-pubs-static.s3.amazonaws.com/1691_3c8dee811cf2497385cde81bd97f8e15.html
 **** Elements
 ***** Color
 - https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html
@@ -1226,6 +1345,7 @@ algorithm properties
 :PROPERTIES:
 :ID:       CFACF7AD-30FC-4200-92FE-3710B5DC5E9E
 :END:
+https://www.reddit.com/r/MachineLearning/comments/17p42te/r_very_detailed_mathematical_introduction_to_deep/
 https://www.reddit.com/r/datascience/comments/150dyrf/xgboost_to_learn_insights_in_data/
 https://distill.pub/
 - cite:james2021
@@ -2104,8 +2224,8 @@ https://chat.openai.com/c/73c00b0b-4dfd-4241-ae7c-af96ac84bdb2
 ****** Processes
 ******* 0 Flat
 ******** Build environment from multiple yamls
-https://stackoverflow.com/questions/48158137/conda-importing-one-environment-yml-into-another
-https://stackoverflow.com/questions/65668913/can-i-create-a-conda-environment-from-multiple-yaml-files
+- https://stackoverflow.com/questions/48158137/conda-importing-one-environment-yml-into-another
+- https://stackoverflow.com/questions/65668913/can-i-create-a-conda-environment-from-multiple-yaml-files
 https://github.com/conda/conda/issues/5821
 ******** Inherit from another environment - can't be done https://stackoverflow.com/questions/54682742/inheritance-model-in-conda-environments
 ******** Miniconda install
@@ -4165,7 +4285,7 @@ CLOCK: [2021-11-09 Tue 13:19]--[2021-11-09 Tue 13:49] =>  0:30
   -
 ***** nohup
 - https://www.google.com/search?q=nohup+pipe
-https://unix.stackexchange.com/questions/420594/why-process-killed-with-nohup
+- https://unix.stackexchange.com/questions/420594/why-process-killed-with-nohup
 ***** offlineimap
   - https://medium.com/@kirang89/emacs-as-email-client-with-offlineimap-and-mu4e-on-os-x-3ba55adc78b6
   - https://github.com/sup-heliotrope/sup/wiki/Complete-gmail-configuration
@@ -4460,6 +4580,7 @@ singularity version
 :ID:       a8b27140-4b9e-40c5-86ab-ee5afeae723f
 :CREATED:  [2021-09-13 Mon 07:29]
 :END:
+https://www.reddit.com/r/bioinformatics/comments/17pk9ut/good_ways_to_control_file_structure_and_output/
 # logger.info("Mouse heart RNA-seq library count: " + str(len(raw_ms_hrt_rna_df['library'].tolist())))
 # logger.info(f"\nRAW mouse heart RNA-seq libraries: {RAW_MS_HRT_RNA_LIBS}")
 
@@ -5632,15 +5753,15 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 :PROPERTIES:
 :ID:       56b7a8f4-25d7-41a2-a0b5-cdb8a86481cc
 :END:
-  |----------------------+--------------------------------------------------------------|
-  | function             | command                                                      |
-  |----------------------+--------------------------------------------------------------|
-  | mount partition      | udisksctl mount -b /dev/<PARTITION>                          |
-  |                      |                                                              |
-  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                      |
+  |----------------------+----------------------------------------------------------------------------------------------|
+  | function             | command                                                                                      |
+  |----------------------+----------------------------------------------------------------------------------------------|
+  | mount partition      | udisksctl mount -b /dev/<PARTITION>                                                          |
+  |                      |                                                                                              |
+  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                                                      |
   | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]] |
-  | see systemd services | systemctl list-units --type=service                          |
-  | see ubuntu version   | lsb_release -a                                               |
+  | see systemd services | systemctl list-units --type=service                                                          |
+  | see ubuntu version   | lsb_release -a                                                                               |
 - https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
 ******* X Window System
 :PROPERTIES:
@@ -5715,15 +5836,15 @@ sudo python setup.py install
 :PROPERTIES:
 :ID:       6cf0206e-fe85-44bb-a84b-b6c63c3adf6c
 :END:
-  |----------------------+--------------------------------------------------------------|
-  | function             | command                                                      |
-  |----------------------+--------------------------------------------------------------|
-  | mount partition      | udisksctl mount -b /dev/<PARTITION>                          |
-  |                      |                                                              |
-  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                      |
+  |----------------------+----------------------------------------------------------------------------------------------|
+  | function             | command                                                                                      |
+  |----------------------+----------------------------------------------------------------------------------------------|
+  | mount partition      | udisksctl mount -b /dev/<PARTITION>                                                          |
+  |                      |                                                                                              |
+  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                                                      |
   | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]] |
-  | see systemd services | systemctl list-units --type=service                          |
-  | see ubuntu version   | lsb_release -a                                               |
+  | see systemd services | systemctl list-units --type=service                                                          |
+  | see ubuntu version   | lsb_release -a                                                                               |
 - https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
 - find large files sudo du -a /home | sort -n -r | head -n 10
 ******* ideas
@@ -6246,12 +6367,12 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
 - https://www.howtogeek.com/312755/what-is-the-process-windowserver-and-why-is-it-running-on-my-mac/
 - [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][How to allow install of non app store or identified developers on MacOS Sierra]]
 - Command Table
-  | Function             | Command                   | Notes                                                        |
-  |----------------------+---------------------------+--------------------------------------------------------------|
-  |                      |                           | <20>                                                         |
+  | Function             | Command                   | Notes                                                                                        |
+  |----------------------+---------------------------+----------------------------------------------------------------------------------------------|
+  |                      |                           | <20>                                                                                         |
   | List process to kill | ps -A\ grep -m1 <PROCESS> | https://stackoverflow.com/questions/11546765/how-to-get-the-pid-of-a-process-by-giving-the-process-name-in-mac-os-x |
-  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/        |
-  |                      |                           |                                                              |
+  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                        |
+  |                      |                           |                                                                                              |
 - https://stackoverflow.com/questions/17935301/how-to-force-mac-os-to-open-search-with-google-in-chrome
 - Window management
   - Default layouts
@@ -6372,40 +6493,45 @@ https://abseil.io/resources/swe-book
 :PROPERTIES:
 :ID:       a49abc44-8e71-4a1a-bd35-a77849427c94
 :END:
-
-- https://github.com/Izder456/Emacs-Config
-- https://github.com/ahyatt/llm
-- https://docs.khoj.dev/#/emacs
-- https://www.reddit.com/r/emacs/comments/15lad2v/extending_emacs_29_sqlitemode_cell_navigation_edit/
-- https://www.reddit.com/r/datascience/comments/13wkkdv/which_is_the_best_editor_for_python_in_your/jmcj7f1/
-- https://www.reddit.com/r/emacs/comments/13y4gg0/nano_modeline_10_now_with_buttons/
-- https://www.reddit.com/r/emacs/comments/13qmo1u/jupyter_in_the_emacs_universe/
-- https://www.reddit.com/r/emacs/comments/1459elk/llm_pal_ai_inside_emacs_via_lsp_locally_hosted/
-- https://plantarum.ca/2021/10/03/emacs-tutorial-rmarkdown/
-- https://melpa.org/#/chatgpt-shell
-- https://github.com/rougier/nano-emacs
-- https://xenodium.com/my-emacs-eye-candy/
-- https://emacsdocs.org/
-- https://randomgeekery.org/config/emacs/nano/
-- https://www.reddit.com/r/emacs/comments/onpv90/emacs_as_shell_script_ide/
-- https://www.reddit.com/r/emacs/comments/1n5s5g/perhaps_a_stupid_question_enforcing_a_line_width/
-- https://www.reddit.com/r/emacs/comments/10l2glx/is_there_a_way_to_keep_backup_files_without/
--
-- https://www.youtube.com/watch?app=desktop&time_continue=781&v=JkI-sdgpOoA&embeds_euri=https%3A%2F%2Fwww.reddit.com%2F&source_ve_path=MjM4NTE&feature=emb_title&ab_channel=lxsameer&themeRefresh=1
+https://www.reddit.com/r/emacs/comments/185n3yo/emacs_meets_chatgpt_for_flawless_grammar_and/
+https://github.com/MiniApollo/kickstart.emacs/blob/main/config.org#language-support--lsp
+https://stackoverflow.com/questions/48051120/display-flycheck-buffer-automatically-when-there-are-errors
+https://xenodium.com/my-emacs-eye-candy/
 ***** org_export_to_beamer.sh
 #+begin_src bash :tangle ./tools/shell/org_export_to_beamer.sh
 emacsclient -e "(progn (find-file \"$1\") \
                        (org-id-goto \"$2\") \
                        (org-beamer-export-to-pdf nil t))"
 #+end_src
-***** pandoc-mode
-:PROPERTIES:
-:ID:       da49373a-63e4-445d-842b-8d4ea02d16f0
-:END:
-- [[https://github.com/joostkremers/pandoc-mode][github]]
-- http://joostkremers.github.io/pandoc-mode/
 ***** Processes
+****** Integration with programming
+[[id:44347009-ee09-4cf1-9786-f0106a378a2e][sql integration]]
+[[id:5d29a241-3165-4a3b-a88c-c3fe122d2ff9][Jupyter integration]]
+[[id:e33cbb04-6299-4a46-bcbd-116bdd72e99d][Rmd integration]]
+[[id:e7806712-9607-4b78-8662-80a2659c203d][Python integration]]
+[[id:07b8634c-70a6-4a99-90b5-0f5083ccaf04][Emacs shell IDE]]
 ****** 0 Flat                                 :flat:
+******* sql integration
+:PROPERTIES:
+:ID:       44347009-ee09-4cf1-9786-f0106a378a2e
+:END:
+- https://www.reddit.com/r/emacs/comments/15lad2v/extending_emacs_29_sqlitemode_cell_navigation_edit/
+
+******* Jupyter integration
+- https://www.reddit.com/r/emacs/comments/13qmo1u/jupyter_in_the_emacs_universe/
+:PROPERTIES:
+:ID:       5d29a241-3165-4a3b-a88c-c3fe122d2ff9
+:END:
+******* Rmd integration
+:PROPERTIES:
+:ID:       e33cbb04-6299-4a46-bcbd-116bdd72e99d
+:END:
+- https://plantarum.ca/2021/10/03/emacs-tutorial-rmarkdown/
+******* Line wrap https://www.reddit.com/r/emacs/comments/1n5s5g/perhaps_a_stupid_question_enforcing_a_line_width/
+
+******* Backup
+- https://www.reddit.com/r/emacs/comments/10l2glx/is_there_a_way_to_keep_backup_files_without/
+
 ******* Syntax highlighting
 https://wilkesley.org/~ian/xah/emacs/elisp_syntax_coloring.html
 ******* [[https://www.google.com/search?q=emacs+open+file+location+instead+of+file][google:emacs open file location instead of file]]
@@ -6450,14 +6576,26 @@ https://github.com/yilkalargaw/org-auto-tangle/blob/master/org-auto-tangle.el
 - https://www.google.com/search?q=r+linting+in+emacs&sxsrf=ALiCzsZVGCOPi3tH5qIIUWdvxCGB6HalWw%3A1661434268625&ei=nHkHY6zsJbyD0PEP7Lm8kAM&oq=r+linting+in+emacs&gs_lcp=ChNtb2JpbGUtZ3dzLXdpei1zZXJwEAMyBwgAEB4QogQyBQgAEKIEOgcIABBHELADSgQIQRgAUI0SWN4dYP0laAFwAXgAgAGwAYgB2waSAQMwLjeYAQCgAQHIAQjAAQE&sclient=mobile-gws-wiz-serp
 ******* Modify write permission from within buffer w/ C-x C-q
 https://unix.stackexchange.com/questions/47724/how-to-modify-write-permission-on-current-buffer-in-emacs
+****** Python integration
+:PROPERTIES:
+:ID:       e7806712-9607-4b78-8662-80a2659c203d
+:END:
+- https://realpython.com/emacs-the-best-python-editor/
+- https://www.reddit.com/r/emacs/comments/d2mhx7/nonprogrammer_here_looking_to_learn_python_should/
+
+
 ****** Window and frame management
 https://www.reddit.com/r/emacs/comments/179t67l/window_management_share_your_displaybufferalist/
 ****** Emacs as a genreal IDE
+https://ochicken.net/projects/workspace/
 https://emacsrocks.com/e13.html
 https://www.reddit.com/r/emacs/comments/17gqjsy/using_ruff_format_with_emacs_to_reformat_python/
 - https://github.com/alhassy/repl-driven-development
 - [[id:340af0cc-4211-4ae2-8bb2-4acdb1e2de2b][Show or identify whitespace]]
 ****** Appearance
+- https://www.reddit.com/r/emacs/comments/13y4gg0/nano_modeline_10_now_with_buttons/
+- https://github.com/rougier/nano-emacs
+- https://xenodium.com/my-emacs-eye-candy/
 [[id:5510fe9b-8878-4ac6-86be-6035043b31f3][Set fringe color]]
 - https://github.com/Likhon-baRoy/.emacs.d
 - https://www.reddit.com/r/orgmode/comments/z9ysi0/examples_of_good_org_mode_styling/
@@ -6474,7 +6612,33 @@ https://www.reddit.com/r/emacs/comments/17gqjsy/using_ruff_format_with_emacs_to_
 :ID:       340af0cc-4211-4ae2-8bb2-4acdb1e2de2b
 :END:
 - https://www.emacswiki.org/emacs/ShowWhiteSpace
+****** Emacs Interfaces
+:PROPERTIES:
+:ID:       0c0667a7-dcb3-4ef8-98c1-8fa1b9cc3116
+:END:
+- [currently not working] to goodle drive- https://www.gnu.org/software/tramp/#Using-Google-Drive
+
+- docker
+  - https://github.com/JAremko/docker-emacs
+  - https://github.com/Silex/docker.el
+  - https://github.com/Silex/docker.el
+  - https://github.com/spotify/dockerfile-mode
+- web
+  - https://github.com/karlicoss/cloudmacs
+  - https://emacs.stackexchange.com/questions/40829/cannot-open-new-chrome-tab-by-browse-url-chrome-newtab
+  - https://github.com/karlicoss/cloudmacs
+
+
 ****** Bash IDE
+- shells
+  - https://www.reddit.com/r/emacs/comments/r2p12t/eshellmode/
+  - - https://emacs.stackexchange.com/questions/50539/sending-code-to-an-ansi-term-via-isend-mode-how-to-modify-default-buffer-chosen
+  - [[https://emacs.stackexchange.com/questions/43711/displaying-a-second-buffer-with-a-shell][see send-line-to-region-and-step]]
+  - https://github.com/riscy/shx-for-emacs#description
+  - eshell
+    - https://old.reddit.com/r/emacs/comments/cyu4is/anyone_actually_using_eshells_smart_display/
+  - https://old.reddit.com/r/emacs/comments/cyu4is/anyone_actually_using_eshells_smart_display/
+- https://github.com/manateelazycat/aweshell
 - bash-completion https://github.com/szermatt/emacs-bash-completion
     #+begin_src emacs-lisp
 ;; (use-package bash-completion)
@@ -6562,7 +6726,7 @@ https://www.reddit.com/r/emacs/comments/17gqjsy/using_ruff_format_with_emacs_to_
     - put output of one-liner into current buffer: C-u M-!
     - https://www.emacswiki.org/emacs/EshellRedirection
 
-
+- https://www.reddit.com/r/emacs/comments/onpv90/emacs_as_shell_script_ide/
 ****** Emacs custom development
 - https://jmonlong.github.io/Hippocamplus/emacs/
 - https://www.google.com/search?q=emacs+change+keybinding
@@ -6583,6 +6747,7 @@ https://daryl.wakatara.com/emacs-gtd-flow-evolved/#structure---para
 - tramp gdrive
   - [currently not working] to goodle drive- https://www.gnu.org/software/tramp/#Using-Google-Drive
 ****** Programming
+- https://testing.googleblog.com/2023/11/write-clean-code-to-reduce-cognitive.html
 - https://www.val.town/
 - https://www.youtube.com/c/arjancodes
 - https://abseil.io/resources/swe-book/html/ch02.html#blameless_postmortem_culture
@@ -6605,6 +6770,8 @@ http://xahlee.info/emacs/emacs/emacs_string-rectangle_ascii-art.html
 - [[https://www.google.com/search?q=org-mode+tangle+mkdir][google:org-mode tangle mkdir]]
 - [[id:ecb54a80-b177-4c9e-a3c9-47d1f680c7ac][Code indentation]]
 ****** Text and writing
+- https://www.reddit.com/r/emacs/comments/dtciau/is_there_any_way_i_can_integrate_emacs_with/
+
 [[id:dff4145a-8b64-458a-bb79-19c41792455c][Creating bibtex entries]]
 [[id:634ccd44-6f57-40c5-8868-a890cb4f3248][Paste line n times]]
 - https://www.reddit.com/r/emacs/comments/ysfcmx/advice_emacs_as_a_word_processor/
@@ -6618,6 +6785,19 @@ http://xahlee.info/emacs/emacs/emacs_string-rectangle_ascii-art.html
 ****** Version control
 - https://alexpeits.github.io/emacs.d/#org4048a44
 - simple vc push pull https://www.gnu.org/software/emacs/manual/html_node/emacs/Pulling-_002f-Pushing.html
+****** Emacs shell IDE
+:PROPERTIES:
+:ID:       07b8634c-70a6-4a99-90b5-0f5083ccaf04
+:END:
+https://www.reddit.com/r/emacs/comments/17rghxv/emacs_as_a_replacement_tmux/
+- interfaces
+****** llm integration
+  - https://www.reddit.com/r/emacs/comments/17hvcsi/ellama_moved_to_llm_library_and_now_supports/
+  - https://melpa.org/#/chatgpt-shell
+  - https://www.reddit.com/r/emacs/comments/1459elk/llm_pal_ai_inside_emacs_via_lsp_locally_hosted/
+  - https://docs.khoj.dev/#/emacs
+  - https://github.com/ahyatt/llm
+
 ***** Themes
 - https://github.com/doomemacs/themes/tree/screenshots
 #+begin_src emacs-lisp
@@ -6655,9 +6835,12 @@ http://xahlee.info/emacs/emacs/emacs_string-rectangle_ascii-art.html
 ****** LSP clients
   - https://www.reddit.com/r/emacs/comments/vhqewj/lspbridge_is_good/
 ****** Emacs packages :flat:
+https://github.com/intramurz/flycheck-eglot/tree/9ff8d0068be59b1450964b390349d75a68af21ed
 - https://github.com/alphapapa/org-web-tools
 - https://github.com/CeleritasCelery/emacs-native-shell-complete
 - https://github.com/abo-abo/org-download
+******* treesit-auto
+https://www.reddit.com/r/emacs/comments/17ydxhr/im_bumping_treesitauto_to_v10/
 ******* anki-editor
 :PROPERTIES:
 :ID:       037ae1d1-f3b6-4b63-8d43-4d642b947c71
@@ -6756,6 +6939,9 @@ counsel-yank-pop
 https://www.reddit.com/r/emacs/comments/mdjrza/consult_key_features_and_some_tweaks/
 [[id:dd893353-0e1c-4d77-85af-7121845298ed][My Council / ivy / swiper setup]]
 ******* Eglot
+https://www.reddit.com/r/emacs/comments/17tm2cc/what_are_your_favorite_companion_packages_to_eglot/
+https://joaotavora.github.io/eglot/#Setting-Up-LSP-Servers
+https://www.reddit.com/r/emacs/comments/ye18nd/setting_up_eglot_for_python/
 [[id:57a8362b-d3a7-410c-b137-b24f800e2edc][My eglot config]]
 ******* Elpy
 :PROPERTIES:
@@ -6850,13 +7036,6 @@ https://github.com/alphapapa/org-ql
 :PROPERTIES:
 :ID:       d7d54139-64d0-4cfe-ab3a-879b3617b226
 :END:
-- https://www.reddit.com/r/emacs/comments/17hvcsi/ellama_moved_to_llm_library_and_now_supports/
-- https://github.com/mpedramfar/zotra
-- https://200ok.ch/posts/2022-02-13_integrating_org_mode_agenda_into_other_calendar_apps.html
-- https://www.reddit.com/r/orgmode/comments/147ofmi/what_element_type_is_the_colon/
-- https://orgmode.org/worg/dev/org-element-api.html
-- https://www.reddit.com/r/emacs/comments/13y4gg0/nano_modeline_10_now_with_buttons/
-- https://www.reddit.com/r/emacs/comments/16u4lvk/is_there_a_way_to_design_an_org_block_that_acts/
 ******** Org manual input table export to csv
 :PROPERTIES:
 :ID:       655164a2-53ee-40aa-8120-286b55f164b5
@@ -7059,6 +7238,7 @@ examples:
 C-u-c-s
 [[https://www.google.com/search?q=orgmode+agenda+clear+scheduled][google:orgmode agenda clear scheduled]]
 ********* Appearance
+- https://www.reddit.com/r/emacs/comments/13y4gg0/nano_modeline_10_now_with_buttons/
 - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Visual-Line-Mode.html][default visual line mode]]
 https://lepisma.xyz/2017/10/28/ricing-org-mode/
 - Themes
@@ -7140,7 +7320,8 @@ https://www.reddit.com/r/orgmode/comments/sngxpe/orgbabels_pythonsession_vs_emac
 
 ********** Export from shell with batch
 - batch exporter and make file https://stackoverflow.com/questions/22072773/batch-export-of-org-mode-files-from-the-command-line
-
+********** Calendar ics export
+https://200ok.ch/posts/2022-02-13_integrating_org_mode_agenda_into_other_calendar_apps.html
 ********** With Export dispatcher
 - setup makefile export process
   #+begin_src sh
@@ -7358,6 +7539,8 @@ https://www.reddit.com/r/orgmode/comments/x2e90r/there_really_needs_to_be_a_bett
 ******** Ideas
 linting like https://github.com/loeffel-io/ls-lint
 ******** General reference
+- https://orgmode.org/worg/dev/org-element-api.html
+  - calls made e.g. https://www.reddit.com/r/orgmode/comments/147ofmi/what_element_type_is_the_colon/
 - https://www.reddit.com/r/datascience/comments/13wkkdv/which_is_the_best_editor_for_python_in_your/jmcj7f1/
 - https://www.reddit.com/r/emacs/comments/une2d8/orgmode_links_in_2022_implementation_packages/
 - https://www.reddit.com/r/orgmode/comments/yqz7j0/what_features_of_the_more_mainstream_productivity/
@@ -7656,6 +7839,12 @@ $0
 ****** General reference
 - https://karthinks.com/software/batteries-included-with-emacs/
 - https://www.reddit.com/r/emacs/comments/wcupae/lets_share_your_top_3_packages_that_you_cant_live/
+****** pandoc-mode
+:PROPERTIES:
+:ID:       da49373a-63e4-445d-842b-8d4ea02d16f0
+:END:
+- [[https://github.com/joostkremers/pandoc-mode][github]]
+- http://joostkremers.github.io/pandoc-mode/
 ***** Local yas
 ****** prop :yas:
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/prop
@@ -7677,36 +7866,6 @@ sudo add-apt-repository ppa:ubuntu-elisp/ppa
 sudo apt-get update
 sudo apt-get install emacs-snapshot
 #+end_src
-***** Emacs Interfaces
-:PROPERTIES:
-:ID:       0c0667a7-dcb3-4ef8-98c1-8fa1b9cc3116
-:END:
-- https://github.com/manateelazycat/aweshell
-- [currently not working] to goodle drive- https://www.gnu.org/software/tramp/#Using-Google-Drive
-
-- https://www.reddit.com/r/emacs/comments/dtciau/is_there_any_way_i_can_integrate_emacs_with/
-- https://www.reddit.com/r/emacs/comments/ggke5m/new_calibredbel_yet_another_calibre_emacs_client/
-- docker
-  - https://github.com/JAremko/docker-emacs
-  - https://github.com/Silex/docker.el
-  - https://github.com/Silex/docker.el
-  - https://github.com/spotify/dockerfile-mode
-- python
-  - https://realpython.com/emacs-the-best-python-editor/
-  - https://www.reddit.com/r/emacs/comments/d2mhx7/nonprogrammer_here_looking_to_learn_python_should/
-- web
-  - https://github.com/karlicoss/cloudmacs
-  - https://emacs.stackexchange.com/questions/40829/cannot-open-new-chrome-tab-by-browse-url-chrome-newtab
-  - https://github.com/karlicoss/cloudmacs
-- shells
-  - https://www.reddit.com/r/emacs/comments/r2p12t/eshellmode/
-  - - https://emacs.stackexchange.com/questions/50539/sending-code-to-an-ansi-term-via-isend-mode-how-to-modify-default-buffer-chosen
-  - [[https://emacs.stackexchange.com/questions/43711/displaying-a-second-buffer-with-a-shell][see send-line-to-region-and-step]]
-  - https://github.com/riscy/shx-for-emacs#description
-  - eshell
-    - https://old.reddit.com/r/emacs/comments/cyu4is/anyone_actually_using_eshells_smart_display/
-  - https://old.reddit.com/r/emacs/comments/cyu4is/anyone_actually_using_eshells_smart_display/
-- https://rebeja.eu/posts/python-ide-with-emacs-and-docker/
 ***** Emacs [[https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html#SEC_Contents][Documentation]]
 :PROPERTIES:
 :ID:       6a66a393-75c0-4576-b77d-e259dbd5d252
@@ -7837,6 +7996,12 @@ sudo apt-get install emacs-snapshot
   ;;(desktop-save-mode 1)
     #+end_src
 ***** General reference
+https://www.reddit.com/r/emacs/comments/1802hag/how_can_i_become_a_more_proficient_emacs_user_esp/
+- https://rebeja.eu/posts/python-ide-with-emacs-and-docker/
+- https://www.reddit.com/r/datascience/comments/13wkkdv/which_is_the_best_editor_for_python_in_your/jmcj7f1/
+- Emacs from scratch
+  - https://www.youtube.com/watch?app=desktop&time_continue=781&v=JkI-sdgpOoA&embeds_euri=https%3A%2F%2Fwww.reddit.com%2F&source_ve_path=MjM4NTE&feature=emb_title&ab_channel=lxsameer&themeRefresh=1
+  -
 - https://github.com/ahendriksen/ob-tmux
 - https://www.reddit.com/r/emacs/comments/zxetet/i_made_a_chatgpt_client_for_emacs_and_so_can_you/
 - skeletons
@@ -7972,12 +8137,9 @@ https://github.com/politza/pdf-tools
 - how to autoupdate packages?
 - https://github.com/emacs-tw/awesome-emacs
 - https://tuhdo.github.io/emacs-tutor3.html
-
-***** Emacs shell IDE
-:PROPERTIES:
-:ID:       07b8634c-70a6-4a99-90b5-0f5083ccaf04
-:END:
-- interfaces
+****** init file examples
+- https://github.com/Izder456/Emacs-Config
+- https://randomgeekery.org/config/emacs/nano/
 ***** Development
 ****** Ideas
 :PROPERTIES:
@@ -9518,6 +9680,19 @@ B
 :END:
 - Uses sh-mode
 ******* [[id:1b86754e-15fd-4b7b-8b4d-675208aa8d89][head4]]
+******* must.src
+******* must.src :yas:
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/sh-mode/must.src
+# -*- mode: snippet -*-
+# key: must.src
+# expand-env: ((yas-indent-line 'none))
+# --
+if [[ "\${BASH_SOURCE[0]}" == "\${0}" ]]; then
+  echo "You must source this script"
+  exit 1
+fi
+
+#+end_src
 ******* [[id:fcd48576-a658-44c4-8a98-9d9404366c1b][head2]]
 ******* [[id:2870f5de-4af4-4d76-a8bc-89823e4e09a0][head3]]
 ******* var                                                             :yas:
@@ -10841,7 +11016,9 @@ http://howardism.org/Technical/Emacs/literate-devops.html
 - https://github.com/norvig/pytudes/blob/main/ipynb/risk.ipynb
 - https://github.com/alhassy/emacs.d/blob/master/README.org#what-does-literate-programming-look-like
 
-
+- Donald Knuth developed the idea in 1980s
+- [[https://www.youtube.com/watch?v=dljNabciEGg&ab_channel=HowardAbrams][Literate Deveops with Emacs]]
+  -
 **** General reference
 :PROPERTIES:
 :ID:       48dfc684-aa60-4222-8641-d1646b3451be
@@ -11390,7 +11567,7 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 CLOCK: [2021-08-25 Wed 08:33]--[2021-08-25 Wed 09:13] =>  0:40
 :END:
   | du -shc . | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]] |
-  | l         | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\('              |
+  | l         | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\('                                              |
 
   | change password                     | passwd                      |
   | disk usage, top level               | du -h --summarize           |
@@ -11698,12 +11875,12 @@ chmod 600 ~/.ssh/id_rsa.pub
 - https://www.howtogeek.com/312755/what-is-the-process-windowserver-and-why-is-it-running-on-my-mac/
 - [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][How to allow install of non app store or identified developers on MacOS Sierra]]
 - Command Table
-  | Function             | Command                   | Notes                                                        |
-  |----------------------+---------------------------+--------------------------------------------------------------|
-  |                      |                           | <20>                                                         |
+  | Function             | Command                   | Notes                                                                                        |
+  |----------------------+---------------------------+----------------------------------------------------------------------------------------------|
+  |                      |                           | <20>                                                                                         |
   | List process to kill | ps -A\ grep -m1 <PROCESS> | https://stackoverflow.com/questions/11546765/how-to-get-the-pid-of-a-process-by-giving-the-process-name-in-mac-os-x |
-  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/        |
-  |                      |                           |                                                              |
+  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                        |
+  |                      |                           |                                                                                              |
 - https://stackoverflow.com/questions/17935301/how-to-force-mac-os-to-open-search-with-google-in-chrome
 - Window management
   - Default layouts
@@ -11730,7 +11907,7 @@ http://www.mitchchn.me/2014/os-x-terminal/
 :PROPERTIES:
 :ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
 :END:
-
+https://www.reddit.com/r/Rlanguage/comments/17yg8hx/what_are_some_aspects_you_dislike_about_r/
 **** Development                                                        :dev:
 ***** Ideas
 :PROPERTIES:
@@ -12956,6 +13133,7 @@ myft
 :PROPERTIES:
 :ID:       2faf071d-912b-4003-a42a-d9f18144434b
 :END:
+- https://www.mensurdurakovic.com/hard-to-swallow-truths-they-wont-tell-you-about-software-engineer-job/
 - miscellaneous
   - github education discounts
     - https://mail.google.com/mail/u/0/#inbox/FMfcgxwDqnjnHJFDpDpBQQdGrjgtfdfn
@@ -13037,6 +13215,7 @@ git_setup:
 :PROPERTIES:
 :ID:       b3c4c653-9584-4084-9e0e-abf16f95ac52
 :END:
+- https://docs.khoj.dev/#/
 - http://jasperproject.github.io/
 - http://www.instructables.com/id/Raspberry-Pi-Sous-Vide/
 - https://9to5google.com/2016/12/26/how-to-use-chrome-remote-desktop-family-assistance/

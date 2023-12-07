@@ -1,3 +1,23 @@
+docx_to_pdf() {
+    local in_docx="$1"
+
+    if [ -z "$in_docx" ]; then
+	cat <<- EOF
+	usage: docx_to_pdf <INPUT DOCX FILE>
+
+	Converts a docx file to a pdf
+
+	example: docx_to_pdf /tmp/test.docx
+EOF
+	return 1
+    fi
+
+    local out_pdf=$(echo "$in_docx" | sed 's/\.docx$/.pdf/')
+    libreoffice --headless --convert-to pdf:writer_pdf_Export "$in_docx" --outdir $(dirname "$in_docx")
+
+    echo "Conversion complete"
+}
+
 check_mnt(){
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF
