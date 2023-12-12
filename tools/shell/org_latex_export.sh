@@ -8,7 +8,7 @@ fi
 FILE="$1"
 ORG_ID="$2"
 
-emacs --batch -l ~/.emacs.d/lisp/latex.el --eval "(progn
+/usr/bin/emacs --batch -l ~/.emacs.d/lisp/latex.el --eval "(progn
                         (require 'org)
                         (require 'org-id)
                         (setq org-confirm-babel-evaluate nil)

@@ -6,6 +6,40 @@
 Basecamp snakefile md5s, aymlinks,
 Note archived
 
+#+begin_src python
+import re
+
+def parse_conda_export(file_path):
+    package_versions = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            if line.startswith('#') or not line.strip():
+                continue  # Skip comment lines and empty lines
+            parts = line.split()
+            package_name = parts[0]
+            package_version = parts[1]
+            package_versions[package_name] = package_version
+    return package_versions
+
+def find_versions_in_text(text, package_versions):
+    potential_packages = re.findall(r'\b\w+\b', text)
+    versions = {}
+    for package in potential_packages:
+        if package in package_versions:
+            versions[package] = package_versions[package]
+    return versions
+
+# Example usage
+text_block = "samtools fastp"
+conda_export_file = '/home/jeszyman/repos/mpnst/resources/full_conda_env.txt'
+
+package_versions = parse_conda_export(conda_export_file)
+found_versions = find_versions_in_text(text_block, package_versions)
+
+for package, version in found_versions.items():
+    print(f"{package}: {version}")
+
+#+end_src
 
 ** [[id:00656e3d-e62c-4ace-a27c-252b56010fe0][Scientific Project Template]]
 ** lib
@@ -234,6 +268,55 @@ EOF
 
 BLAH
 *** Snakemake
+:PROPERTIES:
+:header-args: :tangle ./lib/snakemake_funtions.sh :tangle-mode (identity #o555) :mkdirp yes :noweb yes :comments org
+:END:
+**** [[id:a8b27140-4b9e-40c5-86ab-ee5afeae723f][snakemake]]
+**** smk_unlock() Unlock a snakemake repo
+#+begin_src bash
+smk_unlock() {
+    [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+	cat <<- EOF
+
+Usage: smk_unlock <SNAKEFILE> [CONFIGFILE]
+
+Wrapper for snakemake --unlock. --configfile defaults to ./config/${HOSTNAME}.yaml if no second argument is provided.
+
+Example: smk_unlock ./workflow/analysis1.smk
+        smk_unlock ./workflow/analysis1.smk ./config/custom_config.yaml
+
+EOF
+	return
+    }
+
+    local snakefile="${1}"
+    local configfile="${2:-./config/${HOSTNAME}.yaml}"
+
+    # Check if variables exist
+    if [[ ! -f "$snakefile" ]]; then
+	echo "Error: Snakefile '$snakefile' does not exist."
+	return 1
+    fi
+
+    if [[ ! -f "$configfile" ]]; then
+	echo "Error: Config file '$configfile' does not exist."
+	return 1
+    fi
+
+  # Run
+  snakemake --configfile "$configfile" \
+    --cores 1 \
+    --snakefile "$snakefile" \
+    --unlock
+
+  # Check exit code and provide error message
+  if [ $? -ne 0 ]; then
+    echo "Error: Snakemake run failed."
+  fi
+}
+
+#+end_src
+
 **** smk_draw() Draw a rulegraph
 #+begin_src bash
 smk_draw(){
@@ -260,16 +343,49 @@ EOF
 
 #+end_src
 
-**** smk_dry()Dry run
+**** smk_dry() Dry run
 #+begin_src bash
 smk_dry(){
-    local snakefile="${1}"
-    snakemake \
-        --configfile ./config/${HOSTNAME}.yaml \
-        --cores 4 \
-        --dry-run \
-        --rerun-incomplete \
-        --snakefile $snakefile
+  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+    cat <<EOF
+
+Usage: smk_dry <SNAKEFILE> [CONFIGFILE]
+
+Wrapper for snakemake --dry-run. --configfile defaults to ./config/${HOSTNAME}.yaml if no second argument is provided.
+
+Example: smk_dry ./workflow/analysis1.smk
+         smk_dry ./workflow/analysis1.smk ./config/custom_config.yaml
+
+EOF
+	return
+    }
+
+  local snakefile="${1}"
+  local configfile="${2:-./config/${HOSTNAME}.yaml}"
+
+  # Check if variables exist
+  if [[ ! -f "$snakefile" ]]; then
+      echo "Error: Snakefile '$snakefile' does not exist."
+      return 1
+  fi
+
+  if [[ ! -f "$configfile" ]]; then
+      echo "Error: Config file '$configfile' does not exist."
+      return 1
+  fi
+
+  # Run
+  snakemake \
+      --configfile ./config/${HOSTNAME}.yaml \
+      --cores 4 \
+      --dry-run \
+      --rerun-incomplete \
+      --snakefile $snakefile
+
+  # Check exit code and provide error message
+  if [ $? -ne 0 ]; then
+      echo "Error: Snakemake run failed."
+  fi
 }
 
 #+end_src
@@ -277,15 +393,102 @@ smk_dry(){
 **** smk_forced() Forced run
 #+begin_src bash
 smk_forced(){
-    local snakefile="${1}"
-    local cores=$(nproc)
-    snakemake \
-        --configfile ./config/${HOSTNAME}.yaml \
-        --cores "$cores" \
-        --forceall \
-        --rerun-incomplete \
-        --snakefile "$snakefile"
+  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+    cat <<EOF
+
+Usage: smk_forced <SNAKEFILE> [CONFIGFILE]
+
+Wrapper for a forced snakemake run. --configfile defaults to ./config/${HOSTNAME}.yaml if no second argument is provided. Runs all available cores.
+
+Example: smk_forced ./workflow/analysis1.smk
+         smk_forced ./workflow/analysis1.smk ./config/custom_config.yaml
+
+EOF
+    return
+  }
+
+  local snakefile="${1}"
+  local configfile="${2:-./config/${HOSTNAME}.yaml}"
+  local cores=$(nproc)
+
+  # Check if variables exist
+  if [[ ! -f "$snakefile" ]]; then
+      echo "Error: Snakefile '$snakefile' does not exist."
+      return 1
+  fi
+
+  if [[ ! -f "$configfile" ]]; then
+      echo "Error: Config file '$configfile' does not exist."
+      return 1
+  fi
+
+  # Run
+  snakemake \
+      --configfile "$configfile" \
+      --cores "$cores" \
+      --forceall \
+      --rerun-incomplete \
+      --snakefile "$snakefile"
+
+  # Check exit code and provide error message
+  if [ $? -ne 0 ]; then
+      echo "Error: Snakemake run failed."
+  fi
 }
+#+end_src
+#+begin_src bash
+smk_forced(){
+  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+    cat <<EOF
+
+Usage: smk_forced <SNAKEFILE> [CONFIGFILE]
+
+Wrapper for a forced snakemake run. --configfile defaults to ./config/${HOSTNAME}.yaml if no second argument is provided. Runs all available cores.
+
+Example: smk_forced ./workflow/analysis1.smk
+         smk_forced ./workflow/analysis1.smk ./config/custom_config.yaml
+
+EOF
+    return
+  }
+
+  local snakefile="${1}"
+  local configfile="${2:-./config/${HOSTNAME}.yaml}"
+  local cores=$(nproc)
+
+  # Check if variables exist
+  if [[ ! -f "$snakefile" ]]; then
+      echo "Error: Snakefile '$snakefile' does not exist."
+      return 1
+  fi
+
+  if [[ ! -f "$configfile" ]]; then
+      echo "Error: Config file '$configfile' does not exist."
+      return 1
+  fi
+
+  # Confirmation prompt
+  read -p "This will force a complete re-run of the whole snakefile. Are you sure? (y/n) " -n 1 -r
+  echo    # (optional) move to a new line
+  if [[ ! $REPLY =~ ^[Yy]$ ]]
+  then
+      [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # exit script or return from function
+  fi
+
+  # Run
+  snakemake \
+      --configfile "$configfile" \
+      --cores "$cores" \
+      --forceall \
+      --rerun-incomplete \
+      --snakefile "$snakefile"
+
+  # Check exit code and provide error message
+  if [ $? -ne 0 ]; then
+      echo "Error: Snakemake run failed."
+  fi
+}
+
 #+end_src
 
 **** smk_run() Normal run
@@ -293,20 +496,45 @@ smk_forced(){
 smk_run(){
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF
-Usage: smk_run <CONFIGFILE> <SNAKEFILE>
-Launches a snakemake run with common parameters
-(keep-going, rerun-incomplete, use all available cores)
+
+Usage: smk_dry <SNAKEFILE> [CONFIGFILE]
+
+Wrapper for normal snakemake. --configfile defaults to ./config/${HOSTNAME}.yaml if no second argument is provided. Runs all available cores.
+
+Example: smk_run ./workflow/analysis1.smk
+         smk_run ./workflow/analysis1.smk ./config/custom_config.yaml
+
 EOF
     return
   }
-    local snakefile="${1}"
-    local cores=$(nproc)
-    snakemake \
-        --configfile ./config/${HOSTNAME}.yaml \
-        --cores "$cores" \
-        --keep-going \
-        --rerun-incomplete \
-        --snakefile "$snakefile"
+
+  local snakefile="${1}"
+  local configfile="${2:-./config/${HOSTNAME}.yaml}"
+  local cores=$(nproc)
+
+  # Check if variables exist
+  if [[ ! -f "$snakefile" ]]; then
+      echo "Error: Snakefile '$snakefile' does not exist."
+      return 1
+  fi
+
+  if [[ ! -f "$configfile" ]]; then
+      echo "Error: Config file '$configfile' does not exist."
+      return 1
+  fi
+
+  # Run
+  snakemake \
+      --configfile "$configfile" \
+      --cores "$cores" \
+      --keep-going \
+      --rerun-incomplete \
+      --snakefile "$snakefile"
+
+  # Check exit code and provide error message
+  if [ $? -ne 0 ]; then
+      echo "Error: Snakemake run failed."
+  fi
 }
 
 #+end_src
@@ -362,6 +590,14 @@ EOF
 }
 
 #+end_src
+** scripts
+*** Snakemake
+**** discont_smk_run
+#+begin_src bash
+
+#+end_src
+
+**** [[id:a8b27140-4b9e-40c5-86ab-ee5afeae723f][snakemake]]
 ** Org-mode literate programming for devops :tutorial:
 :PROPERTIES:
 :header-args: :results replace :session testsesh :cache no
@@ -430,35 +666,36 @@ channels:
 
 #########1#########2#########3#########4#########5#########6#########7#########8
 dependencies:                                                                  #
-  - r-lintr=3.1                                                 # Linting tool #
-  - r-svglite                                   # Provides svg graphics output #
+  - black
+  - numpy
+  - openpyxl
+  - pandas
+  - pandas
+  - parallel
   - r-colorramps
   - r-devtools
+  - r-ggextra
+  - r-ggpattern
   - r-ggpubr
+  - r-ggrepel
+  - r-ggsci
+  - r-lintr=3.1                                                 # Linting tool #
+  - r-magick
   - r-multcomp
+  - r-optparse                              # For command line options parsing #
   - r-patchwork
   - r-pheatmap
   - r-readxl
   - r-rlang
   - r-rstatix
-  - r-tidyverse
-  - scikit-learn
-  - numpy
-  - black
-  - pandas
-  - openpyxl
-  - pandas
-  - parallel
-  - r-ggextra
-  - r-ggpattern
-  - r-ggrepel
-  - r-ggsci
-  - r-magick
   - r-rstatix
   - r-svglite
+  - r-svglite                                   # Provides svg graphics output #
+  - r-tidyverse
   - r-tidyverse
   - r-writexl
   - r-yaml
+  - scikit-learn
   - snakemake
 
 #+end_src
@@ -2219,7 +2456,6 @@ cmake -version
 :PROPERTIES:
 :ID:       b16d0202-8d35-472b-b538-87a7d6a6cef7
 :END:
-https://chat.openai.com/c/73c00b0b-4dfd-4241-ae7c-af96ac84bdb2
 ****** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
 ****** Processes
 ******* 0 Flat
@@ -5753,15 +5989,15 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 :PROPERTIES:
 :ID:       56b7a8f4-25d7-41a2-a0b5-cdb8a86481cc
 :END:
-  |----------------------+----------------------------------------------------------------------------------------------|
-  | function             | command                                                                                      |
-  |----------------------+----------------------------------------------------------------------------------------------|
-  | mount partition      | udisksctl mount -b /dev/<PARTITION>                                                          |
-  |                      |                                                                                              |
-  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                                                      |
+  |----------------------+--------------------------------------------------------------|
+  | function             | command                                                      |
+  |----------------------+--------------------------------------------------------------|
+  | mount partition      | udisksctl mount -b /dev/<PARTITION>                          |
+  |                      |                                                              |
+  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                      |
   | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]] |
-  | see systemd services | systemctl list-units --type=service                                                          |
-  | see ubuntu version   | lsb_release -a                                                                               |
+  | see systemd services | systemctl list-units --type=service                          |
+  | see ubuntu version   | lsb_release -a                                               |
 - https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
 ******* X Window System
 :PROPERTIES:
@@ -5836,15 +6072,15 @@ sudo python setup.py install
 :PROPERTIES:
 :ID:       6cf0206e-fe85-44bb-a84b-b6c63c3adf6c
 :END:
-  |----------------------+----------------------------------------------------------------------------------------------|
-  | function             | command                                                                                      |
-  |----------------------+----------------------------------------------------------------------------------------------|
-  | mount partition      | udisksctl mount -b /dev/<PARTITION>                                                          |
-  |                      |                                                                                              |
-  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                                                      |
+  |----------------------+--------------------------------------------------------------|
+  | function             | command                                                      |
+  |----------------------+--------------------------------------------------------------|
+  | mount partition      | udisksctl mount -b /dev/<PARTITION>                          |
+  |                      |                                                              |
+  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                      |
   | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]] |
-  | see systemd services | systemctl list-units --type=service                                                          |
-  | see ubuntu version   | lsb_release -a                                                                               |
+  | see systemd services | systemctl list-units --type=service                          |
+  | see ubuntu version   | lsb_release -a                                               |
 - https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
 - find large files sudo du -a /home | sort -n -r | head -n 10
 ******* ideas
@@ -6367,12 +6603,12 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
 - https://www.howtogeek.com/312755/what-is-the-process-windowserver-and-why-is-it-running-on-my-mac/
 - [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][How to allow install of non app store or identified developers on MacOS Sierra]]
 - Command Table
-  | Function             | Command                   | Notes                                                                                        |
-  |----------------------+---------------------------+----------------------------------------------------------------------------------------------|
-  |                      |                           | <20>                                                                                         |
+  | Function             | Command                   | Notes                                                        |
+  |----------------------+---------------------------+--------------------------------------------------------------|
+  |                      |                           | <20>                                                         |
   | List process to kill | ps -A\ grep -m1 <PROCESS> | https://stackoverflow.com/questions/11546765/how-to-get-the-pid-of-a-process-by-giving-the-process-name-in-mac-os-x |
-  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                        |
-  |                      |                           |                                                                                              |
+  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/        |
+  |                      |                           |                                                              |
 - https://stackoverflow.com/questions/17935301/how-to-force-mac-os-to-open-search-with-google-in-chrome
 - Window management
   - Default layouts
@@ -11567,7 +11803,7 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 CLOCK: [2021-08-25 Wed 08:33]--[2021-08-25 Wed 09:13] =>  0:40
 :END:
   | du -shc . | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]] |
-  | l         | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\('                                              |
+  | l         | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\('              |
 
   | change password                     | passwd                      |
   | disk usage, top level               | du -h --summarize           |
@@ -11875,12 +12111,12 @@ chmod 600 ~/.ssh/id_rsa.pub
 - https://www.howtogeek.com/312755/what-is-the-process-windowserver-and-why-is-it-running-on-my-mac/
 - [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][How to allow install of non app store or identified developers on MacOS Sierra]]
 - Command Table
-  | Function             | Command                   | Notes                                                                                        |
-  |----------------------+---------------------------+----------------------------------------------------------------------------------------------|
-  |                      |                           | <20>                                                                                         |
+  | Function             | Command                   | Notes                                                        |
+  |----------------------+---------------------------+--------------------------------------------------------------|
+  |                      |                           | <20>                                                         |
   | List process to kill | ps -A\ grep -m1 <PROCESS> | https://stackoverflow.com/questions/11546765/how-to-get-the-pid-of-a-process-by-giving-the-process-name-in-mac-os-x |
-  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                        |
-  |                      |                           |                                                                                              |
+  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/        |
+  |                      |                           |                                                              |
 - https://stackoverflow.com/questions/17935301/how-to-force-mac-os-to-open-search-with-google-in-chrome
 - Window management
   - Default layouts
@@ -11907,7 +12143,6 @@ http://www.mitchchn.me/2014/os-x-terminal/
 :PROPERTIES:
 :ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
 :END:
-https://www.reddit.com/r/Rlanguage/comments/17yg8hx/what_are_some_aspects_you_dislike_about_r/
 **** Development                                                        :dev:
 ***** Ideas
 :PROPERTIES:
@@ -12607,6 +12842,15 @@ $0
 # --
 $1 = args[$2]
 #+end_src
+***** make.opt :yas:
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/ess-mode/make.opt
+# -*- mode: snippet -*-
+# key: make.opt
+# expand-env: ((yas-indent-line 'none))
+# --
+  make_option(c("--$1"), type = "character", default = "$2"),
+
+#+end_src
 ***** script                                                            :yas:
 #+name: script
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/ess-mode/script
@@ -12616,15 +12860,36 @@ $1 = args[$2]
 # --
 #!/usr/bin/env Rscript
 
-${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
-###   ${1:$$(capitalize yas-text)}   ###
-${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
+# ---   Setup   --- #
+# ----------------- #
 
-# Command line arguements
-args = commandArgs(trailingOnly = TRUE)
-$0 = args[1]
+## ---   Load Packages   --- ##
+## ------------------------- ##
 
-# Load required packages, data, and functions
+library(optparse)
+
+## ---   Load Inputs   --- ##
+## ----------------------- ##
+
+optparse
+#+end_src
+***** optparse :yas:
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/ess-mode/optparse
+# -*- mode: snippet -*-
+# key: optparse
+# expand-env: ((yas-indent-line 'none))
+# --
+option_list <- list(
+  make_option(c("--"), type = "character", default = "")
+)
+
+opts <- parse_args(OptionParser(option_list = option_list))
+
+list_of_options <- names(opts)
+for (opt_name in list_of_options) {
+  assign(opt_name, opts[[opt_name]], envir = .GlobalEnv)
+}
+
 #+end_src
 ***** r.cmd :yas:
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/r.cmd
@@ -13023,6 +13288,7 @@ https://stat.ethz.ch/pipermail/ess-help/2015-July/010628.html
 :CREATED:  [2021-06-04 Fri 10:12]
 :ID:       707e5032-ae3d-4f3e-86eb-46917bec88f8
 :END:
+- https://www.reddit.com/r/Rlanguage/comments/17yg8hx/what_are_some_aspects_you_dislike_about_r/
 - https://rdrr.io/cran/styler/man/tidyverse_style.html
 - https://little-books-of-r.readthedocs.io/en/latest/
 - cite:lewis2010 http://proquest.safaribooksonline.com/9780763758080
@@ -13223,6 +13489,10 @@ git_setup:
 - http://nengo.ca/build-a-brain/spaunvideos
 - [[https://aws.amazon.com/websites/?sc_channel=PS&sc_campaign=acquisition_US&sc_publisher=google&sc_medium=websites_webapps_nb&sc_content=web_hosting_e&sc_detail=free%20web%20hosting&sc_category=websites_webapps&sc_segment=96578640642&sc_matchtype=e&sc_country=US&s_kwcid=AL!4422!3!96578640642!e!!g!!free%20web%20hosting&ef_id=WENUqgAAAV2Dp9Ql:20170209002051:s][Amazon web hosting]]
 - https://aws.amazon.com/getting-started/tutorials/launch-a-virtual-machine/
+*** wider chatgtp message window
+https://community.openai.com/t/please-widen-the-code-block-style-element-in-chat/132308/2
+*** CI/CD of basic snakemake repo testing my run functions
+- https://chat.openai.com/c/b911ebfa-9d2c-42d7-bdc5-7df22ecbffc9
 *** App development
 :PROPERTIES:
 :ID:       DFF98A32-3864-46E0-AF88-BC3105D8A8D5
@@ -13272,7 +13542,7 @@ fi
 FILE="$1"
 ORG_ID="$2"
 
-emacs --batch -l ~/.emacs.d/lisp/latex.el --eval "(progn
+/usr/bin/emacs --batch -l ~/.emacs.d/lisp/latex.el --eval "(progn
                         (require 'org)
                         (require 'org-id)
                         (setq org-confirm-babel-evaluate nil)

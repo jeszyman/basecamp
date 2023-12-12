@@ -10,33 +10,34 @@ channels:
 
 #########1#########2#########3#########4#########5#########6#########7#########8
 dependencies:                                                                  #
-  - r-lintr=3.1                                                 # Linting tool #
-  - r-svglite                                   # Provides svg graphics output #
+  - black
+  - numpy
+  - openpyxl
+  - pandas
+  - pandas
+  - parallel
   - r-colorramps
   - r-devtools
+  - r-ggextra
+  - r-ggpattern
   - r-ggpubr
+  - r-ggrepel
+  - r-ggsci
+  - r-lintr=3.1                                                 # Linting tool #
+  - r-magick
   - r-multcomp
+  - r-optparse                              # For command line options parsing #
   - r-patchwork
   - r-pheatmap
   - r-readxl
   - r-rlang
   - r-rstatix
-  - r-tidyverse
-  - scikit-learn
-  - numpy
-  - black
-  - pandas
-  - openpyxl
-  - pandas
-  - parallel
-  - r-ggextra
-  - r-ggpattern
-  - r-ggrepel
-  - r-ggsci
-  - r-magick
   - r-rstatix
   - r-svglite
+  - r-svglite                                   # Provides svg graphics output #
+  - r-tidyverse
   - r-tidyverse
   - r-writexl
   - r-yaml
+  - scikit-learn
   - snakemake
