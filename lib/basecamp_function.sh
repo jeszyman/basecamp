@@ -57,52 +57,40 @@ EOF
     /usr/bin/emacs --batch -l ~/.emacs.d/tangle.el -l org -eval "(org-babel-tangle-file \"$org_file\")"
 }
 
-convert_pdf_to_png() {
-    local input_file="$1"
+cpout() {
+    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
+        cat <<EOF
 
-    if [ -z "$input_file" ]; then
-        cat <<- EOF
-        usage: convert_pdf_to_png <input-file.pdf>
+Usage: cpout <COMMAND>
 
-        Converts a PDF to a PNG with a white background.
+Copies command stdout and stderr to clipboad using xclip.
 
-        example: convert_pdf_to_png input.pdf
-
-        Notes:
-        - /etc/ImageMagick-6/policy.xml policy change allows work with PDF
-        - allows file overwrite
-        - works from /tmp
-        - set to 600 dpi
 EOF
-        return 1
+        return
     fi
-
-    local output_file=$(echo "$input_file" | sed 's/\.pdf$/.png/')
-    convert -density 600 -background white -flatten "$input_file" "$output_file"
-
-    echo "Conversion complete. Output saved to $output_file"
+    "$@" 2>&1 | tee >(xclip -selection clipboard)
 }
 
-# Uncomment below line to use the function with the first script argument
-# convert_pdf_to_png "$1"
-
 convert_pdf_to_svg() {
+    print_usage() {
+        cat <<- EOF
+Usage: convert_pdf_to_svg <input-file.pdf>
+
+Converts a PDF to an SVG with a white background.
+
+Example: convert_pdf_to_svg input.pdf
+
+Notes:
+- Uses pdf2svg for conversion
+- Allows file overwrite
+- Works from /tmp
+EOF
+}
     local input_file="$1"
 
     if [ -z "$input_file" ]; then
-        cat <<- EOF
-        usage: convert_pdf_to_svg <input-file.pdf>
-
-        Converts a PDF to an SVG with a white background.
-
-        example: convert_pdf_to_svg input.pdf
-
-        Notes:
-        - Uses pdf2svg for conversion
-        - Allows file overwrite
-        - Works from /tmp
-EOF
-        return 1
+	print_usage
+        return
     fi
 
     local output_file=$(echo "$input_file" | sed 's/\.pdf$/.svg/')
@@ -114,30 +102,77 @@ EOF
     echo "Conversion complete. Output saved to $output_file with a white background."
 }
 
-find_in_files(){
-    print_usage(){
+
+# :PROPERTIES:
+# :ID:       61cef427-947e-4d91-9dfe-8758ccbe3512
+# :END:
+
+
+convert_pdf_to_png() {
+    print_usage() {
         cat <<- EOF
 
-usage: find_in_files <TERM> [<DIRECTORY>]
+$(tput setaf 12)Usage: convert_pdf_to_png$(tput sgr0) $(tput setaf 11)<INPUT_FILE.pdf>$(tput sgr0)
 
-Use grep to search a term throughout text files of a directory. Searches current directory by default or specify.
+Converts a PDF to a PNG with a white background.
 
-examples:
-find_in_files test
-find_in_files test /path/to/dir
+Example: convert_pdf_to_png $(tput setaf 11)input.pdf$(tput sgr0)
 
+Notes:
+- /etc/ImageMagick-6/policy.xml policy change allows work with PDF
+- allows file overwrite
+- works from /tmp
+- set to 600 dpi
 EOF
     }
 
-    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
+    local input_file="$1"
+
+    if [ -z "$input_file" ]; then
         print_usage
         return
     fi
 
-    local term="$1"
-    local dir="${2:-.}" # Default to current directory if not provided
+    local output_file=$(echo "$input_file" | sed 's/\.pdf$/.png/')
+    convert -density 600 -background white -flatten "$input_file" "$output_file"
 
-    grep -rnw "${dir}" -e "${term}"
+    echo "Conversion complete. Output saved to $output_file"
+
+}
+
+run_with_nohup() {
+
+    print_usage() {
+        cat <<- EOF
+Usage: run_with_nohup <FUNCTION> <FUNCTION'S OPERANDS>
+
+Wrapper to export a function and run it with nohup.
+
+Example: run_with_nohup smk_run ./workflow/analysis1.smk
+EOF
+    }
+
+    main() {
+        # Check for help or no arguments
+        if [[ " $* " =~ " -h " ]] || [[ " $* " =~ " --help " ]] || [[ -z "$1" ]]; then
+            print_usage
+            return
+        fi
+
+        local func="$1"
+        shift
+        local args="$@"
+
+        # Export the function
+        export -f "$func"
+
+        # Run the function with nohup
+        nohup bash -c "$func $args" &> nohup.out &
+        disown
+        tail -f nohup.out
+    }
+
+    main "$@" & disown
 }
 
 open(){
@@ -166,16 +201,28 @@ EOF
 
 }
 
-cpout() {
-    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
-        cat <<EOF
+find_in_files(){
+    print_usage(){
+        cat <<- EOF
 
-Usage: cpout <COMMAND>
+usage: find_in_files <TERM> [<DIRECTORY>]
 
-Copies command stdout and stderr to clipboad using xclip.
+Use grep to search a term throughout text files of a directory. Searches current directory by default or specify.
+
+examples:
+find_in_files test
+find_in_files test /path/to/dir
 
 EOF
+    }
+
+    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
+        print_usage
         return
     fi
-    "$@" 2>&1 | tee >(xclip -selection clipboard)
+
+    local term="$1"
+    local dir="${2:-.}" # Default to current directory if not provided
+
+    grep -rnw "${dir}" -e "${term}"
 }

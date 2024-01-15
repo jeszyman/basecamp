@@ -3,44 +3,6 @@
 :header-args: :tangle-mode (identity #o555) :mkdirp yes :noweb yes
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :END:
-Basecamp snakefile md5s, aymlinks,
-Note archived
-
-#+begin_src python
-import re
-
-def parse_conda_export(file_path):
-    package_versions = {}
-    with open(file_path, 'r') as file:
-        for line in file:
-            if line.startswith('#') or not line.strip():
-                continue  # Skip comment lines and empty lines
-            parts = line.split()
-            package_name = parts[0]
-            package_version = parts[1]
-            package_versions[package_name] = package_version
-    return package_versions
-
-def find_versions_in_text(text, package_versions):
-    potential_packages = re.findall(r'\b\w+\b', text)
-    versions = {}
-    for package in potential_packages:
-        if package in package_versions:
-            versions[package] = package_versions[package]
-    return versions
-
-# Example usage
-text_block = "samtools fastp"
-conda_export_file = '/home/jeszyman/repos/mpnst/resources/full_conda_env.txt'
-
-package_versions = parse_conda_export(conda_export_file)
-found_versions = find_versions_in_text(text_block, package_versions)
-
-for package, version in found_versions.items():
-    print(f"{package}: {version}")
-
-#+end_src
-
 ** [[id:00656e3d-e62c-4ace-a27c-252b56010fe0][Scientific Project Template]]
 ** lib
 *** [[id:a9f97cde-27bc-4777-bb12-164ac4cb421d][Shell functions in basecamp-private]] more_bashrc
@@ -95,6 +57,7 @@ EOF
 #+end_src
 
 **** Emacs
+*****  [[id:a49abc44-8e71-4a1a-bd35-a77849427c94][Emacs]]
 ***** emacs-save()
 #+begin_src bash
 
@@ -125,59 +88,51 @@ EOF
     /usr/bin/emacs --batch -l ~/.emacs.d/tangle.el -l org -eval "(org-babel-tangle-file \"$org_file\")"
 }
 #+end_src
-**** convert_pdf_to_png()
+**** cpout()
 #+begin_src bash
+cpout() {
+    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
+        cat <<EOF
 
-convert_pdf_to_png() {
-    local input_file="$1"
+Usage: cpout <COMMAND>
 
-    if [ -z "$input_file" ]; then
-        cat <<- EOF
-        usage: convert_pdf_to_png <input-file.pdf>
+Copies command stdout and stderr to clipboad using xclip.
 
-        Converts a PDF to a PNG with a white background.
-
-        example: convert_pdf_to_png input.pdf
-
-        Notes:
-        - /etc/ImageMagick-6/policy.xml policy change allows work with PDF
-        - allows file overwrite
-        - works from /tmp
-        - set to 600 dpi
 EOF
-        return 1
+        return
     fi
-
-    local output_file=$(echo "$input_file" | sed 's/\.pdf$/.png/')
-    convert -density 600 -background white -flatten "$input_file" "$output_file"
-
-    echo "Conversion complete. Output saved to $output_file"
+    "$@" 2>&1 | tee >(xclip -selection clipboard)
 }
-
-# Uncomment below line to use the function with the first script argument
-# convert_pdf_to_png "$1"
-
 #+end_src
+
+BLAH
+**** Development :dev:
+:PROPERTIES:
+:header-args: :tangle no
+:END:
 **** convert_pdf_to_svg()
 #+begin_src bash
 
 convert_pdf_to_svg() {
+    print_usage() {
+        cat <<- EOF
+Usage: convert_pdf_to_svg <input-file.pdf>
+
+Converts a PDF to an SVG with a white background.
+
+Example: convert_pdf_to_svg input.pdf
+
+Notes:
+- Uses pdf2svg for conversion
+- Allows file overwrite
+- Works from /tmp
+EOF
+}
     local input_file="$1"
 
     if [ -z "$input_file" ]; then
-        cat <<- EOF
-        usage: convert_pdf_to_svg <input-file.pdf>
-
-        Converts a PDF to an SVG with a white background.
-
-        example: convert_pdf_to_svg input.pdf
-
-        Notes:
-        - Uses pdf2svg for conversion
-        - Allows file overwrite
-        - Works from /tmp
-EOF
-        return 1
+	print_usage
+        return
     fi
 
     local output_file=$(echo "$input_file" | sed 's/\.pdf$/.svg/')
@@ -187,6 +142,118 @@ EOF
     sed -i '/<svg/a <rect width="100%" height="100%" fill="white"/>' "$output_file"
 
     echo "Conversion complete. Output saved to $output_file with a white background."
+}
+
+#+end_src
+**** convert_pdf_to_png()
+:PROPERTIES:
+:ID:       61cef427-947e-4d91-9dfe-8758ccbe3512
+:END:
+
+#+begin_src bash
+convert_pdf_to_png() {
+    print_usage() {
+        cat <<- EOF
+
+$(tput setaf 12)Usage: convert_pdf_to_png$(tput sgr0) $(tput setaf 11)<INPUT_FILE.pdf>$(tput sgr0)
+
+Converts a PDF to a PNG with a white background.
+
+Example: convert_pdf_to_png $(tput setaf 11)input.pdf$(tput sgr0)
+
+Notes:
+- /etc/ImageMagick-6/policy.xml policy change allows work with PDF
+- allows file overwrite
+- works from /tmp
+- set to 600 dpi
+EOF
+    }
+
+    local input_file="$1"
+
+    if [ -z "$input_file" ]; then
+        print_usage
+        return
+    fi
+
+    local output_file=$(echo "$input_file" | sed 's/\.pdf$/.png/')
+    convert -density 600 -background white -flatten "$input_file" "$output_file"
+
+    echo "Conversion complete. Output saved to $output_file"
+
+}
+
+#+end_src
+
+
+
+**** run_with_nohup()
+#+begin_src bash
+run_with_nohup() {
+
+    print_usage() {
+        cat <<- EOF
+Usage: run_with_nohup <FUNCTION> <FUNCTION'S OPERANDS>
+
+Wrapper to export a function and run it with nohup.
+
+Example: run_with_nohup smk_run ./workflow/analysis1.smk
+EOF
+    }
+
+    main() {
+        # Check for help or no arguments
+        if [[ " $* " =~ " -h " ]] || [[ " $* " =~ " --help " ]] || [[ -z "$1" ]]; then
+            print_usage
+            return
+        fi
+
+        local func="$1"
+        shift
+        local args="$@"
+
+        # Export the function
+        export -f "$func"
+
+        # Run the function with nohup
+        nohup bash -c "$func $args" &> nohup.out &
+        disown
+        tail -f nohup.out
+    }
+
+    main "$@" & disown
+}
+
+#+end_src
+
+
+
+**** open()
+#+begin_src bash
+open(){
+    print_usage(){
+	cat <<- EOF
+
+usage: open <FILE>
+
+Open files with specific applications based on file extension. Defaults to xdg-open. Runs open in background using &.
+
+example: test.pdf
+
+EOF
+    }
+
+    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
+        print_usage
+        return
+    fi
+
+    case "${1##*.}" in
+	pdf)   nohup okular "$1" >/dev/null 2>&1 & ;;
+	docx)  nohup libreoffice "$1" >/dev/null 2>&1 & ;;
+	,*)     nohup xdg-open "$1" >/dev/null 2>&1 & ;;
+    esac
+
 }
 
 #+end_src
@@ -220,53 +287,6 @@ EOF
 }
 
 #+end_src
-**** open()
-#+begin_src bash
-open(){
-    print_usage(){
-	cat <<- EOF
-
-usage: open <FILE>
-
-Open files with specific applications based on file extension. Defaults to xdg-open. Runs open in background using &.
-
-example: test.pdf
-
-EOF
-    }
-
-    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
-        print_usage
-        return
-    fi
-
-    case "${1##*.}" in
-	pdf)   nohup okular "$1" >/dev/null 2>&1 & ;;
-	docx)  nohup libreoffice "$1" >/dev/null 2>&1 & ;;
-	,*)     nohup xdg-open "$1" >/dev/null 2>&1 & ;;
-    esac
-
-}
-
-#+end_src
-**** cpout()
-#+begin_src bash
-cpout() {
-    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
-        cat <<EOF
-
-Usage: cpout <COMMAND>
-
-Copies command stdout and stderr to clipboad using xclip.
-
-EOF
-        return
-    fi
-    "$@" 2>&1 | tee >(xclip -selection clipboard)
-}
-#+end_src
-
-BLAH
 *** Snakemake
 :PROPERTIES:
 :header-args: :tangle ./lib/snakemake_funtions.sh :tangle-mode (identity #o555) :mkdirp yes :noweb yes :comments org
@@ -340,6 +360,29 @@ EOF
               --rulegraph | tee >(dot -Tpdf > "$out_pdf") | dot -Tpng > "$out_png"
 }
 
+
+#+end_src
+#+begin_src bash
+smk_draw(){
+  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+    cat <<EOF
+Usage: smk_draw <CONFIG FILE> <SNAKEFILE>
+Implements snakemake's rulegraph to make a DAG. DAG is saved in ./resources/<SNAKEFILE BASENAME>.pdf and .png
+EOF
+    return
+  }
+  local snakefile="${1}"
+  local snakefile_basename="$(basename "$snakefile")"
+  local out_pdf="./resources/${snakefile_basename%.*}_smk.pdf"
+  local out_png="${out_pdf%.*}.png"
+  snakemake --configfile ./config/${HOSTNAME}.yaml \
+            --snakefile "$snakefile" \
+            --cores 1 \
+            --rerun-incomplete \
+            --dry-run \
+            --quiet \
+            --rulegraph | tee >(dot -Tpdf -Gsize=11,8.5 > "$out_pdf") | dot -Tpng > "$out_png"
+}
 
 #+end_src
 
@@ -436,63 +479,10 @@ EOF
   fi
 }
 #+end_src
-#+begin_src bash
-smk_forced(){
-  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
-    cat <<EOF
-
-Usage: smk_forced <SNAKEFILE> [CONFIGFILE]
-
-Wrapper for a forced snakemake run. --configfile defaults to ./config/${HOSTNAME}.yaml if no second argument is provided. Runs all available cores.
-
-Example: smk_forced ./workflow/analysis1.smk
-         smk_forced ./workflow/analysis1.smk ./config/custom_config.yaml
-
-EOF
-    return
-  }
-
-  local snakefile="${1}"
-  local configfile="${2:-./config/${HOSTNAME}.yaml}"
-  local cores=$(nproc)
-
-  # Check if variables exist
-  if [[ ! -f "$snakefile" ]]; then
-      echo "Error: Snakefile '$snakefile' does not exist."
-      return 1
-  fi
-
-  if [[ ! -f "$configfile" ]]; then
-      echo "Error: Config file '$configfile' does not exist."
-      return 1
-  fi
-
-  # Confirmation prompt
-  read -p "This will force a complete re-run of the whole snakefile. Are you sure? (y/n) " -n 1 -r
-  echo    # (optional) move to a new line
-  if [[ ! $REPLY =~ ^[Yy]$ ]]
-  then
-      [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # exit script or return from function
-  fi
-
-  # Run
-  snakemake \
-      --configfile "$configfile" \
-      --cores "$cores" \
-      --forceall \
-      --rerun-incomplete \
-      --snakefile "$snakefile"
-
-  # Check exit code and provide error message
-  if [ $? -ne 0 ]; then
-      echo "Error: Snakemake run failed."
-  fi
-}
-
-#+end_src
 
 **** smk_run() Normal run
 #+begin_src bash
+
 smk_run(){
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF
@@ -590,6 +580,11 @@ EOF
 }
 
 #+end_src
+*** Ideas :ideas:
+**** smk_touch() Mark target files as complete
+hard to get the touch to work here
+https://chat.openai.com/c/22b1d5c5-5d9b-4ced-98cf-860f7eb493c8
+
 ** scripts
 *** Snakemake
 **** discont_smk_run
@@ -711,6 +706,7 @@ dependencies:                                                                  #
 :PROPERTIES:
 :ID:       39F11977-BE11-47CF-98B1-14CE6D9B97C4
 :END:
+https://www.reddit.com/r/datascience/comments/18nxz71/what_are_some_of_the_most_confidently_incorrect/
 https://www.reddit.com/r/datascience/comments/17zshma/what_do_you_do_with_highly_correlated_features/
 https://rosalind.info/problems/locations/
 https://www.reddit.com/r/datascience/comments/17t04cn/chatgpt_becomes_a_serious_contender_for/
@@ -2396,6 +2392,7 @@ optimized lambda strikes balance of coeffienct bias and optimized likelihood
 :PROPERTIES:
 :ID:       9E19E626-9D6C-4296-BEDB-80033A846CF4
 :END:
+**** [[id:a49abc44-8e71-4a1a-bd35-a77849427c94][Emacs]]
 **** Software :flat:
 https://unixpapa.com/js/testkey.html
 ***** Advanced package tool (APT)
@@ -5281,6 +5278,7 @@ https://stackoverflow.com/questions/50413374/glob-wildcards-on-multiple-director
 :PROPERTIES:
 :ID:       44d21b98-0a61-43db-937f-65ff5a5d27d3
 :END:
+******** See also [[id:83ab8d81-d8b9-4430-b639-2cbe92ec49b4][Python YAS]]
 ******** Operating snakemake file org-mode tree (YAS)
 :PROPERTIES:
 :ID:       8a7cdf48-a132-45e9-a5da-18e2d5fad643
@@ -5600,6 +5598,8 @@ args = commandArgs(trailingOnly = TRUE)
 ******* [[https://snakemake.readthedocs.io/en/stable/index.html][Documentation]]
 - https://snakemake-wrappers.readthedocs.io/en/stable/wrappers.html
 - [[Snakemake Tutorial][Snakemake Tutorial]]
+******* Ideas
+set emacs buffers of smk windows to a smaller text size default
 ******* General reference
 - https://snakepipes.readthedocs.io/en/latest/content/workflows/mRNA-seq.html#mrna-seq
 
@@ -5989,15 +5989,15 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 :PROPERTIES:
 :ID:       56b7a8f4-25d7-41a2-a0b5-cdb8a86481cc
 :END:
-  |----------------------+--------------------------------------------------------------|
-  | function             | command                                                      |
-  |----------------------+--------------------------------------------------------------|
-  | mount partition      | udisksctl mount -b /dev/<PARTITION>                          |
-  |                      |                                                              |
-  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                      |
+  |----------------------+------------------------------------------------------------------------------------------------------|
+  | function             | command                                                                                              |
+  |----------------------+------------------------------------------------------------------------------------------------------|
+  | mount partition      | udisksctl mount -b /dev/<PARTITION>                                                                  |
+  |                      |                                                                                                      |
+  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                                                              |
   | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]] |
-  | see systemd services | systemctl list-units --type=service                          |
-  | see ubuntu version   | lsb_release -a                                               |
+  | see systemd services | systemctl list-units --type=service                                                                  |
+  | see ubuntu version   | lsb_release -a                                                                                       |
 - https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
 ******* X Window System
 :PROPERTIES:
@@ -6072,15 +6072,15 @@ sudo python setup.py install
 :PROPERTIES:
 :ID:       6cf0206e-fe85-44bb-a84b-b6c63c3adf6c
 :END:
-  |----------------------+--------------------------------------------------------------|
-  | function             | command                                                      |
-  |----------------------+--------------------------------------------------------------|
-  | mount partition      | udisksctl mount -b /dev/<PARTITION>                          |
-  |                      |                                                              |
-  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                      |
+  |----------------------+------------------------------------------------------------------------------------------------------|
+  | function             | command                                                                                              |
+  |----------------------+------------------------------------------------------------------------------------------------------|
+  | mount partition      | udisksctl mount -b /dev/<PARTITION>                                                                  |
+  |                      |                                                                                                      |
+  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                                                              |
   | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]] |
-  | see systemd services | systemctl list-units --type=service                          |
-  | see ubuntu version   | lsb_release -a                                               |
+  | see systemd services | systemctl list-units --type=service                                                                  |
+  | see ubuntu version   | lsb_release -a                                                                                       |
 - https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
 - find large files sudo du -a /home | sort -n -r | head -n 10
 ******* ideas
@@ -6603,12 +6603,12 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
 - https://www.howtogeek.com/312755/what-is-the-process-windowserver-and-why-is-it-running-on-my-mac/
 - [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][How to allow install of non app store or identified developers on MacOS Sierra]]
 - Command Table
-  | Function             | Command                   | Notes                                                        |
-  |----------------------+---------------------------+--------------------------------------------------------------|
-  |                      |                           | <20>                                                         |
+  | Function             | Command                   | Notes                                                                                                |
+  |----------------------+---------------------------+------------------------------------------------------------------------------------------------------|
+  |                      |                           | <20>                                                                                                 |
   | List process to kill | ps -A\ grep -m1 <PROCESS> | https://stackoverflow.com/questions/11546765/how-to-get-the-pid-of-a-process-by-giving-the-process-name-in-mac-os-x |
-  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/        |
-  |                      |                           |                                                              |
+  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                                |
+  |                      |                           |                                                                                                      |
 - https://stackoverflow.com/questions/17935301/how-to-force-mac-os-to-open-search-with-google-in-chrome
 - Window management
   - Default layouts
@@ -6729,6 +6729,11 @@ https://abseil.io/resources/swe-book
 :PROPERTIES:
 :ID:       a49abc44-8e71-4a1a-bd35-a77849427c94
 :END:
+https://github.com/rougier
+https://www.reddit.com/r/emacs/comments/18mvqez/how_can_i_create_inputs_and_buttons_like_the/
+https://www.reddit.com/r/emacs/comments/18ian37/my_modern_emacs_ui_setup/
+https://www.reddit.com/r/emacs/comments/18gjtk8/your_favoritemost_usefull_modeline_segments/
+https://www.reddit.com/r/emacs/comments/18frlq4/packages_that_you_would_like_to_be_in_emacs_core/
 https://www.reddit.com/r/emacs/comments/185n3yo/emacs_meets_chatgpt_for_flawless_grammar_and/
 https://github.com/MiniApollo/kickstart.emacs/blob/main/config.org#language-support--lsp
 https://stackoverflow.com/questions/48051120/display-flycheck-buffer-automatically-when-there-are-errors
@@ -7317,7 +7322,11 @@ mv /tmp/*_input.csv ${data_dir}/inputs/
 ******** [[id:B171BCE2-2FF8-45C6-8958-8799B349E1B0][Org-Mode in basecamp-private]]
 ******** Processes
 ********* 0 Flat                                                       :flat:
+********** Execute asynchrous process in source code block
+#+begin_src emacs-lisp :
+(call-process "firefox" nil 0 nil "www.spacemacs.org")
 
+#+end_src
 ********** Command line (batch) export subtree to other doc type
 - https://emacs.stackexchange.com/questions/48513/how-can-i-export-an-org-subtree-to-html-from-the-command-line/48520#48520
 ********** Command-line org table export to tsv
@@ -8092,6 +8101,9 @@ $0
 $0
 :END:
 #+end_src
+
+
+
 ***** Emacs Scripts and Commands
 #+begin_src emacs-lisp
 (buffer-file-name)
@@ -8377,7 +8389,7 @@ https://github.com/politza/pdf-tools
 - https://github.com/Izder456/Emacs-Config
 - https://randomgeekery.org/config/emacs/nano/
 ***** Development
-****** Ideas
+***** Ideas
 :PROPERTIES:
 :ID:       ea022e58-f02d-4f37-831f-59bc0fb9957f
 :END:
@@ -8388,6 +8400,7 @@ https://github.com/politza/pdf-tools
   - https://stat.ethz.ch/pipermail/ess-help/2015-July/010628.html
   - https://github.com/ffevotte/isend-mode.el
 
+****** Don't tangle Property drawers
 *** Processes
 **** 0 Flat
 - ocr
@@ -9362,6 +9375,9 @@ ALLLIB.remove("lib240")
 - https://stackoverflow.com/questions/7152762/how-to-redirect-print-output-to-a-file
 - https://www.btelligent.com/en/blog/best-practice-working-with-paths-in-python-part-1/
 ****** Local YAS
+:PROPERTIES:
+:ID:       83ab8d81-d8b9-4430-b639-2cbe92ec49b4
+:END:
 
 #+name: code.py
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.py
@@ -9372,6 +9388,16 @@ ALLLIB.remove("lib240")
 #+begin_src python
 $0
 ,#+end_src
+#+end_src
+******* head2
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/python-mode/head2
+# -*- mode: snippet -*-
+# key: head2
+# expand-env: ((yas-indent-line 'none))
+# --
+# ---   ${1:$$(capitalize yas-text)}   --- #
+# ${1:$(make-string (+ (string-width yas-text) 12) ?\-)} #
+$0
 #+end_src
 
 ****** function.py :yas:
@@ -10025,7 +10051,7 @@ main "$@"
 print_usage(){
     cat <<- EOF
 
-usage: ${1:<SCRIPT NAME>} [options] <${2:<OPERANDS>}> [${3:<OPTIONAL OPERANDS>}]
+Usage: ${1:<SCRIPT NAME>} [options] <${2:<OPERANDS>}> [${3:<OPTIONAL OPERANDS>}]
 
 options:
     -
@@ -10033,7 +10059,7 @@ options:
 ${4:<LONG TITLE>}
 ${5:<DESCRIPTION>}
 
-example: ${6:<EXAMPLE>}
+Example: ${6:<EXAMPLE>}
 
 EOF
 
@@ -10109,6 +10135,9 @@ shift $((OPTIND -1))
 - [[https://www.cyberciti.biz/faq/linux-unix-formatting-dates-for-display/][formatting dates for display]]
 - https://stackoverflow.com/questions/22962591/how-to-prevent-direct-bash-script-execution-and-allow-only-usage-from-other-scri
 - https://unix.stackexchange.com/questions/10646/repeat-a-unix-command-every-x-seconds-forever
+******** terminal colors
+[[id:61cef427-947e-4d91-9dfe-8758ccbe3512][convert_pdf_to_png()]]
+https://chat.openai.com/c/29bd45d7-ee7e-4711-954f-26cf8cabff44
 ******** case esac
 - eg
   #+begin_src bash :tangle no
@@ -11803,7 +11832,7 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 CLOCK: [2021-08-25 Wed 08:33]--[2021-08-25 Wed 09:13] =>  0:40
 :END:
   | du -shc . | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]] |
-  | l         | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\('              |
+  | l         | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\('                                                      |
 
   | change password                     | passwd                      |
   | disk usage, top level               | du -h --summarize           |
@@ -12111,12 +12140,12 @@ chmod 600 ~/.ssh/id_rsa.pub
 - https://www.howtogeek.com/312755/what-is-the-process-windowserver-and-why-is-it-running-on-my-mac/
 - [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][How to allow install of non app store or identified developers on MacOS Sierra]]
 - Command Table
-  | Function             | Command                   | Notes                                                        |
-  |----------------------+---------------------------+--------------------------------------------------------------|
-  |                      |                           | <20>                                                         |
+  | Function             | Command                   | Notes                                                                                                |
+  |----------------------+---------------------------+------------------------------------------------------------------------------------------------------|
+  |                      |                           | <20>                                                                                                 |
   | List process to kill | ps -A\ grep -m1 <PROCESS> | https://stackoverflow.com/questions/11546765/how-to-get-the-pid-of-a-process-by-giving-the-process-name-in-mac-os-x |
-  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/        |
-  |                      |                           |                                                              |
+  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                                |
+  |                      |                           |                                                                                                      |
 - https://stackoverflow.com/questions/17935301/how-to-force-mac-os-to-open-search-with-google-in-chrome
 - Window management
   - Default layouts
@@ -13477,10 +13506,54 @@ git_setup:
 	chmod +x .git/hooks/precommit_sizecheck
 
 #+end_src
+** General reference
+:PROPERTIES:
+:ID:       3eb81250-e885-4941-a559-997381abc196
+:END:
+- https://www.reddit.com/r/ChatGPT/comments/13r3v36/i_run_an_ai_tools_directory_here_are_some_top_ai/
+- https://dev.to/devdefinitive/33-github-projects-i-have-bookmarked-and-you-should-298o
+- https://www.reddit.com/r/datascience/comments/mlfy02/what_is_your_ds_stack_and_roast_mine/
 ** Ideas                                                              :ideas:
 :PROPERTIES:
 :ID:       b3c4c653-9584-4084-9e0e-abf16f95ac52
 :END:
+
+#+begin_src python
+import re
+
+def parse_conda_export(file_path):
+    package_versions = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            if line.startswith('#') or not line.strip():
+                continue  # Skip comment lines and empty lines
+            parts = line.split()
+            package_name = parts[0]
+            package_version = parts[1]
+            package_versions[package_name] = package_version
+    return package_versions
+
+def find_versions_in_text(text, package_versions):
+    potential_packages = re.findall(r'\b\w+\b', text)
+    versions = {}
+    for package in potential_packages:
+        if package in package_versions:
+            versions[package] = package_versions[package]
+    return versions
+
+# Example usage
+text_block = "samtools fastp"
+conda_export_file = '/home/jeszyman/repos/mpnst/resources/full_conda_env.txt'
+
+package_versions = parse_conda_export(conda_export_file)
+found_versions = find_versions_in_text(text_block, package_versions)
+
+for package, version in found_versions.items():
+    print(f"{package}: {version}")
+
+#+end_src
+
+Basecamp snakefile md5s, aymlinks,
 - https://docs.khoj.dev/#/
 - http://jasperproject.github.io/
 - http://www.instructables.com/id/Raspberry-Pi-Sous-Vide/
@@ -13534,6 +13607,24 @@ https://www.reddit.com/r/IWantToLearn/comments/5bfegh/iwtl_how_to_make_a_very_si
 #+begin_src bash :tangle ./tools/shell/org_latex_export.sh :tangle-mode (identity #o755)
 #!/bin/sh
 
+# if [ $# -ne 2 ]; then
+#     echo "Usage: $0 <file> <org-id>"
+#     exit 1
+# fi
+
+# FILE="$1"
+# ORG_ID="$2"
+
+# /usr/bin/emacs --batch -l ~/.emacs.d/lisp/latex.el --eval "(progn
+#                         (require 'org)
+#                         (require 'org-id)
+#                         (setq org-confirm-babel-evaluate nil)
+#                         (find-file \"$FILE\")
+#                         (org-id-goto \"$ORG_ID\")
+#                         (org-latex-export-to-pdf nil t)
+#                         (kill-emacs))"
+# #!/bin/sh
+
 if [ $# -ne 2 ]; then
     echo "Usage: $0 <file> <org-id>"
     exit 1
@@ -13542,7 +13633,33 @@ fi
 FILE="$1"
 ORG_ID="$2"
 
+echo "Debug: File - $FILE"
+echo "Debug: Org ID - $ORG_ID"
+
 /usr/bin/emacs --batch -l ~/.emacs.d/lisp/latex.el --eval "(progn
+                        (require 'org)
+                        (require 'org-id)
+                        (setq org-confirm-babel-evaluate nil)
+                        (find-file \"$FILE\")
+                        (message \"Debug: Current buffer %s\" (buffer-name))
+                        (org-id-goto \"$ORG_ID\")
+                        (org-latex-export-to-pdf nil t)
+                        (kill-emacs))"
+
+#+end_src
+
+#+begin_src bash :tangle ./tools/shell/org_latex_export_quick.sh :tangle-mode (identity #o755)
+#!/bin/sh
+
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <file> <org-id>"
+    exit 1
+fi
+
+FILE="$1"
+ORG_ID="$2"
+
+/usr/bin/emacs --batch -l ~/repos/basecamp-private/resources/latex_quick.el --eval "(progn
                         (require 'org)
                         (require 'org-id)
                         (setq org-confirm-babel-evaluate nil)
@@ -13551,6 +13668,7 @@ ORG_ID="$2"
                         (org-latex-export-to-pdf nil t)
                         (kill-emacs))"
 #+end_src
+
 *** Ideas
 :PROPERTIES:
 :ID:       58cecae5-0126-4608-b079-c0cb5c1835c8
@@ -13579,10 +13697,3 @@ ORG_ID="$2"
         - nextflow nfs, parameterized
         - nextflow config
       - tmp- testing output files
-** General reference
-:PROPERTIES:
-:ID:       3eb81250-e885-4941-a559-997381abc196
-:END:
-- https://www.reddit.com/r/ChatGPT/comments/13r3v36/i_run_an_ai_tools_directory_here_are_some_top_ai/
-- https://dev.to/devdefinitive/33-github-projects-i-have-bookmarked-and-you-should-298o
-- https://www.reddit.com/r/datascience/comments/mlfy02/what_is_your_ds_stack_and_roast_mine/
