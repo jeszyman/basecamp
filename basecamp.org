@@ -684,21 +684,26 @@ channels:
 
 #########1#########2#########3#########4#########5#########6#########7#########8
 dependencies:                                                                  #
+  - beautifulsoup4
   - black
+  - bs4
+  - intervaltree
   - numpy
   - openpyxl
-  - pyarrow
-  - intervaltree
-  - python=3.10
   - pandas
   - parallel
+  - pyarrow
+  - python=3.10
   - r-colorramps
   - r-devtools
+  - r-eulerr
   - r-ggextra
   - r-ggpattern
   - r-ggpubr
   - r-ggrepel
+  - r-ggridges
   - r-ggsci
+  - r-kableextra
   - r-lintr=3.1                                                 # Linting tool #
   - r-magick
   - r-multcomp
@@ -710,6 +715,7 @@ dependencies:                                                                  #
   - r-rstatix
   - r-svglite                                   # Provides svg graphics output #
   - r-tidyverse
+  - r-upsetr
   - r-writexl
   - r-yaml
   - scikit-learn
@@ -6020,15 +6026,15 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 :PROPERTIES:
 :ID:       56b7a8f4-25d7-41a2-a0b5-cdb8a86481cc
 :END:
-  |----------------------+------------------------------------------------------------------------------------------------------|
-  | function             | command                                                                                              |
-  |----------------------+------------------------------------------------------------------------------------------------------|
-  | mount partition      | udisksctl mount -b /dev/<PARTITION>                                                                  |
-  |                      |                                                                                                      |
-  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                                                              |
+  |----------------------+-------------------------------------------------------------------------------------------------------------|
+  | function             | command                                                                                                     |
+  |----------------------+-------------------------------------------------------------------------------------------------------------|
+  | mount partition      | udisksctl mount -b /dev/<PARTITION>                                                                         |
+  |                      |                                                                                                             |
+  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                                                                     |
   | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]] |
-  | see systemd services | systemctl list-units --type=service                                                                  |
-  | see ubuntu version   | lsb_release -a                                                                                       |
+  | see systemd services | systemctl list-units --type=service                                                                         |
+  | see ubuntu version   | lsb_release -a                                                                                              |
 - https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
 ******* X Window System
 :PROPERTIES:
@@ -6103,15 +6109,15 @@ sudo python setup.py install
 :PROPERTIES:
 :ID:       6cf0206e-fe85-44bb-a84b-b6c63c3adf6c
 :END:
-  |----------------------+------------------------------------------------------------------------------------------------------|
-  | function             | command                                                                                              |
-  |----------------------+------------------------------------------------------------------------------------------------------|
-  | mount partition      | udisksctl mount -b /dev/<PARTITION>                                                                  |
-  |                      |                                                                                                      |
-  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                                                              |
+  |----------------------+-------------------------------------------------------------------------------------------------------------|
+  | function             | command                                                                                                     |
+  |----------------------+-------------------------------------------------------------------------------------------------------------|
+  | mount partition      | udisksctl mount -b /dev/<PARTITION>                                                                         |
+  |                      |                                                                                                             |
+  | unzip .bz2           | tar --bzip2 -xvf <FILE>                                                                                     |
   | see cores            | [[https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux][lscpu]] |
-  | see systemd services | systemctl list-units --type=service                                                                  |
-  | see ubuntu version   | lsb_release -a                                                                                       |
+  | see systemd services | systemctl list-units --type=service                                                                         |
+  | see ubuntu version   | lsb_release -a                                                                                              |
 - https://unix.stackexchange.com/questions/49786/finding-all-storage-devices-attached-to-a-linux-machine
 - find large files sudo du -a /home | sort -n -r | head -n 10
 ******* ideas
@@ -6642,12 +6648,12 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
 - https://www.howtogeek.com/312755/what-is-the-process-windowserver-and-why-is-it-running-on-my-mac/
 - [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][How to allow install of non app store or identified developers on MacOS Sierra]]
 - Command Table
-  | Function             | Command                   | Notes                                                                                                |
-  |----------------------+---------------------------+------------------------------------------------------------------------------------------------------|
-  |                      |                           | <20>                                                                                                 |
+  | Function             | Command                   | Notes                                                                                                               |
+  |----------------------+---------------------------+---------------------------------------------------------------------------------------------------------------------|
+  |                      |                           | <20>                                                                                                                |
   | List process to kill | ps -A\ grep -m1 <PROCESS> | https://stackoverflow.com/questions/11546765/how-to-get-the-pid-of-a-process-by-giving-the-process-name-in-mac-os-x |
-  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                                |
-  |                      |                           |                                                                                                      |
+  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                                               |
+  |                      |                           |                                                                                                                     |
 - https://stackoverflow.com/questions/17935301/how-to-force-mac-os-to-open-search-with-google-in-chrome
 - Window management
   - Default layouts
@@ -9447,30 +9453,35 @@ https://fabienmaussion.info/scientific_programming/week_03/02-Strings-Paths.html
 $1
 """
 
-# ---   Setup   --- #
-# ----------------- #
-
-## ---   Load Packages   --- ##
-## ------------------------- ##
+# ---   Load Packages   --- #
+# ------------------------- #
 
 import argparse
 
 # ---   Load Inputs   --- #
 # ----------------------- #
 
-parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("--your_option", type=str, default="", help="Description of option")
+def load_inputs():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--your_option", type=str, default="", help="Description of option")
 
-args = parser.parse_args()
+    args = parser.parse_args()
 
-# You can directly access arguments via args (e.g., args.your_option)
+    return args
 
-# --- Functions --- #
-# ... (define your functions here)
+# ---   Main   --- #
+# ---------------- #
 
-# Main Script
+def main():
+
+# ---   Functions   --- #
+# --------------------- #
+
+# ---   Main Guard   --- #
+# ---------------------- #
+
 if __name__ == "__main__":
-    # ... (main script execution)
+    main()
 
 #+end_src
 ******* function :yas:
@@ -9522,7 +9533,7 @@ $0
 #+end_src
 
 
-****** function.py :yas:
+******* function.py                                                     :yas:
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/function.py
 # -*- mode: snippet -*-
 # key: function.py
@@ -11969,7 +11980,7 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 CLOCK: [2021-08-25 Wed 08:33]--[2021-08-25 Wed 09:13] =>  0:40
 :END:
   | du -shc . | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]] |
-  | l         | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\('                                                      |
+  | l         | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\('                                                                               |
 
   | change password                     | passwd                      |
   | disk usage, top level               | du -h --summarize           |
@@ -12277,12 +12288,12 @@ chmod 600 ~/.ssh/id_rsa.pub
 - https://www.howtogeek.com/312755/what-is-the-process-windowserver-and-why-is-it-running-on-my-mac/
 - [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][How to allow install of non app store or identified developers on MacOS Sierra]]
 - Command Table
-  | Function             | Command                   | Notes                                                                                                |
-  |----------------------+---------------------------+------------------------------------------------------------------------------------------------------|
-  |                      |                           | <20>                                                                                                 |
+  | Function             | Command                   | Notes                                                                                                               |
+  |----------------------+---------------------------+---------------------------------------------------------------------------------------------------------------------|
+  |                      |                           | <20>                                                                                                                |
   | List process to kill | ps -A\ grep -m1 <PROCESS> | https://stackoverflow.com/questions/11546765/how-to-get-the-pid-of-a-process-by-giving-the-process-name-in-mac-os-x |
-  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                                |
-  |                      |                           |                                                                                                      |
+  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                                               |
+  |                      |                           |                                                                                                                     |
 - https://stackoverflow.com/questions/17935301/how-to-force-mac-os-to-open-search-with-google-in-chrome
 - Window management
   - Default layouts
