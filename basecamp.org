@@ -2,7 +2,26 @@
 :PROPERTIES:
 :header-args: :tangle-mode (identity #o555) :mkdirp yes :noweb yes
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
+:RESET_CHECK_BOXES: t
 :END:
+
+
+
+#+begin_src emacs-lisp
+(defun suppress-file-are-same-warning (orig-fun &rest args)
+  "Suppress warnings when `file-truename' identifies files as the same."
+  (let ((warning-minimum-level :error))
+    (apply orig-fun args)))
+
+(advice-add 'file-truename :around #'suppress-file-are-same-warning)
+
+#+end_src
+#+begin_src emacs-lisp
+(with-eval-after-load 'files
+  (setq find-file-suppress-same-file-warnings t))
+
+#+end_src
+
 ** [[id:00656e3d-e62c-4ace-a27c-252b56010fe0][Scientific Project Template]]
 ** lib
 *** [[id:a9f97cde-27bc-4777-bb12-164ac4cb421d][Shell functions in basecamp-private]] more_bashrc
@@ -188,6 +207,9 @@ EOF
 
 
 **** run_with_nohup()
+:PROPERTIES:
+:ID:       4736e63d-4661-432c-b4d7-79cf7f4684ae
+:END:
 #+begin_src bash
 run_with_nohup() {
 
@@ -292,6 +314,7 @@ EOF
 :header-args: :tangle ./lib/snakemake_funtions.sh :tangle-mode (identity #o555) :mkdirp yes :noweb yes :comments org
 :END:
 **** [[id:a8b27140-4b9e-40c5-86ab-ee5afeae723f][snakemake]]
+**** [[id:4736e63d-4661-432c-b4d7-79cf7f4684ae][run_with_nohup()]]
 **** smk_unlock() Unlock a snakemake repo
 #+begin_src bash
 smk_unlock() {
@@ -664,7 +687,9 @@ dependencies:                                                                  #
   - black
   - numpy
   - openpyxl
-  - pandas
+  - pyarrow
+  - intervaltree
+  - python=3.10
   - pandas
   - parallel
   - r-colorramps
@@ -683,10 +708,7 @@ dependencies:                                                                  #
   - r-readxl
   - r-rlang
   - r-rstatix
-  - r-rstatix
-  - r-svglite
   - r-svglite                                   # Provides svg graphics output #
-  - r-tidyverse
   - r-tidyverse
   - r-writexl
   - r-yaml
@@ -694,6 +716,7 @@ dependencies:                                                                  #
   - snakemake
 
 #+end_src
+[[id:b16d0202-8d35-472b-b538-87a7d6a6cef7][Conda and Miniconda]]
 ** Processes
 *** 0 Flat
 ** [[id:9E19E626-9D6C-4296-BEDB-80033A846CF4][Software]]
@@ -2403,6 +2426,7 @@ https://unixpapa.com/js/testkey.html
 :PROPERTIES:
 :ID:       8ff75d66-11b7-4e26-81f4-32e761c1e054
 :END:
+- https://www.reddit.com/r/datascience/comments/17hlvki/how_to_get_better_at_powerpoint/
 - there are no gridlines in  [[https://www.google.com/search?q=powerpoint+online+make+guidelines][google:powerpoint online make guidelines]] [2023-01-27 Fri]
 
 ***** box
@@ -2457,6 +2481,9 @@ cmake -version
 ****** Processes
 ******* 0 Flat
 ******** Build environment from multiple yamls
+
+mamba env update -f <FILE> -n <NAME>
+
 - https://stackoverflow.com/questions/48158137/conda-importing-one-environment-yml-into-another
 - https://stackoverflow.com/questions/65668913/can-i-create-a-conda-environment-from-multiple-yaml-files
 https://github.com/conda/conda/issues/5821
@@ -4451,6 +4478,10 @@ specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]
 - arial and other std fonts  https://www.google.com/search?q=inkscape+arial https://askubuntu.com/questions/651441/how-to-install-arial-font-and-other-windows-fonts-in-ubuntu
 - https://stackoverflow.com/questions/15710673/inkscape-too-slow-when-importing-r-plots
 - https://inkscape.org/forums/questions/line-spacing/
+****** Processes
+******* Flat
+******** Change origin
+https://inkscape.org/forums/questions/how-to-set-origin-in-bottom-left-corner/
 
 ***** isync
 - Google drive sync via insync
@@ -6289,6 +6320,14 @@ https://www.reddit.com/r/linux4noobs/comments/114w615/tutorial_creating_quick_an
   - https://superuser.com/questions/277990/how-do-i-swap-alt-and-windows-keys-with-xmodmap
   - https://unix.stackexchange.com/questions/107566/how-to-swap-ctrl-and-capslock-using-xmodmap
 ********** 0 Flat
+*********** Install arial font
+#+begin_src bash
+sudo apt update
+sudo apt install ttf-mscorefonts-installer
+fc-cache -f -v
+fc-list | grep -i arial || true
+#+end_src
+
 *********** Change file opening assosications in mime
 https://askubuntu.com/questions/204823/how-do-you-change-the-default-document-viewer-to-okular
 *********** battery optimization
@@ -6729,6 +6768,14 @@ https://abseil.io/resources/swe-book
 :PROPERTIES:
 :ID:       a49abc44-8e71-4a1a-bd35-a77849427c94
 :END:
+#+begin_src emacs-lisp
+(defun my-python-mode-hook ()
+  (setq comint-scroll-to-bottom-on-output 'others))
+
+(add-hook 'python-mode-hook 'my-python-mode-hook)
+
+#+end_src
+
 https://github.com/rougier
 https://www.reddit.com/r/emacs/comments/18mvqez/how_can_i_create_inputs_and_buttons_like_the/
 https://www.reddit.com/r/emacs/comments/18ian37/my_modern_emacs_ui_setup/
@@ -6752,6 +6799,17 @@ emacsclient -e "(progn (find-file \"$1\") \
 [[id:e7806712-9607-4b78-8662-80a2659c203d][Python integration]]
 [[id:07b8634c-70a6-4a99-90b5-0f5083ccaf04][Emacs shell IDE]]
 ****** 0 Flat                                 :flat:
+******* Make mu
+#+begin_src emacs-lisp
+(defun insert-mu ()
+  "Insert the Greek letter mu."
+  (interactive)
+  (insert "\u03BC"))
+
+(global-set-key (kbd "C-c m") 'insert-mu)
+
+#+end_src
+μ
 ******* sql integration
 :PROPERTIES:
 :ID:       44347009-ee09-4cf1-9786-f0106a378a2e
@@ -6871,6 +6929,9 @@ https://www.reddit.com/r/emacs/comments/17gqjsy/using_ruff_format_with_emacs_to_
 
 
 ****** Bash IDE
+:PROPERTIES:
+:ID:       f2557e40-0d81-438a-93e9-6917a40c1d8e
+:END:
 - shells
   - https://www.reddit.com/r/emacs/comments/r2p12t/eshellmode/
   - - https://emacs.stackexchange.com/questions/50539/sending-code-to-an-ansi-term-via-isend-mode-how-to-modify-default-buffer-chosen
@@ -7674,11 +7735,7 @@ https://bitspook.in/blog/using-org-mode-as-an-sql-playground/
   - [[http://emacs.stackexchange.com/questions/3844/good-methods-for-setting-up-alarms-audio-visual-triggered-by-org-mode-events][any tools for making UI-based or email-based DEADLINE notifications in org-mode?]]
   - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Desktop-Notifications.html][emacs desktop notifications]]
   - [[https://github.com/groksteve/org-alert][org-alert]]
-    #+BEGIN_SRC emacs-lisp
-;;  (require 'org-alert)
-;;  (setq alert-default-style 'libnotify)
 
-    #+END_SRC
 ********* Tables
 https://emacs.stackexchange.com/questions/11/how-to-add-a-prefix-to-every-line/13
 
@@ -9293,8 +9350,6 @@ https://www.freecodecamp.org/news/rust-in-replit/
 :PROPERTIES:
 :ID:       CA21AAC9-F147-4086-A24C-64451EE349F3
 :END:
-https://www.linuxjournal.com/content/python-scripts-replacement-bash-utility-scripts
-https://fabienmaussion.info/scientific_programming/week_03/02-Strings-Paths.html
 ****** Processes                                                  :hierarchy:
 ******* 0 Flat                                                         :flat:
 ******** Convert docx to txt
@@ -9369,7 +9424,10 @@ ALLLIB.remove("lib240")
 #+end_src
 ******* Data
 - https://www.google.com/search?q=python+filter+one+list+by+another+list
+******* Working with shell
+- https://www.linuxjournal.com/content/python-scripts-replacement-bash-utility-scripts
 ******* Working with paths and system files
+https://fabienmaussion.info/scientific_programming/week_03/02-Strings-Paths.html
 - working w/ file paths https://medium.com/@ageitgey/python-3-quick-tip-the-easy-way-to-deal-with-file-paths-on-windows-mac-and-linux-11a072b58d5f
 - https://stackoverflow.com/questions/57459455/changing-the-name-of-multiple-files-based-on-an-index
 - https://stackoverflow.com/questions/7152762/how-to-redirect-print-output-to-a-file
@@ -9378,7 +9436,61 @@ ALLLIB.remove("lib240")
 :PROPERTIES:
 :ID:       83ab8d81-d8b9-4430-b639-2cbe92ec49b4
 :END:
+******* script                                                          :yas:
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/python-mode/script
+# -*- mode: snippet -*-
+# key: script
+# expand-env: ((yas-indent-line 'none))
+# --
+#!/usr/bin/env python3
+"""
+$1
+"""
 
+# ---   Setup   --- #
+# ----------------- #
+
+## ---   Load Packages   --- ##
+## ------------------------- ##
+
+import argparse
+
+# ---   Load Inputs   --- #
+# ----------------------- #
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--your_option", type=str, default="", help="Description of option")
+
+args = parser.parse_args()
+
+# You can directly access arguments via args (e.g., args.your_option)
+
+# --- Functions --- #
+# ... (define your functions here)
+
+# Main Script
+if __name__ == "__main__":
+    # ... (main script execution)
+
+#+end_src
+******* function :yas:
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/python-mode/function
+# -*- mode: snippet -*-
+# key: function
+# expand-env: ((yas-indent-line 'none))
+# --
+def some_function(param1: int, param2: str)
+    """
+    Description of what this function does.
+
+    :param param1: Description of param1.
+    :param param2: Description of param2.
+    :return: Description of return value.
+    """
+    # Function implementation
+    return True
+#+end_src
+******* code.py
 #+name: code.py
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.py
 # -*- mode: snippet -*-
@@ -9399,6 +9511,16 @@ $0
 # ${1:$(make-string (+ (string-width yas-text) 12) ?\-)} #
 $0
 #+end_src
+******* 80
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/python-mode/80
+# -*- mode: snippet -*-
+# key: 80
+# expand-env: ((yas-indent-line 'none))
+# --
+#########1#########2#########3#########4#########5#########6#########7#########8
+$0
+#+end_src
+
 
 ****** function.py :yas:
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/function.py
@@ -9700,6 +9822,21 @@ rx_dict = {
 $0
 ,#+end_src
 #+end_src
+******* 80
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/emacs-lisp-mode/80
+# -*- mode: snippet -*-
+# key: 80
+# expand-env: ((yas-indent-line 'none))
+# --
+;;;;;;;;;1;;;;;;;;;2;;;;;;;;;3;;;;;;;;;4;;;;;;;;;5;;;;;;;;;6;;;;;;;;;7;;;;;;;;;8
+
+#+end_src
+#+begin_src emacs-lisp
+;;;;;;;;;1
+
+#+end_src
+
+
 ****** Scripts
 - Lisp export function for master inputs table
   #+begin_src emacs-lisp :tangle ./src/org_master_input_tbl_export.el
@@ -10864,7 +11001,7 @@ test=out.docx
 pandoc -S $test | xclip -selection clipboard
 
 #+end_src
-
+****** [[id:f2557e40-0d81-438a-93e9-6917a40c1d8e][Emacs as a bash IDE]]
 ****** [[file:~/repos/basecamp-private/basecamp-private.org::*Shell and bash setup][My shell and bash setup]]
 ****** Local scripts
 #+begin_src bash
@@ -12172,6 +12309,26 @@ http://www.mitchchn.me/2014/os-x-terminal/
 :PROPERTIES:
 :ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
 :END:
+for style see
+https://chat.openai.com/c/8c852ec7-1709-4e61-ab17-9d8796daccc7
+The most notable among these are:
+
+Hadley Wickham's Style Guide: Developed by Hadley Wickham, a prominent figure in the R community, this style guide is widely respected and used, especially among users of the Tidyverse set of packages. It covers topics like syntax, file organization, naming conventions, and more.
+
+Google's R Style Guide: Google has its own style guide for R which is publicly available. It's concise and covers basic principles of coding style, file structure, and syntax.
+
+Bioconductor Coding Style: In the bioinformatics domain, the Bioconductor project has its own style guidelines. Given your background in bioinformatics, these guidelines might be particularly relevant.
+
+The R Journal's "A Few Tips for Writing Readable Code": This article in The R Journal offers general advice on writing readable and maintainable code, which aligns with the principles of PEP 8.
+
+Lintr: An R package that provides static code analysis for R, similar to Python's Pylint. It helps enforce coding standards and can be customized to follow a specific style guide.
+
+These guides and tools offer a consensus on best practices for R coding, promoting a coding style that emphasizes clarity, simplicity, and consistency. While they may not be as universally adopted as PEP 8 in the Python world, they provide a solid foundation for writing clean and maintainable R code.
+
+
+
+
+
 **** Development                                                        :dev:
 ***** Ideas
 :PROPERTIES:
@@ -12863,6 +13020,28 @@ package.check = lapply(
 $0
 ,#+end_src
 #+end_src
+***** script                                                            :yas:
+#+name: script
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/ess-mode/script
+# -*- mode: snippet -*-
+# key: script
+# expand-env: ((yas-indent-line 'fixed))
+# --
+#!/usr/bin/env Rscript
+
+# ---   Setup   --- #
+# ----------------- #
+
+## ---   Load Packages   --- ##
+## ------------------------- ##
+
+require(optparse, quietly = TRUE)
+
+## ---   Load Inputs   --- ##
+## ----------------------- ##
+
+optparse
+#+end_src
 ***** var :yas:
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/ess-mode/var
 # -*- mode: snippet -*-
@@ -12880,28 +13059,6 @@ $1 = args[$2]
   make_option(c("--$1"), type = "character", default = "$2"),
 
 #+end_src
-***** script                                                            :yas:
-#+name: script
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/ess-mode/script
-# -*- mode: snippet -*-
-# key: script
-# expand-env: ((yas-indent-line 'fixed))
-# --
-#!/usr/bin/env Rscript
-
-# ---   Setup   --- #
-# ----------------- #
-
-## ---   Load Packages   --- ##
-## ------------------------- ##
-
-library(optparse)
-
-## ---   Load Inputs   --- ##
-## ----------------------- ##
-
-optparse
-#+end_src
 ***** optparse :yas:
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/ess-mode/optparse
 # -*- mode: snippet -*-
@@ -12913,11 +13070,6 @@ option_list <- list(
 )
 
 opts <- parse_args(OptionParser(option_list = option_list))
-
-list_of_options <- names(opts)
-for (opt_name in list_of_options) {
-  assign(opt_name, opts[[opt_name]], envir = .GlobalEnv)
-}
 
 #+end_src
 ***** r.cmd :yas:

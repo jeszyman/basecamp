@@ -13,7 +13,9 @@ dependencies:                                                                  #
   - black
   - numpy
   - openpyxl
-  - pandas
+  - pyarrow
+  - intervaltree
+  - python=3.10
   - pandas
   - parallel
   - r-colorramps
@@ -32,10 +34,7 @@ dependencies:                                                                  #
   - r-readxl
   - r-rlang
   - r-rstatix
-  - r-rstatix
-  - r-svglite
   - r-svglite                                   # Provides svg graphics output #
-  - r-tidyverse
   - r-tidyverse
   - r-writexl
   - r-yaml
