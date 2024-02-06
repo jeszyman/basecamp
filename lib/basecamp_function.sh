@@ -231,3 +231,66 @@ EOF
 
     grep -rnw "${dir}" -e "${term}"
 }
+
+git_wkflow_up(){
+    print_usage(){
+          cat <<- EOF
+
+ Usage: git_wkflow_up ["COMMIT MESSAGE"]
+
+      Wrapper for the git add, commit, and push workflow. Operates on the
+      current directory.
+
+      Examples: git_wkflow_up "Message"
+                git_wkflow_up
+
+EOF
+    }
+
+    if [[ "$@" =~ (-h|--help) ]]; then
+        print_usage
+        return
+    fi
+
+    commit_msg="$1"
+
+    if [ -z "$commit_msg" ]; then
+        git add -A && git commit -m. && git push
+    else
+        git add -A && git commit -m "$commit_msg" && git push
+    fi
+}
+
+git_wkflow_up(){
+    print_usage(){
+          cat <<- EOF
+
+ Usage: git_wkflow_up ["COMMIT MESSAGE"]
+
+      Wrapper for the git add, commit, and push workflow. Operates on the
+      current directory.
+
+      Examples: git_wkflow_up "Message"
+                git_wkflow_up
+
+EOF
+    }
+
+    if [[ "$@" =~ (-h|--help) ]]; then
+        print_usage
+        return
+    fi
+
+    if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+        echo "Error: Not inside a Git repository."
+        return 1  # Exit the function with a non-zero status
+    fi
+
+    commit_msg="$1"
+
+    if [ -z "$commit_msg" ]; then
+        git add -A && git commit -m. && git push
+    else
+        git add -A && git commit -m "$commit_msg" && git push
+    fi
+}

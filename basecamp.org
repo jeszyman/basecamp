@@ -6,6 +6,16 @@
 :END:
 
 
+#+begin_src emacs-lisp
+(setq text-scale-mode-step 1.01)
+
+#+end_src
+
+#+begin_src emacs-lisp
+;;https://github.com/joaotavora/yasnippet/pull/789
+(advice-remove 'yas--auto-fill-wrapper #'ignore)
+#+end_src
+
 
 #+begin_src emacs-lisp
 (defun suppress-file-are-same-warning (orig-fun &rest args)
@@ -21,7 +31,7 @@
   (setq find-file-suppress-same-file-warnings t))
 
 #+end_src
-
+** [[id:CA21AAC9-F147-4086-A24C-64451EE349F3][Python]]
 ** [[id:00656e3d-e62c-4ace-a27c-252b56010fe0][Scientific Project Template]]
 ** lib
 *** [[id:a9f97cde-27bc-4777-bb12-164ac4cb421d][Shell functions in basecamp-private]] more_bashrc
@@ -280,7 +290,6 @@ EOF
 
 #+end_src
 **** find_in_files()
-
 #+begin_src bash
 find_in_files(){
     print_usage(){
@@ -309,6 +318,74 @@ EOF
 }
 
 #+end_src
+**** git_wkflow_up()
+#+begin_src bash
+git_wkflow_up(){
+    print_usage(){
+          cat <<- EOF
+
+ Usage: git_wkflow_up ["COMMIT MESSAGE"]
+
+      Wrapper for the git add, commit, and push workflow. Operates on the
+      current directory.
+
+      Examples: git_wkflow_up "Message"
+                git_wkflow_up
+
+EOF
+    }
+
+    if [[ "$@" =~ (-h|--help) ]]; then
+        print_usage
+        return
+    fi
+
+    commit_msg="$1"
+
+    if [ -z "$commit_msg" ]; then
+        git add -A && git commit -m. && git push
+    else
+        git add -A && git commit -m "$commit_msg" && git push
+    fi
+}
+#+end_src
+#+begin_src bash
+git_wkflow_up(){
+    print_usage(){
+          cat <<- EOF
+
+ Usage: git_wkflow_up ["COMMIT MESSAGE"]
+
+      Wrapper for the git add, commit, and push workflow. Operates on the
+      current directory.
+
+      Examples: git_wkflow_up "Message"
+                git_wkflow_up
+
+EOF
+    }
+
+    if [[ "$@" =~ (-h|--help) ]]; then
+        print_usage
+        return
+    fi
+
+    if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+        echo "Error: Not inside a Git repository."
+        return 1  # Exit the function with a non-zero status
+    fi
+
+    commit_msg="$1"
+
+    if [ -z "$commit_msg" ]; then
+        git add -A && git commit -m. && git push
+    else
+        git add -A && git commit -m "$commit_msg" && git push
+    fi
+}
+
+#+end_src
+
 *** Snakemake
 :PROPERTIES:
 :header-args: :tangle ./lib/snakemake_funtions.sh :tangle-mode (identity #o555) :mkdirp yes :noweb yes :comments org
@@ -5316,6 +5393,56 @@ https://stackoverflow.com/questions/50413374/glob-wildcards-on-multiple-director
 :ID:       44d21b98-0a61-43db-937f-65ff5a5d27d3
 :END:
 ******** See also [[id:83ab8d81-d8b9-4430-b639-2cbe92ec49b4][Python YAS]]
+
+******** smk.rule.py :yas:
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.py
+# -*- mode: snippet -*-
+# key: smk.rule.py
+# expand-env: ((yas-indent-line 'none))
+# --
+,#+begin_src snakemake
+rule ${1:$$(replace-regexp-in-string " " "_" yas-text)}:
+    input: ${2: <INPUT>},
+    log: f"{log_dir}/$1.log",
+    output: ${3: <OUTPUT>},
+    params: script = f"{${3:$$(replace-regexp-in-string " " "_" yas-text)}}/$1.py",
+    shell:
+        """
+        python {params.script} {input} {output} > {log} 2>&1
+        """
+,#+end_src
+
+#+begin_src python :tangle ./scripts/$1.py
+,#+end_src
+
+#+end_src
+******** R rule smk.rule.r
+:PROPERTIES:
+:ID:       928c57a9-dd2b-427b-b1c4-191e6321d133
+:END:
+#+name: smk.rule.r
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.r
+# -*- mode: snippet -*-
+# key: smk.rule.r
+# expand-env: ((yas-indent-line 'none))
+# --
+,#+begin_src snakemake
+rule ${1:$$(replace-regexp-in-string " " "_" yas-text)}:
+    input: ${2: <INPUT>},
+    log: f"{log_dir}/$1.log",
+    output: ${3: <OUTPUT>},
+    params: script = f"{${3:$$(replace-regexp-in-string " " "_" yas-text)}}/$1.R",
+    shell:
+        """
+        Rscript {params.script} {input} {output} > {log} 2>&1
+        """
+,#+end_src
+
+#+begin_src R :tangle ./scripts/$1.R
+,#+end_src
+
+#+end_src
+
 ******** Operating snakemake file org-mode tree (YAS)
 :PROPERTIES:
 :ID:       8a7cdf48-a132-45e9-a5da-18e2d5fad643
@@ -5439,33 +5566,6 @@ output=\$2
 # expand-env: ((yas-indent-line 'none))
 # --
 smk.rule.${1:$$(yas-choose-value '("bash" "r"))}
-#+end_src
-
-******** R rule smk.rule.r
-:PROPERTIES:
-:ID:       928c57a9-dd2b-427b-b1c4-191e6321d133
-:END:
-#+name: smk.rule.r
-#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/smk.rule.r
-# -*- mode: snippet -*-
-# key: smk.rule.r
-# expand-env: ((yas-indent-line 'none))
-# --
-,#+begin_src snakemake
-rule ${1:$$(replace-regexp-in-string " " "_" yas-text)}:
-    input: ${2: <INPUT>},
-    log: f"{log_dir}/$1.log",
-    output: ${3: <OUTPUT>},
-    params: script = f"{${3:$$(replace-regexp-in-string " " "_" yas-text)}}/$1.R",
-    shell:
-        """
-        Rscript {params.script} {input} {output} > {log} 2>&1
-        """
-,#+end_src
-
-#+begin_src R :tangle ./scripts/$1.R
-,#+end_src
-
 #+end_src
 
 ******** Insert snakemake file org-mode tree
@@ -7986,13 +8086,31 @@ https://github.com/minad/vertico
 :PROPERTIES:
 :ID:       6b9ba5dd-0ec7-4dbe-aee8-d9e56f0dc6b3
 :END:
-"there's no direct function in org-mode to get the level of the heading below the current position. It would involve complex navigation and manipulation which might not be feasible within a snippet."
 ******** Demo :demo
+******** [[id:EA056C38-9DE6-47EE-A75B-0FCBAE62372B][private YASnippets setup]]
 ******** Processes
 :PROPERTIES:
 :ID:       61811c73-973c-40af-bc2c-00576eaa82b6
 :END:
 - [[https://www.google.com/search?q=yasnippets+no+new+line+after+insert][google:yasnippets no new line after insert]]
+- "there's no direct function in org-mode to get the level of the heading below the current position. It would involve complex navigation and manipulation which might not be feasible within a snippet."
+
+*********
+********* demo.org.header :yas:
+#+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/demo.org.header
+# -*- mode: snippet -*-
+# key: demo.org.header
+# expand-env: ((yas-indent-line 'none))
+# --
+`(make-string (org-current-level) ?*)` THE HEADER
+:PROPERTIES:
+:END:
+`(make-string (+ 1 (org-current-level)) ?*)` BELOW THE HEADER
+
+#+end_src
+demo.org.header
+
+********* Nested snippet
 - Nested snippet
   #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/fundamental-mode/nested
 # -*- mode: snippet -*-
@@ -9318,6 +9436,7 @@ ${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
 ###   ${1:$$(capitalize yas-text)}   ###
 ${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
 #+end_src
+**** Style Guide
 
 **** Programming languages
 :PROPERTIES:
@@ -9347,7 +9466,7 @@ https://www.freecodecamp.org/news/rust-in-replit/
   - https://www.freecodecamp.org/news/learn-object-oriented-programming-oop-in-c-full-video-course/
   - http://www.seqan.de/
   - https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/
-***** [[id:F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD][LINK TO R Statistical Computing]]
+***** [[id:F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD][R Statistical Computing]]
 :PROPERTIES:
 :ID:       1672D6B1-BCB8-428C-8AF1-013BC82A91AC
 :END:
@@ -9356,6 +9475,27 @@ https://www.freecodecamp.org/news/rust-in-replit/
 :PROPERTIES:
 :ID:       CA21AAC9-F147-4086-A24C-64451EE349F3
 :END:
+https://www.emacswiki.org/emacs/PythonProgrammingInEmacs
+#+begin_src emacs-lisp
+(use-package highlight-indentation
+  :ensure t
+  :hook (python-mode . highlight-indentation-mode))
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+#+end_src
+
+#+begin_src emacs-lisp
+(defun blacken-buffer ()
+  "Formats the current Python buffer using Black."
+  (interactive)
+  (when (and (derived-mode-p 'python-mode)
+             (executable-find "black"))
+    (shell-command-on-region (point-min) (point-max) "black -q -" nil t)))
+
+#+end_src
+
 ****** Processes                                                  :hierarchy:
 ******* 0 Flat                                                         :flat:
 ******** Convert docx to txt
@@ -9490,17 +9630,15 @@ if __name__ == "__main__":
 # key: function
 # expand-env: ((yas-indent-line 'none))
 # --
-def some_function(param1: int, param2: str)
-    """
-    Description of what this function does.
 
-    :param param1: Description of param1.
-    :param param2: Description of param2.
-    :return: Description of return value.
+def ${1:FUNCTIONNAME$$(replace-regexp-in-string " " "_" yas-text)}(${2:PARAM$$(replace-regexp-in-string " " "_" yas-text)}):
     """
-    # Function implementation
-    return True
+    ${3: <DOC STRING>}
+
+    """
+    $0
 #+end_src
+
 ******* code.py
 #+name: code.py
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/org-mode/code.py
@@ -13040,18 +13178,23 @@ $0
 # --
 #!/usr/bin/env Rscript
 
-# ---   Setup   --- #
-# ----------------- #
-
-## ---   Load Packages   --- ##
-## ------------------------- ##
+# ---   Load Packages   --- #
+# ------------------------- #
 
 require(optparse, quietly = TRUE)
 
-## ---   Load Inputs   --- ##
-## ----------------------- ##
+# ---   Load Inputs   --- #
+# ----------------------- #
 
 optparse
+
+# ---   Main   --- #
+# ---------------- #
+
+# ---   Functions   --- #
+# --------------------- #
+
+
 #+end_src
 ***** var :yas:
 #+begin_src fundamental :tangle ~/repos/emacs.d/snippets/ess-mode/var
@@ -13101,7 +13244,7 @@ $0=args[1]
 # key: function
 # expand-env: ((yas-indent-line 'fixed))
 # --
-${1:FUNCTION NAME} = function(${2:VARIABLE LIST}){
+${1:FUNCTIONNAME$$(replace-regexp-in-string " " "_" yas-text)} = function(${2:VARIABLE LIST}){
   # ${3:DESCRIPTION}
   $0
 }
@@ -13811,6 +13954,7 @@ echo "Debug: Org ID - $ORG_ID"
 
 #+end_src
 
+- need to redefine org-latex-pdf-process
 #+begin_src bash :tangle ./tools/shell/org_latex_export_quick.sh :tangle-mode (identity #o755)
 #!/bin/sh
 
