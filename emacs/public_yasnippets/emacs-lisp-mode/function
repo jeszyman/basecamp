@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# key: function
+# expand-env: ((yas-indent-line 'none))
+# --
+(defun ${1: <FUNCTION NAME>} (${2: <VARIABLE 1 NAME>})
+  "${3: <DOC STRING>}
+
+$2 ${4: <VARIABLE 1 DEFINITION>}
+
+Example usage:
+  ($1 ${5: <USAGE>})"
+
+$0

@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# key: usepackage
+# expand-env: ((yas-indent-line 'none))
+# --
+(use-package ${1: <PACKAGE>}
+  :bind-keymap
+  ("" . cmd)
+  :config
+  :ensure t
+  (setq )
+  :hook
+)

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# key: must.src
+# expand-env: ((yas-indent-line 'none))
+# --
+if [[ "\${BASH_SOURCE[0]}" == "\${0}" ]]; then
+  echo "You must source this script"
+  exit 1
+fi

@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: array.from.find
+# key: array.from.find
+# --
+${1:ARRAY NAME}=()
+while IFS=  read -r -d $'\0'; do
+    $1+=("$REPLY")
+done < <(find ${2:FIND DIR} -name ${3:FIND TERM} -print0)
+printf '%s\n' "\${$1[@]}"
+$0

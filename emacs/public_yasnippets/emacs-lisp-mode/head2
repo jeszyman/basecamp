@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: head2
+# expand-env: ((yas-indent-line 'none))
+# --
+; ---   ${1:$$(capitalize yas-text)}   --- ;
+; ${1:$(make-string (+ (string-width yas-text) 12) ?\-)} ;
+$0

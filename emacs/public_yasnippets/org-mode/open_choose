@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: open_choose
+# expand-env: ((yas-indent-line 'fixed))
+# --
+#+begin_src bash
+
+#+end_src

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# key: smk.rulegraph
+# expand-env: ((yas-indent-line 'none))
+# --
+#+ATTR_ORG: :width 800px
+[[file:resources/$1_smk.png]]

@@ -1,0 +1,50 @@
+# -*- mode: snippet -*-
+# key: script
+# expand-env: ((yas-indent-line 'fixed))
+# --
+#!/usr/bin/env Rscript
+
+# ---   Load Packages   --- #
+# ------------------------- #
+
+packages <- c("optparse", "tidyverse")
+sapply(packages, require, character.only = TRUE, quietly = TRUE)
+
+# ---   Load Inputs   --- #
+# ----------------------- #
+
+option_list <- list(
+  make_option(c("--<OPTION NAME>"), type = "character"),
+
+opts <- parse_args(OptionParser(option_list = option_list))
+
+inputs_list = function(opts){
+
+  return(list())
+}
+
+# ---   Main   --- #
+# ---------------- #
+
+main = function(opts){
+
+  # Process inputs
+  inputs = inputs_list(opts)
+
+  # Return a list of outputs
+  return(list())
+}
+
+# ---   Functions   --- #
+# --------------------- #
+
+# ---   Run   --- #
+# --------------- #
+
+out = main(opts)
+
+for (name in names(out)) {
+  item <- out[[name]]
+  file_path <- file.path(opts$out_dir, paste0(name, ".rds"))
+  saveRDS(item, file_path)
+}

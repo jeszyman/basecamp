@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: print_array
+# key: print_array
+# --
+printf '%s\n' "${${1:ARRAY_NAME}[@]}"
+$0

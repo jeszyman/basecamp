@@ -1,0 +1,21 @@
+# -*- mode: snippet -*-
+# key: smk.rule
+# expand-env: ((yas-indent-line 'none))
+# --
+smk.rule.${1:$$(yas-choose-value '("bash" "r"))}
+
+# -*- mode: snippet -*-
+# key: smk.rule
+# expand-env: ((yas-indent-line 'none))
+# --
+#+begin_src snakemake
+rule ${1:$$(downcase(replace-regexp-in-string " " "_" yas-text))}:
+    input:
+    log: f"{log_dir}/$1.log",
+    output:
+    params: script = $1
+    shell:
+        """
+        """
+$0
+#+end_src

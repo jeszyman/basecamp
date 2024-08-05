@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# key: return_usage_any
+# expand-env: ((yas-indent-line 'fixed))
+# --
+# Return usage if any arguments are provided
+if [[ $# -gt 0 ]]; then
+    print_usage
+    return 0
+fi
+$0

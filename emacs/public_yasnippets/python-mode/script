@@ -1,0 +1,38 @@
+# -*- mode: snippet -*-
+# key: script
+# expand-env: ((yas-indent-line 'none))
+# --
+#!/usr/bin/env python3
+"""
+$1
+"""
+
+# ---   Load Packages   --- #
+# ------------------------- #
+
+import argparse
+
+# ---   Load Inputs   --- #
+# ----------------------- #
+
+def load_inputs():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--your_option", type=str, default="", help="Description of option")
+
+    args = parser.parse_args()
+
+    return args
+
+# ---   Main   --- #
+# ---------------- #
+
+def main():
+
+# ---   Functions   --- #
+# --------------------- #
+
+# ---   Main Guard   --- #
+# ---------------------- #
+
+if __name__ == "__main__":
+    main()

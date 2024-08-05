@@ -1,0 +1,26 @@
+# -*- mode: snippet -*-
+# key: usage
+# expand-env: ((yas-indent-line 'fixed))
+# --
+
+print_usage(){
+    cat <<- EOF
+
+ Usage: ${1:${1:SCRIPT NAME}$$(replace-regexp-in-string " " "_" yas-text)} [OPTIONS] ${2:${2:REQUIRED OPERAND}$$(upcase yas-text)}  ${3:${3:[OPTIONAL OPERAND]}$$(upcase yas-text)}
+ 
+ ${4:<DESCRIPTION>}
+ 
+ Options:
+   -h, --help    Show this help message and exit
+
+ Arguements:
+   ${2:$(ignore-errors (format (yas-field-value 2)))} ${5: <OPERAND DESCRIPTION>} 
+
+ Example:
+   ${1:$(ignore-errors (format (yas-field-value 1)))} ${6: <EXAMPLE>} 
+
+EOF
+}
+
+# See print usage caller yas
+# return_usage_any

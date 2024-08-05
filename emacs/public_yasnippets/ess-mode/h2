@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# key: h2
+# expand-env: ((yas-indent-line 'none))
+# --
+
+# ========== ${1:$$(capitalize yas-text)} ========= #
+
+$0

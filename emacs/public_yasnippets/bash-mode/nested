@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# key: nested
+# expand-env: ((yas-indent-line 'none))
+# --
+$1
+
+$2
+
+$3

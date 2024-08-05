@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: make.opt
+# expand-env: ((yas-indent-line 'none))
+# --
+  make_option(c("--$1"), type = "character", default = "$2"),

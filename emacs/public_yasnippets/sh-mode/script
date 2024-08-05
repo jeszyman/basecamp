@@ -1,0 +1,22 @@
+# -*- mode: snippet -*-
+# key: script
+# --
+#!/usr/bin/env bash
+
+head1
+
+# Block comment here
+
+set -o errexit   # abort on nonzero exitstatus
+set -o nounset   # abort on unbound variable
+set -o pipefail  # don't hide errors within pipes
+
+usage
+
+variables
+
+main(){
+    variables /$1
+}
+
+main "$@"

@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# key: smk.rscript
+# expand-env: ((yas-indent-line 'none))
+# --
+    params:
+        script = f"{$2_script_dir}/${1:$$(replace-regexp-in-string " " "_" yas-text)}.R"
+    shell:
+        """
+        Rscript {params.script} \
+        {input} \
+        {output} > {log} 2>&1
+        """
+#+end_src
+- [[file:./scripts/$1.R][Rscript]]
+  #+begin_src R :tangle ./scripts/$1.R
+r.script$0
+#+end_src

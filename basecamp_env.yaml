@@ -1,48 +1,72 @@
-name: basecamp
-#########1#########2#########3#########4#########5#########6#########7#########8
-# To build, see basecamp/lib/conda_functions.sh
-# To incorporate into another conda env,
+# Jeff Szymanski's basecamp conda environment.
 
-#########1#########2#########3#########4#########5#########6#########7#########8
+
+
+# Preamble and channels
+# :PROPERTIES:
+# :ID:       abb2816b-257f-4af7-803d-33ae295919c1
+# :END:
+
+name: basecamp
+
 channels:
   - conda-forge
   - bioconda
 
-#########1#########2#########3#########4#########5#########6#########7#########8
-dependencies:                                                                  #
-  - beautifulsoup4
-  - black
-  - bs4
-  - intervaltree
-  - numpy
-  - openpyxl
-  - pandas
-  - parallel
-  - pyarrow
+dependencies:
+
+# Python
+# :PROPERTIES:
+# :ID:       99c189db-c124-4f8e-923e-99dd2e67a4b8
+# :END:
+
+# ---   Python   --- #
+# ------------------ #
+
+  - beautifulsoup4=4                    # Pulls data out of HTML and XML files #
+  - black=24                            # Uncompromising Python code formatter #
+  - python-docx=1.1           # Create and modify MS Word docx files in python #
+  - intervaltree=3.1             # Efficient storage and querying of intervals #
+  - numpy=1.26           # Bash package needed for scientific computing #
+  - openpyxl=3.0                               # Reads excel files into python #
+  - pandas=2.1                                     # Data structures in python #
+  - parallel     # GNU parallel is a shell tool for executing jobs in parallel #
+  - pyarrow=15.0                       # Provides bindings to the Apache Arrow #
   - python=3.10
-  - r-colorramps
-  - r-devtools
-  - r-eulerr
-  - r-ggextra
-  - r-ggpattern
-  - r-ggpubr
-  - r-ggrepel
-  - r-ggridges
-  - r-ggsci
-  - r-kableextra
-  - r-lintr=3.1                                                 # Linting tool #
-  - r-magick
-  - r-multcomp
+  - scikit-learn=1.3                         # Python machine learning modules #
+  - snakemake                               # Python workflow management system #
+
+# R
+# :PROPERTIES:
+# :ID:       4783cca8-92ea-4053-b3c8-7d79862e3939
+# :END:
+
+# ---   R   --- #
+# ------------- #
+
+  - bioconductor-complexheatmap
+  - r-colorramps                                  # Builds gradient color maps #
+  - r-devtools                                   # R package development tools #
+  - r-eulerr                           # Best area-proportional Euler diagrams #
+  - r-ggextra                      # Has ggMarginal to add marginal histograms #
+  - r-ggpattern                           # Custom ggplot2 geoms with patterns #
+  - r-ggpubr                           # Functions for publication ready plots #
+  - r-ggrepel                                # Text and label geoms that repel #
+  - r-ggridges                                               # Ridgeline plots #
+  - r-ggsci                   # Ggplot2 color palettes for scientific journals #
+  - r-kableextra       # Builds HTML or LaTeX tables knitr and magrittr piping #
+  - r-lintr                                                     # Linting tool #
+  - r-magick                # Bindings to ImageMagick image processing library #
+  - r-multcomp          # Tests and confidence intervals for parametric models #
   - r-optparse                              # For command line options parsing #
-  - r-patchwork
-  - r-pheatmap
-  - r-readxl
-  - r-rlang
-  - r-rstatix
+  - r-patchwork                                      # Composes multiple plots #
+  - r-pheatmap                                               # Simple heatmaps #
+  - r-readxl                                         # Read Excel files into R #
+  - r-rlang             # Toolbox for working with base types, core R features #
+  - r-rstatix            # pipe-friendly framework for basic statistical tests #
   - r-svglite                                   # Provides svg graphics output #
   - r-tidyverse
-  - r-upsetr
-  - r-writexl
-  - r-yaml
-  - scikit-learn
-  - snakemake
+  - r-rtsne   # t-distributed stochastic neighbor embedding dimension reduction #
+  - r-upsetr       # Visualizations of intersecting sets using a matrix design #
+  - r-writexl                                    # Export data frames to Excel #
+  - r-yaml                    # Impliments libyaml YAML 1.1 parser and emitter #

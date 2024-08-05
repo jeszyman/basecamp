@@ -1,0 +1,52 @@
+# -*- mode: snippet -*-
+# key: smk
+# expand-env: ((yas-indent-line 'none))
+# --
+`(make-string (org-current-level) ?*)` [[file:./workflow/$2.smk][Snakefile]]:smk:
+:PROPERTIES:
+:header-args:snakemake: :tangle ./workflow/${2: SNAKEFILE NAME}.smk
+:END:
+`(make-string (+ 1 (org-current-level)) ?*)` Smk preamble
+#+begin_src snakemake
+
+#+end_src
+`(make-string (+ 1 (org-current-level)) ?*)` Smk rules
+`(make-string (+ 2 (org-current-level)) ?*)` All rule
+#+begin_src snakemake
+rule all:
+    input:
+
+#+end_src
+- add rules with smk.rule
+`(make-string (+ 1 (org-current-level)) ?*)` Dev
+:PROPERTIES:
+:header-args:snakemake: :tangle no
+:END:
+`(make-string (+ 2 (org-current-level)) ?*)` Ideas
+:PROPERTIES:
+:header-args:snakemake: :tangle no
+:END:
+
+# -*- mode: snippet -*-
+# key: smk
+# expand-env: ((yas-indent-line 'none))
+# --
+`(make-string (org-current-level) ?*)` $3 :smk:
+:PROPERTIES:
+:header-args:snakemake: :tangle ./workflow/${1: SNAKEFILE NAME}.smk
+:END:
+[[file:./workflow/$1.smk][Link to Snakefile]]
+[[46270062-e3f4-46c9-9d71-5868376e495b][yas]]
+`(make-string (+ 1 (org-current-level)) ?*)` Preamble
+#+begin_src snakemake
+# ${3: <ORG DESCRIPTIVE TITLE>}
+#+end_src
+`(make-string (+ 1 (org-current-level)) ?*)` Use smk.rule
+`(make-string (+ 1 (org-current-level)) ?*)` Dev
+:PROPERTIES:
+:header-args:snakemake: :tangle no
+:END:
+`(make-string (+ 1 (org-current-level)) ?*)` Ideas
+:PROPERTIES:
+:header-args:snakemake: :tangle no
+:END:

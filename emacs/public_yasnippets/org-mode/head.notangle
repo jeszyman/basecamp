@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: head.notangle
+# expand-env: ((yas-indent-line 'none))
+# --
+:PROPERTIES:
+:header-args: :tangle no
+:END:

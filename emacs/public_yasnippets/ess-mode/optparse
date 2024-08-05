@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# key: optparse
+# expand-env: ((yas-indent-line 'none))
+# --
+option_list <- list(
+  make_option(c("--"), type = "character", default = "")
+)
+
+opts <- parse_args(OptionParser(option_list = option_list))

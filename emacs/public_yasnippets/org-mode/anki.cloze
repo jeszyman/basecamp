@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# key: anki.cloze
+# expand-env: ((yas-indent-line 'none))
+# --
+`(make-string (org-current-level) ?*)` ${2:(${(capitalize yas-text)})} :anki:
+:PROPERTIES:
+:ANKI_NOTE_TYPE: Cloze
+:ANKI_DECK: ${1: <DECK>}
+:END:
+`(make-string (+ 1 (org-current-level)) ?*)` Text
+$0
+`(make-string (+ 1 (org-current-level)) ?*)` Extra

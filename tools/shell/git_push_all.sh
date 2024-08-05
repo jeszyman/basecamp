@@ -1,3 +1,6 @@
+
+# - Push all
+
 #!/usr/bin/env bash
 d=$(date +%Y-%m-%d)
 for d in $HOME/repos/*

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# key: demo.org.header
+# expand-env: ((yas-indent-line 'none))
+# --
+`(make-string (org-current-level) ?*)` THE HEADER
+:PROPERTIES:
+:END:
+`(make-string (+ 1 (org-current-level)) ?*)` BELOW THE HEADER

@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# key: smk.org.rule
+# expand-env: ((yas-indent-line 'none))
+# --
+`(make-string (org-current-level) ?*)` ${2: <RULE DESCRIPTIVE NAME>}    :smk_rule:
+- Snakemake
+  #+begin_src snakemake
+rule ${1:$$(replace-regexp-in-string " " "_" yas-text)}:
+    benchmark: bench_dir + "/$1.benchmark",
+    container:
+    input:
+    log: log_dir + "/$1.log",
+    output:
+smk.$0

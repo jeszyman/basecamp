@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# key: code.prop
+# expand-env: ((yas-indent-line 'none))
+# --
+:PROPERTIES:
+:header-args:${1:`(yas-choose-value '("R" "bash" " "))`}: :tangle $2
+:END:
+$0
