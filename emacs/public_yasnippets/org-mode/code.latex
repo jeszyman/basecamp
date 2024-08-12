@@ -1,8 +1,3 @@
-# code.latex                                                          :yas:
-# :PROPERTIES:
-# :ID:       6121d634-c011-4d02-bbe3-c008be326694
-# :END:
-
 # -*- mode: snippet -*-
 # key: code.latex
 # expand-env: ((yas-indent-line 'none))

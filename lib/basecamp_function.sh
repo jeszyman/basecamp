@@ -8,13 +8,23 @@ launch() {
 
 brave() { launch /usr/bin/brave-browser; }
 chrome() { launch /usr/bin/brave-browser; }
-emacs() { launch /usr/bin/emacsclient -c; }
 inkscape() { launch /usr/bin/inkscape; }
 okular() { launch /usr/bin/okular; }
+
+
+
+emacs() {
+    exec /usr/local/bin/emacsclient -c --no-wait &
+    disown
+    exit
+}
 # Volume control with amixer
 
 
 # mute() Mute computer speakers and microphone
+# :PROPERTIES:
+# :ID:       318be8d0-cfce-495f-90cd-93942c04f3b6
+# :END:
 
 mute(){
     amixer set Master mute
@@ -31,11 +41,11 @@ unmute() {
 volume-up() {
     # Check if speakers are muted
     mute_status=$(amixer -D pulse get Master | grep -o '\[off\]')
-
+    
     if [[ -n "$mute_status" ]]; then
         echo "WARNING: Speakers are currently muted. Unmute them to hear audio."
     else
-	amixer -D pulse sset Master 5%+
+	amixer -D pulse sset Master 5%+	    
     fi
 }
 # volume-down
@@ -43,7 +53,7 @@ volume-up() {
 volume-down() {
     # Check if speakers are muted
     mute_status=$(amixer -D pulse get Master | grep -o '\[off\]')
-
+    
     if [[ -n "$mute_status" ]]; then
         echo "WARNING: Speakers are currently muted. Unmute them to hear audio."
     else
@@ -57,16 +67,16 @@ emacs-start() {
     cat <<- EOF
 
  Usage: emacs-start
-
+ 
  Invokes the emacsclient systemd daemon if not already running.
-
+ 
  Options:
    -h, --help    Show this help message and exit
 
- Arguements: This function takes no arguements.
+ Arguements: This function takes no arguements. 
 
  Example:
-   emacs-start
+   emacs-start   
 
 EOF
 }
@@ -91,7 +101,7 @@ EOF
             return 1
         fi
     fi
-
+    
 }
 # emacs-stop()
 
@@ -100,13 +110,13 @@ emacs-stop() {
     cat <<- EOF
 
  Usage: emacs-stop
-
+ 
  Terminates the emacsclient systemd daemon if running.
-
+ 
  Options:
    -h, --help    Show this help message and exit
 
- Arguements: This function takes no arguements.
+ Arguements: This function takes no arguements. 
 
  Example:
    emacs-stop
@@ -127,9 +137,12 @@ EOF
     else
         echo "Emacs daemon is not running. Nothing to do."
     fi
-
+    
 }
 # check_mnt() Check if mount is active
+# :PROPERTIES:
+# :ID:       c98f8d3a-bdf1-4c91-8ca2-7d4743dace59
+# :END:
 
 check_mnt(){
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
@@ -147,6 +160,9 @@ EOF
     fi
 }
 # pomo() Pomodoro
+# :PROPERTIES:
+# :ID:       422747c3-9054-4022-bcc3-e67d0f6fb9aa
+# :END:
 
 function pomo() {
     arg1=$1
@@ -162,6 +178,9 @@ function pomo() {
     done
 }
 # convert_pdf_to_png()
+# :PROPERTIES:
+# :ID:       61cef427-947e-4d91-9dfe-8758ccbe3512
+# :END:
 
 convert_pdf_to_png() {
     print_usage() {
@@ -195,6 +214,9 @@ EOF
 
 }
 # convert_pdf_to_svg()
+# :PROPERTIES:
+# :ID:       98421984-2ff6-4ad8-bd7d-4b9f4810f1b1
+# :END:
 
 convert_pdf_to_svg() {
     print_usage() {
@@ -227,6 +249,9 @@ EOF
     echo "Conversion complete. Output saved to $output_file with a white background."
 }
 # cpout()
+# :PROPERTIES:
+# :ID:       4548b630-06a9-4480-8e11-6e690d05eabc
+# :END:
 
 cpout() {
     if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
@@ -242,6 +267,9 @@ EOF
     "$@" 2>&1 | tee >(xclip -selection clipboard)
 }
 # docx_to_pdf()
+# :PROPERTIES:
+# :ID:       8240dc4a-a77f-438e-93a4-ed63d5828f7e
+# :END:
 
 docx_to_pdf() {
     local in_docx="$1"
@@ -263,6 +291,9 @@ EOF
     echo "Conversion complete"
 }
 # emacs-latex()
+# :PROPERTIES:
+# :ID:       ca04cfb0-6ddf-4d33-9e64-81b2f16def79
+# :END:
 
 emacs-latex() {
     print_usage() {
@@ -301,6 +332,9 @@ EOF
 
 }
 # emacs-save()
+# :PROPERTIES:
+# :ID:       a79a1266-7168-49da-861a-d06a497a44c8
+# :END:
 
 emacs-save(){
     [[ "$1" =~ (-h|--help) ]] && {
@@ -313,6 +347,9 @@ EOF
     emacsclient --eval '(save-some-buffers t)'
 }
 # find_in_files()
+# :PROPERTIES:
+# :ID:       bbe30f0b-9836-4459-bf8f-39dca3b38907
+# :END:
 
 find_in_files(){
     print_usage(){
@@ -340,6 +377,9 @@ EOF
     grep -rnw "${dir}" -e "${term}"
 }
 # screenshot()
+# :PROPERTIES:
+# :ID:       f829815e-41cc-4180-b91e-07e00395f473
+# :END:
 
 screenshot(){
     print_usage(){
@@ -366,6 +406,9 @@ EOF
 
 }
 # debug()
+# :PROPERTIES:
+# :ID:       8b0b016c-cdc5-4583-87d2-9b25a0b5fac4
+# :END:
 
 debug(){
     print_usage(){
@@ -409,6 +452,9 @@ EOF
     fi
 }
 # git_search_all()
+# :PROPERTIES:
+# :ID:       91c9ca9e-73ab-4a14-8087-96441b2fe0fc
+# :END:
 
 git_search_all(){
     print_usage(){
@@ -444,9 +490,9 @@ pptx-to-pdf() {
     cat <<- EOF
 
  Usage: pptx-to-pdf PPTX
-
+ 
  Converts a Powerpoint ppt file to PDF using unoconv. The PDF file will be
- written to the same location as the pptx, but with a .pdf extension.
+ written to the same location as the pptx, but with a .pdf extension. 
 
  Options:
    -h, --help    Show this help message and exit
@@ -465,15 +511,15 @@ EOF
         print_usage
         return 1
     fi
-
+    
     # Return usage if the argument is a help flag
     if [[ "$1" == "-h" || "$1" == "--help" ]]; then
         print_usage
         return 0
     fi
-
+        
   unoconv -f pdf $1
-
+  
 }
 # logout
 
@@ -481,18 +527,18 @@ logout() {
     print_usage(){
         cat <<- EOF
 
- Usage: logout
+ Usage: logout 
 
  Logs out of i3 using i3lock. If emacsclient is running, will save all buffers prior to
- logout.
+ logout. 
 
  Options:
    -h, --help    Show this help message and exit
 
- Arguements: This function takes no arguements.
-
+ Arguements: This function takes no arguements. 
+       
  Example:
-   logout
+   logout  
 
 EOF
     }
@@ -504,14 +550,14 @@ EOF
     fi
 
     pgrep emacsclient && emacs-save && i3lock -c 000000 || i3lock -c 000000
-
+ 
 }
 # ls-size()
 
 ls-size(){
     print_usage(){
         cat <<- EOF
-
+	
  Usage: ls-size
 
  Lists files in the current directory, sorted by size in descending order, with file
@@ -532,10 +578,13 @@ EOF
         print_usage
         return 0
     fi
-
+    
     ls -lrS1 --block-size=M
 }
 # ls_recursive()
+# :PROPERTIES:
+# :ID:       af1385b3-6baf-4e86-80e7-6a178f7623c1
+# :END:
 
 
 
@@ -577,6 +626,9 @@ EOF
     find . -maxdepth "$level" -name "*${regex}*"
 }
 # git_wkflow_up()
+# :PROPERTIES:
+# :ID:       656832e2-e6e1-47ee-a1ec-97345e915648
+# :END:
 
 git_wkflow_up(){
     print_usage(){
@@ -621,6 +673,9 @@ EOF
     fi
 }
 # open()
+# :PROPERTIES:
+# :ID:       2b4acddd-ca9f-488f-aaf1-ecf4f86afdb9
+# :END:
 
 open(){
     print_usage(){
@@ -648,6 +703,9 @@ EOF
 
 }
 # run_with_nohup()
+# :PROPERTIES:
+# :ID:       4736e63d-4661-432c-b4d7-79cf7f4684ae
+# :END:
 
 run_with_nohup() {
 
@@ -684,6 +742,9 @@ EOF
     main "$@" & disown
 }
 # file_size()
+# :PROPERTIES:
+# :ID:       0ba47641-2a7f-4ec3-b6f9-e3abbdb49864
+# :END:
 
 file_sizes() {
 
@@ -715,6 +776,9 @@ EOF
     main "$@"
 }
 # tangle() Invoke emacs batch to tangle a file
+# :PROPERTIES:
+# :ID:       0af857f2-01b1-44f5-8063-cfcaa0414745
+# :END:
 
 tangle() {
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {

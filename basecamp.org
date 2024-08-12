@@ -263,6 +263,14 @@ progn: special form to evaluate sequence of expressions
 
 **** Org-mode
 
+If you place an asterisk at the beginning of your search, Org-mode will search only headlines (and not entry text). E.g., to find all entries with "emacs" in the headline, you could type:
+
+#+begin_src emacs-lisp
+C-c a s
+[+-]Word/{Regexp} ...: *+emacs
+
+#+end_src
+
 
 See also Emacs and Org-mode use in my LaTeX repository ([[https://github.com/jeszyman/latex][GitHub]], [[plain:7F54F016-934E-45AA-BABF-B640464BDEF1][local buffer]]). 
 ***** Org File Standard Setup
@@ -2186,9 +2194,17 @@ launch() {
 
 brave() { launch /usr/bin/brave-browser; }
 chrome() { launch /usr/bin/brave-browser; }
-emacs() { launch /usr/bin/emacsclient -c; }
 inkscape() { launch /usr/bin/inkscape; }
 okular() { launch /usr/bin/okular; }
+
+
+
+emacs() {
+    exec /usr/local/bin/emacsclient -c --no-wait &
+    disown
+    exit
+}
+
 #+end_src
 ***** Volume control with amixer
 #+begin_src bash
@@ -17833,14 +17849,7 @@ Lintr: An R package that provides static code analysis for R, similar to Python'
 
 These guides and tools offer a consensus on best practices for R coding, promoting a coding style that emphasizes clarity, simplicity, and consistency. While they may not be as universally adopted as PEP 8 in the Python world, they provide a solid foundation for writing clean and maintainable R code.
 **** [[id:593672e1-82b2-44e0-aa00-d28825860706][My programming style guide]]
-:PROPERTIES:
-:ID:       9102327f-22b0-41c3-9b59-ec6a3b912078
-:END:
-**** Development                                                        :dev:
-:PROPERTIES:
-:ID:       8a1c3379-73ee-4969-88fc-9443631d3384
-:END:
-***** Ideas
+**** Ideas
 :PROPERTIES:
 :ID:       d3e14906-80f0-409b-b8df-8d98da11f09f
 :END:
@@ -17851,7 +17860,6 @@ CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
   - ideas
     - define path variables in r
     - [ ] how to stop R ESS tab complete from pinging countries?
-
 
 **** R Processes                                                  :hierarchy:
 :PROPERTIES:
@@ -18903,7 +18911,6 @@ long.${2:$(let ((input (s-trim yas-text)))
 long.${2:$(let ((input (s-trim yas-text)))
            (s-wrap input 80 "\n"))}
 #+end_src
-
 
 **** Best practices, style
 :PROPERTIES:
