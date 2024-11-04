@@ -4,6 +4,7 @@
 :RESET_CHECK_BOXES: t
 :END:
 ** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
+** [[id:89576FD2-F863-4220-BAD7-D4E179AEA644][Bash and shell]]
 ** [[id:a49abc44-8e71-4a1a-bd35-a77849427c94][Emacs]]
 ** [[id:cd560390-aa1e-4c9e-8317-08610e5de42a][Linux]]
 ** [[id:28ed3017-eedb-4a6c-94e5-f477353170c8][Public emacs configuration]]
@@ -23,21 +24,29 @@
 :END:
 Files in this repository are managed through [[ https://orgmode.org/manual/Extracting-Source-Code.html][extracting ("tangling") code]] within source code blocks of Emacs Org-mode text files. Tangling overwrites existing target files. 
 ** Documentation
-:PROPERTIES:
+:properties:
 :export_date:
 :export_file_name: ./basecamp-documentation.pdf
 :export_latex_class: empty
 :export_latex_header+: \usepackage{/home/jeszyman/repos/latex/sty/documentation}
 :export_title: Basecamp
+:export_options: toc:t num:t \n:t
 :ID:       c364a0c0-10c3-4476-ad24-60dd5def3ff4
-:END:
-
+:CUSTOM_ID:       c364a0c0-10c3-4476-ad24-60dd5def3ff4
+:end:
+[[elisp:(run-latex-at-point)][Run LaTeX with ID]]
+TEST
 Documentation for my general computing set up and operation.
 
+*** Reference :noexport:
+- [[file:basecamp-documentation.tex][TeX]]
+- [[file:basecamp-documentation.pdf][pdf]]
+- [[id:f453bd37-55e8-46ee-9cf5-c499d7e7c5d9][Documentation style]]    
 *** Setup and Configuration
-**** Good practice for base computing setup
-***** Bash
-
+**** General Information and Good Practice for Base Computing Setup
+***** Bash Configuration
+[[file:~/.bashrc][.bashrc]] is used for interactive shell customizations and [[file:~/.profile][.profile]] is used for setting up environment variables and system-wide settings needed during the login process.
+****** Bashrc
 - The default bashrc lives at /etc/skel/.bashrc.
 - Other programs such as singularity or conda may write directly to bashrc.
 - Otherwise, bashrc is not altered automatically, as through Org-mode tangling. Instead, additional code is sourced though a simple if else statement. I source my basecamp shell libraries as follows:
@@ -159,7 +168,9 @@ At the file level, tangled code should reference it's location in orgmode files.
 tangle defaults to ./
 ******* Templating with YASnippets
 My public YASnippets are compiled from source code blocks across my Org-mode agenda files. These tangle into appropriate subdirectories of [[file:emacs/public_yasnippets/][./emacs/public_yasnippets]]. Private snippets are tangled into appropriate subdirectories of [[file:~/repos/org/emacs/private_yasnippets][org/emacs/private_yasnippets]].
-*** General Style Guide Good Practice
+*** Pan-computing Good Practive and General Style Guide
+- Directory names should be in hyphen-case, using only lowercase letters (a-z), digits (0-9), and hyphens (-) as separators. Use as few words as possible
+  - Can use more human-friendly title case and spaces with symlinks and shortcuts
 - Prefer single-word file and directory names
 - For multi-word file and directory names, prefer a dash (-) separator (/e.g./ a-longer-file-name.txt)  
 *** Conda
@@ -646,7 +657,7 @@ https://chatgpt.com/c/fe962d8c-eb34-42fe-b362-032a61d8b728
             (delq 'process-kill-buffer-query-function
                   kill-buffer-query-functions)))))
 
-(add-hook 'shell-mode-hook 'custom-dont-ask-to-kill-shell-buffer)
+(add-hook 'shell-mode-hook 'dont-ask-to-kill-shell-buffer)
 
 #+end_src
 
@@ -671,6 +682,16 @@ https://chatgpt.com/c/fe962d8c-eb34-42fe-b362-032a61d8b728
 :PROPERTIES:
 :ID:       45e28300-51fd-4ce7-aed1-15dca15022d4
 :END:
+******* Startup
+#+begin_src emacs-lisp
+(setq org-startup-shrink-all-tables t)
+(setq org-startup-with-inline-images t)
+#+end_src
+
+******* Default reset check boxes
+https://chatgpt.com/c/67069939-5e04-8005-80b3-7865981a8843
+- currently an edit at point for all properties- NO!
+
 ******* Tags
 #+BEGIN_SRC emacs-lisp
         (setq
@@ -758,12 +779,6 @@ https://chatgpt.com/c/fe962d8c-eb34-42fe-b362-032a61d8b728
 (setq org-startup-shrink-all-tables t)
 #+END_SRC
 
-******* Startup
-#+begin_src emacs-lisp
-(setq org-startup-shrink-all-tables t)
-(setq org-startup-with-inline-images t)
-#+end_src
-
 ******* org-collector
 #+begin_src emacs-lisp
 (require 'org-collector)
@@ -822,6 +837,9 @@ When set as a list as below, 300 pixels will be the default, but another width c
 ******* Source code
 
 ******** Declare Babel languages
+:PROPERTIES:
+:ID:       32dc9158-01f6-4303-b4eb-3901fe98f8d8
+:END:
 
 
 #+begin_src emacs-lisp
@@ -832,6 +850,7 @@ When set as a list as below, 300 pixels will be the default, but another width c
    (dot .t)
    (emacs-lisp . t)
    (latex . t)
+   (mermaid .t)
    (org . t)
    (python . t)
    (R . t)
@@ -935,16 +954,21 @@ https://emacs.stackexchange.com/questions/39390/force-org-to-use-instead-of-begi
       org-babel-noweb-wrap-end "#>")
 #+end_src
 ******** (org-remove-properties-drawer)
+- https://claude.ai/chat/87d68d37-ff96-4a8f-9c5c-cd694ac78831
 #+begin_src emacs-lisp
-(defun org-remove-properties-drawer ()
-  "Remove PROPERTIES drawer from tangled files."
-  (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward "^# :PROPERTIES:\n\\(?:# .*\n\\)*?# :END:\n" nil t)
-      (replace-match ""))))
+(defun my-org-remove-properties-drawer ()
+  "Remove PROPERTIES drawer from tangled files without triggering buffer modification warning."
+  (let ((buffer-modified-p (not (buffer-modified-p))))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "^# :PROPERTIES:\n\\(?:# .*\n\\)*?# :END:\n" nil t)
+        (replace-match "")))
+    (unless buffer-modified-p
+      (set-buffer-modified-p nil))))
 
-(add-hook 'org-babel-post-tangle-hook 'org-remove-properties-drawer)
+(advice-add 'org-remove-properties-drawer :override #'my-org-remove-properties-drawer)
 #+end_src
+
 
 ******* Header views and cycling
 #+begin_src emacs-lisp
@@ -953,8 +977,32 @@ https://emacs.stackexchange.com/questions/39390/force-org-to-use-instead-of-begi
 (setq org-fold-show-context-detail
       '((default . tree)))
 #+end_src
+******* No blank lines!
+#+begin_src emacs-lisp
+(setq org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
+(setq org-cycle-separator-lines 0)
+(setq yas-indent-line 'fixed)
+
+#+end_src
+
+https://chatgpt.com/c/670d4cb7-5c08-8005-bec8-a2800e4bd0c4
+#+begin_src emacs-lisp
+(defun my-remove-trailing-newlines-in-tangled-blocks ()
+  "Remove trailing newlines from tangled block bodies."
+  (save-excursion
+    (goto-char (point-max))
+    (when (looking-back "\n" nil)
+      (delete-char -1))))
+
+(add-hook 'org-babel-post-tangle-hook #'my-remove-trailing-newlines-in-tangled-blocks)
+
+#+end_src
 
 ******* General
+#+begin_src emacs-lisp
+(setq org-confirm-shell-link-function nil)
+
+#+end_src
 #+begin_src emacs-lisp
 
 (with-eval-after-load 'org
@@ -1093,6 +1141,103 @@ When called with two prefix arguments, ARG, run the original function without pr
                                     ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 
 #+end_src
+******* Open URLs in new window with C-u C-c C-o
+https://chatgpt.com/c/670d5b8e-aa7c-8005-946d-81409ee082d6
+#+begin_src emacs-lisp
+(defun my-org-open-in-brave-new-window ()
+  "Open the link at point in Brave browser in a new window."
+  (interactive)
+  (let* ((context (org-element-context))
+         (link (and (eq (org-element-type context) 'link)
+                    (org-element-property :raw-link context))))
+    (if link
+        (start-process "brave-new-window" nil "brave-browser" "--new-window" link)
+      (message "No link at point"))))
+
+(defun my-org-open-at-point (&optional arg)
+  "Open the link at point, using a new window in Brave if ARG is non-nil."
+  (interactive "P")
+  (if arg
+      (my-org-open-in-brave-new-window)
+    (org-open-at-point)))
+
+;; Rebind C-c C-o in org mode to our custom function
+(define-key org-mode-map (kbd "C-c C-o") 'my-org-open-at-point)
+#+end_src
+******* Checkboxes
+
+#+begin_src emacs-lisp
+(defun org-toggle-checkbox-and-children ()
+  "Toggle checkbox and all children checkboxes."
+  (interactive)
+  (save-excursion
+    (let* ((parent-indent (current-indentation))
+           (end (save-excursion
+                  (org-end-of-subtree)
+                  (point)))
+           (current-checkbox (save-excursion
+                              (beginning-of-line)
+                              (when (re-search-forward "\\[[ X-]\\]" (line-end-position) t)
+                                (match-string 0))))
+           (new-state (if (equal current-checkbox "[X]") "[X]" "[ ]")))
+      ;; Toggle the parent checkbox
+      (beginning-of-line)
+      (when (re-search-forward "\\[[ X-]\\]" (line-end-position) t)
+        (replace-match new-state))
+      ;; Toggle all children checkboxes
+      (forward-line)
+      (while (< (point) end)
+        (let ((line-start (point)))
+          (when (and (> (current-indentation) parent-indent)
+                     (re-search-forward "\\[[ X-]\\]" (line-end-position) t))
+            (replace-match new-state)
+            (goto-char line-start)))
+        (forward-line 1)))))
+
+(defun org-toggle-checkbox-advice (&rest _args)
+  "Toggle child checkboxes instead of default behavior when on a checkbox line."
+  (when (org-at-item-checkbox-p)
+    (org-toggle-checkbox-and-children)
+    t))
+
+(advice-add 'org-ctrl-c-ctrl-c :before-until #'org-toggle-checkbox-advice)
+
+#+end_src
+******* Documentation
+#+begin_src emacs-lisp
+(with-eval-after-load 'ox-latex
+  (add-to-list 'org-latex-classes
+               '("documentation"
+                 "\\documentclass{article}
+                 \\usepackage{/home/jeszyman/repos/latex/sty/documentation}
+                 [NO-DEFAULT-PACKAGES]
+                 [NO-PACKAGES]
+                 [EXTRA]
+                 \\tableofcontents"
+                 ("\\section{%s}" . "\\section{%s}")
+                 ("\\subsection{%s}" . "\\subsection{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
+#+end_src
+#+begin_src emacs-lisp
+(with-eval-after-load 'ox-latex
+  (add-to-list 'org-latex-classes
+               '("documentation"
+                 "\\documentclass{article}
+                 \\usepackage{/home/jeszyman/repos/latex/sty/documentation}
+                 [NO-DEFAULT-PACKAGES]
+                 [NO-PACKAGES]
+                 [EXTRA]
+                 \\begin{document}
+                 \\tableofcontents
+                 \\vspace{1cm}"
+                 ("\\section{%s}" . "\\section{%s}")
+                 ("\\subsection{%s}" . "\\subsection{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
+#+end_src
 
 ******* Prevent blank lines inserted between headers 
 #+begin_src emacs-lisp
@@ -1189,6 +1334,38 @@ Example usage:
 (setq org-confirm-elisp-link-function nil)
 
 #+end_src
+
+******* :plain link type
+:PROPERTIES:
+:ID:       0f1b7abb-233b-4e81-abcb-e424e9b860e4
+:END:
+https://chatgpt.com/c/6dfdb7af-d81c-4096-a89f-5a4b0455fe0f
+https://claude.ai/chat/c775f0eb-fa91-45b4-82d6-e1a0df8b5526
+#+name: org_plain_links
+#+begin_src emacs-lisp
+(defun org-plain-follow (id _)
+  "Follow a plain link as if it were an ID link."
+  (org-id-open id nil))
+
+(org-link-set-parameters "plain"
+                         :follow #'org-plain-follow
+                         :export #'org-plain-export
+                         :store #'org-store-link)
+
+(defun org-plain-export (link description format _)
+  "Export a plain link. Always export as plain text."
+  (cond
+   ((eq format 'html) (or description link))
+   ((eq format 'latex) (or description link))
+   ((eq format 'ascii) (or description link))
+   (t link)))
+
+(provide 'ol-plain)
+
+(with-eval-after-load 'org
+  (require 'ol-plain))
+#+end_src
+https://chatgpt.com/c/672535f5-2328-8005-a44f-c6ca1b71f064
 
 ****** custom-command-error-function
 #+begin_src emacs-lisp
@@ -1342,6 +1519,14 @@ https://github.com/gregsexton/ob-ipython/issues/28
 
 (setq python-indent-guess-indent-offset-verbose nil)
 #+end_src
+****** UTF8
+#+begin_src emacs-lisp
+(set-buffer-file-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(set-language-environment "UTF-8")
+
+#+end_src
+
 ****** Alpha key
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-x a") (lambda () (interactive) (insert "α")))
@@ -1355,35 +1540,24 @@ https://github.com/gregsexton/ob-ipython/issues/28
 (set-default-coding-systems 'utf-8)
 #+end_src
 
-******* :plain link type
-:PROPERTIES:
-:ID:       0f1b7abb-233b-4e81-abcb-e424e9b860e4
-:END:
-https://chatgpt.com/c/6dfdb7af-d81c-4096-a89f-5a4b0455fe0f
-https://claude.ai/chat/c775f0eb-fa91-45b4-82d6-e1a0df8b5526
-#+name: org_plain_links
+
+***** open-chatgtp-query-in-new-browser-window
+
+- Make a ChatGPT query from emacs
+  - https://chatgpt.com/c/d4f18f6b-2f09-4a69-93f1-8f8ab5b39cb0
+    
 #+begin_src emacs-lisp
-(defun org-plain-follow (id _)
-  "Follow a plain link as if it were an ID link."
-  (org-id-open id nil))
+(defun open-chatgpt-query-in-new-browser-window (query &optional use-gpt-4)
+  "Send a QUERY to ChatGPT and open the result in a new browser window.
+With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
+  (interactive "sEnter your ChatGPT query: \nP")
+  (let* ((model (if use-gpt-4 "gpt-4" "gpt-4-turbo"))
+         (url (concat "https://chat.openai.com/?q=" (url-hexify-string query)
+                      "&model=" model)))
+    (start-process "brave-browser" nil "brave-browser" "--new-window" url)))
 
-(org-link-set-parameters "plain"
-                         :follow #'org-plain-follow
-                         :export #'org-plain-export
-                         :store #'org-store-link)
+(global-set-key (kbd "C-c C-g") 'open-chatgpt-query-in-new-browser-window)
 
-(defun org-plain-export (link description format _)
-  "Export a plain link. Always export as plain text."
-  (cond
-   ((eq format 'html) (or description link))
-   ((eq format 'latex) (or description link))
-   ((eq format 'ascii) (or description link))
-   (t link)))
-
-(provide 'ol-plain)
-
-(with-eval-after-load 'org
-  (require 'ol-plain))
 #+end_src
 
 ***** mark-whole-word
@@ -1556,6 +1730,23 @@ https://claude.ai/chat/c775f0eb-fa91-45b4-82d6-e1a0df8b5526
   (setq elpy-rpc-python-command "~/miniconda3/bin/python")
 )
 #+end_src
+- Open Python shells in a new frame
+  - https://chatgpt.com/c/67252540-09c0-8005-8b13-e8cac310cd3a
+  #+begin_src emacs-lisp
+(defun my-elpy-shell-display-buffer-in-new-frame (buffer alist)
+  "Display the Python shell buffer in a new frame."
+  (let ((display-buffer-alist
+         '(("*Python*" display-buffer-pop-up-frame))))
+    (display-buffer buffer alist)))
+
+(advice-add 'elpy-shell-send-statement-and-step :around
+            (lambda (orig-fun &rest args)
+              "Send statement and open the Python buffer in a new frame."
+              (let ((display-buffer-alist
+                     '(("*Python*" . (my-elpy-shell-display-buffer-in-new-frame)))))
+                (apply orig-fun args))))
+
+#+end_src
 ***** exec-path-from-shell
 - Ensures parts of Emacs inherit shell PATH when Emacs is runnng as a daemon
 ****** Use-package
@@ -1700,6 +1891,10 @@ https://claude.ai/chat/c775f0eb-fa91-45b4-82d6-e1a0df8b5526
 (ox-extras-activate '(ignore-headlines))
 
 #+end_src
+***** org-ql
+#+begin_src emacs-lisp
+(use-package org-ql)
+#+end_src
 
 ***** org-ref
 ****** [[id:50da582a-7d75-4646-9a94-638244760b4a][Package notes]]
@@ -1746,6 +1941,21 @@ https://claude.ai/chat/c775f0eb-fa91-45b4-82d6-e1a0df8b5526
       org-ref-insert-label-function 'org-ref-insert-label-link
       org-ref-insert-ref-function 'org-ref-insert-ref-link
       org-ref-cite-onclick-function (lambda (_) (org-ref-citation-hydra/body)))
+
+#+end_src
+****** Show citation info in minibuffer
+https://github.com/jkitchin/org-ref/issues/938
+#+begin_src emacs-lisp
+(defun org-ref-link-message (&optional a1 a2 a3)
+  (when (and (eq major-mode 'org-mode)
+   (eq (get-text-property (point) 'help-echo) 'org-ref-cite-tooltip))
+  (display-local-help)))
+
+(advice-add 'right-char :after 'org-ref-link-message)
+(advice-add 'left-char :after 'org-ref-link-message)
+(advice-add 'evil-forward-char :after 'org-ref-link-message)
+(advice-add 'evil-backward-char :after 'org-ref-link-message)
+
 
 #+end_src
 
@@ -1805,7 +2015,6 @@ https://claude.ai/chat/c775f0eb-fa91-45b4-82d6-e1a0df8b5526
 
 (add-hook 'tree-sitter-mode-hook #'disable-tree-sitter-for-org-mode)
 #+end_src
-
 
 ***** vertico
 ****** Use-package
@@ -1964,15 +2173,12 @@ https://claude.ai/chat/c775f0eb-fa91-45b4-82d6-e1a0df8b5526
 #+begin_src emacs-lisp
 (use-package yasnippet
   :init
+  ;; Dynamically add subdirectories in ~/.emacs.d/snippets to yas-snippet-dirs
   (setq yas-snippet-dirs
-	'("~/.emacs.d/private_yasnippets"
-	  "~/.emacs.d/public_yasnippets"))
-  :config
-  (yas-global-mode 1) ; Enabled everywhere
+        (directory-files "~/.emacs.d/snippets" t "^[^.]+")) ; Directories only, no append needed
+   :config
+  (yas-global-mode 1) ; Enable yasnippet globally
   (define-key yas-minor-mode-map (kbd "<C-tab>") 'yas-expand))
-
-(when (file-exists-p "~/repos/latex/latex_snippets")
-  (add-to-list 'yas-snippet-dirs "~/repos/latex/latex_snippets"))
 
 #+end_src
 
@@ -2086,91 +2292,50 @@ ls
 	- Each snippet resides under it's own terminal org mode header. The header consists of only the snippet keyword and tags including the :yas: tag (i.e. * <SNIPPET KEYWORD> :yas: )
 	- The :yas: tag is reserved exclusively for yas block headers and does not have tag inheritance.
       - Snippets are stored in the main org repository under the directory./snippets which is symlinked to .emacs.d. Snippets are therefore under org version control.
-
-** Google cloud
-- https://superuser.com/questions/691189/totally-unable-to-switch-google-accounts
+** Install and setup
 #+begin_src bash
-cd /tmp
-curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-478.0.0-linux-x86_64.tar.gz
+sudo apt install ttf-mscorefonts-installer
 
-tar -xf google-cloud-cli-478.0.0-linux-x86_64.tar.gz
-
-./google-cloud-sdk/install.sh
-
-./google-cloud-sdk/bin/gcloud init
-
-./google-cloud-sdk/bin/gcloud compute ssh <USERNAME>@<INSTANCE_NAME> --zone <ZONE> --ssh-key-file ~/.ssh/id_rsa
-
-./google-cloud-sdk/bin/gcloud compute ssh jeszyman@instance-20240601-125838 --zone us-central1-a --ssh-key-file ~/.ssh/id_rsa
-
-sudo mkdir -p /usr/local/gcloud
-sudo mv /tmp/google-cloud-sdk /usr/local/gcloud/
-
-echo $PATH
-
-gcloud compute ssh jeszyman@instance-20240601-125838 --zone us-central1-a
+sudo fc-cache -fv
 #+end_src
+** Org-mode guide
+*** Clock table
+ 
+#+BEGIN: clocktable :scope file :maxlevel 6 :match "tagin" :tstart "<2024-10-01>" :tend "<2024-10-03>" :fileskip0 t
+#+CAPTION: Clock summary at [2024-10-14 Mon 12:14]
+| Headline                   | Time   |      |      |      |      |
+|----------------------------+--------+------+------+------+------|
+| *Total time*               | *0:16* |      |      |      |      |
+|----------------------------+--------+------+------+------+------|
+| Basecamp                   | 0:16   |      |      |      |      |
+| \_  Org-mode guide         |        | 0:16 |      |      |      |
+| \_    Clock table          |        |      | 0:16 |      |      |
+| \_      Clock table events |        |      |      | 0:16 |      |
+| \_        Included event 1 |        |      |      |      | 0:08 |
+| \_        Included event 2 |        |      |      |      | 0:08 |
+#+END:
+
+**** Clock table events
+***** Included event 1 :tagin:
+:LOGBOOK:
+CLOCK: [2024-10-01 Tue 12:00]--[2024-10-01 Tue 12:08] =>  0:08
+:END:
+***** Included event 2 :tagin:
+:LOGBOOK:
+CLOCK: [2024-10-02 Wed 13:00]--[2024-10-02 Wed 13:08] =>  0:08
+:END:
+***** Excluded event 1 :tagout: 
+:LOGBOOK:
+CLOCK: [2024-10-02 Wed 12:00]--[2024-10-02 Wed 12:08] =>  0:08
+:END:
+
 
 ** lib
 :PROPERTIES:
 :ID:       861fb855-7bac-4601-87b9-a5bb7a6db293
 :END:
 *** Shell
-**** Conda functions
-:PROPERTIES:
-:header-args:bash: :tangle ./lib/conda_functions.sh
-:ID:       fb5f258b-cf75-46d1-9196-adc80d1ff6ff
-:END:
-***** [[id:b16d0202-8d35-472b-b538-87a7d6a6cef7][Conda and Miniconda]]
-***** conda_update()
-:PROPERTIES:
-:ID:       22cd3dad-af6a-42d8-8d82-4c1da9d7a7b9
-:END:
-#+begin_src bash
-
-function conda_update() {
-    if [[ "$1" =~ ^(-h|--help)$ ]] || [[ -z "$1" ]]; then
-        cat <<EOF
-Usage: conda_update <ENV YAML>
-Updates a conda environment yaml file using mamba
-EOF
-        return
-    fi
-    local file="$1"
-    source /opt/miniconda3/etc/profile.d/conda.sh
-    conda activate base || { echo "Failed to activate base conda environment."; return; }
-    if command -v mamba >/dev/null 2>&1; then
-        mamba env update --file "$file" && echo "Environment updated successfully with $file!"
-    else
-        echo "Mamba is not installed. Install mamba or use conda instead."
-    fi
-}
-
-function conda_update() {
-    if [[ "$1" =~ ^(-h|--help)$ ]] || [[ -z "$1" ]]; then
-        cat <<EOF
-Usage: conda_update <ENV YAML> [ENV NAME]
-Updates a conda environment yaml file using mamba. Optionally updates a specific named environment.
-EOF
-        return
-    fi
-    local file="$1"
-    local env_name="${2:-}" # If $2 is not provided, env_name will be empty
-    source /opt/miniconda3/etc/profile.d/conda.sh
-    conda activate base || { echo "Failed to activate base conda environment."; return; }
-    if command -v mamba >/dev/null 2>&1; then
-        if [[ -n "$env_name" ]]; then
-            mamba env update -n "$env_name" --file "$file" && echo "Environment '$env_name' updated successfully with $file!"
-        else
-            mamba env update --file "$file" && echo "Environment updated successfully with $file!"
-        fi
-    else
-        echo "Mamba is not installed. Install mamba or use conda instead."
-    fi
-    conda deactivate
-}
-
-#+end_src
+https://chatgpt.com/c/66f5b550-66f0-8005-b5a1-733d20a01aed
 **** General shell functions
 :PROPERTIES:
 :header-args: :tangle ./lib/basecamp_function.sh :comments org :padline no
@@ -2252,7 +2417,6 @@ volume-down() {
     fi
 }
 #+end_src
-***** Git
 ***** Emacs and emacs daemon
 ****** emacs-start()
 #+begin_src bash
@@ -2336,6 +2500,13 @@ EOF
 }
 #+end_src
 ****** emacs-save()
+***** ubuntu-settings()
+#+begin_src bash
+ubuntu-settings(){
+    env XDG_CURRENT_DESKTOP=GNOME gnome-control-center sound & exit
+}
+#+end_src
+
 ***** check_mnt() Check if mount is active
 :PROPERTIES:
 :ID:       c98f8d3a-bdf1-4c91-8ca2-7d4743dace59
@@ -2976,6 +3147,34 @@ EOF
 }
 
 #+end_src
+***** dir_size
+#+begin_src bash
+dir_size() {
+    if [[ "$1" == "-h" || "$1" == "--help" || $# -ne 1 ]]; then
+        cat <<EOF
+
+ Usage: ${FUNCNAME[0]} <path_to_directory>
+
+ Prints the size of the specified directory, switching between MB and GB as appropriate.
+
+ Example:
+   dir_size /tmp
+EOF
+        return
+    fi
+
+    # Calculate size, suppressing errors
+    size=$(du -s -B1 -L "$1" 2>/dev/null | cut -f1)    
+
+    # If size is greater than or equal to 1 GB, show in GB, otherwise in MB
+    if [ "$size" -ge $((1024**3)) ]; then
+        du -sh --block-size=GB -L "$1"
+    else
+        du -sh --block-size=MB -L "$1"
+    fi
+}
+#+end_src
+
 ***** file_size()
 :PROPERTIES:
 :ID:       0ba47641-2a7f-4ec3-b6f9-e3abbdb49864
@@ -3039,6 +3238,61 @@ EOF
 :header-args: :tangle no
 :END:
 alias disksize="du -sh -- * | sort -h"
+**** Conda functions
+:PROPERTIES:
+:header-args:bash: :tangle ./lib/conda_functions.sh
+:ID:       fb5f258b-cf75-46d1-9196-adc80d1ff6ff
+:END:
+***** [[id:b16d0202-8d35-472b-b538-87a7d6a6cef7][Conda and Miniconda]]
+***** conda_update()
+:PROPERTIES:
+:ID:       22cd3dad-af6a-42d8-8d82-4c1da9d7a7b9
+:END:
+#+begin_src bash
+
+function conda_update() {
+    if [[ "$1" =~ ^(-h|--help)$ ]] || [[ -z "$1" ]]; then
+        cat <<EOF
+Usage: conda_update <ENV YAML>
+Updates a conda environment yaml file using mamba
+EOF
+        return
+    fi
+    local file="$1"
+    source /opt/miniconda3/etc/profile.d/conda.sh
+    conda activate base || { echo "Failed to activate base conda environment."; return; }
+    if command -v mamba >/dev/null 2>&1; then
+        mamba env update --file "$file" && echo "Environment updated successfully with $file!"
+    else
+        echo "Mamba is not installed. Install mamba or use conda instead."
+    fi
+}
+
+function conda_update() {
+    if [[ "$1" =~ ^(-h|--help)$ ]] || [[ -z "$1" ]]; then
+        cat <<EOF
+Usage: conda_update <ENV YAML> [ENV NAME]
+Updates a conda environment yaml file using mamba. Optionally updates a specific named environment.
+EOF
+        return
+    fi
+    local file="$1"
+    local env_name="${2:-}" # If $2 is not provided, env_name will be empty
+    source /opt/miniconda3/etc/profile.d/conda.sh
+    conda activate base || { echo "Failed to activate base conda environment."; return; }
+    if command -v mamba >/dev/null 2>&1; then
+        if [[ -n "$env_name" ]]; then
+            mamba env update -n "$env_name" --file "$file" && echo "Environment '$env_name' updated successfully with $file!"
+        else
+            mamba env update --file "$file" && echo "Environment updated successfully with $file!"
+        fi
+    else
+        echo "Mamba is not installed. Install mamba or use conda instead."
+    fi
+    conda deactivate
+}
+
+#+end_src
 **** Snakemake
 :PROPERTIES:
 :header-args: :tangle ./lib/snakemake_funtions.sh :tangle-mode (identity #o555) :mkdirp yes :noweb yes :comments org
@@ -3307,6 +3561,33 @@ EOF
 :header-args: :tangle ./lib/lisp_functions.el :tangle-mode (identity #o555) :mkdirp yes :noweb yes :comments org
 :ID:       2fc1a6f1-093c-4250-a905-1bf42b7b9eee
 :END:
+**** run-latex-at-point
+:PROPERTIES:
+:ID:       3975a173-ac71-4c02-b032-ef215329ca59
+:END:
+- https://chatgpt.com/c/66f5c68c-8c4c-8005-b7c6-14665eadb848
+- https://chatgpt.com/c/66f95df4-0dfc-8005-9e7b-c3f15c1ca924
+- [[id:9fa465f4-68f7-45c5-966e-80084e2c8a05][emacs_export_header_to_latex.py]]  
+#+begin_src emacs-lisp
+(defun run-latex-at-point ()
+  "Extract the ID from the Org properties and run emacs-save and emacs-latex for the current file."
+  (interactive)
+  (let* ((id (org-entry-get (point) "ID"))
+         (current-file (buffer-file-name))
+         (output-buffer "*Latex Output*"))
+    (if (not id)
+        (message "No ID property found!")
+      (with-current-buffer (get-buffer-create output-buffer)
+        (erase-buffer))
+      (let ((command (concat "source ~/repos/basecamp/lib/basecamp_function.sh && emacs-save && /usr/bin/python3 ~/repos/latex/scripts/emacs_export_header_to_latex.py --org_file \""
+                             current-file "\" --node_id \"" id "\"")))
+        ;; Start the process without a process name
+        (start-process-shell-command "latex-process" output-buffer command)
+        ;; Display the output buffer
+        (pop-to-buffer output-buffer)))))
+
+#+end_src
+
 **** export-org-table-by-name-to-csv
 #+begin_src emacs-lisp
 (defun export-org-table-by-name-to-csv (org-file table-name csv-file)
@@ -3328,17 +3609,21 @@ EOF
 hard to get the touch to work here
 https://chat.openai.com/c/22b1d5c5-5d9b-4ced-98cf-860f7eb493c8
 ** Processes
-:PROPERTIES:
-:ID:       9ee1db4f-9550-4aa7-a627-e98dcb84dab8
-:END:
+
+*** Flat
+**** Use phone on computer
+[[https://chatgpt.com/c/67192b0b-18b4-8005-97aa-e1f960b69a42][chatgtp]]
+scrcpy process
+adb connect 192.168.1.12:5555
+
 *** [[id:608c6f89-a4da-483c-bb4d-818c54a37675][Computer processes]]
-:PROPERTIES:
-:ID:       10b82b6a-a7ad-480a-92b2-7812a7b632d0
-:END:
 ** Information Science / Data Science :career:hierarchy:
 :PROPERTIES:
 :ID:       39F11977-BE11-47CF-98B1-14CE6D9B97C4
 :END:
+https://www.reddit.com/r/programming/comments/1fl9c3f/why_csv_is_still_king/
+https://www.reddit.com/r/datascience/comments/1ex40hv/how_would_you_update_the_2012_article/
+https://www.reddit.com/r/datascience/comments/1es5zjh/what_new_exciting_things_are_out_there/
 https://www.reddit.com/r/datascience/comments/18nxz71/what_are_some_of_the_most_confidently_incorrect/
 https://www.reddit.com/r/datascience/comments/17zshma/what_do_you_do_with_highly_correlated_features/
 https://rosalind.info/problems/locations/
@@ -4272,7 +4557,12 @@ algorithm properties
   - http://mlwhiz.com/blog/2017/03/26/top_data_science_resources_on_the_internet_right_now/
 - http://www.datacarpentry.org/
 - http://courses.csail.mit.edu/18.337/2015/docs/50YearsDataScience.pdf
-
+** Graph theory tools
+:PROPERTIES:
+:ID:       4a5444c9-918d-4651-9def-bbcc26f9016e
+:END:
+- [[f6f303fe-70ba-4e15-99e5-5f881b3b0a45][f6f303fe-70ba-4e15-99e5-5f881b3b0a45]]
+- [[http://vlado.fmf.uni-lj.si/pub/networks/pajek/][Pajek]]
 ** Machine Learning
 :PROPERTIES:
 :ID:       c013714a-c4f5-4c3b-9eac-94bfc3ded1ab
@@ -5158,17 +5448,47 @@ ShowSidebar=false
 :ID:       A91BF233-F14E-4E91-A1E9-B39802A9ED2D
 :CREATED:  [2019-07-03 Wed 08:13]
 :END:
-https://superuser.com/questions/691189/totally-unable-to-switch-google-accounts
-#+begin_src bash
-sudo apt install ttf-mscorefonts-installer
 
-sudo fc-cache -fv
-#+end_src
+
 *** Software
 :PROPERTIES:
 :ID:       9E19E626-9D6C-4296-BEDB-80033A846CF4
 :END:
-- https://claude.ai/chats
+**** Mermaid
+#+begin_src bash
+sudo npm install -g @mermaid-js/mermaid-cli
+
+npx puppeteer browsers install chrome
+
+#+end_src
+
+[[id:32dc9158-01f6-4303-b4eb-3901fe98f8d8][Declare Babel languages]]
+
+#+begin_src emacs-lisp
+M-x package-install RET ob-mermaid RET
+#+end_src
+
+https://github.com/mermaid-js/mermaid-cli/issues/588
+
+https://jojozhuang.github.io/tutorial/mermaid-cheat-sheet/
+
+#+BEGIN_SRC mermaid :file /tmp/output.png :tangle /tmp/test.mmd
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#ffffff'}}}%%
+flowchart TD
+  A[Hard e2dge] --> B(Round edge)
+  B --> C{Decision}
+  C -->|Yes| D[Result 1]
+  C -->|No| E[Result 2]
+#+END_SRC
+
+#+RESULTS:
+[[file:/tmp/output.png]]
+
+**** ChatGTP
+https://www.reddit.com/r/ChatGPT/comments/1g3hz9i/whats_one_chatgpt_tip_you_wish_youd_known_sooner/
+
+https://www.reddit.com/r/ChatGPT/comments/1g08jca/how_do_get_it_to_stop_the_meaningless_blather/
+
 **** Anki
 :PROPERTIES:
 :ID:       0b25f799-7576-48d1-956d-778598ed5de5
@@ -5237,11 +5557,13 @@ hostname --long
 :PROPERTIES:
 :ID:       9d48f3fb-3d70-4844-aeca-4f22d2f38ccb
 :END:
-https://unixpapa.com/js/testkey.html
+- https://unixpapa.com/js/testkey.html
 ***** Advanced package tool (APT)
 :PROPERTIES:
 :ID:       f36a370c-c4ba-4ddc-81b7-79c12b601255
 :END:
+sudo -E bash -c 'export DEBIAN_FRONTEND=noninteractive && yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade > /tmp/log.log 2>&1; if grep -q "0 upgraded, 0 newly installed" /tmp/log.log; then echo "System is already up to date."; else tail -f /tmp/log.log; fi'
+https://chatgpt.com/c/670c0b1f-11a4-8005-baa2-71f9d595d568
 - processes
   - https://askubuntu.com/questions/187888/what-is-the-correct-way-to-completely-remove-an-application
   - install deb: sudo apt install <.DEB>
@@ -5550,17 +5872,16 @@ dependencies:
 ****** Basecamp conda environment
 :PROPERTIES:
 :ID:       76a6e083-f569-42a9-b551-4b9ccc770834
-:header-args:yaml: :tangle ./basecamp_env.yaml :comments org
+:header-args:yaml: :tangle ./basecamp_env.yaml :comments no
 :END:
 ******* [[file:basecamp_env.yaml][yaml]]
-******* Jeff Szymanski's basecamp conda environment.
-#+begin_src yaml
-#+end_src
 ******* Preamble and channels
 :PROPERTIES:
 :ID:       abb2816b-257f-4af7-803d-33ae295919c1
 :END:
-#+begin_src yaml
+#+begin_src yaml :use-heading yes :comments org
+
+# Jeff Szymanski's basecamp conda environment. 
 name: basecamp
 
 channels:
@@ -5588,7 +5909,8 @@ dependencies:
   - pyarrow=15.0                       # Provides bindings to the Apache Arrow #
   - python=3.10
   - scikit-learn=1.3                         # Python machine learning modules #
-  - snakemake                               # Python workflow management system #
+  - snakemake                              # Python workflow management system #
+  - statsmodels                        # A stats package with causal inference #
 
 #+end_src
 
@@ -5610,6 +5932,7 @@ dependencies:
   - r-ggrepel                                # Text and label geoms that repel #
   - r-ggridges                                               # Ridgeline plots #
   - r-ggsci                   # Ggplot2 color palettes for scientific journals #
+  - r-igraph                              # Network analysis and visualization # 
   - r-kableextra       # Builds HTML or LaTeX tables knitr and magrittr piping #
   - r-lintr                                                     # Linting tool #
   - r-magick                # Bindings to ImageMagick image processing library #
@@ -7405,11 +7728,6 @@ https://askubuntu.com/questions/1196914/gnome-screenshot-cant-copy-to-clipboard-
 :END:
 - [[https://www.google.com/search?q=gnome-termial+default+text+size][google:gnome-termial default text size]]
 - gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
-***** Google
-:PROPERTIES:
-:ID:       bc60974d-3e95-4d60-8240-a3a2a7b5d36d
-:END:
-https://www.freecodecamp.org/news/use-google-search-tips/
 ***** Google chrome
 :PROPERTIES:
 :ID:       eb9edbdb-b989-4cb3-8373-fd2603303f3a
@@ -7459,6 +7777,89 @@ CLOCK: [2017-11-10 Fri 10:45]--[2017-11-10 Fri 11:31] =>  0:46
   - attributes
     - [[http://www.graphviz.org/doc/info/attrs.html#a:rankdir][Node, Edge and Graph Attributes]]
     - [[https://hackage.haskell.org/package/graphviz-2999.19.0.0/docs/Data-GraphViz-Attributes.html][attributes and values from the haskell graphviz package]]
+- [[file:~/repos/mpnst/imgs/pipeline.pdf][pipeline graphic]]
+  #+BEGIN_SRC dot :file ./imgs/pipeline.pdf :cmdline -Tpdf
+digraph {
+// syntax notes
+//  no . or - allowed, instead use CamelCase
+//
+////////////////////////////////////////////////////////////////////
+// parameters
+ rankdir=LR;   
+ graph [fontsize=14, fontname="Verdana", compound=true, overlap=false];
+ node [
+ fontsize=12
+ shape=box
+ fontname=Helvetica];
+////////////////////////////////////////////////////////////////////
+// nodes
+/// inputs and outputs
+multiplexFastq [fillcolor="green",style="filled",label="Multiplexed \n Fastqs"]
+nciFastq [fillcolor="green",style="filled",label="NCI Fastqs"]
+extractedFastq [fillcolor="green",style="filled",label="De-multiplexed \n Barcode-extracted \n Fastqs"]
+cfdnaWESBam [label="cfDNA WES Alignments"]
+cfdnaWGSBam 
+tumorWGSBam 
+leukocyteWGSBam 
+tumorWESBam 
+fragFilterBam 
+downsampledBam 
+wig 
+tumorFraction 
+cfDNADummy [shap=point style=invis]
+///
+/// processes
+demultiplexRenameExtract [fillcolor="green",style="filled",label="Demultiplex, \n Rename \n and Extract \n demultiplex.sh"]
+bamQc [fillcolor="yellow",style="filled",label="Bam File QC \n bam-qc.sh"]
+fragFilter [fillcolor="yellow",style="filled"]
+readCounting [label="Read Counting \n bam-to-wig.sh"]
+alignment [fillcolor="yellow",style="filled"]
+fastqQc [fillcolor="green",style="filled"]
+//
+////////////////////////////////////////////////////////////////////
+// clusters
+subgraph cluster_washu {
+       label = "WashU CAPP-seq Processing"
+       multiplexFastq
+       demultiplexRenameExtract
+}
+subgraph cluster_cfDNA {
+       label = "cfDNA for Fragment Filtering"
+       cfdnaWGSBam
+       cfDNADummy 
+       cfdnaWESBam
+}
+subgraph cluster_genomicDNA {
+       label = "Genomic DNA"
+       genomicDNADummy [shap=point style=invis]
+       tumorWGSBam
+       leukocyteWGSBam
+       tumorWESBam
+}
+//
+////////////////////////////////////////////////////////////////////
+// node format
+multiplexFastq,extractedFastq,nciFastq,cfdnaWESBam,cfdnaWGSBam,tumorWGSBam,leukocyteWGSBam,tumorWESBam,fragFilterBam,downsampledBam,wig,tumorFraction [shape=circle]
+//
+////////////////////////////////////////////////////////////////////
+// edges
+ multiplexFastq -> demultiplexRenameExtract -> extractedFastq -> alignment
+ multiplexFastq -> fastqQc
+ extractedFastq -> fastqQc   
+ nciFastq -> alignment
+ nciFastq -> fastqQc
+ alignment -> cfDNADummy [lhead=cluster_cfDNA]         
+ alignment -> genomicDNADummy [lhead=cluster_genomicDNA]
+ cfDNADummy -> fragFilter [ltail=cluster_cfDNA]
+ cfDNADummy -> bamQc [ltail=cluster_cfDNA]
+ genomicDNADummy -> downsample [ltail=cluster_genomicDNA] 
+ genomicDNADummy -> bamQc [ltail=cluster_genomicDNA] 
+ fragFilter -> fragFilterBam
+ fragFilterBam -> fragmentAnalysis
+ cfDNADummy -> fragmentAnalysis [ltail=cluster_cfDNA]
+ fragFilterBam -> downsample -> downsampledBam -> readCounting -> wig -> ichor -> tumorFraction 
+}
+#+END_SRC
 - applications
   [[file:/tmp/entity-relationship-diagram.pdf]]
   #+BEGIN_SRC dot :dir ~/data/imgs/graphviz-examples :file /tmp/entity-relationship-diagram.pdf :cmdline -Tpdf
@@ -7602,10 +8003,41 @@ specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]
 :PROPERTIES:
 :ID:       9b81018a-f437-4a56-b4c4-7ee370943b5d
 :END:
+- Setting windows to precise placement
+  - https://chatgpt.com/c/670becdc-2a60-8005-bfe2-d6ba146443e3
+#+begin_src bash :tangle /tmp/test.sh
+#!/bin/bash
+
+# Switch to workspace 9
+i3-msg workspace 9
+
+# Open Gmail in Brave browser
+brave-browser --new-window "https://mail.google.com" &
+
+# Wait for the window to open
+sleep 2
+
+# Split horizontally (tiling split between two windows)
+i3-msg 'split h'
+
+# Open Amazon in a new Brave browser window
+brave-browser --new-window "https://www.amazon.com" &
+
+# Wait for the window to open
+sleep 2
+
+# Focus on Gmail (this ensures Gmail is the window being resized)
+i3-msg '[title="Gmail"] focus'
+
+# Resize Gmail to take 2/3 of the screen
+i3-msg 'resize set 66 ppt'
+#+end_src
+
+- clear a popup window the CTRL + SHIFT + Q
 - https://ultrabug.github.io/py3status/user-guide/modules/#pomodoro
 - https://github.com/ultrabug/py3status?tab=readme-ov-file
 - https://github.com/raulpenate/.dotfiles/blob/main/.config/i3/config
-- [[./basecamp.org_20220526_081510.png]]
+- [[./resources/images/basecamp.org_20220526_081510.png][i3 keyboard shortcuts]]
 - https://www.reddit.com/r/i3wm/comments/808685/create_your_own_i3_layouts_that_are_actually/
 - https://i3wm.org/docs/userguide.html#_scratchpad
 - https://www.reddit.com/r/i3wm/comments/95z285/opening_all_terminal_applications_directly_from/
@@ -7804,6 +8236,7 @@ CLOCK: [2021-11-09 Tue 13:19]--[2021-11-09 Tue 13:49] =>  0:30
 :PROPERTIES:
 :ID:       a5717be7-afe9-4db2-8b4d-b797c7631466
 :END:
+https://www.orgzlyrevived.com/
 - see [[id:d7d54139-64d0-4cfe-ab3a-879b3617b226][Org-mode]]
 - [[https://www.orgzly.com/docs][documentation]]
 - https://www.reddit.com/r/orgmode/comments/drzptk/orgzly_adds_webdav_support/
@@ -9149,6 +9582,12 @@ CLOCK: [2019-03-04 Mon 14:59]--[2019-03-04 Mon 15:17] =>  0:18
     - Allows custom file location at [[file:~/data/library/]]
 - Performance- manual entry lag
   - [[https://forums.zotero.org/discussion/16733/manual-citation-entry-clunky][No answers, but question asked]]
+**** Google
+:PROPERTIES:
+:ID:       bc60974d-3e95-4d60-8240-a3a2a7b5d36d
+:END:
+https://www.freecodecamp.org/news/use-google-search-tips/
+https://superuser.com/questions/691189/totally-unable-to-switch-google-accounts
 **** Cloud computing
 :PROPERTIES:
 :ID:       6422f98c-0da2-4eac-afd5-282900bfc0db
@@ -9225,10 +9664,6 @@ done
 :PROPERTIES:
 :ID:       40a77a9b-24f3-44a3-97bf-fbf64d4e43e7
 :END:
-  - - globus
-    - [[https://docs.globus.org/cli/][cli]]
-      - [[https://docs.globus.org/cli/reference/][documentation]]
-        - https://docs.globus.org/how-to/globus-connect-personal-linux/#globus-connect-personal-cli
 
 ***** Version Control
 :PROPERTIES:
@@ -9638,6 +10073,7 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :CREATED:  [2020-01-09 Thu 15:46]
 :ID:       cd560390-aa1e-4c9e-8317-08610e5de42a
 :END:
+https://www.reddit.com/r/commandline/comments/1epjppl/10_cli_tools_that_made_the_biggest_impact_on/
 ******** Processes- see [[id:b33a7727-70b2-4743-a8cf-025a0803c3cc][Ubuntu Processes]]
 :PROPERTIES:
 :ID:       523b0a71-a7b3-48af-be83-35f64616f844
@@ -10247,6 +10683,38 @@ https://abseil.io/resources/swe-book
 :PROPERTIES:
 :ID:       a49abc44-8e71-4a1a-bd35-a77849427c94
 :END:
+- https://www.jamescherti.com/essential-emacs-packages/
+- https://github.com/minad/corfu  
+- https://github.com/LaurenceWarne/reddit-emacs-tips-n-tricks/blob/master/out.md
+- https://github.com/oantolin/embark
+- https://github.com/rougier/notebook-mode
+- https://github.com/kickingvegas/casual
+- https://github.com/rougier/nano-emacs
+- https://sachachua.com/dotemacs/index.html#babel-init
+- https://github.com/konrad1977/punch-line
+https://chatgpt.com/c/66f70956-8184-8005-b6ff-6c77e19ddcde
+https://claude.ai/chat/5c14d313-143c-4cd9-882a-0d59aa67c09e
+
+#+begin_src emacs-lisp
+(defun paste-without-line-breaks ()
+  "Paste the clipboard content without line breaks."
+  (interactive)
+  (let ((clipboard-content (current-kill 0)))
+    (insert (replace-regexp-in-string "\n" " " clipboard-content))))
+
+;; Bind to C-c v (you can change this to any key combination you prefer)
+(global-set-key (kbd "C-c v") 'paste-without-line-breaks)
+#+end_src
+
+https://www.reddit.com/r/emacs/comments/1fw7jbb/karthink_emacs_latex/
+https://github.com/skuro/plantuml-mode
+https://www.reddit.com/r/emacs/comments/1feaf37/minimal_emacsd_emacs_starter_kit_with_better/
+https://www.youtube.com/@jamesnvc000/videos?app=desktop
+https://github.com/pprevos/emacs-writing-studio
+https://www.reddit.com/r/emacs/comments/1ext5f0/help_me_make_mx_shell_better_by_making_comint/
+https://config.phundrak.com/emacs/
+https://protesilaos.com/codelog/2023-06-03-emacs-spacious-padding/
+https://www.reddit.com/r/emacs/comments/1e6qhpf/announcing_consultomni_a_powerful_omnisearch_and/
 https://lambdaland.org/posts/2024-05-30_top_emacs_packages/
 https://github.com/armindarvish/consult-web
 https://lambdaland.org/posts/2024-05-30_top_emacs_packages/
@@ -10519,6 +10987,31 @@ https://www.reddit.com/r/emacs/comments/18gjtk8/your_favoritemost_usefull_modeli
 :PROPERTIES:
 :ID:       e0089b9b-694c-4ffb-b105-732b54451f92
 :END:
+
+#+begin_src emacs-lisp
+
+;; Load Leuven theme
+(load-theme 'leuven t)
+
+;; Customize the highlighted line color for readability
+(custom-set-faces
+ '(hl-line ((t (:background "#d7d7ff"))))  ;; Choose a soft, readable color
+ '(region ((t (:background "#d7d7ff" :foreground "black")))))  ;; Adjust selected region color
+
+
+(custom-set-faces
+ '(hl-line ((t (:background "#b0c4de"))))  ;; A medium slate blue for better contrast
+ '(region ((t (:background "#b0c4de" :foreground "black")))))  ;; Adjust selected region color
+
+;; (custom-set-faces
+;;  '(hl-line ((t (:background "#a9a9a9"))))  ;; Darker gray for high contrast
+;;  '(region ((t (:background "#a9a9a9" :foreground "black")))))  ;; Adjust selected region color
+
+(custom-set-faces
+ '(hl-line ((t (:background "#3f444a"))))  ;; Darker background for high contrast similar to minibuffer
+ '(region ((t (:background "#3f444a" :foreground "white")))))  ;; Match region highlight with minibuffer contrast
+
+#+end_src
 - https://github.com/doomemacs/themes/tree/screenshots
 #+begin_src emacs-lisp
 
@@ -11227,6 +11720,100 @@ active process."
                       (process-list)))))
   (process-send-region tws-process-target beg end))
 #+end_src
+***** System checker
+#+begin_src emacs-lisp
+(defun my-ess-shell-display-buffer-in-new-frame (buffer alist)
+  "Display the R shell buffer in a new frame."
+  (let ((display-buffer-alist
+         '(("*R*" display-buffer-pop-up-frame))))
+    (display-buffer buffer alist)))
+
+(advice-add 'ess-eval-region :around
+            (lambda (orig-fun &rest args)
+              "Send region and open the R buffer in a new frame."
+              (let ((display-buffer-alist
+                     '(("*R*" . (my-ess-shell-display-buffer-in-new-frame)))))
+                (apply orig-fun args))))
+
+(advice-add 'ess-eval-line :around
+            (lambda (orig-fun &rest args)
+              "Send line and open the R buffer in a new frame."
+              (let ((display-buffer-alist
+                     '(("*R*" . (my-ess-shell-display-buffer-in-new-frame)))))
+                (apply orig-fun args))))
+
+(advice-add 'ess-eval-paragraph :around
+            (lambda (orig-fun &rest args)
+              "Send paragraph and open the R buffer in a new frame."
+              (let ((display-buffer-alist
+                     '(("*R*" . (my-ess-shell-display-buffer-in-new-frame)))))
+                (apply orig-fun args))))
+#+end_src
+
+#+begin_src emacs-lisp
+(defun my-ess-shell-display-buffer-in-new-frame-and-return (buffer alist)
+  "Display the R shell buffer in a new frame, then return to the original buffer."
+  (let ((orig-buffer (current-buffer)))
+    (let ((display-buffer-alist
+           '(("*R*" display-buffer-pop-up-frame))))
+      (display-buffer buffer alist))
+    (select-frame-set-input-focus (window-frame (get-buffer-window orig-buffer)))))
+
+(advice-add 'ess-eval-region :around
+            (lambda (orig-fun &rest args)
+              "Send region to R, open the R buffer in a new frame, and return to the original buffer."
+              (let ((display-buffer-alist
+                     '(("*R*" . (my-ess-shell-display-buffer-in-new-frame-and-return)))))
+                (apply orig-fun args))))
+
+(advice-add 'ess-eval-line :around
+            (lambda (orig-fun &rest args)
+              "Send line to R, open the R buffer in a new frame, and return to the original buffer."
+              (let ((display-buffer-alist
+                     '(("*R*" . (my-ess-shell-display-buffer-in-new-frame-and-return)))))
+                (apply orig-fun args))))
+
+(advice-add 'ess-eval-paragraph :around
+            (lambda (orig-fun &rest args)
+              "Send paragraph to R, open the R buffer in a new frame, and return to the original buffer."
+              (let ((display-buffer-alist
+                     '(("*R*" . (my-ess-shell-display-buffer-in-new-frame-and-return)))))
+                (apply orig-fun args))))
+#+end_src
+
+
+https://claude.ai/chat/fdc4825f-2695-4349-9c6a-b41313905a07
+
+https://chatgpt.com/c/6722326f-2360-8005-bb87-58ed4372e525
+#+begin_src emacs-lisp
+(defun create-or-update-test-buffer-in-new-frame-and-return ()
+  "Create or update a buffer named '*Test Buffer*' in a new frame, insert 'THIS IS A TEST', then return focus to the original buffer."
+  (let ((original-frame (selected-frame))
+        (original-buffer (current-buffer))
+        (buffer (get-buffer-create "*Test Buffer*")))
+    ;; Create a new frame if the buffer does not already exist in another frame
+    (unless (get-buffer-window buffer t)
+      (select-frame (make-frame-command)))
+    ;; Switch to the target buffer and insert/update content
+    (switch-to-buffer buffer)
+    (erase-buffer) ;; Clear the buffer before inserting new content
+    (insert "THIS IS A TEST NEW")
+    (insert (format "\n\nYasnippets are stored at: \n%s\n" yas-snippet-dirs))
+
+;; Check if Yasnippet directories are readable and report back
+    (dolist (dir yas-snippet-dirs)
+      (if (file-readable-p dir)
+          (insert (format "\nDirectory '%s' is readable.\n" dir))
+        (insert (format "Directory '%s' is NOT readable.\n" dir))))
+    
+    ;; Return focus to the original frame and buffer
+    (select-frame-set-input-focus original-frame)
+    (switch-to-buffer original-buffer)))
+
+(create-or-update-test-buffer-in-new-frame-and-return)
+
+#+end_src
+
 ***** Emacs Packages
 :PROPERTIES:
 :ID:       60c3beed-f228-4707-9033-4cce38ca5b00
@@ -11489,6 +12076,12 @@ https://github.com/abo-abo/org-download
 :PROPERTIES:
 :ID:       d7d54139-64d0-4cfe-ab3a-879b3617b226
 :END:
+- https://www.reddit.com/r/orgmode/comments/1gh7p92/how_do_you_use_properties/
+- https://github.com/karlicoss/orgparse
+- cool formatting w/ scimax
+- sql from org data
+  - https://github.com/ndwarshuis/org-sql?tab=readme-ov-file
+- https://www.reddit.com/r/emacs/comments/1en7wap/find_your_tasks_instantly_when_you_need_to_5/
 - tangel w/ org as commnets https://eschulte.github.io/babel-dev/DONE-tangle-entire-org-mode-file-in-comments.html
 
 (ox-extras-activate '(ignore-headlines))
@@ -11694,20 +12287,11 @@ org-todo-state-tags-triggers
 - clock table tags requires "" as here https://stackoverflow.com/questions/38545767/org-mode-clock-table-by-tag
 - [ ] how to show remaining effort per task?
 - https://github.com/progfolio/doct
-- https://www.reddit.com/r/emacs/comments/fzuv4f/my_prettified_orgcapture/
 - archiving
   - archive via #+ARCHIVE: myarchive.org
   - [[https://www.reddit.com/r/orgmode/comments/9kunnv/archiving_practices/][Archiving practices]]
   - [[http://orgmode.org/manual/Refile-and-copy.html#Refile-and-copy][9.5 Refile and copy]]
-- capture template formatting
-  - [[https://emacs.stackexchange.com/questions/27486/orgmode-capture-template-adding-sub-headers][stack: orgmode capture template adding subheaders]]
-  - org capture template notes
-    - https://emacs.stackexchange.com/search?q=%5Borg-mode%5D+capture
-    - https://emacs.stackexchange.com/questions/27486/orgmode-capture-template-adding-sub-headers
-    - https://www.youtube.com/watch?v=Af4NVJbNAB4&list=PLVtKhBrRV_ZkPnBtt_TD1Cs9PJlU0IIdE&index=13
-    - [[http://sachachua.com/blog/2008/01/outlining-your-notes-with-org/][sacha: outlining notes with org]]
-  - [[https://www.reddit.com/r/emacs/comments/5jhwlu/getting_things_from_outside_emacs_into/][reddit: org capture setups]]
-  - https://www.reddit.com/r/emacs/comments/7zqc7b/share_your_org_capture_templates/
+
 
 - reference
   - [[https://emacs.stackexchange.com/questions/2162/when-are-org-mode-attachments-preferable-to-file-hyperlinks][When are org-mode attachments preferable to file hyperlinks?]]
@@ -11758,7 +12342,7 @@ https://emacs.stackexchange.com/questions/5889/how-to-highlight-text-permanently
 - [[https://www.miskatonic.org/2016/10/03/orgexportbabelevaluate/][eval never export causes all header arguements to be ignored]]
 - https://www.reddit.com/r/orgmode/comments/kg6ydq/how_to_automatically_sort_a_checklist_based_on_x/
 - https://lists.gnu.org/archive/html/emacs-orgmode/2013-09/msg00060.html
-- insert tally w/ ‘[/]’
+- insert tally w/ ‘[0/0]’
 - https://emacs.stackexchange.com/questions/17258/in-org-mode-how-to-move-point-to-next-checkbox-when-its-marked-completed
 - https://emacs.stackexchange.com/questions/19843/how-to-automatically-adjust-an-org-task-state-with-its-children-checkboxes/22147
     - https://web.archive.org/web/20190715181853/http://www.i3s.unice.fr:80/~malapert/org/tips/emacs_orgmode.html
@@ -11854,53 +12438,6 @@ do
 done
 
 /usr/bin/emacs-snapshot --batch "/home/jeszyman/repos/card-rad-bio/card-rad-bio.org" -l "/home/jeszyman/repos/card-rad-bio/src/org_input_tbl_export.el" --eval '(my-tbl-export "'"input"'")'
-
-******** Org manual input table export to csv
-:PROPERTIES:
-:ID:       655164a2-53ee-40aa-8120-286b55f164b5
-:END:
-
-- Lisp export function
-  #+name: org_input_tbl_lisp_export
-  #+begin_src emacs-lisp
-(require 'org)
-
-(defun my-tbl-export (name)
-"Search for table named `NAME` and export."
-(interactive "s")
-(show-all)
-(let ((case-fold-search t))
-(if (search-forward-regexp (concat "#\\+NAME: +" name) nil t)
-(progn
-  (next-line)
-  (org-table-export (format "/tmp/%s.csv" name) "orgtbl-to-csv")))))
-
-#+end_src
-  #+name: org_input_tbl_lisp_export_wrapper
-  #+begin_src org :noweb yes
-<<org_input_tbl_lisp_export>>
-#+end_src
-- Bash to make the csvs
-  #+name: org_input_tbl_to_csv
-  #+begin_src bash
-# Insert tables as bash array named org_tables
-
-for table in "${org_tables[@]}";
-do
-/usr/bin/emacs-snapshot --batch "${org_file}" -l "${org_export_el}" --eval '(my-tbl-export "'"$table"'")'
-done
-
-mv /tmp/*_input.csv ${data_dir}/inputs/
-#+end_src
-  #+name: org_input_tbl_to_csv_wrapper
-  #+begin_src org :noweb yes
-<<org_input_tbl_to_csv>>
-#+end_src
-
-******** [[id:B171BCE2-2FF8-45C6-8958-8799B349E1B0][Org-Mode in basecamp-private]]
-:PROPERTIES:
-:ID:       b8cd229a-fe04-4c7b-a86b-812584ba7ff3
-:END:
 ******** Processes
 :PROPERTIES:
 :ID:       8b5c515e-689b-436d-ac09-f368ec6d87ef
@@ -11909,6 +12446,19 @@ mv /tmp/*_input.csv ${data_dir}/inputs/
 :PROPERTIES:
 :ID:       1c3e70f6-1ca0-44bd-b2fa-2cf5fae2a126
 :END:
+********** Prevent log recording
+
+In emacs orgmode, how to prevent the logbook from recording state transitions for a specific header, is there a properties setting?
+
+Yes, you can prevent the logbook from recording state transitions for a specific header in Org mode by setting the property =LOGGING= to =nil=. You can do this by adding the following line under the header:
+
+#+begin_src org
+:LOGGING nil
+#+end_src
+
+This will stop the logbook from recording state transitions for that specific entry.
+
+
 ********** Execute asynchrous process in source code block
 :PROPERTIES:
 :ID:       53db0c77-12e8-4b19-80db-231154557310
@@ -12094,6 +12644,8 @@ examples:
 :END:
 - https://www.google.com/search?q=tangle+block+to+multiple+locations
 - https://emacs.stackexchange.com/questions/39032/tangle-the-same-src-block-to-different-files
+********* Importing and exporting in structured ways
+- https://orgmode.org/worg/org-contrib/org-collector.html
 ********* Writing
 :PROPERTIES:
 :ID:       7f4e49a0-6139-43e5-9162-15e683f2ce4d
@@ -12123,6 +12675,20 @@ https://lepisma.xyz/2017/10/28/ricing-org-mode/
 ;  :config ; add late to hook
 ;  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 #+end_src
+********* Capture templates
+:PROPERTIES:
+:ID:       a3520e71-8dbb-409a-b618-d312405aab81
+:END:
+- https://www.reddit.com/r/emacs/comments/fzuv4f/my_prettified_orgcapture/
+- capture template formatting
+  - [[https://emacs.stackexchange.com/questions/27486/orgmode-capture-template-adding-sub-headers][stack: orgmode capture template adding subheaders]]
+  - org capture template notes
+    - https://emacs.stackexchange.com/search?q=%5Borg-mode%5D+capture
+    - https://emacs.stackexchange.com/questions/27486/orgmode-capture-template-adding-sub-headers
+    - https://www.youtube.com/watch?v=Af4NVJbNAB4&list=PLVtKhBrRV_ZkPnBtt_TD1Cs9PJlU0IIdE&index=13
+    - [[http://sachachua.com/blog/2008/01/outlining-your-notes-with-org/][sacha: outlining notes with org]]
+  - [[https://www.reddit.com/r/emacs/comments/5jhwlu/getting_things_from_outside_emacs_into/][reddit: org capture setups]]
+  - https://www.reddit.com/r/emacs/comments/7zqc7b/share_your_org_capture_templates/
 ********* Calendar sync
 :PROPERTIES:
 :ID:       91fd993a-aea5-4e05-b16a-ee3aa4e01eac
@@ -12500,6 +13066,122 @@ https://emacs.stackexchange.com/questions/54497/how-to-set-tab-behavior-in-org-m
 :PROPERTIES:
 :ID:       287bcbb7-46f5-46b8-9448-191f7fce0d52
 :END:
+********* Configuration examples
+- https://github.com/sk8ingdom/.emacs.d/tree/master/org-mode-config
+********* Comprehensive workflow suites
+********** scimax
+:PROPERTIES:
+:ID:       c1726ede-399f-4f0d-a457-cdb3ed41de1a
+:END:
+https://www.reddit.com/r/orgmode/comments/q82k5v/new_video_scimax_orgdb_searching_for_things_in/
+********* Search and query
+https://github.com/alphapapa/org-ql?tab=readme-ov-file#org-ql-view
+#+begin_src emacs-lisp
+(require 'org-ql)
+
+(org-ql-search
+  (org-agenda-files)
+  '(and (todo)
+        (scheduled :to today)
+        (deadline :to +5))
+  :title "Custom Agenda View"
+  :sort '(date priority)
+)
+#+end_src
+#+begin_src emacs-lisp
+(require 'org-ql)
+
+(org-ql-search
+  (org-agenda-files)
+  '(and (todo)
+        (scheduled :to today)
+        (deadline :to +5))
+  :title "Custom Agenda View"
+  :sort '(date priority)
+  :super-groups '((:name "Overdue Deadlines"
+                         :deadline past)
+                  (:name "Today’s Tasks"
+                         :scheduled today)
+                  (:name "Upcoming Deadlines"
+                         :deadline future))
+  :formatter (lambda ()
+               (let ((heading (org-get-heading t t t t))
+                     (todo (org-get-todo-state))
+                     (deadline (org-entry-get nil "DEADLINE"))
+                     (scheduled (org-entry-get nil "SCHEDULED")))
+                 (format "- [%s] %s %s %s"
+                         (or todo "")
+                         heading
+                         (if deadline (concat "⚠️ " deadline) "")
+                         (if scheduled (concat "📅 " scheduled) "")))))
+
+#+end_src
+#+begin_src emacs-lisp
+(require 'org-ql)
+
+(org-ql-search
+  (org-agenda-files)
+  '(and (todo)
+        (scheduled :to today)
+        (deadline :to +5))
+  :title "Custom Agenda View"
+  :sort '(date priority)
+  :super-groups '((:name "Overdue Deadlines"
+                         :deadline past)
+                  (:name "Today’s Tasks"
+                         :scheduled today)
+                  (:name "Upcoming Deadlines"
+                         :deadline future)
+                  (:auto-outline-path t)))
+
+#+end_src
+
+********* Org manual input table export to csv
+:PROPERTIES:
+:ID:       655164a2-53ee-40aa-8120-286b55f164b5
+:END:
+
+- Lisp export function
+  #+name: org_input_tbl_lisp_export
+  #+begin_src emacs-lisp
+(require 'org)
+
+(defun my-tbl-export (name)
+"Search for table named `NAME` and export."
+(interactive "s")
+(show-all)
+(let ((case-fold-search t))
+(if (search-forward-regexp (concat "#\\+NAME: +" name) nil t)
+(progn
+  (next-line)
+  (org-table-export (format "/tmp/%s.csv" name) "orgtbl-to-csv")))))
+
+#+end_src
+  #+name: org_input_tbl_lisp_export_wrapper
+  #+begin_src org :noweb yes
+<<org_input_tbl_lisp_export>>
+#+end_src
+- Bash to make the csvs
+  #+name: org_input_tbl_to_csv
+  #+begin_src bash
+# Insert tables as bash array named org_tables
+
+for table in "${org_tables[@]}";
+do
+/usr/bin/emacs-snapshot --batch "${org_file}" -l "${org_export_el}" --eval '(my-tbl-export "'"$table"'")'
+done
+
+mv /tmp/*_input.csv ${data_dir}/inputs/
+#+end_src
+  #+name: org_input_tbl_to_csv_wrapper
+  #+begin_src org :noweb yes
+<<org_input_tbl_to_csv>>
+#+end_src
+
+******** [[id:B171BCE2-2FF8-45C6-8958-8799B349E1B0][Org-Mode in basecamp-private]]
+:PROPERTIES:
+:ID:       b8cd229a-fe04-4c7b-a86b-812584ba7ff3
+:END:
 ******** Local YAS
 :PROPERTIES:
 :ID:       4ce165ef-2b82-4dcb-b3ba-09fc3d2f4898
@@ -12560,15 +13242,6 @@ $0
 - [[file:~/repos/basecamp/emacs/public_yasnippets/org-mode/google]]
 - [[https://www.google.com/search?q=][google:]]
 
-******** Interfaces
-:PROPERTIES:
-:ID:       d888a09a-14c9-4441-85ba-bbd84a27a03c
-:END:
-https://www.reddit.com/r/orgmode/comments/x2e90r/there_really_needs_to_be_a_better_mobile_app_for/
-********* [[id:a5717be7-afe9-4db2-8b4d-b797c7631466][orgzly]]
-:PROPERTIES:
-:ID:       6780c045-157e-4179-a3f5-048cb8c0adff
-:END:
 ******** LaTeX batch export init file
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle ./emacs/latex_init.el
@@ -12623,6 +13296,15 @@ https://www.reddit.com/r/orgmode/comments/x2e90r/there_really_needs_to_be_a_bett
   :ensure t)
 #+end_src
 
+******** Interfaces
+:PROPERTIES:
+:ID:       d888a09a-14c9-4441-85ba-bbd84a27a03c
+:END:
+https://www.reddit.com/r/orgmode/comments/x2e90r/there_really_needs_to_be_a_better_mobile_app_for/
+********* [[id:a5717be7-afe9-4db2-8b4d-b797c7631466][orgzly]]
+:PROPERTIES:
+:ID:       6780c045-157e-4179-a3f5-048cb8c0adff
+:END:
 ******** General reference
 :PROPERTIES:
 :ID:       a0cf47b6-2f7a-41cf-9d4f-9ce78ac648de
@@ -13135,6 +13817,15 @@ Example usage:
 #+end_src
 
 Invoke by org-open-at-point like [[elisp:(run-gnome-ctrl)]]
+**** Flat
+***** Globus
+:PROPERTIES:
+:ID:       e6aab15d-36b0-4b08-93b8-ef9f6254d950
+:END:
+- 
+- [[https://docs.globus.org/cli/][cli]]
+  - [[https://docs.globus.org/cli/reference/][documentation]]
+    - https://docs.globus.org/how-to/globus-connect-personal-linux/#globus-connect-personal-cli
 **** See [[id:BF9D824A-02EF-4580-97A1-B887299AD461][Lisp]]
 ****** (custom-org-open-link)
 #+begin_src emacs-lisp
@@ -13531,6 +14222,7 @@ https://github.com/politza/pdf-tools
 :PROPERTIES:
 :ID:       c6aece45-b4fc-4f7b-9a0c-44e04962d5f4
 :END:
+- https://askubuntu.com/questions/1163761/how-to-flatten-comments-using-okular
 - ocr
   - https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux
   - [[https://unix.stackexchange.com/questions/377359/how-to-use-ocr-from-the-command-line-in-linux][optical character recognition in linux]]
@@ -13705,6 +14397,7 @@ https://github.com/axel-download-accelerator/axel
 :PROPERTIES:
 :ID:       670ed8f4-bb93-4d93-b9ea-a142a599169f
 :END:
+- https://askubuntu.com/questions/1163761/how-to-flatten-comments-using-okular
 - merge
   - https://askubuntu.com/questions/2799/how-to-merge-several-pdf-files
 - https://www.google.com/search?q=ubuntu+pdf+rotate+page
@@ -14392,6 +15085,7 @@ https://mmistakes.github.io/jekyll-theme-basically-basic/recipes/chocolate-chip-
 :PROPERTIES:
 :ID:       CBD1C9BA-44CB-4510-8ACD-F12CEF7E3402
 :END:
+https://www.reddit.com/r/programming/comments/1eo2lo5/uncle_bob_martin_i_am_in_the_midst_of_writing_the/
 **** Style Guide
 :PROPERTIES:
 :ID:       593672e1-82b2-44e0-aa00-d28825860706
@@ -15121,6 +15815,7 @@ $0
 $0
 ,#+end_src
 #+end_src
+
 ******* function :yas:
 #+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/emacs-lisp-mode/function
 # -*- mode: snippet -*-
@@ -15429,6 +16124,291 @@ B
 :PROPERTIES:
 :ID:       89576FD2-F863-4220-BAD7-D4E179AEA644
 :END:
+****** [[id:f2557e40-0d81-438a-93e9-6917a40c1d8e][Emacs as a bash IDE]]
+****** [[file:~/repos/basecamp-private/basecamp-private.org::*Shell and bash setup][My shell and bash setup]]
+****** General
+:PROPERTIES:
+:ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
+:END:
+- https://www.reddit.com/r/bash/comments/yp8afm/some_scripts_that_might_be_useful/
+- https://www.reddit.com/r/commandline/comments/zigu22/in_dept_guide_how_to_create_a_shell_script_to/
+- https://www.reddit.com/r/bash/comments/12bptfj/are_there_any_quality_of_life_improvements_that/
+- https://getaido.app/
+- https://github.com/awesome-lists/awesome-bash
+- https://github.com/TheR1D/shell_gpt
+- https://www.programming-helper.com/linux
+- https://www.reddit.com/r/bash/comments/z09oiu/bashlib_a_helpful_source_file_for_any_script/
+- https://github.com/jlevy/the-art-of-command-line
+- https://www.reddit.com/r/bash/comments/yp8afm/some_scripts_that_might_be_useful/
+- https://www.reddit.com/r/bash/comments/xt40e2/bgit_the_beginners_git_script/
+- [[id:c7d8dd07-098e-4bc4-b008-5da0abcabb0d][The Missing Semester of Your CS Education]]
+- https://www.reddit.com/r/emacs/comments/x2mmfc/from_vanilla_emacs_to_bash_ide_in_17_minutes/
+-
+- https://explainshell.com/explain?cmd=set+-euxo+pipefail
+- http://redsymbol.net/articles/unofficial-bash-strict-mode/
+- [[id:BDC42DA2-A632-4FB7-A586-E100B2A045DC][LINK TO UNIX-based operating systems]]
+- [[id:76c4836c-fe3f-4948-86dd-25d8df38d1af][LINK TO GNU tools]]
+- https://pastebin.com/9itu8v0w
+- https://www.linuxtopia.org/online_books/advanced_bash_scripting_guide/
+- [[https://google.github.io/styleguide/shellguide.html][Google shell style guide]]
+- [[https://www.gnu.org/software/bash/manual/bash.html][documentation]]
+- [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Advanced Bash-Scripting Guide]]
+- [[http://mywiki.wooledge.org/FullBashGuide][wooledge bash guide]]
+- [[https://bash.cyberciti.biz/guide/Main_Page][nixCraft linux tutorial]]
+- http://bash3boilerplate.sh/
+- a -c flag essentially adds an extra shell around multi-part command, see https://superuser.com/questions/1214597/calling-a-script-with-bash-c-option
+- [[id:07b8634c-70a6-4a99-90b5-0f5083ccaf04][Emacs shell IDE]]
+- Guides, tutorials, cheatsheets, books
+  - http://ryanstutorials.net/bash-scripting-tutorial/
+  - http://linuxcommand.org/lc3_writing_shell_scripts.php
+  - https://www.youtube.com/watch?v=3ME7gayYeUQ
+  - https://www.youtube.com/results?search_query=shell+scripts+bioinformatics&page=&utm_source=opensearch
+  - https://google.github.io/styleguide/shell.xml
+  - http://mywiki.wooledge.org/BashGuide
+  - http://www.davidpashley.com/articles/writing-robust-shell-scripts/
+  - https://emb.carnegiescience.edu/sites/default/files/140602-sedawkbash.key_.pdf
+  - https://github.com/dylanaraps/pure-bash-bible
+  - https://devhints.io/bash
+  - https://www.ibm.com/developerworks/aix/library/au-satbash.html
+  - [[http://tldp.org/LDP/LG/issue18/bash.html][string manipulations]]
+  - cite:veeraraghavan2002
+  - http://tldp.org/LDP/abs/html/
+  - https://github.com/onceupon/Bash-Oneliner
+  - https://devhints.io/bash?source=post_page---------------------------
+  - [[https://www.ostechnix.com/test-your-bash-skills-by-playing-command-line-games/][bash games]]
+  - [[https://www.reddit.com/r/commandline/comments/kbeoe/you_can_make_readline_and_bash_much_more_user/?st=j6k0lbfa&sh=6d214d1f][reddit: You can make readline (and bash) much more user friendly by adding a few options to ~/.inputrc]]
+  - best practices
+    - include error calling, but avoid -e http://mywiki.wooledge.org/BashFAQ/105
+    - https://www.google.com/search?q=shell+script+formatting+best+practices
+    - include usage example
+    - a -c flag essentially adds an extra shell around multi-part command, see https://superuser.com/questions/1214597/calling-a-script-with-bash-c-option
+    - ideas
+    - [[file:~/.basecamp/emacs/public_yasnippets/sh-mode/write.bash]]
+    - https://stackoverflow.com/questions/33297857/how-to-check-dependency-in-bash-script
+  - https://unix.stackexchange.com/questions/42728/what-does-31-12-23-do-in-a-script
+  - http://tldp.org/LDP/abs/html/index.html
+  - https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
+  - https://github.com/dylanaraps/pure-bash-bible
+  - https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md
+- https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
+- https://github.com/hopeseekr/BashScripts
+- https://www.reddit.com/r/programming/comments/aw0zko/bash_creating_tabcompletion_for_your_programs/
+- reference
+  - https://github.com/shellspec/shellspec
+- examples
+  - https://github.com/hopeseekr/BashScripts
+- [[https://www.gnu.org/software/bash/manual/bash.html][documentation]] and general reference
+  - guides, tutorials, cheatsheets, books
+    - [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Linux documentation project: Advanced Bash-Scripting Guide]]
+    - http://bash3boilerplate.sh/
+    - [[https://bash.cyberciti.biz/guide/Main_Page][Linux Shell Scripting Tutorial]]
+    - http://ryanstutorials.net/bash-scripting-tutorial/
+    - http://linuxcommand.org/lc3_writing_shell_scripts.php
+    - https://www.youtube.com/watch?v=3ME7gayYeUQ
+    - https://www.youtube.com/results?search_query=shell+scripts+bioinformatics&page=&utm_source=opensearch
+    - https://google.github.io/styleguide/shell.xml
+    - http://mywiki.wooledge.org/BashGuide
+    - http://www.davidpashley.com/articles/writing-robust-shell-scripts/
+    - https://emb.carnegiescience.edu/sites/default/files/140602-sedawkbash.key_.pdf
+    - https://github.com/dylanaraps/pure-bash-bible
+    - https://devhints.io/bash
+    - https://www.ibm.com/developerworks/aix/library/au-satbash.html
+    - [[http://tldp.org/LDP/LG/issue18/bash.html][string manipulations]]
+    - cite:veeraraghavan2002
+    - http://tldp.org/LDP/abs/html/
+    - https://github.com/onceupon/Bash-Oneliner
+    - https://devhints.io/bash?source=post_page---------------------------
+    - [[https://www.ostechnix.com/test-your-bash-skills-by-playing-command-line-games/][bash games]]
+    - [[https://www.reddit.com/r/commandline/comments/kbeoe/you_can_make_readline_and_bash_much_more_user/?st=j6k0lbfa&sh=6d214d1f][reddit: You can make readline (and bash) much more user friendly by adding a few options to ~/.inputrc]]
+    - https://unix.stackexchange.com/questions/42728/what-does-31-12-23-do-in-a-script
+    - http://tldp.org/LDP/abs/html/index.html
+    - https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
+    - https://github.com/dylanaraps/pure-bash-bible
+    - https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md
+  - [[http://mywiki.wooledge.org/FullBashGuide][Full bash guide]]
+- https://mywiki.wooledge.org/BashPitfalls
+- [[https://tldp.org/LDP/abs/html/][Advanced bash scripting guide]]
+- cite:greenberg2021
+- Style and best practices
+  - https://google.github.io/styleguide/shellguide.html
+  - https://stackoverflow.com/questions/64786/error-handling-in-bash/13099228#13099228
+  - function and variable names
+    - https://www.google.com/search?q=bash+best+practice+function+name
+      - https://google.github.io/styleguide/shellguide.html#s7.1-function-names
+****** Ideas
+:PROPERTIES:
+:ID:       0ab13eb3-64dc-4696-888a-0caf1e7997dc
+:END:
+- https://www.reddit.com/r/emacs/comments/x2mmfc/from_vanilla_emacs_to_bash_ide_in_17_minutes/
+- check and set file permissions as best practice
+- ideas for function development protocol-
+  - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
+- size filter
+  - #find $localdata/frag-filt-bams -name "*.bam" -type 'f' -size -4M -delete
+     # small bam check
+     ##
+     #if [ -f /drive3/users/jszymanski/repos/mpnst/data/small_bams ]; then rm /drive3/users/jszymanski/repos/mpnst/data/small_bams; fi
+     ##
+     #minimum_bam_size=200000000
+- ideas
+  - check and set file permissions as best practice
+  - ideas for function development protocol-
+    - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
+****** Local scripts
+:PROPERTIES:
+:ID:       50fa6877-2a58-43b7-a412-565822746257
+:END:
+#+begin_src bash
+#!/bin/bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+
+####################################
+###   Choose and Run Snakefile   ###
+####################################
+
+# Setup
+#set -euxov pipefail
+
+source config/${HOSTNAME}.sh
+echo "The following `*.smk` archives were found; select one:"
+
+# set the prompt used by select, replacing "#?"
+PS3="Use number to select an option"
+
+select filename in ./workflow/*.smk
+
+do
+    if [[ "$filename" == "" ]]
+    then
+        echo "'$REPLY' is not a valid number"
+        continue
+    fi
+    echo $filename
+    select run_option in dry_run normal force_final force_all
+    do
+        echo selected $run_option
+        case $run_option in
+            dry_run)
+                source activate snakemake
+                snakemake \
+                    --configfile config/${HOSTNAME}.yaml \
+                    --cores $threads \
+                    --directory ${repo} \
+                    --dry-run \
+                    --rerun-incomplete \
+                    --singularity-args "--bind $mntpt:$mntpt" \
+                    --use-singularity \
+                    --snakefile $filename
+                ;;
+            normal)
+                source activate snakemake
+                select nohup_option in no yes
+                do
+                    case $nohup_option in
+                        no)
+                            snakemake \
+                                --configfile config/${HOSTNAME}.yaml \
+                                --cores $threads \
+                                --directory ${repo} \
+                                --singularity-args "--bind $mntpt:$mntpt" \
+                                --use-singularity \
+                                --snakefile $filename
+                            ;;
+                        yes)
+                            nohup snakemake \
+                                  --configfile config/${HOSTNAME}.yaml \
+                                  --cores $threads \
+                                  --directory ${repo} \
+                                  --singularity-args "--bind $mntpt:$mntpt" \
+                                  --use-singularity \
+                                  --snakefile $filename
+                            ;;
+                    esac
+                done
+                ;;
+            force_final)
+                source activate snakemake
+                select nohup_option in no yes
+                do
+                    case $nohup_option in
+                        no)
+                            snakemake \
+                                --configfile config/${HOSTNAME}.yaml \
+                                --cores $threads \
+                                --directory ${repo} \
+                                --force \
+                                --singularity-args "--bind $mntpt:$mntpt" \
+                                --use-singularity \
+                                --snakefile $filename
+                            ;;
+                        yes)
+                            nohup snakemake \
+                                  --configfile config/${HOSTNAME}.yaml \
+                                  --cores $threads \
+                                  --directory ${repo} \
+                                  --force \
+                                  --singularity-args "--bind $mntpt:$mntpt" \
+                                  --use-singularity \
+                                  --snakefile $filename
+                            ;;
+                    esac
+                done
+                ;;
+            force_all)
+                source activate snakemake
+                select nohup_option in no yes
+                do
+                    case $nohup_option in
+                        no)
+
+                snakemake \
+                    --configfile config/${HOSTNAME}.yaml \
+                    --cores $threads \
+                    --directory ${repo} \
+                    -F \
+                    --singularity-args "--bind $mntpt:$mntpt" \
+                    --use-singularity \
+                    --snakefile $filename
+                                            ;;
+                        yes)
+                nohup snakemake \
+                    --configfile config/${HOSTNAME}.yaml \
+                    --cores $threads \
+                    --directory ${repo} \
+                    -F \
+                    --singularity-args "--bind $mntpt:$mntpt" \
+                    --use-singularity \
+                    --snakefile $filename
+                            ;;
+                    esac
+                done
+                ;;
+        esac
+        break
+    done
+    break
+done
+#+end_src
+- Command line script
+  #+name: bash_cmdline_script_preamble
+  #+begin_src bash :noweb yes
+#!/usr/bin/env bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+# Notes:
+#  This script is tangled from source code in the mpnst-frag.org file
+#  Therefore any changes to this compiled file in place will likely be reverted
+#  by a subsequent tangle operation.
+#
+#  This script assumes you are running from the repository main directory in
+#  order to source the appriopriate configuation file.
+
+# Load bash configuation
+if [ -f ./config/${HOSTNAME}.sh ]; then
+    source ./config/${HOSTNAME}.sh
+else
+    echo "No bash config found. Are you running from repo main dir?"
+fi
+#+end_src
 ****** Local YAS                                                       :flat:
 :PROPERTIES:
 :ID:       42e37db5-29e7-418f-a74d-e91ffc81167f
@@ -15728,7 +16708,6 @@ $1="$\{$2}"$0
 :PROPERTIES:
 :ID:       c3e424cd-7191-423e-815b-7e7fcb770100
 :END:
-
 ******* 0 Flat list of bash and shell processes
 :PROPERTIES:
 :ID:       eb57ddca-919e-4167-9112-8fc378d00486
@@ -15745,12 +16724,28 @@ $1="$\{$2}"$0
 - [[https://www.cyberciti.biz/faq/linux-unix-formatting-dates-for-display/][formatting dates for display]]
 - https://stackoverflow.com/questions/22962591/how-to-prevent-direct-bash-script-execution-and-allow-only-usage-from-other-scri
 - https://unix.stackexchange.com/questions/10646/repeat-a-unix-command-every-x-seconds-forever
-******** terminal colors
-:PROPERTIES:
-:ID:       b7fef3cb-c4d5-417e-8c28-fc54edabfa1f
-:END:
-[[id:61cef427-947e-4d91-9dfe-8758ccbe3512][convert_pdf_to_png()]]
-https://chat.openai.com/c/29bd45d7-ee7e-4711-954f-26cf8cabff44
+******** Check dependencies with which
+#+begin_src sh 
+dependencies=("docker" "wget" "bash")
+for i in ${dependencies[@]}; do
+    if [ "$(which $i)" = "" ] ; then
+        echo "EARLY EXIT- $i needs to be installed and on PATH"
+        exit 0
+    else
+        echo "$i installed"
+    fi;
+done
+#
+source ~/repos/mpnst/bin/global-setup.sh
+#
+if [ $HOSTNAME == "aclm350" ]; then
+    basedir=/mnt/xt3/mpnst
+else
+    echo "No on Chaudhuri-roche server, exiting"
+    exit 1
+fi
+echo "Local setup complete for Chaudhuri-Roche server"
+#+end_src
 ******** case esac
 :PROPERTIES:
 :ID:       8356ea0b-2249-4e60-8bda-47889e120ac3
@@ -15825,6 +16820,12 @@ echo "Bergom RNA setup complete for $HOSTNAME"
 :END:
 https://unix.stackexchange.com/questions/295022/displaying-usage-comments-in-functions-intended-to-be-used-interactively
 
+******** terminal colors
+:PROPERTIES:
+:ID:       b7fef3cb-c4d5-417e-8c28-fc54edabfa1f
+:END:
+[[id:61cef427-947e-4d91-9dfe-8758ccbe3512][convert_pdf_to_png()]]
+https://chat.openai.com/c/29bd45d7-ee7e-4711-954f-26cf8cabff44
 ******* Checkers
 :PROPERTIES:
 :ID:       5efce201-5375-42a8-a8d0-827a0325a7bf
@@ -15879,10 +16880,12 @@ https://unix.stackexchange.com/questions/295022/displaying-usage-comments-in-fun
 :ID:       cab2ac79-9202-4ad4-a475-f0d4c0a017f8
 :END:
 https://www.google.com/search?q=bash+read+csv
-******* Linting and debugging
+******* Linting, parsing, and debugging
 :PROPERTIES:
 :ID:       df3acc6f-0a6c-4199-9061-474a80cff9b2
 :END:
+- https://github.com/mvdan/sh
+- https://www.reddit.com/r/bash/comments/1f38s1q/out_of_curiosity_how_many_of_you_use_shellcheck/
 - https://github.com/loeffel-io/ls-lint
 - https://github.com/koalaman/shellcheck#in-your-editor
 - https://stackoverflow.com/questions/171924/how-do-i-syntax-check-a-bash-script-without-running-it#171932
@@ -15971,16 +16974,56 @@ https://www.google.com/search?q=bash+read+csv
 :ID:       28a66d42-f97b-4166-8afe-7b86de7a33b6
 :END:
 - https://www.google.com/search?q=command+line+remove+first+line+of+text+file
-******* TUI
-:PROPERTIES:
-:ID:       97b458fa-8a96-415d-b582-d0c730e09316
-:END:
-- tui
-  - https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
 ******* User inputs
 :PROPERTIES:
 :ID:       17707f3f-aee6-4eab-9d79-de07c975a3d5
 :END:
+- with read
+  #+begin_src bash
+## identifies server in docker containers
+server_ask() {
+    echo -n "Choose your server: "
+    read SERVER
+    SERVER="${SERVER:=chaudhuri-roche}"
+}
+
+## interactive docker initialization
+docker_interactive() {
+    repo="USER INPUT"
+    read -p "repo name: " repo
+    case $HOSTNAME in
+        (radonc-cancerbio) docker run -it \
+                                  -v /media/:/media/ \
+                                  -v /home/:/home/ \
+                            -u $(id -u ${USER}) \
+                            jeszyman/$repo \
+                            /bin/bash;;
+        (jeszyman-*) docker run -it \
+                            -v /home/:/home/ \
+                            -u $(id -u ${USER}) \
+                            jeszyman/$repo \
+                            /bin/bash;;
+        (acl*) docker run -it \
+                      -v /drive3/:/drive3/ \
+                      -v /duo4/:/duo4/ \
+                      -v /mnt/:/mnt/ \
+                      -v /home/:/home/ \
+                      -u $(id -u ${USER}) \
+                      jeszyman/$repo \
+                      /bin/bash;;
+        (ACL*) docker run -it \
+                      -v /home/:/home/ \
+                      -v /duo4/:/duo4/ \
+                      -u $(id -u ${USER}):$(id -g ${USER}) \
+                      -h=${HOSTNAME} \
+                      jeszyman/$repo \
+                      /bin/bash;;
+        (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$repo"')' /bin/bash;;
+    esac
+}
+
+#+end_src
+
 - https://stackoverflow.com/questions/2642585/read-a-variable-in-bash-with-a-default-value
 - Choose from list
   - https://linuxize.com/post/bash-select/
@@ -16003,6 +17046,12 @@ https://www.google.com/search?q=bash+read+csv
 - Simulate key presses
   - https://www.google.com/search?q=bash+pass+ENTER+to+script
   - https://stackoverflow.com/questions/30712126/how-to-simulate-two-consecutive-enter-key-presses-for-a-command-in-a-bash-script?noredirect=1&lq=1
+******** TUI
+:PROPERTIES:
+:ID:       97b458fa-8a96-415d-b582-d0c730e09316
+:END:
+- tui
+  - https://linuxconfig.org/how-to-use-ncurses-widgets-in-shell-scripts-on-linux
 ******* Variables
 :PROPERTIES:
 :ID:       f824de5e-ecce-4f4e-aa25-1daf675577a6
@@ -16015,6 +17064,7 @@ https://www.google.com/search?q=bash+read+csv
 :PROPERTIES:
 :ID:       f54ac1df-f52d-42ee-a339-6557e7293a59
 :END:
+- https://nochlin.com/blog/6-techniques-i-use-to-create-a-great-user-experience-for-shell-scripts
 - prevent script runs with https://stackoverflow.com/questions/22962591/how-to-prevent-direct-bash-script-execution-and-allow-only-usage-from-other-scri/22963631#22963631
 - https://unix.stackexchange.com/questions/313256/why-write-an-entire-bash-script-in-functions
 - best practices
@@ -16498,297 +17548,7 @@ test=out.docx
 pandoc -S $test | xclip -selection clipboard
 
 #+end_src
-****** [[id:f2557e40-0d81-438a-93e9-6917a40c1d8e][Emacs as a bash IDE]]
-:PROPERTIES:
-:ID:       b579f933-e4f7-4260-98ba-b52df1533060
-:END:
-****** [[file:~/repos/basecamp-private/basecamp-private.org::*Shell and bash setup][My shell and bash setup]]
-:PROPERTIES:
-:ID:       189d877c-ffd3-4792-9b92-66bd4cd3354b
-:END:
-****** Local scripts
-:PROPERTIES:
-:ID:       50fa6877-2a58-43b7-a412-565822746257
-:END:
-#+begin_src bash
-#!/bin/bash
-#########1#########2#########3#########4#########5#########6#########7#########8
 
-####################################
-###   Choose and Run Snakefile   ###
-####################################
-
-# Setup
-#set -euxov pipefail
-
-source config/${HOSTNAME}.sh
-echo "The following `*.smk` archives were found; select one:"
-
-# set the prompt used by select, replacing "#?"
-PS3="Use number to select an option"
-
-select filename in ./workflow/*.smk
-
-do
-    if [[ "$filename" == "" ]]
-    then
-        echo "'$REPLY' is not a valid number"
-        continue
-    fi
-    echo $filename
-    select run_option in dry_run normal force_final force_all
-    do
-        echo selected $run_option
-        case $run_option in
-            dry_run)
-                source activate snakemake
-                snakemake \
-                    --configfile config/${HOSTNAME}.yaml \
-                    --cores $threads \
-                    --directory ${repo} \
-                    --dry-run \
-                    --rerun-incomplete \
-                    --singularity-args "--bind $mntpt:$mntpt" \
-                    --use-singularity \
-                    --snakefile $filename
-                ;;
-            normal)
-                source activate snakemake
-                select nohup_option in no yes
-                do
-                    case $nohup_option in
-                        no)
-                            snakemake \
-                                --configfile config/${HOSTNAME}.yaml \
-                                --cores $threads \
-                                --directory ${repo} \
-                                --singularity-args "--bind $mntpt:$mntpt" \
-                                --use-singularity \
-                                --snakefile $filename
-                            ;;
-                        yes)
-                            nohup snakemake \
-                                  --configfile config/${HOSTNAME}.yaml \
-                                  --cores $threads \
-                                  --directory ${repo} \
-                                  --singularity-args "--bind $mntpt:$mntpt" \
-                                  --use-singularity \
-                                  --snakefile $filename
-                            ;;
-                    esac
-                done
-                ;;
-            force_final)
-                source activate snakemake
-                select nohup_option in no yes
-                do
-                    case $nohup_option in
-                        no)
-                            snakemake \
-                                --configfile config/${HOSTNAME}.yaml \
-                                --cores $threads \
-                                --directory ${repo} \
-                                --force \
-                                --singularity-args "--bind $mntpt:$mntpt" \
-                                --use-singularity \
-                                --snakefile $filename
-                            ;;
-                        yes)
-                            nohup snakemake \
-                                  --configfile config/${HOSTNAME}.yaml \
-                                  --cores $threads \
-                                  --directory ${repo} \
-                                  --force \
-                                  --singularity-args "--bind $mntpt:$mntpt" \
-                                  --use-singularity \
-                                  --snakefile $filename
-                            ;;
-                    esac
-                done
-                ;;
-            force_all)
-                source activate snakemake
-                select nohup_option in no yes
-                do
-                    case $nohup_option in
-                        no)
-
-                snakemake \
-                    --configfile config/${HOSTNAME}.yaml \
-                    --cores $threads \
-                    --directory ${repo} \
-                    -F \
-                    --singularity-args "--bind $mntpt:$mntpt" \
-                    --use-singularity \
-                    --snakefile $filename
-                                            ;;
-                        yes)
-                nohup snakemake \
-                    --configfile config/${HOSTNAME}.yaml \
-                    --cores $threads \
-                    --directory ${repo} \
-                    -F \
-                    --singularity-args "--bind $mntpt:$mntpt" \
-                    --use-singularity \
-                    --snakefile $filename
-                            ;;
-                    esac
-                done
-                ;;
-        esac
-        break
-    done
-    break
-done
-#+end_src
-- Command line script
-  #+name: bash_cmdline_script_preamble
-  #+begin_src bash :noweb yes
-#!/usr/bin/env bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-# Notes:
-#  This script is tangled from source code in the mpnst-frag.org file
-#  Therefore any changes to this compiled file in place will likely be reverted
-#  by a subsequent tangle operation.
-#
-#  This script assumes you are running from the repository main directory in
-#  order to source the appriopriate configuation file.
-
-# Load bash configuation
-if [ -f ./config/${HOSTNAME}.sh ]; then
-    source ./config/${HOSTNAME}.sh
-else
-    echo "No bash config found. Are you running from repo main dir?"
-fi
-#+end_src
-****** General
-:PROPERTIES:
-:ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
-:END:
-- https://www.reddit.com/r/bash/comments/yp8afm/some_scripts_that_might_be_useful/
-- https://www.reddit.com/r/commandline/comments/zigu22/in_dept_guide_how_to_create_a_shell_script_to/
-- https://www.reddit.com/r/bash/comments/12bptfj/are_there_any_quality_of_life_improvements_that/
-- https://getaido.app/
-- https://github.com/awesome-lists/awesome-bash
-- https://github.com/TheR1D/shell_gpt
-- https://www.programming-helper.com/linux
-- https://www.reddit.com/r/bash/comments/z09oiu/bashlib_a_helpful_source_file_for_any_script/
-- https://github.com/jlevy/the-art-of-command-line
-- https://www.reddit.com/r/bash/comments/yp8afm/some_scripts_that_might_be_useful/
-- https://www.reddit.com/r/bash/comments/xt40e2/bgit_the_beginners_git_script/
-- [[id:c7d8dd07-098e-4bc4-b008-5da0abcabb0d][The Missing Semester of Your CS Education]]
-- https://www.reddit.com/r/emacs/comments/x2mmfc/from_vanilla_emacs_to_bash_ide_in_17_minutes/
--
-- https://explainshell.com/explain?cmd=set+-euxo+pipefail
-- http://redsymbol.net/articles/unofficial-bash-strict-mode/
-- [[id:BDC42DA2-A632-4FB7-A586-E100B2A045DC][LINK TO UNIX-based operating systems]]
-- [[id:76c4836c-fe3f-4948-86dd-25d8df38d1af][LINK TO GNU tools]]
-- https://pastebin.com/9itu8v0w
-- https://www.linuxtopia.org/online_books/advanced_bash_scripting_guide/
-- [[https://google.github.io/styleguide/shellguide.html][Google shell style guide]]
-- [[https://www.gnu.org/software/bash/manual/bash.html][documentation]]
-- [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Advanced Bash-Scripting Guide]]
-- [[http://mywiki.wooledge.org/FullBashGuide][wooledge bash guide]]
-- [[https://bash.cyberciti.biz/guide/Main_Page][nixCraft linux tutorial]]
-- http://bash3boilerplate.sh/
-- a -c flag essentially adds an extra shell around multi-part command, see https://superuser.com/questions/1214597/calling-a-script-with-bash-c-option
-- [[id:07b8634c-70a6-4a99-90b5-0f5083ccaf04][Emacs shell IDE]]
-- Guides, tutorials, cheatsheets, books
-  - http://ryanstutorials.net/bash-scripting-tutorial/
-  - http://linuxcommand.org/lc3_writing_shell_scripts.php
-  - https://www.youtube.com/watch?v=3ME7gayYeUQ
-  - https://www.youtube.com/results?search_query=shell+scripts+bioinformatics&page=&utm_source=opensearch
-  - https://google.github.io/styleguide/shell.xml
-  - http://mywiki.wooledge.org/BashGuide
-  - http://www.davidpashley.com/articles/writing-robust-shell-scripts/
-  - https://emb.carnegiescience.edu/sites/default/files/140602-sedawkbash.key_.pdf
-  - https://github.com/dylanaraps/pure-bash-bible
-  - https://devhints.io/bash
-  - https://www.ibm.com/developerworks/aix/library/au-satbash.html
-  - [[http://tldp.org/LDP/LG/issue18/bash.html][string manipulations]]
-  - cite:veeraraghavan2002
-  - http://tldp.org/LDP/abs/html/
-  - https://github.com/onceupon/Bash-Oneliner
-  - https://devhints.io/bash?source=post_page---------------------------
-  - [[https://www.ostechnix.com/test-your-bash-skills-by-playing-command-line-games/][bash games]]
-  - [[https://www.reddit.com/r/commandline/comments/kbeoe/you_can_make_readline_and_bash_much_more_user/?st=j6k0lbfa&sh=6d214d1f][reddit: You can make readline (and bash) much more user friendly by adding a few options to ~/.inputrc]]
-  - best practices
-    - include error calling, but avoid -e http://mywiki.wooledge.org/BashFAQ/105
-    - https://www.google.com/search?q=shell+script+formatting+best+practices
-    - include usage example
-    - a -c flag essentially adds an extra shell around multi-part command, see https://superuser.com/questions/1214597/calling-a-script-with-bash-c-option
-    - ideas
-    - [[file:~/.basecamp/emacs/public_yasnippets/sh-mode/write.bash]]
-    - https://stackoverflow.com/questions/33297857/how-to-check-dependency-in-bash-script
-  - https://unix.stackexchange.com/questions/42728/what-does-31-12-23-do-in-a-script
-  - http://tldp.org/LDP/abs/html/index.html
-  - https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
-  - https://github.com/dylanaraps/pure-bash-bible
-  - https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md
-- https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
-- https://github.com/hopeseekr/BashScripts
-- https://www.reddit.com/r/programming/comments/aw0zko/bash_creating_tabcompletion_for_your_programs/
-- reference
-  - https://github.com/shellspec/shellspec
-- examples
-  - https://github.com/hopeseekr/BashScripts
-- [[https://www.gnu.org/software/bash/manual/bash.html][documentation]] and general reference
-  - guides, tutorials, cheatsheets, books
-    - [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Linux documentation project: Advanced Bash-Scripting Guide]]
-    - http://bash3boilerplate.sh/
-    - [[https://bash.cyberciti.biz/guide/Main_Page][Linux Shell Scripting Tutorial]]
-    - http://ryanstutorials.net/bash-scripting-tutorial/
-    - http://linuxcommand.org/lc3_writing_shell_scripts.php
-    - https://www.youtube.com/watch?v=3ME7gayYeUQ
-    - https://www.youtube.com/results?search_query=shell+scripts+bioinformatics&page=&utm_source=opensearch
-    - https://google.github.io/styleguide/shell.xml
-    - http://mywiki.wooledge.org/BashGuide
-    - http://www.davidpashley.com/articles/writing-robust-shell-scripts/
-    - https://emb.carnegiescience.edu/sites/default/files/140602-sedawkbash.key_.pdf
-    - https://github.com/dylanaraps/pure-bash-bible
-    - https://devhints.io/bash
-    - https://www.ibm.com/developerworks/aix/library/au-satbash.html
-    - [[http://tldp.org/LDP/LG/issue18/bash.html][string manipulations]]
-    - cite:veeraraghavan2002
-    - http://tldp.org/LDP/abs/html/
-    - https://github.com/onceupon/Bash-Oneliner
-    - https://devhints.io/bash?source=post_page---------------------------
-    - [[https://www.ostechnix.com/test-your-bash-skills-by-playing-command-line-games/][bash games]]
-    - [[https://www.reddit.com/r/commandline/comments/kbeoe/you_can_make_readline_and_bash_much_more_user/?st=j6k0lbfa&sh=6d214d1f][reddit: You can make readline (and bash) much more user friendly by adding a few options to ~/.inputrc]]
-    - https://unix.stackexchange.com/questions/42728/what-does-31-12-23-do-in-a-script
-    - http://tldp.org/LDP/abs/html/index.html
-    - https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
-    - https://github.com/dylanaraps/pure-bash-bible
-    - https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md
-  - [[http://mywiki.wooledge.org/FullBashGuide][Full bash guide]]
-- https://mywiki.wooledge.org/BashPitfalls
-- [[https://tldp.org/LDP/abs/html/][Advanced bash scripting guide]]
-- cite:greenberg2021
-- Style and best practices
-  - https://google.github.io/styleguide/shellguide.html
-  - https://stackoverflow.com/questions/64786/error-handling-in-bash/13099228#13099228
-  - function and variable names
-    - https://www.google.com/search?q=bash+best+practice+function+name
-      - https://google.github.io/styleguide/shellguide.html#s7.1-function-names
-****** Ideas
-:PROPERTIES:
-:ID:       0ab13eb3-64dc-4696-888a-0caf1e7997dc
-:END:
-- https://www.reddit.com/r/emacs/comments/x2mmfc/from_vanilla_emacs_to_bash_ide_in_17_minutes/
-- check and set file permissions as best practice
-- ideas for function development protocol-
-  - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
-- size filter
-  - #find $localdata/frag-filt-bams -name "*.bam" -type 'f' -size -4M -delete
-     # small bam check
-     ##
-     #if [ -f /drive3/users/jszymanski/repos/mpnst/data/small_bams ]; then rm /drive3/users/jszymanski/repos/mpnst/data/small_bams; fi
-     ##
-     #minimum_bam_size=200000000
-- ideas
-  - check and set file permissions as best practice
-  - ideas for function development protocol-
-    - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
 ***** Document markup langugaes
 :PROPERTIES:
 :ID:       d0814f52-3b46-4d3a-b46c-20e2864e43d7
@@ -16803,6 +17563,19 @@ https://codebeautify.org/yaml-validator
 :ID:       7e4af24b-2b05-44bc-b87c-a16393f1e9dc
 :END:
 - https://www.educative.io/blog/advanced-yaml-syntax-cheatsheet
+******* Local YAS
+******* code.yaml :yas:
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/org-mode/code.yaml
+# -*- mode: snippet -*-
+# key: code.yaml
+# expand-env: ((yas-indent-line 'none))
+# condition: 'auto
+# --
+,#+begin_src yaml
+$0
+,#+end_src
+#+end_src
+
 ******* Processes
 :PROPERTIES:
 :ID:       a7ab5383-e7c2-4341-ab78-48967db4c9ca
@@ -17828,7 +18601,38 @@ http://www.mitchchn.me/2014/os-x-terminal/
 :END:
 - https://cellencooper.medium.com/how-to-change-ok-google-to-a-different-phrase-bd6ca322398#:~:text=After%20launching%20the%20app%2C%20tap,to%20call%20your%20Google%20Assistant.
 
+**** Android → Linux mirror
+- https://chatgpt.com/c/671b9551-ded0-8005-88f4-5569ab769f63
 - https://www.google.com/search?q=android+block+number
+- https://github.com/Genymobile/scrcpy
+  #+begin_src bash
+# for Debian/Ubuntu
+sudo apt install ffmpeg libsdl2-2.0-0 adb wget \
+                 gcc git pkg-config meson ninja-build libsdl2-dev \
+                 libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev \
+                 libswresample-dev libusb-1.0-0 libusb-1.0-0-dev
+
+mkdir /tmp/scrcpy
+cd /tmp/scrcpy
+git clone https://github.com/Genymobile/scrcpy
+
+cd scrcpy
+
+./install_release.sh
+
+
+
+sudo adb kill-server
+sudo adb start-server
+sudo adb devices
+
+adb tcpip 5555
+
+adb connect 192.168.1.12:5555
+
+
+#+end_src
+
 *** R Statistical Computing                                :career:hierarchy:
 :PROPERTIES:
 :ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
@@ -18653,11 +19457,14 @@ package.check = lapply(
 # -*- mode: snippet -*-
 # key: code.r
 # expand-env: ((yas-indent-line 'none))
+# condition: 'auto
 # --
 ,#+begin_src R
 $0
 ,#+end_src
 #+end_src
+
+
 ***** 80 :yas:
 :PROPERTIES:
 :ID:       3e97b905-780b-4612-a5a1-18e9062dd8a8
@@ -19371,6 +20178,7 @@ myft
 :PROPERTIES:
 :ID:       2faf071d-912b-4003-a42a-d9f18144434b
 :END:
+- https://software-carpentry.org/lessons/
 - https://www.mensurdurakovic.com/hard-to-swallow-truths-they-wont-tell-you-about-software-engineer-job/
 - miscellaneous
   - github education discounts
@@ -19435,6 +20243,30 @@ CLOCK: [2017-10-19 Thu 14:01]--[2017-10-19 Thu 15:01] =>  1:00
 :PROPERTIES:
 :ID:       D2ABA474-BA09-4A1D-BFDE-C8404DD8AD0A
 :END:
+*** Google cloud
+- https://superuser.com/questions/691189/totally-unable-to-switch-google-accounts
+#+begin_src bash
+cd /tmp
+curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-478.0.0-linux-x86_64.tar.gz
+
+tar -xf google-cloud-cli-478.0.0-linux-x86_64.tar.gz
+
+./google-cloud-sdk/install.sh
+
+./google-cloud-sdk/bin/gcloud init
+
+./google-cloud-sdk/bin/gcloud compute ssh <USERNAME>@<INSTANCE_NAME> --zone <ZONE> --ssh-key-file ~/.ssh/id_rsa
+
+./google-cloud-sdk/bin/gcloud compute ssh jeszyman@instance-20240601-125838 --zone us-central1-a --ssh-key-file ~/.ssh/id_rsa
+
+sudo mkdir -p /usr/local/gcloud
+sudo mv /tmp/google-cloud-sdk /usr/local/gcloud/
+
+echo $PATH
+
+gcloud compute ssh jeszyman@instance-20240601-125838 --zone us-central1-a
+#+end_src
+
 ** Development :dev:
 :PROPERTIES:
 :header-args: :tangle no
@@ -19442,7 +20274,6 @@ CLOCK: [2017-10-19 Thu 14:01]--[2017-10-19 Thu 15:01] =>  1:00
 :END:
 *** Make basic repo                                                :makefile:
 :PROPERTIES:
-:header-args:bash: :tangle ./tools/repo.makefile
 :ID:       3616424d-6e5d-44ef-acad-45d4b44891e3
 :END:
 #+begin_src bash :tangle ./tmp/makefile :tangle-mode (identity #o555) :mkdirp yes
@@ -19469,6 +20300,7 @@ git_setup:
 :ID:       b3c4c653-9584-4084-9e0e-abf16f95ac52
 :END:
 
+https://gitlab.com/Chocimier/tuir
 
 let's draw the dir trees w/ tikz / forest
 https://tex.stackexchange.com/questions/211726/draw-directory-tree-using-folder-icons
@@ -19583,71 +20415,10 @@ https://www.reddit.com/r/IWantToLearn/comments/5bfegh/iwtl_how_to_make_a_very_si
 :ID:       c62cf1fd-36bd-4555-8e8a-4030aedf6f06
 :header-args: tangle-mode (identity #o755) :mkdirp yes
 :END:
-#+begin_src bash :tangle ./tools/shell/org_latex_export.sh :tangle-mode (identity #o755)
-#!/bin/sh
 
-# if [ $# -ne 2 ]; then
-#     echo "Usage: $0 <file> <org-id>"
-#     exit 1
-# fi
-
-# FILE="$1"
-# ORG_ID="$2"
-
-# /usr/bin/emacs --batch -l ~/.emacs.d/lisp/latex.el --eval "(progn
-#                         (require 'org)
-#                         (require 'org-id)
-#                         (setq org-confirm-babel-evaluate nil)
-#                         (find-file \"$FILE\")
-#                         (org-id-goto \"$ORG_ID\")
-#                         (org-latex-export-to-pdf nil t)
-#                         (kill-emacs))"
-# #!/bin/sh
-
-if [ $# -ne 2 ]; then
-    echo "Usage: $0 <file> <org-id>"
-    exit 1
-fi
-
-FILE="$1"
-ORG_ID="$2"
-
-echo "Debug: File - $FILE"
-echo "Debug: Org ID - $ORG_ID"
-
-/usr/bin/emacs --batch -l ~/.emacs.d/lisp/latex.el --eval "(progn
-                        (require 'org)
-                        (require 'org-id)
-                        (setq org-confirm-babel-evaluate nil)
-                        (find-file \"$FILE\")
-                        (message \"Debug: Current buffer %s\" (buffer-name))
-                        (org-id-goto \"$ORG_ID\")
-                        (org-latex-export-to-pdf nil t)
-                        (kill-emacs))"
-
-#+end_src
 
 - need to redefine org-latex-pdf-process
-#+begin_src bash :tangle ./tools/shell/org_latex_export_quick.sh :tangle-mode (identity #o755)
-#!/bin/sh
 
-if [ $# -ne 2 ]; then
-    echo "Usage: $0 <file> <org-id>"
-    exit 1
-fi
-
-FILE="$1"
-ORG_ID="$2"
-
-/usr/bin/emacs --batch -l ~/repos/basecamp-private/resources/latex_quick.el --eval "(progn
-                        (require 'org)
-                        (require 'org-id)
-                        (setq org-confirm-babel-evaluate nil)
-                        (find-file \"$FILE\")
-                        (org-id-goto \"$ORG_ID\")
-                        (org-latex-export-to-pdf nil t)
-                        (kill-emacs))"
-#+end_src
 
 *** Ideas
 :PROPERTIES:
@@ -19677,3 +20448,27 @@ ORG_ID="$2"
         - nextflow nfs, parameterized
         - nextflow config
       - tmp- testing output files
+*** tmp
+**** Literate Programming with Emacs Org-mode
+
+Generally comments should reside within the Org-mode structure and outside of code blocks. Tangling with a header argument :comments org will include both the header text and text between the header and code block. For example:
+
+***** This header will be a comment
+:properties:
+:header-args:bash: :tangle /tmp/test.sh :comments org
+:end:
+
+This text in org and below the header will be a comment
+
+#+begin_src bash
+
+# This text within the code block will be a comment
+
+ls
+2
+#+end_src
+
+This comment will not appear in the tangled code
+
+****** Child headers are not comments unless they contain more code blocks
+

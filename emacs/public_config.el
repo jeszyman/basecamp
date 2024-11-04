@@ -312,7 +312,7 @@
             (delq 'process-kill-buffer-query-function
                   kill-buffer-query-functions)))))
 
-(add-hook 'shell-mode-hook 'custom-dont-ask-to-kill-shell-buffer)
+(add-hook 'shell-mode-hook 'dont-ask-to-kill-shell-buffer)
 
 (cua-mode t)
 
@@ -322,6 +322,9 @@
   (save-excursion
     (goto-char (point-min))
     (flush-lines "^[[:space:]]*$")))
+
+(setq org-startup-shrink-all-tables t)
+(setq org-startup-with-inline-images t)
 
         (setq
          org-tags-exclude-from-inheritance
@@ -394,9 +397,6 @@
 (setq org-startup-align-all-tables t)
 (setq org-startup-shrink-all-tables t)
 
-(setq org-startup-shrink-all-tables t)
-(setq org-startup-with-inline-images t)
-
 (require 'org-collector)
 
 (defun endless/follow-tag-link (tag)
@@ -434,6 +434,7 @@ With prefix argument, also display headlines without a TODO keyword."
    (dot .t)
    (emacs-lisp . t)
    (latex . t)
+   (mermaid .t)
    (org . t)
    (python . t)
    (R . t)
@@ -508,19 +509,37 @@ With prefix argument, also display headlines without a TODO keyword."
 (setq org-babel-noweb-wrap-start "<#"
       org-babel-noweb-wrap-end "#>")
 
-(defun org-remove-properties-drawer ()
-  "Remove PROPERTIES drawer from tangled files."
-  (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward "^# :PROPERTIES:\n\\(?:# .*\n\\)*?# :END:\n" nil t)
-      (replace-match ""))))
+(defun my-org-remove-properties-drawer ()
+  "Remove PROPERTIES drawer from tangled files without triggering buffer modification warning."
+  (let ((buffer-modified-p (not (buffer-modified-p))))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "^# :PROPERTIES:\n\\(?:# .*\n\\)*?# :END:\n" nil t)
+        (replace-match "")))
+    (unless buffer-modified-p
+      (set-buffer-modified-p nil))))
 
-(add-hook 'org-babel-post-tangle-hook 'org-remove-properties-drawer)
+(advice-add 'org-remove-properties-drawer :override #'my-org-remove-properties-drawer)
 
 (setq org-show-hierarchy-above t)
 
 (setq org-fold-show-context-detail
       '((default . tree)))
+
+(setq org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
+(setq org-cycle-separator-lines 0)
+(setq yas-indent-line 'fixed)
+
+(defun my-remove-trailing-newlines-in-tangled-blocks ()
+  "Remove trailing newlines from tangled block bodies."
+  (save-excursion
+    (goto-char (point-max))
+    (when (looking-back "\n" nil)
+      (delete-char -1))))
+
+(add-hook 'org-babel-post-tangle-hook #'my-remove-trailing-newlines-in-tangled-blocks)
+
+(setq org-confirm-shell-link-function nil)
 
 (with-eval-after-load 'org
         (add-to-list 'org-modules 'org-habit))
@@ -627,6 +646,58 @@ When called with two prefix arguments, ARG, run the original function without pr
                                     ("\\paragraph{%s}" . "\\paragraph*{%s}")
                                     ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 
+(defun my-org-open-in-brave-new-window ()
+  "Open the link at point in Brave browser in a new window."
+  (interactive)
+  (let* ((context (org-element-context))
+         (link (and (eq (org-element-type context) 'link)
+                    (org-element-property :raw-link context))))
+    (if link
+        (start-process "brave-new-window" nil "brave-browser" "--new-window" link)
+      (message "No link at point"))))
+
+(defun my-org-open-at-point (&optional arg)
+  "Open the link at point, using a new window in Brave if ARG is non-nil."
+  (interactive "P")
+  (if arg
+      (my-org-open-in-brave-new-window)
+    (org-open-at-point)))
+
+;; Rebind C-c C-o in org mode to our custom function
+(define-key org-mode-map (kbd "C-c C-o") 'my-org-open-at-point)
+
+(with-eval-after-load 'ox-latex
+  (add-to-list 'org-latex-classes
+               '("documentation"
+                 "\\documentclass{article}
+                 \\usepackage{/home/jeszyman/repos/latex/sty/documentation}
+                 [NO-DEFAULT-PACKAGES]
+                 [NO-PACKAGES]
+                 [EXTRA]
+                 \\tableofcontents"
+                 ("\\section{%s}" . "\\section{%s}")
+                 ("\\subsection{%s}" . "\\subsection{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
+
+(with-eval-after-load 'ox-latex
+  (add-to-list 'org-latex-classes
+               '("documentation"
+                 "\\documentclass{article}
+                 \\usepackage{/home/jeszyman/repos/latex/sty/documentation}
+                 [NO-DEFAULT-PACKAGES]
+                 [NO-PACKAGES]
+                 [EXTRA]
+                 \\begin{document}
+                 \\tableofcontents
+                 \\vspace{1cm}"
+                 ("\\section{%s}" . "\\section{%s}")
+                 ("\\subsection{%s}" . "\\subsection{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
+
 (setf org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
 
 (setq org-icalendar-with-timestamps 'active)
@@ -704,6 +775,28 @@ Example usage:
 ;; Needed for no y/n prompt at linked agenda execution
 (setq org-confirm-elisp-link-function nil)
 
+;; (defun org-plain-follow (id _)
+;;   "Follow a plain link as if it were an ID link."
+;;   (org-id-open id nil))
+
+;; (org-link-set-parameters "plain"
+;;                          :follow #'org-plain-follow
+;;                          :export #'org-plain-export
+;;                          :store #'org-store-link)
+
+;; (defun org-plain-export (link description format _)
+;;   "Export a plain link. Always export as plain text."
+;;   (cond
+;;    ((eq format 'html) (or description link))
+;;    ((eq format 'latex) (or description link))
+;;    ((eq format 'ascii) (or description link))
+;;    (t link)))
+
+;; (provide 'ol-plain)
+
+;; (with-eval-after-load 'org
+;;   (require 'ol-plain))
+
 ;; https://emacs.stackexchange.com/questions/19742/is-there-a-way-to-disable-the-buffer-is-read-only-warning
 (defun custom-command-error-function (data context caller)
   "Ignore the buffer-read-only signal; pass the rest to the default handler."
@@ -747,7 +840,22 @@ Example usage:
 
 (setq python-indent-guess-indent-offset-verbose nil)
 
+(set-buffer-file-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(set-language-environment "UTF-8")
+
 (global-set-key (kbd "C-x a") (lambda () (interactive) (insert "α")))
+
+(defun open-chatgpt-query-in-new-browser-window (query &optional use-gpt-4)
+  "Send a QUERY to ChatGPT and open the result in a new browser window.
+With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
+  (interactive "sEnter your ChatGPT query: \nP")
+  (let* ((model (if use-gpt-4 "gpt-4" "gpt-4-turbo"))
+         (url (concat "https://chat.openai.com/?q=" (url-hexify-string query)
+                      "&model=" model)))
+    (start-process "brave-browser" nil "brave-browser" "--new-window" url)))
+
+(global-set-key (kbd "C-c C-g") 'open-chatgpt-query-in-new-browser-window)
 
   ;; https://emacs.stackexchange.com/questions/35069/best-way-to-select-a-word
   (defun mark-whole-word (&optional arg allow-extend)
@@ -882,6 +990,19 @@ Example usage:
   (setq elpy-rpc-python-command "~/miniconda3/bin/python")
 )
 
+(defun my-elpy-shell-display-buffer-in-new-frame (buffer alist)
+  "Display the Python shell buffer in a new frame."
+  (let ((display-buffer-alist
+         '(("*Python*" display-buffer-pop-up-frame))))
+    (display-buffer buffer alist)))
+
+(advice-add 'elpy-shell-send-statement-and-step :around
+            (lambda (orig-fun &rest args)
+              "Send statement and open the Python buffer in a new frame."
+              (let ((display-buffer-alist
+                     '(("*Python*" . (my-elpy-shell-display-buffer-in-new-frame)))))
+                (apply orig-fun args))))
+
 (use-package exec-path-from-shell
   :config
   (when (daemonp)
@@ -965,6 +1086,8 @@ Example usage:
 (require 'ox-extra)
 (ox-extras-activate '(ignore-headlines))
 
+(use-package org-ql)
+
 (use-package org-ref
   :init
   (require 'bibtex)
@@ -1005,6 +1128,16 @@ Example usage:
       org-ref-insert-label-function 'org-ref-insert-label-link
       org-ref-insert-ref-function 'org-ref-insert-ref-link
       org-ref-cite-onclick-function (lambda (_) (org-ref-citation-hydra/body)))
+
+(defun org-ref-link-message (&optional a1 a2 a3)
+  (when (and (eq major-mode 'org-mode)
+   (eq (get-text-property (point) 'help-echo) 'org-ref-cite-tooltip))
+  (display-local-help)))
+
+(advice-add 'right-char :after 'org-ref-link-message)
+(advice-add 'left-char :after 'org-ref-link-message)
+(advice-add 'evil-forward-char :after 'org-ref-link-message)
+(advice-add 'evil-backward-char :after 'org-ref-link-message)
 
 (use-package ox-pandoc
   :after org
@@ -1172,15 +1305,12 @@ Example usage:
 
 (use-package yasnippet
   :init
+  ;; Dynamically add subdirectories in ~/.emacs.d/snippets to yas-snippet-dirs
   (setq yas-snippet-dirs
-	'("~/.emacs.d/private_yasnippets"
-	  "~/.emacs.d/public_yasnippets"))
-  :config
-  (yas-global-mode 1) ; Enabled everywhere
+        (directory-files "~/.emacs.d/snippets" t "^[^.]+")) ; Directories only, no append needed
+   :config
+  (yas-global-mode 1) ; Enable yasnippet globally
   (define-key yas-minor-mode-map (kbd "<C-tab>") 'yas-expand))
-
-(when (file-exists-p "~/repos/latex/latex_snippets")
-  (add-to-list 'yas-snippet-dirs "~/repos/latex/latex_snippets"))
 
 (defun my-org-mode-hook ()
   (setq-local yas-buffer-local-condition

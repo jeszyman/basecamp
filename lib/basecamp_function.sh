@@ -139,6 +139,11 @@ EOF
     fi
     
 }
+# ubuntu-settings()
+
+ubuntu-settings(){
+    env XDG_CURRENT_DESKTOP=GNOME gnome-control-center sound & exit
+}
 # check_mnt() Check if mount is active
 # :PROPERTIES:
 # :ID:       c98f8d3a-bdf1-4c91-8ca2-7d4743dace59
@@ -740,6 +745,32 @@ EOF
     }
 
     main "$@" & disown
+}
+# dir_size
+
+dir_size() {
+    if [[ "$1" == "-h" || "$1" == "--help" || $# -ne 1 ]]; then
+        cat <<EOF
+
+ Usage: ${FUNCNAME[0]} <path_to_directory>
+
+ Prints the size of the specified directory, switching between MB and GB as appropriate.
+
+ Example:
+   dir_size /tmp
+EOF
+        return
+    fi
+
+    # Calculate size, suppressing errors
+    size=$(du -s -B1 -L "$1" 2>/dev/null | cut -f1)    
+
+    # If size is greater than or equal to 1 GB, show in GB, otherwise in MB
+    if [ "$size" -ge $((1024**3)) ]; then
+        du -sh --block-size=GB -L "$1"
+    else
+        du -sh --block-size=MB -L "$1"
+    fi
 }
 # file_size()
 # :PROPERTIES:

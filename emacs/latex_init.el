@@ -66,27 +66,27 @@
     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
 
-(defun org-plain-follow (id _)
-  "Follow a plain link as if it were an ID link."
-  (org-id-open id nil))
+;; (defun org-plain-follow (id _)
+;;   "Follow a plain link as if it were an ID link."
+;;   (org-id-open id nil))
 
-(org-link-set-parameters "plain"
-                         :follow #'org-plain-follow
-                         :export #'org-plain-export
-                         :store #'org-store-link)
+;; (org-link-set-parameters "plain"
+;;                          :follow #'org-plain-follow
+;;                          :export #'org-plain-export
+;;                          :store #'org-store-link)
 
-(defun org-plain-export (link description format _)
-  "Export a plain link. Always export as plain text."
-  (cond
-   ((eq format 'html) (or description link))
-   ((eq format 'latex) (or description link))
-   ((eq format 'ascii) (or description link))
-   (t link)))
+;; (defun org-plain-export (link description format _)
+;;   "Export a plain link. Always export as plain text."
+;;   (cond
+;;    ((eq format 'html) (or description link))
+;;    ((eq format 'latex) (or description link))
+;;    ((eq format 'ascii) (or description link))
+;;    (t link)))
 
-(provide 'ol-plain)
+;; (provide 'ol-plain)
 
-(with-eval-after-load 'org
-  (require 'ol-plain))
+;; (with-eval-after-load 'org
+;;   (require 'ol-plain))
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes '("empty"
                                     "\\documentclass{article}
