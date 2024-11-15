@@ -1,12 +1,3 @@
-(add-to-list 'exec-path "/usr/local/bin")
-
-;(cua-selection-mode t)
-;(setq mark-even-if-inactive t) ;; Keep mark active even when buffer is inactive
-;(transient-mark-mode 1) ;; Enable transient-mark-mode for visual selection
-(scroll-bar-mode 'right) ;; Place scroll bar on the right side
-
-(setq org-export-backends '(ascii html latex odt icalendar md org)) ; This variable needs to be set before org.el is loaded.
-
 (setq large-file-warning-threshold most-positive-fixnum) ; disable large file warning
 (setq-default cache-long-scans nil)
 
@@ -323,7 +314,7 @@
     (goto-char (point-min))
     (flush-lines "^[[:space:]]*$")))
 
-(setq org-startup-shrink-all-tables t)
+(setq org-startup-folded t)
 (setq org-startup-with-inline-images t)
 
         (setq
@@ -488,7 +479,10 @@ With prefix argument, also display headlines without a TODO keyword."
  ;;
  org-confirm-babel-evaluate nil
  ;;
- org-src-fontify-natively t)
+ org-src-fontify-natively t
+ ;;
+ ;; Open src windows in current frames
+ org-src-window-setup 'current-window)
 
 ;; disable confrmation for elisp execution of org src blocks
 (setq safe-local-variable-values '((org-confirm-elisp-link-function . nil)))
@@ -526,7 +520,14 @@ With prefix argument, also display headlines without a TODO keyword."
 (setq org-fold-show-context-detail
       '((default . tree)))
 
-(setq org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
+(setq
+ org-show-context-detail
+ '((agenda . ancestors)
+   (bookmark-jump . ancestors)
+   (isearch . ancestors)
+   (default . ancestors))
+)
+
 (setq org-cycle-separator-lines 0)
 (setq yas-indent-line 'fixed)
 
@@ -557,7 +558,7 @@ With prefix argument, also display headlines without a TODO keyword."
 
 (setq org-id-link-to-org-use-id 'use-existing)
 ;;https://stackoverflow.com/questions/28351465/emacs-orgmode-do-not-insert-line-between-headers
-(setf org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
+
 
 (setq org-enforce-todo-checkbox-dependencies t)
 ;; don't adapt indentation to header level
@@ -666,6 +667,36 @@ When called with two prefix arguments, ARG, run the original function without pr
 ;; Rebind C-c C-o in org mode to our custom function
 (define-key org-mode-map (kbd "C-c C-o") 'my-org-open-at-point)
 
+;; (defun org-toggle-checkbox-and-children ()
+;;   "Toggle checkbox and all children checkboxes."
+;;   (interactive)
+;;   (save-excursion
+;;     (let* ((parent-indent (current-indentation))
+;;            (end (save-excursion
+;;                   (org-end-of-subtree)
+;;                   (point)))
+;;            (current-checkbox (save-excursion
+;;                              (beginning-of-line)
+;;                              (when (re-search-forward "\\[[ X-]\\]" (line-end-position) t)
+;;                                (match-string 0))))
+;;            (new-state (if (equal current-checkbox "[ ]") "[X]" "[ ]")))
+;;       ;; Toggle the parent checkbox
+;;       (beginning-of-line)
+;;       (when (re-search-forward "\\[[ X-]\\]" (line-end-position) t)
+;;         (replace-match new-state))
+;;       ;; Toggle all children checkboxes
+;;       (forward-line)
+;;       (while (< (point) end)
+;;         (let ((line-start (point)))
+;;           (when (and (> (current-indentation) parent-indent)
+;;                     (re-search-forward "\\[[ X-]\\]" (line-end-position) t))
+;;             (replace-match new-state)
+;;             (goto-char line-start)))
+;;         (forward-line 1)))))
+
+;; ;; Bind it to a convenient key
+;; (define-key org-mode-map (kbd "C-c x") 'org-toggle-checkbox-and-children)
+
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes
                '("documentation"
@@ -697,8 +728,6 @@ When called with two prefix arguments, ARG, run the original function without pr
                  ("\\subsubsection{%s}" . "\\subsubsection{%s}")
                  ("\\paragraph{%s}" . "\\paragraph{%s}")
                  ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
-
-(setf org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
 
 (setq org-icalendar-with-timestamps 'active)
 (setq org-icalendar-use-scheduled t)
@@ -775,27 +804,43 @@ Example usage:
 ;; Needed for no y/n prompt at linked agenda execution
 (setq org-confirm-elisp-link-function nil)
 
-;; (defun org-plain-follow (id _)
-;;   "Follow a plain link as if it were an ID link."
-;;   (org-id-open id nil))
+;; https://emacs.stackexchange.com/questions/19742/is-there-a-way-to-disable-the-buffer-is-read-only-warning
+(defun my-command-error-function (data context caller)
+  "Ignore the buffer-read-only signal; pass the rest to the default handler."
+  (when (not (eq (car data) 'buffer-read-only))
+    (command-error-default-function data context caller)))
 
-;; (org-link-set-parameters "plain"
-;;                          :follow #'org-plain-follow
-;;                          :export #'org-plain-export
-;;                          :store #'org-store-link)
+(setq command-error-function #'my-command-error-function)
 
-;; (defun org-plain-export (link description format _)
-;;   "Export a plain link. Always export as plain text."
-;;   (cond
-;;    ((eq format 'html) (or description link))
-;;    ((eq format 'latex) (or description link))
-;;    ((eq format 'ascii) (or description link))
-;;    (t link)))
+(defun org-plain-follow (id _)
+  "Follow a plain link as if it were an ID link."
+  (org-id-open id nil))
 
-;; (provide 'ol-plain)
+(org-link-set-parameters "plain"
+                         :follow #'org-plain-follow
+                         :export #'org-plain-export)
 
-;; (with-eval-after-load 'org
-;;   (require 'ol-plain))
+(defun org-plain-export (link description format _)
+  "Export a plain link. Always export as plain text."
+  (cond
+   ((eq format 'html) (or description link))
+   ((eq format 'latex) (or description link))
+   ((eq format 'ascii) (or description link))
+   (t link)))
+
+(provide 'ol-plain)
+
+(with-eval-after-load 'org
+  (require 'ol-plain))
+
+(defun shk-fix-inline-images ()
+  (when org-inline-image-overlays
+    (org-redisplay-inline-images)))
+
+(with-eval-after-load 'org
+  (add-hook 'org-babel-after-execute-hook 'shk-fix-inline-images))
+
+(setq org-image-actual-width '(300))
 
 ;; https://emacs.stackexchange.com/questions/19742/is-there-a-way-to-disable-the-buffer-is-read-only-warning
 (defun custom-command-error-function (data context caller)
@@ -1334,21 +1379,3 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
       (yas-expand))))
 
 (add-hook 'post-command-hook #'my-yas-try-expanding-auto-snippets)
-
-(run-with-idle-timer
- 1 nil
- (lambda ()
-   (when (member "Hack" (font-family-list))
-     (set-face-attribute 'default nil
-                         :family "Hack"
-                         :height 114
-                         :weight 'light)
-     (message "Font set to Hack"))))
-
-
-(custom-set-faces
- '(default ((t (:family "Hack" :height 114 :weight light)))))
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (load-theme 'manoj-dark t)))

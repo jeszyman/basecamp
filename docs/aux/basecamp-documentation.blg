@@ -1,0 +1,9 @@
+[0] Config.pm:307> INFO - This is Biber 2.17
+[0] Config.pm:310> INFO - Logfile is 'aux/basecamp-documentation.blg'
+[81] biber:340> INFO - === Thu Nov 14, 2024, 16:13:17
+[94] Biber.pm:418> INFO - Reading 'aux/basecamp-documentation.bcf'
+[144] Biber.pm:972> INFO - Found 0 citekeys in bib section 0
+[155] bbl.pm:654> INFO - Writing 'aux/basecamp-documentation.bbl' with encoding 'UTF-8'
+[155] bbl.pm:757> INFO - Output to aux/basecamp-documentation.bbl
+[155] Biber.pm:130> WARN - The file 'aux/basecamp-documentation.bcf' does not contain any citations!
+[155] Biber.pm:132> INFO - WARNINGS: 1

@@ -1,28 +1,27 @@
-;;-*- mode: elisp -*-
-
 ;; Package Management Setup
 
 (require 'package)
 
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
-(package-initialize)
+;; Ensure 'use-package' is installed
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(require 'use-package)
+(setq use-package-always-ensure t)
 
 (defun add-to-load-path-if-exists (dir)
   "Add DIR and its subdirectories to the Emacs load-path if DIR exists."
   (if (file-directory-p dir)
       (let ((default-directory dir))
-	(message "Adding %s and its subdirectories to load-path" dir)
-	(normal-top-level-add-to-load-path '("."))
-	(normal-top-level-add-subdirs-to-load-path))
+        (message "Adding %s and its subdirectories to load-path" dir)
+        (normal-top-level-add-to-load-path '("."))
+        (normal-top-level-add-subdirs-to-load-path))
     (message "Directory %s does not exist, skipping." dir)))
 
 (add-to-load-path-if-exists "~/.emacs.d/lisp/")
-(add-to-load-path-if-exists "~/.emacs.d/elpa/")
-
-(require 'use-package)
-(setq use-package-always-ensure t)
-
 
 (require 'org)
 (require 'ox-latex)
@@ -66,27 +65,26 @@
     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
 
-;; (defun org-plain-follow (id _)
-;;   "Follow a plain link as if it were an ID link."
-;;   (org-id-open id nil))
+(defun org-plain-follow (id _)
+  "Follow a plain link as if it were an ID link."
+  (org-id-open id nil))
 
-;; (org-link-set-parameters "plain"
-;;                          :follow #'org-plain-follow
-;;                          :export #'org-plain-export
-;;                          :store #'org-store-link)
+(org-link-set-parameters "plain"
+                         :follow #'org-plain-follow
+                         :export #'org-plain-export)
 
-;; (defun org-plain-export (link description format _)
-;;   "Export a plain link. Always export as plain text."
-;;   (cond
-;;    ((eq format 'html) (or description link))
-;;    ((eq format 'latex) (or description link))
-;;    ((eq format 'ascii) (or description link))
-;;    (t link)))
+(defun org-plain-export (link description format _)
+  "Export a plain link. Always export as plain text."
+  (cond
+   ((eq format 'html) (or description link))
+   ((eq format 'latex) (or description link))
+   ((eq format 'ascii) (or description link))
+   (t link)))
 
-;; (provide 'ol-plain)
+(provide 'ol-plain)
 
-;; (with-eval-after-load 'org
-;;   (require 'ol-plain))
+(with-eval-after-load 'org
+  (require 'ol-plain))
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes '("empty"
                                     "\\documentclass{article}

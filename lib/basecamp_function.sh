@@ -1,4 +1,74 @@
 # Basecamp General Shell Functions
+# connect_scrcpy
+
+# Function: connect_scrcpy
+# Usage: connect_scrcpy [-i DEVICE_IP] [-p DEVICE_PORT]
+
+connect_scrcpy() {
+    # Default device IP and port
+    local DEVICE_IP="192.168.1.12"
+    local DEVICE_PORT="5555"
+
+    # Function to display usage information
+    local usage
+    usage() {
+        echo "Usage: connect_scrcpy [-i DEVICE_IP] [-p DEVICE_PORT]"
+        return 1
+    }
+
+    # Reset OPTIND in case getopts has been used previously in the shell
+    OPTIND=1
+
+    # Parse command-line options
+    while getopts ":i:p:" opt; do
+      case ${opt} in
+        i )
+          DEVICE_IP=$OPTARG
+          ;;
+        p )
+          DEVICE_PORT=$OPTARG
+          ;;
+        \? )
+          usage
+          return 1
+          ;;
+      esac
+    done
+    shift $((OPTIND -1))
+
+    # Check if adb is installed
+    if ! command -v adb &> /dev/null; then
+        echo "Error: 'adb' is not installed. Please install it and try again."
+        return 1
+    fi
+
+    # Check if scrcpy is installed
+    if ! command -v scrcpy &> /dev/null; then
+        echo "Error: 'scrcpy' is not installed. Please install it and try again."
+        return 1
+    fi
+
+    # Attempt to connect to the device
+    echo "Connecting to device at ${DEVICE_IP}:${DEVICE_PORT}..."
+    adb connect "${DEVICE_IP}:${DEVICE_PORT}" &> /dev/null
+
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to connect to the device at ${DEVICE_IP}:${DEVICE_PORT}."
+        return 1
+    fi
+
+    # Start scrcpy in the background
+    echo "Starting scrcpy..."
+    scrcpy &
+
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to start scrcpy."
+        return 1
+    fi
+
+    echo "Successfully connected and started scrcpy."
+    return 0
+}
 # Simple alias-like functions as program launchers
 
 launch() {
