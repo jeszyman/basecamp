@@ -1,14 +1,11 @@
-# Preamble and channels
-# :PROPERTIES:
-# :ID:       abb2816b-257f-4af7-803d-33ae295919c1
-# :END:
-
-# Jeff Szymanski's basecamp conda environment. 
 name: basecamp
+# Jeff Szymanski's basecamp conda environment.
 
 channels:
   - conda-forge
   - bioconda
+
+# Adding 'defaults' to channel list implicitly is deprecated and will be removed in 25.3.
 
 dependencies:
 
@@ -42,7 +39,7 @@ dependencies:
   - r-ggrepel                                # Text and label geoms that repel #
   - r-ggridges                                               # Ridgeline plots #
   - r-ggsci                   # Ggplot2 color palettes for scientific journals #
-  - r-igraph                              # Network analysis and visualization # 
+  - r-igraph                              # Network analysis and visualization #
   - r-kableextra       # Builds HTML or LaTeX tables knitr and magrittr piping #
   - r-lintr                                                     # Linting tool #
   - r-magick                # Bindings to ImageMagick image processing library #

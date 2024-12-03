@@ -45,7 +45,7 @@
       org-export-with-todo-keywords nil)
 (require 'ox-latex)
 
-(customize-set-value 'org-latex-with-hyperref nil) 
+(customize-set-value 'org-latex-with-hyperref nil)
 
 (setq org-latex-logfiles-extensions (quote ("auto" "lof" "lot" "tex~" "aux" "idx" "log" "out" "toc" "nav" "snm" "vrb" "dvi" "fdb_latexmk" "blg" "brf" "fls" "entoc" "ps" "spl" "bbl")))
 

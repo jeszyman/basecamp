@@ -22,7 +22,7 @@
 :ID:       fb93d43a-f6ad-490f-8262-01f6b8ff10d0
 :CUSTOM_ID:       fb93d43a-f6ad-490f-8262-01f6b8ff10d0
 :END:
-Files in this repository are managed through [[ https://orgmode.org/manual/Extracting-Source-Code.html][extracting ("tangling") code]] within source code blocks of Emacs Org-mode text files. Tangling overwrites existing target files. 
+Files in this repository are managed through [[ https://orgmode.org/manual/Extracting-Source-Code.html][extracting ("tangling") code]] within source code blocks of Emacs Org-mode text files. Tangling overwrites existing target files.
 ** Documentation
 :properties:
 :export_date:
@@ -34,12 +34,15 @@ Files in this repository are managed through [[ https://orgmode.org/manual/Extra
 :ID:       c364a0c0-10c3-4476-ad24-60dd5def3ff4
 :CUSTOM_ID:       c364a0c0-10c3-4476-ad24-60dd5def3ff4
 :end:
-#+latex: % [[elisp:(run-latex-at-point)][compile]] using [[id:3975a173-ac71-4c02-b032-ef215329ca59][_run-latex-at-point]]_
+
+:noexport:
+ [[elisp:(run-latex-at-point)][compile]] using [[id:3975a173-ac71-4c02-b032-ef215329ca59][_run-latex-at-point]]_
+:end:
 *** LaTeX Reference                                                :noexport:
 - [[file:basecamp-documentation.tex][TeX]]
 - [[file:basecamp-documentation.pdf][pdf]]
-- [[id:f453bd37-55e8-46ee-9cf5-c499d7e7c5d9][Documentation style]]    
-*** Preamble :ignore:
+- [[id:f453bd37-55e8-46ee-9cf5-c499d7e7c5d9][Documentation style]]
+*** Preamble                                                         :ignore:
 
 #+include: "./latex/latex.org::#dd9bb77e-6ff7-44e0-9026-c371bdaf9603" :only-contents t
 #+latex: % [[file:~/repos/latex/latex.org::#dd9bb77e-6ff7-44e0-9026-c371bdaf9603][Last compiled]]
@@ -64,7 +67,7 @@ done
 
 #+end_src
 
-- Use functions instead of aliases. Functions are more flexible, and can be debugged. 
+- Use functions instead of aliases. Functions are more flexible, and can be debugged.
 **** An opinionated and incomplete base computing configuration
 ***** Base operating system
 
@@ -175,7 +178,7 @@ My public YASnippets are compiled from source code blocks across my Org-mode age
 - Directory names should be in hyphen-case, using only lowercase letters (a-z), digits (0-9), and hyphens (-) as separators. Use as few words as possible
   - Can use more human-friendly title case and spaces with symlinks and shortcuts
 - Prefer single-word file and directory names
-- For multi-word file and directory names, prefer a dash (-) separator (/e.g./ a-longer-file-name.txt)  
+- For multi-word file and directory names, prefer a dash (-) separator (/e.g./ a-longer-file-name.txt)
 *** Conda
 
 For repositories and projects with heavy use of Python and R, software should be managed through the Conda package manager.
@@ -191,7 +194,7 @@ My setup assumes normal emacs initialization and package structure at ~/.emacs.d
 2) ~/.emacs.d/config/
 3) ~/.emacs.d/load-late.el
 
-The ~/.emacs.d/config directory can contain symlinked lisp files from other locations. There is no assumed order within that directory.    
+The ~/.emacs.d/config directory can contain symlinked lisp files from other locations. There is no assumed order within that directory.
 
 All files mentioned here can be found in the [[id:7b58510f-fe81-4f0f-beaf-e3b369d06b9a][Lisp Files]] appendix below.
 
@@ -201,7 +204,7 @@ load-path is a list of directories that Emacs searches when you use functions li
   - Local
     - Backup on save to ~/.emacs.d/backup-save-list
     - Emacs auto-saves on default settings to ~/.emacs.d/auto-save-list [[id:33c98414-ab56-4854-9823-1b8b4ef13fd6][Save and Backup]]
-**** Simple Emacs Lisp Tutorial 
+**** Simple Emacs Lisp Tutorial
 Alist
 
 
@@ -278,7 +281,7 @@ C-c a s
 Generally comments should reside within the Org-mode structure and outside of code blocks. Tangling with a header argument :comments org will include both the header text and text between the header and code block. For example:
 
 (property drawers are excluded from tangling with custom-org-remove-properties-drawer)
-***** For example: 
+***** For example:
 ****** This header will be a comment
 :properties:
 :header-args:bash: :tangle /tmp/test.sh :comments org
@@ -321,13 +324,13 @@ ls
 	- The :yas: tag is reserved exclusively for yas block headers and does not have tag inheritance.
       - Snippets are stored in the main org repository under the directory./snippets which is symlinked to .emacs.d. Snippets are therefore under org version control.
 **** Notes
-See also Emacs and Org-mode use in my LaTeX repository ([[https://github.com/jeszyman/latex][GitHub]], [[plain:7F54F016-934E-45AA-BABF-B640464BDEF1][local buffer]]). 
-*** Appendices 
+See also Emacs and Org-mode use in my LaTeX repository ([[https://github.com/jeszyman/latex][GitHub]], [[plain:7F54F016-934E-45AA-BABF-B640464BDEF1][local buffer]]).
+*** Appendices
 **** Lisp Files
 :PROPERTIES:
 :ID:       7b58510f-fe81-4f0f-beaf-e3b369d06b9a
 :END:
-***** Initialization 
+***** Initialization
 #+begin_export latex
 \inputminted{emacs-lisp}{../emacs/init.el}
 #+end_export
@@ -335,7 +338,7 @@ See also Emacs and Org-mode use in my LaTeX repository ([[https://github.com/jes
 #+begin_export latex
 \inputminted{emacs-lisp}{../emacs/init.el}
 #+end_export
-***** Public configuration 
+***** Public configuration
 #+begin_export latex
 \inputminted{emacs-lisp}{../emacs/public_config.el}
 #+end_export
@@ -366,10 +369,19 @@ pip install flake8
 #+begin_src R
 install.packages("languageserver")
 #+end_src
+*** Common Debian startup script
+apt install gh
+#+begin_src bash
+# Setup $HOME
+mkdir -p "${HOME}/repos"
+#+end_src
+
+
+apt-get install xauth
 
 ** Org-mode guide
 *** Clock table
- 
+
 #+BEGIN: clocktable :scope file :maxlevel 6 :match "tagin" :tstart "<2024-10-01>" :tend "<2024-10-03>" :fileskip0 t
 #+CAPTION: Clock summary at [2024-10-14 Mon 12:14]
 | Headline                   | Time   |      |      |      |      |
@@ -385,15 +397,15 @@ install.packages("languageserver")
 #+END:
 
 **** Clock table events
-***** Included event 1 :tagin:
+***** Included event 1                                                :tagin:
 :LOGBOOK:
 CLOCK: [2024-10-01 Tue 12:00]--[2024-10-01 Tue 12:08] =>  0:08
 :END:
-***** Included event 2 :tagin:
+***** Included event 2                                                :tagin:
 :LOGBOOK:
 CLOCK: [2024-10-02 Wed 13:00]--[2024-10-02 Wed 13:08] =>  0:08
 :END:
-***** Excluded event 1 :tagout: 
+***** Excluded event 1                                               :tagout:
 :LOGBOOK:
 CLOCK: [2024-10-02 Wed 12:00]--[2024-10-02 Wed 12:08] =>  0:08
 :END:
@@ -411,7 +423,7 @@ https://chatgpt.com/c/66f5b550-66f0-8005-b5a1-733d20a01aed
 :ID:       cb3c499d-ed2f-4ee3-9965-ca3e1af81178
 :END:
 
-Each function has it's own Org-mode header. 
+Each function has it's own Org-mode header.
 
 ***** INPROCESS Move  [[file:lib/basecamp_function.sh]]
 ***** [[file:lib/basecamp_function.sh]]
@@ -538,11 +550,11 @@ unmute() {
 volume-up() {
     # Check if speakers are muted
     mute_status=$(amixer -D pulse get Master | grep -o '\[off\]')
-    
+
     if [[ -n "$mute_status" ]]; then
         echo "WARNING: Speakers are currently muted. Unmute them to hear audio."
     else
-	amixer -D pulse sset Master 5%+	    
+	amixer -D pulse sset Master 5%+
     fi
 }
 #+end_src
@@ -551,7 +563,7 @@ volume-up() {
 volume-down() {
     # Check if speakers are muted
     mute_status=$(amixer -D pulse get Master | grep -o '\[off\]')
-    
+
     if [[ -n "$mute_status" ]]; then
         echo "WARNING: Speakers are currently muted. Unmute them to hear audio."
     else
@@ -567,16 +579,16 @@ emacs-start() {
     cat <<- EOF
 
  Usage: emacs-start
- 
+
  Invokes the emacsclient systemd daemon if not already running.
- 
+
  Options:
    -h, --help    Show this help message and exit
 
- Arguements: This function takes no arguements. 
+ Arguements: This function takes no arguements.
 
  Example:
-   emacs-start   
+   emacs-start
 
 EOF
 }
@@ -601,7 +613,7 @@ EOF
             return 1
         fi
     fi
-    
+
 }
 #+end_src
 ****** emacs-stop()
@@ -611,13 +623,13 @@ emacs-stop() {
     cat <<- EOF
 
  Usage: emacs-stop
- 
+
  Terminates the emacsclient systemd daemon if running.
- 
+
  Options:
    -h, --help    Show this help message and exit
 
- Arguements: This function takes no arguements. 
+ Arguements: This function takes no arguements.
 
  Example:
    emacs-stop
@@ -638,7 +650,7 @@ EOF
     else
         echo "Emacs daemon is not running. Nothing to do."
     fi
-    
+
 }
 #+end_src
 ****** emacs-save()
@@ -1026,9 +1038,9 @@ pptx-to-pdf() {
     cat <<- EOF
 
  Usage: pptx-to-pdf PPTX
- 
+
  Converts a Powerpoint ppt file to PDF using unoconv. The PDF file will be
- written to the same location as the pptx, but with a .pdf extension. 
+ written to the same location as the pptx, but with a .pdf extension.
 
  Options:
    -h, --help    Show this help message and exit
@@ -1047,15 +1059,15 @@ EOF
         print_usage
         return 1
     fi
-    
+
     # Return usage if the argument is a help flag
     if [[ "$1" == "-h" || "$1" == "--help" ]]; then
         print_usage
         return 0
     fi
-        
+
   unoconv -f pdf $1
-  
+
 }
 #+end_src
 ***** logout
@@ -1064,18 +1076,18 @@ logout() {
     print_usage(){
         cat <<- EOF
 
- Usage: logout 
+ Usage: logout
 
  Logs out of i3 using i3lock. If emacsclient is running, will save all buffers prior to
- logout. 
+ logout.
 
  Options:
    -h, --help    Show this help message and exit
 
- Arguements: This function takes no arguements. 
-       
+ Arguements: This function takes no arguements.
+
  Example:
-   logout  
+   logout
 
 EOF
     }
@@ -1087,7 +1099,7 @@ EOF
     fi
 
     pgrep emacsclient && emacs-save && i3lock -c 000000 || i3lock -c 000000
- 
+
 }
 #+end_src
 ***** ls-size()
@@ -1095,7 +1107,7 @@ EOF
 ls-size(){
     print_usage(){
         cat <<- EOF
-	
+
  Usage: ls-size
 
  Lists files in the current directory, sorted by size in descending order, with file
@@ -1116,7 +1128,7 @@ EOF
         print_usage
         return 0
     fi
-    
+
     ls -lrS1 --block-size=M
 }
 #+end_src
@@ -1306,7 +1318,7 @@ EOF
     fi
 
     # Calculate size, suppressing errors
-    size=$(du -s -B1 -L "$1" 2>/dev/null | cut -f1)    
+    size=$(du -s -B1 -L "$1" 2>/dev/null | cut -f1)
 
     # If size is greater than or equal to 1 GB, show in GB, otherwise in MB
     if [ "$size" -ge $((1024**3)) ]; then
@@ -1712,7 +1724,7 @@ EOF
 :END:
 - https://chatgpt.com/c/66f5c68c-8c4c-8005-b7c6-14665eadb848
 - https://chatgpt.com/c/66f95df4-0dfc-8005-9e7b-c3f15c1ca924
-- [[id:9fa465f4-68f7-45c5-966e-80084e2c8a05][emacs_export_header_to_latex.py]]  
+- [[id:9fa465f4-68f7-45c5-966e-80084e2c8a05][emacs_export_header_to_latex.py]]
 #+begin_src emacs-lisp
 (defun run-latex-at-point ()
   "Extract the ID from the Org properties and run emacs-save and emacs-latex for the current file."
@@ -1743,7 +1755,7 @@ EOF
       (forward-line)
       (org-table-export csv-file "orgtbl-to-csv"))))
 #+end_src
-*** Ideas :ideas:
+*** Ideas                                                             :ideas:
 :PROPERTIES:
 :ID:       9c34cb75-23a9-44bf-be39-c878d7221bb8
 :END:
@@ -1756,13 +1768,16 @@ https://chat.openai.com/c/22b1d5c5-5d9b-4ced-98cf-860f7eb493c8
 ** Processes
 
 *** Flat
+**** Free drawing
+- https://excalidraw.com/
+
 **** Use phone on computer
 [[https://chatgpt.com/c/67192b0b-18b4-8005-97aa-e1f960b69a42][chatgtp]]
 scrcpy process
 adb connect 192.168.1.12:5555
 
 *** [[id:608c6f89-a4da-483c-bb4d-818c54a37675][Computer processes]]
-** Information Science / Data Science :career:hierarchy:
+** Information Science / Data Science                      :career:hierarchy:
 :PROPERTIES:
 :ID:       39F11977-BE11-47CF-98B1-14CE6D9B97C4
 :END:
@@ -3197,155 +3212,6 @@ plot(output.forest)
 - [[http://www.crcnetbase.com/doi/book/10.1201/9781315399102][data mining in R]]
 - [[https://www.r-bloggers.com/random-forests-in-r/][random forests in R]]
 
-******* DONE Kaggle titanic tutorial with R
-CLOSED: [2018-03-10 Sat 10:14]
-:PROPERTIES:
-:ID:       C0AC9886-B827-4254-B1EA-4B4C17C24CDD
-:END:
-:LOGBOOK:
-CLOCK: [2018-03-10 Sat 10:02]--[2018-03-10 Sat 10:14] =>  0:12
-CLOCK: [2017-08-25 Fri 12:19]--[2017-08-25 Fri 13:34] =>  1:15
-CLOCK: [2017-08-25 Fri 11:27]--[2017-08-25 Fri 11:29] =>  0:02
-CLOCK: [2017-08-25 Fri 10:37]--[2017-08-25 Fri 11:01] =>  0:24
-CLOCK: [2017-08-25 Fri 09:47]--[2017-08-25 Fri 10:08] =>  0:21
-:END:
-- [[http://trevorstephens.com/kaggle-titanic-tutorial/getting-started-with-r/][Titanic tutorial with R]]
-- Part 2 Prediction honing http://trevorstephens.com/kaggle-titanic-tutorial/r-part-2-the-gender-class-model/
-- Titanic: Getting Started With R - Part 3: Decision Trees
-  - Glass box model- all information available
-  - Method
-    - Scans complete data for best split
-    - Iterate until all rows have divided between the binary outcomes (terminal nodes)
-    - greedy. They make the decision on the current node which appear to be the best at the time
-      - e.g. cashier must make change for 30c using the smallest number of coins possible. A greedy algorithm would start with the coin that leaves the smallest amount of change left to pay:
-        - Greedy: 25 + 1 + 1 + 1 + 1 + 1 = 30c, with 6 coins
-        - Optimal: 15 + 15 = 30c, with 2 coins
-- Titanic: Getting Started With R - Part 4: Feature Engineering
-- Titanic: Getting Started With R - Part 5: Random Forests
-  - Random forests have less issues with overfitting b/c vote from large set of trees
-  - Variables per tree is typically sqrt of total available
-  - Gini is how pure nodes are at end of tree
-#+BEGIN_SRC R
-getwd()
-setwd('/Users/JeffBook/')
-train=read.csv('train.csv', stringsAsFactors=F)
-test=read.csv('test.csv', stringsAsFactors=F)
-test$Survived=rep(0,418)
-submit=data.frame(PassengerId=test$PassengerId, Survived= test$Survived)
-write.csv(submit, file='theyallperish.csv',row.names=F)
-prop.table(table(train$Sex, train$Survived),1)
-test$Survived=0
-test$Survived[test$Sex == 'female']=1
-summary(train$Age)
-train$Child=0
-train$Child[train$Age <18]=1
-aggregate(Survived ~ Child + Sex, data=train, FUN=sum)
-aggregate(Survived ~ Child + Sex, data=train, FUN=length)
-aggregate(Survived ~ Child + Sex, data=train, FUN=function(x) {sum(x)/length(x)})
-test$Survived=0
-test$Survived[test$Sex == 'female'] =1
-test$Survived[test$Sex == 'female' & test$Pclass == 3 & test$Fare >= 20]=0
-
-library(rpart)
-fit=rpart(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked,
-          data=train,
-          method='class')
-plot(fit)
-text(fit)
-
-
-library(rpart.plot)
-
-library(RColorBrewer)
-
-rpart.plot(fit)
-predict(fit,test,type='class')
-fit=rpart(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked,
-          data=train,
-          method='class',
-          control=rpart.control(minsplit=2, cp=0))
-
-new.fit=prp(fit, snip=T)$obj
-
-train$Name[1]
-test$Survived=NA
-names(train)
-names(test)
-train=train[,!(names(train))=='Child']
-combi=rbind(train,test)
-combi$Name=as.character(combi$Name)
-combi$Name[1]
-strsplit(combi$Name[1], split='[,.]')
-strsplit(combi$Name[1], split='[,.]')[[1]][2]
-combi$Title=sapply(combi$Name, FUN=function(x) {strsplit(x, split='[,.]')[[1]][2]})
-combi$Title=sub(' ','',combi$Title)
-table(combi$Title)
-combi$Title[combi$Title %in% c('Mme','Mlle')]='Mlle'
-
-combi$Title[combi$Title %in% c('Capt', 'Don', 'Major', 'Sir')] <- 'Sir'
-combi$Title[combi$Title %in% c('Dona', 'Lady', 'the Countess', 'Jonkheer')] <- 'Lady'
-combi$Title=factor(combi$Title)
-combi$FamilySize=combi$SibSp + combi$Parch +1
-
-combi$Surname=sapply(combi$Name, FUN=function(x) {strsplit(x, split='[,.]')[[1]][1]})
-combi$FamilyID=paste(as.character(combi$FamilySize),combi$Surname, sep='')
-combi$FamilyID[combi$FamilySize == 2] = 'Small'
-table(combi$FamilyID)
-famIDs=data.frame(table(combi$FamilyID))
-famIDs=famIDs[famIDs$Freq==2,]
-combi$FamilyID[combi$FamilyID %in% famIDs$Var1]='Small'
-combi$Family=factor(combi$FamilyID)
-train=combi[1:891,]
-test=combi[892:1309,]
-fit=rpart(Survived ~Pclass + Sex + Age + SibSp + Parch + Fare + Embarked + Title + FamilySize + FamilyID,
-          data=train,
-          method='class')
-rpart.plot(fit)
-
-summary(combi$Age)
-
-Agefit=rpart(Age ~ Pclass + Sex + SibSp + Parch + Fare + Embarked + Title + FamilySize,
-             data=combi[!is.na(combi$Age),],
-             method='anova')
-combi$Age[is.na(combi$Age)]=predict(Agefit,combi[is.na(combi$Age),])
-summary(combi)
-summary(combi$Embarked)
-combi$Embarked[which(combi$Embarked=='')]='S'
-combi$Embarked=factor(combi$Embarked)
-combi$Fare[which(is.na(combi$Fare))]=median(combi$Fare, na.rm=T)
-combi$FamilyID2 <- combi$FamilyID
-combi$FamilyID2 <- as.character(combi$FamilyID2)
-combi$FamilyID2[combi$FamilySize <= 3] <- 'Small'
-combi$FamilyID2 <- factor(combi$FamilyID2)
-
-library(randomForest)
-set.seed(415)
-fit=randomForest(as.factor(Survived)~ Pclass + Age + SibSp + Parch + Fare + Embarked + Title + FamilySize + FamilyID2,
-                 data=train,
-                 importance=T,
-                 ntree=2000)
-library(ggplot2)
-varImpPlot(fit)
-Prediction=predict(fit,test)
-class(Prediction)
-summary(Prediction)
-268/(268+150)
-
-library(party)
-set.seed(415)
-train$Sex=as.factor(train$Sex)
-train$FamilyID=as.factor(train$FamilyID)
-fit=cforest(as.factor(Survived)~Pclass + Sex + Age + SibSp + Parch + Fare + Embarked + Title + FamilySize + FamilyID,
-            data=train,
-            controls=cforest_unbiased(ntree=2000, mtry=3))
-
-str(train)
-
-
-
-1=1
-#+END_SRC
-
 **** genetic algorithms
 :PROPERTIES:
 :ID:       a2351d48-c55f-4e48-9833-36f454b3def7
@@ -3600,6 +3466,9 @@ ShowSidebar=false
 :ID:       9E19E626-9D6C-4296-BEDB-80033A846CF4
 :END:
 **** Mermaid
+- Limitations
+  - SVG export fucked up
+    - https://github.com/mermaid-js/mermaid/issues/2102
 #+begin_src bash
 sudo npm install -g @mermaid-js/mermaid-cli
 
@@ -3629,8 +3498,67 @@ flowchart TD
 #+RESULTS:
 [[file:/tmp/output.png]]
 
+#+begin_src emacs-lisp
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize))
+
+#+end_src
+#+begin_src emacs-lisp
+(setenv "PATH" (concat (getenv "PATH") ":/home/jeszyman/.nvm/versions/node/v20.18.0/bin"))
+(add-to-list 'exec-path "/home/jeszyman/.nvm/versions/node/v20.18.0/bin")
+
+#+end_src
+
+#+begin_src emacs-lisp
+(defun org-babel-execute:mermaid (body params)
+  (let* ((out-file (or (cdr (assoc :file params))
+                       (error "mermaid requires a \":file\" header argument")))
+         (theme (cdr (assoc :theme params)))
+         (width (cdr (assoc :width params)))
+         (height (cdr (assoc :height params)))
+         (background-color (cdr (assoc :background-color params)))
+         (mermaid-config-file (cdr (assoc :mermaid-config-file params)))
+         (css-file (cdr (assoc :css-file params)))
+         (scale (cdr (assoc :scale params)))
+         (pdf-fit ;; (cdr (assoc :pdf-fit params))
+          t)
+         (quiet (cdr (assoc :quiet params)))
+         (puppeteer-config-file (cdr (assoc :puppeteer-config-file params)))
+         (temp-file (org-babel-temp-file "mermaid-"))
+         (mmdc (or ob-mermaid-cli-path
+                   (executable-find "mmdc")
+                   (error "`ob-mermaid-cli-path' is not set and mmdc is not in `exec-path'")))
+         (cmd (concat (shell-quote-argument (expand-file-name mmdc))
+                      " --input " (org-babel-process-file-name temp-file)
+                      " --output " (org-babel-process-file-name out-file)
+                      (when theme (concat " --theme " theme))
+                      (when width (concat " --width " (format "%s" width)))
+                      (when height (concat " --height " (format "%s" height)))
+                      (when background-color (concat " --backgroundColor " background-color))
+                      (when mermaid-config-file (concat " --configFile " (org-babel-process-file-name mermaid-config-file)))
+                      (when css-file (concat " --cssFile " (org-babel-process-file-name css-file)))
+                      (when scale (concat " --scale " (format "%s" scale)))
+                      (when pdf-fit " --pdfFit ")
+                      (when quiet " --quiet ")
+                      (when puppeteer-config-file (concat " --puppeteerConfigFile " (org-babel-process-file-name puppeteer-config-file))))))
+    (unless (file-executable-p mmdc)
+      ;; cannot happen with `executable-find', so we complain about
+      ;; `ob-mermaid-cli-path'
+      (error "Cannot find or execute %s, please check `ob-mermaid-cli-path'" mmdc))
+    (with-temp-file temp-file (insert body))
+    (message "%s" cmd)
+    (org-babel-eval cmd "")
+    nil))
+
+#+end_src
+
 **** ChatGTP
-https://www.reddit.com/r/ChatGPT/comments/1g3hz9i/whats_one_chatgpt_tip_you_wish_youd_known_sooner/
+- https://www.reddit.com/r/ChatGPT/comments/1h1gx8k/how_many_custom_gpts_do_you_have/
+- https://www.reddit.com/r/ChatGPT/comments/1gzgtgn/what_cool_thing_you_can_do_with_ai_that_nobody/
+- https://www.reddit.com/r/vim/comments/13we2mq/vimium_chatgpt/
+- https://www.reddit.com/r/ChatGPT/comments/1g3hz9i/whats_one_chatgpt_tip_you_wish_youd_known_sooner/
 
 https://www.reddit.com/r/ChatGPT/comments/1g08jca/how_do_get_it_to_stop_the_meaningless_blather/
 
@@ -3698,7 +3626,7 @@ hostname --long
 : jeszyman-work
 
 - piped link for sudo files [[/ssh:localhost|sudo:localhost:/etc/group]]
-**** Software :flat:
+**** Software                                                          :flat:
 :PROPERTIES:
 :ID:       9d48f3fb-3d70-4844-aeca-4f22d2f38ccb
 :END:
@@ -3776,26 +3704,225 @@ y
 cmake -version
 #+end_src
 
-***** Conda and Miniconda :software:
+***** Conda and Miniconda                                          :software:
 :PROPERTIES:
 :ID:       b16d0202-8d35-472b-b538-87a7d6a6cef7
 :END:
+
+#+begin_src bash
+getent group conda
+
+sudo groupadd conda
+sudo usermod -aG conda $(whoami)
+sudo chown -R :conda /opt/miniconda3
+sudo chmod -R g+rwx /opt/miniconda3
+sudo chmod -R g+s /opt/miniconda3
+#+end_src
+
+****** Ansible
+ansible-playbook -c local ansible/playbooks/conda-playbook.yaml
+
+******* Conda install and provisioning playbook
+:properties:
+:header-args:yaml: :tangle ./ansible/playbooks/conda-playbook.yaml :mkdirp yes
+:ID:       7ab1917d-8962-4527-a4ac-5cdf7352f7a3
+:end:
+[[file:ansible/playbooks/conda-playbook.yaml]]
+******** Preamble
+#+begin_src yaml
+---
+- name: Install Conda 
+  hosts: localhost
+  tasks:
+#+end_src
+******** Install
+#+begin_src yaml
+    - name: Check if Miniconda is installed by searching for 'conda' in PATH
+      shell: "command -v conda"
+      register: conda_check
+      ignore_errors: yes
+      changed_when: false
+      failed_when: false
+      
+    - name: Set Miniconda installation needed fact
+      set_fact:
+        miniconda_needed: "{{ conda_check.rc ==127 }}"
+
+    - name: Verify if Miniconda installation is needed
+      debug:
+        msg: "Miniconda installation needed: {{ miniconda_needed }}"        
+        
+    - name: Debug conda_check result
+      debug:
+        var: conda_check.rc
+  
+    - name: Download Miniconda installer if not installed
+      get_url:
+        url: https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+        dest: /tmp/miniconda.sh
+        mode: '0755'
+      when: miniconda_needed
+
+    - name: Debug user's home directory
+      debug:
+        msg: "User's home directory is {{ ansible_user_dir }},Running as user: {{ ansible_env.USER }}, home: {{ ansible_env.HOME }}"
+      
+    - name: Install Miniconda if not installed
+      command: "bash /tmp/miniconda.sh -u -b -p {{ ansible_env.HOME }}/miniconda"
+      args:
+        creates: "{{ ansible_env.HOME }}/miniconda/bin/conda"        
+      when: miniconda_needed
+      
+#+end_src
+******** Settings
+#+begin_src yaml
+    - name: Check if Conda is already initialized
+      shell: "grep -q '>>> conda initialize >>>' {{ ansible_env.HOME }}/.bashrc"
+      register: miniconda_initialized
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Initialize Miniconda for bash
+      shell: "{{ ansible_env.HOME }}/miniconda/bin/conda init bash"
+      args:
+        executable: /bin/bash
+      when: miniconda_initialized.rc !=0
+
+    - name: Prevent automatic activation of the base environment in conda
+      shell: "{{ ansible_env.HOME }}/miniconda/bin/conda config --set auto_activate_base false"
+      args:
+        executable: /bin/bash
+
+    - name: Update conda
+      shell: "{{ ansible_env.HOME }}/miniconda/bin/conda update conda --yes"
+      args:
+        executable: /bin/bash
+      environment:
+        PATH: "{{ ansible_env.HOME }}/miniconda/bin:{{ ansible_env.PATH }}"
+      
+#+end_src
+******** Add mamba
+#+begin_src yaml
+    - name: Install Mamba using Conda
+      shell: "{{ ansible_env.HOME }}/miniconda/bin/conda install -y mamba -c conda-forge"
+      args:
+        executable: /bin/bash
+      environment:
+        PATH: "{{ ansible_env.HOME }}/miniconda/bin:{{ ansible_env.PATH }}"
+
+#+end_src
+
+******** Ideas
+:properties:
+:header-args:yaml: :tangle no
+:end:
+#+begin_src yaml
+    - name: Ensure Conda is at the correct revision
+      shell: conda install --rev 0
+      environment:
+        PATH: "/opt/miniconda/bin:{{ ansible_env.PATH }}"
+      register: conda_rev
+      changed_when: "'nothing to install' not in conda_rev.stdout"
+      when: miniconda_installation.changed
+#+end_src
+
+
+********* Test
+#+begin_src yaml
+
+    - name: Ensure conda-libmamba-solver is installed
+      shell: conda list conda-libmamba-solver
+      environment:
+        PATH: "/opt/miniconda3/bin:{{ ansible_env.PATH }}"
+      register: libmamba_check
+      failed_when: libmamba_check.rc != 0
+      changed_when: false
+
+    - name: Install conda-libmamba-solver if not present
+      shell: conda install -n base conda-libmamba-solver
+      environment:
+        PATH: "/opt/miniconda3/bin:{{ ansible_env.PATH }}"
+      when: libmamba_check.stdout.find('conda-libmamba-solver') == -1
+
+    - name: Set Conda solver to libmamba
+      shell: conda config --set solver libmamba
+      environment:
+        PATH: "/opt/miniconda3/bin:{{ ansible_env.PATH }}"
+      register: solver_config
+      changed_when: "'Setting solver' in solver_config.stdout"
+
+#+end_src
+********* Test
+#+begin_src yaml
+    - name: Create 'condagroup' group
+      group:
+        name: condagroup
+        state: present
+
+    - name: Add existing user to 'condagroup'
+      user:
+        name: jeszyman
+        groups: condagroup
+        append: yes
+
+    - name: Change group ownership of /opt/miniconda3
+      file:
+        path: /opt/miniconda3
+        state: directory
+        recurse: yes
+        group: condagroup
+#+end_src
+********* Tasks
+#+begin_src yaml
+
+
+      - name: Add conda-forge channel
+        shell: "/opt/miniconda3/bin/conda config --add channels conda-forge"
+#+end_src
+
+********* Update install
+#+begin_src yaml
+    - name: Update Conda
+      shell: conda update -y conda
+      environment:
+        PATH: "/opt/miniconda3/bin:{{ ansible_env.PATH }}"
+      register: conda_update
+      changed_when: "'Nothing to do' not in conda_update.stdout"
+#+end_src
+********* Add mamba
+#+begin_src yaml
+    - name: Ensure mamba is installed
+      shell: |
+        if ! conda list | awk '{print $1}' | grep -q '^mamba$'; then
+        echo "Installing mamba..."
+        conda install -c conda-forge mamba -y;
+        else
+        echo "Mamba is already installed.";
+        fi
+      environment:
+        PATH: "/opt/miniconda3/bin:{{ ansible_env.PATH }}"
+      register: mamba_check
+      changed_when: "'Installing mamba...' in mamba_check.stdout"
+#+end_src
+********* Path variable
+#+begin_src yaml
+    - name: Add Conda to user-specific PATH
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: 'export PATH="{{ ansible_env.HOME }}/miniconda/bin:$PATH"'
+        state: present
+#+end_src
+
 ****** Processes
 :PROPERTIES:
 :ID:       9ea589de-3ba6-4ddc-a5e4-6ffbddd70e15
 :END:
-******* Install
+******* [[id:7ab1917d-8962-4527-a4ac-5cdf7352f7a3][Install]] 
 :PROPERTIES:
 :ID:       be60258f-2023-42c4-bc3e-86d2095c4199
 :END:
-******** [[id:9066090d-28df-4d7b-84a6-a3611bdc8386][Conda/mamba/mambaforge install]]
-:PROPERTIES:
-:ID:       c22c2ae2-0cdb-45a9-89f5-f21b09161d0a
-:END:
-******** [[id:89e9b0a1-5157-46e6-9004-755136b291d1][Miniconda install]]
-:PROPERTIES:
-:ID:       c4e3e67f-7be0-4e1c-9d15-6a456114c37c
-:END:
+******* Uninstall
+- https://docs.anaconda.com/miniconda/uninstall/
 ******* Add channel
 :PROPERTIES:
 :ID:       422245b4-4225-4ecf-a764-1e74be0d5ac3
@@ -3865,6 +3992,10 @@ https://stackoverflow.com/questions/43222407/how-to-list-package-versions-availa
 :PROPERTIES:
 :ID:       d9e04105-39ef-465c-9e91-fee12c86645b
 :END:
+******** Update conda env from github location yaml
+- conda env update --name biotools --file https://raw.githubusercontent.com/jeszyman/basecamp/v1.0.0/basecamp_env.yaml
+- mamba cannot update from urls, instead do something like
+  curl -o /tmp/basecamp_env.yaml https://raw.githubusercontent.com/jeszyman/basecamp/v1.0.0/basecamp_env.yaml && mamba env update --name biotools --file /tmp/basecamp_env.yaml
 ******** Build environment from multiple yamls
 :PROPERTIES:
 :ID:       3da61576-d03d-4220-ac44-644e34590783
@@ -4013,19 +4144,20 @@ dependencies:
 :ID:       76a6e083-f569-42a9-b551-4b9ccc770834
 :header-args:yaml: :tangle ./basecamp_env.yaml :comments no
 :END:
-******* [[file:basecamp_env.yaml][yaml]]
+- [[file:basecamp_env.yaml][yaml]]
 ******* Preamble and channels
 :PROPERTIES:
 :ID:       abb2816b-257f-4af7-803d-33ae295919c1
 :END:
-#+begin_src yaml :use-heading yes :comments org
-
-# Jeff Szymanski's basecamp conda environment. 
+#+begin_src yaml :use-heading yes :comments no
 name: basecamp
+# Jeff Szymanski's basecamp conda environment.
 
 channels:
   - conda-forge
   - bioconda
+
+# Adding 'defaults' to channel list implicitly is deprecated and will be removed in 25.3.
 
 dependencies:
 #+end_src
@@ -4071,7 +4203,7 @@ dependencies:
   - r-ggrepel                                # Text and label geoms that repel #
   - r-ggridges                                               # Ridgeline plots #
   - r-ggsci                   # Ggplot2 color palettes for scientific journals #
-  - r-igraph                              # Network analysis and visualization # 
+  - r-igraph                              # Network analysis and visualization #
   - r-kableextra       # Builds HTML or LaTeX tables knitr and magrittr piping #
   - r-lintr                                                     # Linting tool #
   - r-magick                # Bindings to ImageMagick image processing library #
@@ -4744,7 +4876,7 @@ https://stackoverflow.com/questions/67699/how-to-clone-all-remote-branches-in-gi
 - https://stackoverflow.com/questions/29933349/how-can-i-make-git-commit-messages-divide-into-multiple-lines
 - https://www.conventionalcommits.org/en/v1.0.0/#summary
 - https://www.google.com/search?q=git+generate+chage+log
-******* Tags (stable versions) 
+******* Tags (stable versions)
 - https://chatgpt.com/c/6728d0dc-db08-8005-90ca-220ff0dccf67
 ******* Create and initialize
 :PROPERTIES:
@@ -5109,13 +5241,7 @@ git clone -b opencv-2.4 --single-branch https://github.com/Itseez/opencv.git
 :END:
 - Changelog via gitcliff and org- https://www.reddit.com/r/commandline/comments/uaub3o/new_version_of_gitcliff_is_out/
 ****** [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]]
-:PROPERTIES:
-:ID:       213d29c1-9a33-475c-b020-11a2aaa49334
-:END:
 ****** [[id:fcffb312-ca8d-4450-b837-b1945201f9c1][My git]]
-:PROPERTIES:
-:ID:       d95f0f8a-247f-44a2-a676-ec5066d3e1c1
-:END:
 ****** Scripts
 :PROPERTIES:
 :header-args:bash: :tangle-mode (identity #o555) :mkdirp yes
@@ -5248,7 +5374,7 @@ else
     fi
 fi
 #+end_src
-******* Development :dev:
+******* Development                                                     :dev:
 :PROPERTIES:
 :ID:       0a745e73-84c6-466e-8486-37d17af8df62
 :END:
@@ -5837,22 +5963,49 @@ TSWLatexianTemp*
 :PROPERTIES:
 :ID:       e1bbc57a-0660-4ccf-a7e7-9870b3afbff7
 :END:
+
 https://mail.google.com/mail/u/0/#inbox/FMfcgzQXKDVNGVpdWZndFfQJHPDlQnvc
 https://github.nih.gov/learn
-****** Processes :flat:
+****** Processes                                                       :flat:
 :PROPERTIES:
 :ID:       a21144ea-1793-466e-87da-a88f3a540c25
 :END:
+
 - pull specific text file from github https://stackoverflow.com/a/31844340/6106936
 - git filter-branch --tree-filter 'rm -rf path/to/your/file' HEAD
   - https://stackoverflow.com/questions/33330771/git-lfs-this-exceeds-githubs-file-size-limit-of-100-00-mb
 - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
 - https://www.google.com/search?q=github+leave+a+repo+closed+notice
 - https://www.google.com/search?q=github+new+repository
+******* Authorization and API
+#+begin_src bash
+# Load the GitHub token from the YAML file
+GITHUB_TOKEN=$(grep 'github_token:' /tmp/test.yaml | awk '{print $2}')
+
+curl -k -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user/repos?per_page=100 | jq '.[].full_name' | grep jeszyman 
+
+#+end_src
+
+#+begin_src bash :session TEST
+GITHUB_TOKEN=$(grep 'github_token:' /tmp/test.yaml | awk '{print $2}')
+
+#curl -u <username>:<token> -s https://api.github.com/repos/<username>/<repository> | grep "private"
+
+curl -u jeszyman:$GITHUB_TOKEN -s https://api.github.com/repos/jeszyman/sci | grep "private"
+
+curl -u jeszyman:$GITHUB_TOKEN -s https://api.github.com/repos/jeszyman/sci 
+#+end_src
+
+******* Create a remote
+- e.g.
+  #+begin_src bash
+gh auth status
+
+git status
+
+gh repo create mouse-cfdna --private --source=/home/jeszyman/repos/mouse-cfdna --push
+#+end_src
 ****** [[id:E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6][Git]]
-:PROPERTIES:
-:ID:       3e5b0207-b299-49a5-9eaa-757ceb396e62
-:END:
 ****** General reference                                                :ref:
 :PROPERTIES:
 :ID:       d393ce6b-fd67-44e7-8543-221fa38d7634
@@ -5929,7 +6082,7 @@ digraph {
 //
 ////////////////////////////////////////////////////////////////////
 // parameters
- rankdir=LR;   
+ rankdir=LR;
  graph [fontsize=14, fontname="Verdana", compound=true, overlap=false];
  node [
  fontsize=12
@@ -5942,14 +6095,14 @@ multiplexFastq [fillcolor="green",style="filled",label="Multiplexed \n Fastqs"]
 nciFastq [fillcolor="green",style="filled",label="NCI Fastqs"]
 extractedFastq [fillcolor="green",style="filled",label="De-multiplexed \n Barcode-extracted \n Fastqs"]
 cfdnaWESBam [label="cfDNA WES Alignments"]
-cfdnaWGSBam 
-tumorWGSBam 
-leukocyteWGSBam 
-tumorWESBam 
-fragFilterBam 
-downsampledBam 
-wig 
-tumorFraction 
+cfdnaWGSBam
+tumorWGSBam
+leukocyteWGSBam
+tumorWESBam
+fragFilterBam
+downsampledBam
+wig
+tumorFraction
 cfDNADummy [shap=point style=invis]
 ///
 /// processes
@@ -5970,7 +6123,7 @@ subgraph cluster_washu {
 subgraph cluster_cfDNA {
        label = "cfDNA for Fragment Filtering"
        cfdnaWGSBam
-       cfDNADummy 
+       cfDNADummy
        cfdnaWESBam
 }
 subgraph cluster_genomicDNA {
@@ -5989,19 +6142,19 @@ multiplexFastq,extractedFastq,nciFastq,cfdnaWESBam,cfdnaWGSBam,tumorWGSBam,leuko
 // edges
  multiplexFastq -> demultiplexRenameExtract -> extractedFastq -> alignment
  multiplexFastq -> fastqQc
- extractedFastq -> fastqQc   
+ extractedFastq -> fastqQc
  nciFastq -> alignment
  nciFastq -> fastqQc
- alignment -> cfDNADummy [lhead=cluster_cfDNA]         
+ alignment -> cfDNADummy [lhead=cluster_cfDNA]
  alignment -> genomicDNADummy [lhead=cluster_genomicDNA]
  cfDNADummy -> fragFilter [ltail=cluster_cfDNA]
  cfDNADummy -> bamQc [ltail=cluster_cfDNA]
- genomicDNADummy -> downsample [ltail=cluster_genomicDNA] 
- genomicDNADummy -> bamQc [ltail=cluster_genomicDNA] 
+ genomicDNADummy -> downsample [ltail=cluster_genomicDNA]
+ genomicDNADummy -> bamQc [ltail=cluster_genomicDNA]
  fragFilter -> fragFilterBam
  fragFilterBam -> fragmentAnalysis
  cfDNADummy -> fragmentAnalysis [ltail=cluster_cfDNA]
- fragFilterBam -> downsample -> downsampledBam -> readCounting -> wig -> ichor -> tumorFraction 
+ fragFilterBam -> downsample -> downsampledBam -> readCounting -> wig -> ichor -> tumorFraction
 }
 #+END_SRC
 - applications
@@ -6387,7 +6540,7 @@ https://www.orgzlyrevived.com/
 - orgzly event reminders occur at time of event https://github.com/orgzly/orgzly-android/issues/664
 - https://github.com/orgzly/orgzly-android/issues/674
 - https://github.com/orgzly/orgzly-android/issues/295
-***** Outlook on the web :software:
+***** Outlook on the web                                           :software:
 :PROPERTIES:
 :ID:       935c943e-8ed0-4aec-b12c-9576abd5a1bc
 :END:
@@ -7205,7 +7358,7 @@ https://stackoverflow.com/questions/50413374/glob-wildcards-on-multiple-director
 :ID:       44d21b98-0a61-43db-937f-65ff5a5d27d3
 :END:
 ******** See also [[id:83ab8d81-d8b9-4430-b639-2cbe92ec49b4][Python YAS]]
-******** smk.rule.py :yas:
+******** smk.rule.py                                                    :yas:
 :PROPERTIES:
 :ID:       930a22e1-af7a-41d5-bd6d-31cf659eb726
 :END:
@@ -7419,7 +7572,7 @@ smk.rule.${1:$$(yas-choose-value '("bash" "r"))}
 :header-args:snakemake: :tangle no
 :END:
 #+end_src
-******** smk.rulegraph :yas:
+******** smk.rulegraph                                                  :yas:
 :PROPERTIES:
 :ID:       6832b456-5ad2-4f2f-afe0-ae7d16a1301f
 :END:
@@ -7489,7 +7642,7 @@ $0
 $0
 ,#+end_src
 #+end_src
-******** smk.rscript :yas:
+******** smk.rscript                                                    :yas:
 :PROPERTIES:
 :ID:       f1e9b827-677e-4e25-b59d-8b12f46ba4b8
 :END:
@@ -8755,7 +8908,7 @@ http://www.mitchchn.me/2014/os-x-terminal/
 :ID:       4bc3532d-09d0-4098-be6a-c02d4cbb5070
 :END:
 
-**** Software engineering :ref:
+**** Software engineering                                               :ref:
 :PROPERTIES:
 :ID:       d4c65ebf-8abd-4876-8b79-08ae9fcc50c2
 :END:
@@ -8846,7 +8999,7 @@ emacsclient -e "(progn (find-file \"$1\") \
 :PROPERTIES:
 :ID:       55964bf9-dba0-44b4-9b78-1ec6731822b0
 :END:
-****** 0 Flat                                 :flat:
+****** 0 Flat                                                          :flat:
 :PROPERTIES:
 :ID:       8d6e65d5-aa51-4dfa-804f-8ce9126f8ae9
 :END:
@@ -8856,13 +9009,13 @@ emacsclient -e "(progn (find-file \"$1\") \
 :END:
 https://www.reddit.com/r/emacs/comments/18mvqez/how_can_i_create_inputs_and_buttons_like_the/
 ******* Install
-I install a more recent, non-apt emacs version from https://ftp.wayne.edu/gnu/emacs/ (v29.4 as of [2024-07-05 Fri]). 
+I install a more recent, non-apt emacs version from https://ftp.wayne.edu/gnu/emacs/ (v29.4 as of [2024-07-05 Fri]).
   #+begin_src bash
 cd /tmp
 
 wget https://mirrors.ocf.berkeley.edu/gnu/emacs/emacs-29.4.tar.xz
 
-tar -xf /tmp/emacs-29.4.tar.xz 
+tar -xf /tmp/emacs-29.4.tar.xz
 
 sudo apt-get install -y \
     libwebp-dev xaw3dg libxpm4 libpng16-16 zlib1g libjpeg8 libtiff5 libgif7 librsvg2-2 librsvg2-dev \
@@ -9014,8 +9167,6 @@ https://www.reddit.com/r/emacs/comments/185n3yo/emacs_meets_chatgpt_for_flawless
 :ID:       19e68685-1e50-4b8f-9da0-61f9b8565153
 :END:
 https://unix.stackexchange.com/questions/47724/how-to-modify-write-permission-on-current-buffer-in-emacs
-****** White space and empty lines
-http://xahlee.info/emacs/emacs/elisp_compact_empty_lines.html
 ****** Appearance
 :PROPERTIES:
 :ID:       990e6299-2050-44ad-ab5e-e95ac1b03c12
@@ -9279,6 +9430,14 @@ https://github.com/tarsius/moody
 - essh.el- tools to send lines in emacs to shell
   - https://www.emacswiki.org/emacs/essh.el
 - [[id:2501e2dd-b2ca-4bea-a313-3a0a758144e4][essh.el in my config]]
+- [[id:fc0d7670-9357-4209-a699-88d05157bcea][bash-completion package]]
+- [[id:f73673dd-e2fe-4228-97c5-efcabcf8f69b][shx package]]
+- https://github.com/p3r7/friendly-shell
+- https://www.eigenbahn.com/2020/07/07/emacs-remote-shell-interpreter-conf
+- https://www.masteringemacs.org/article/running-shells-in-emacs-overview
+- https://stackoverflow.com/questions/12224909/is-there-a-way-to-get-my-emacs-to-recognize-my-bash-aliases-and-custom-functions
+
+
 #+begin_src emacs-lisp
 ;;https://emacs.stackexchange.com/questions/37887/send-region-to-shell-in-another-buffer
 (defun tws-region-to-process (arg beg end)
@@ -9300,6 +9459,8 @@ active process."
                       (process-list)))))
   (process-send-region tws-process-target beg end))
 #+end_src
+****** Interfaces
+- https://github.com/emacs-slack/emacs-slack/
 ****** Bibtex
 :PROPERTIES:
 :ID:       b9213e5b-1c3a-4da0-a648-10eed94179c4
@@ -9322,14 +9483,6 @@ active process."
 
 #+end_src
 - https://www.youtube.com/watch?app=desktop&v=D3FzMPZm7vY&ab_channel=DistroTube
-****** Debugging, troubleshooting
-- 27.6 Running Debuggers
-    - Debugging
-      - - https://www.reddit.com/r/emacs/comments/6uc7g5/just_figured_out_why_emacs_pauses_sometimes/
-      - - M-x toggle-debug-on-error
-      - https://www.reddit.com/r/emacs/comments/2dmv85/invalid_search_bound_wrong_side_of_point_whenever/
-    - bactrace with (setq debug-on-error t)
-- Troubleshooting- M-x profiler-start / profiler-report
 ****** Completion frameworks
 :PROPERTIES:
 :ID:       b67dea45-0f1c-44b7-a76d-efc6dd1f2a75
@@ -9351,11 +9504,27 @@ active process."
 - https://emacsnotes.wordpress.com/2018/05/27/keyboard-macros-build-custom-commands-with-the-emacs-command-language/
 - https://www.reddit.com/r/emacs/comments/yzgfas/autocorrect_the_ign_ing_typo/
 - https://www.lucacambiaghi.com/vanilla-emacs/readme.html#h:06E0EA9F-7CF4-4B99-8A4A-2C63A4F8A6B6
+- [[id:dab8038b-67bd-413e-88d5-25d168f29e9b][key-chord]]
+******* Capture templates
+:PROPERTIES:
+:ID:       a3520e71-8dbb-409a-b618-d312405aab81
+:END:
+- https://www.reddit.com/r/emacs/comments/fzuv4f/my_prettified_orgcapture/
+- capture template formatting
+  - [[https://emacs.stackexchange.com/questions/27486/orgmode-capture-template-adding-sub-headers][stack: orgmode capture template adding subheaders]]
+  - org capture template notes
+    - https://emacs.stackexchange.com/search?q=%5Borg-mode%5D+capture
+    - https://emacs.stackexchange.com/questions/27486/orgmode-capture-template-adding-sub-headers
+    - https://www.youtube.com/watch?v=Af4NVJbNAB4&list=PLVtKhBrRV_ZkPnBtt_TD1Cs9PJlU0IIdE&index=13
+    - [[http://sachachua.com/blog/2008/01/outlining-your-notes-with-org/][sacha: outlining notes with org]]
+  - [[https://www.reddit.com/r/emacs/comments/5jhwlu/getting_things_from_outside_emacs_into/][reddit: org capture setups]]
+  - https://www.reddit.com/r/emacs/comments/7zqc7b/share_your_org_capture_templates/
 
 ****** Config and admin
 :PROPERTIES:
 :ID:       0df2f01d-54a1-45a2-a7aa-272d6fcf7bf8
 :END:
+- https://www.reddit.com/r/emacs/comments/1h1zyhz/emacs_a_basic_and_capable_configuration/
 - https://github.com/Likhon-baRoy/.emacs.d
 - [[http://emacs.stackexchange.com/questions/28772/manage-same-init-file-for-linux-and-windows][same init for multiple platforms]]
 - https://emacs.stackexchange.com/questions/293/what-should-shouldnt-i-do-when-keeping-emacs-and-emacs-d-in-version-control
@@ -9418,6 +9587,14 @@ active process."
 - https://muto.ca/posts/my-emacs-configuration.html
 - https://www.reddit.com/r/emacs/comments/m9zxw6/444_days_of_literate_configuration_450_days_using/
 - https://github.com/DiamondBond/emacs
+****** Debugging, troubleshooting
+- 27.6 Running Debuggers
+    - Debugging
+      - - https://www.reddit.com/r/emacs/comments/6uc7g5/just_figured_out_why_emacs_pauses_sometimes/
+      - - M-x toggle-debug-on-error
+      - https://www.reddit.com/r/emacs/comments/2dmv85/invalid_search_bound_wrong_side_of_point_whenever/
+    - bactrace with (setq debug-on-error t)
+- Troubleshooting- M-x profiler-start / profiler-report
 ****** Emacs as a genreal IDE
 :PROPERTIES:
 :ID:       704f27f2-f861-4156-8a38-079ce51080c7
@@ -9433,6 +9610,27 @@ https://www.reddit.com/r/emacs/comments/17gqjsy/using_ruff_format_with_emacs_to_
 :PROPERTIES:
 :ID:       5857e608-7dbc-4cf2-93fd-6e786e2b0c11
 :END:
+#+begin_src emacs-lisp
+;;https://emacs.stackexchange.com/questions/37887/send-region-to-shell-in-another-buffer
+(defun tws-region-to-process (arg beg end)
+  "Send the current region to a process buffer.
+The first time it's called, will prompt for the buffer to
+send to. Subsequent calls send to the same buffer, unless a
+prefix argument is used (C-u), or the buffer no longer has an
+active process."
+  (interactive "P\nr")
+  (if (or arg ;; user asks for selection
+          (not (boundp 'tws-process-target)) ;; target not set
+          ;; or target is not set to an active process:
+          (not (process-live-p (get-buffer-process
+                                tws-process-target))))
+      (setq tws-process-target
+            (completing-read
+             "Process: "
+             (seq-map (lambda (el) (buffer-name (process-buffer el)))
+                      (process-list)))))
+  (process-send-region tws-process-target beg end))
+#+end_src
 - [[http://ergoemacs.org/emacs/emacs_shell_vs_terminal.html][Why Run Shell in Emacs?]]
 - https://www.reddit.com/r/emacs/comments/1ext5f0/help_me_make_mx_shell_better_by_making_comint/
 - use windows for bash script and *shell*
@@ -9495,11 +9693,6 @@ https://www.gnu.org/software/tramp/#Overview
 ;;   (exec-path-from-shell-initialize))
 
 #+END_SRC
-****** Plain text diagraming
-- see mermaid
-- https://github.com/skuro/plantuml-mode  
-****** LaTeX integration
-https://www.reddit.com/r/emacs/comments/1fw7jbb/karthink_emacs_latex/
 ****** Emacs custom development
 :PROPERTIES:
 :ID:       e5bf7c5d-80dc-4ee8-bccd-775be35ee7ad
@@ -9555,285 +9748,6 @@ https://www.reddit.com/r/emacs/comments/1fw7jbb/karthink_emacs_latex/
 :END:
 https://www.reddit.com/r/emacs/comments/17rghxv/emacs_as_a_replacement_tmux/
 - interfaces
-****** Email
-:PROPERTIES:
-:ID:       ea517dbd-d9d1-4e9f-b72d-c45ed8b6e1f3
-:END:
-- email https://www.reddit.com/r/emacs/comments/yx1q69/how_to_set_up_email_step_by_step_guide_for/
-****** External file annotation and notes
-:PROPERTIES:
-:ID:       5c955ca9-331f-4206-bbfd-735401e2f33d
-:END:
-- https://www.youtube.com/watch?app=desktop&v=P02FD63gGco&ab_channel=DmitryM
-****** Freehand drawing
-https://www.reddit.com/r/emacs/comments/pk5ad6/draw_and_scribble_in_gnu_emacs/
-****** GTD in Emacs
-:PROPERTIES:
-:ID:       c178c08c-ac3c-424d-8bae-ad96afc197df
-:END:
-https://github.com/rougier/emacs-gtd
-https://daryl.wakatara.com/emacs-gtd-flow-evolved/#structure---para
-- https://www.labri.fr/perso/nrougier/GTD/index.html
-****** Integration with programming
-:PROPERTIES:
-:ID:       3b3db398-e82a-4a5d-b4cb-a8c10cc08aca
-:END:
-[[id:44347009-ee09-4cf1-9786-f0106a378a2e][sql integration]]
-[[id:5d29a241-3165-4a3b-a88c-c3fe122d2ff9][Jupyter integration]]
-[[id:e33cbb04-6299-4a46-bcbd-116bdd72e99d][Rmd integration]]
-[[id:e7806712-9607-4b78-8662-80a2659c203d][Python integration]]
-[[id:07b8634c-70a6-4a99-90b5-0f5083ccaf04][Emacs shell IDE]]
-****** External
-:PROPERTIES:
-:ID:       c56ee165-06f6-451b-8a5d-526e684367b6
-:END:
-  - emacs
-    - https://stackoverflow.com/questions/1008750/ide-emacs-mode-for-shell-scripting-in-bash-sh-etc
-    - http://www.skybert.net/emacs/bash-linting-in-emacs/
-- https://www.emacswiki.org/emacs/ComintMode
-- https://www.reddit.com/r/emacs/comments/ajwtcb/emacs_on_the_go/
-- https://xenodium.com/seamless-command-line-utils/
-- [[id:c5af6642-dbe2-43df-b672-eea684e96de6][Launching applications]]
-- tramp gdrive
-  - [currently not working] to goodle drive- https://www.gnu.org/software/tramp/#Using-Google-Drive
-****** llm integration
-:PROPERTIES:
-:ID:       907b0796-a3c5-4851-8cf7-272d6c9750d1
-:END:
-  - https://www.reddit.com/r/emacs/comments/17hvcsi/ellama_moved_to_llm_library_and_now_supports/
-  - https://melpa.org/#/chatgpt-shell
-  - https://www.reddit.com/r/emacs/comments/1459elk/llm_pal_ai_inside_emacs_via_lsp_locally_hosted/
-  - https://docs.khoj.dev/#/emacs
-  - https://github.com/ahyatt/llm
-****** Popups
-:PROPERTIES:
-:ID:       c82504a2-5be4-4ec0-b2e4-bb7080561e05
-:END:
-https://www.emacswiki.org/emacs/PosTip
-#+begin_src emacs-lisp
- (require 'pos-tip)
- (defun my-describe-function (function)
-   "Display the full documentation of FUNCTION (a symbol) in tooltip."
-   (interactive (list (function-called-at-point)))
-   (if (null function)
-       (pos-tip-show
-        "** You didn't specify a function! **" '("red"))
-     (pos-tip-show
-      (with-temp-buffer
-        (let ((standard-output (current-buffer))
-              (help-xref-following t))
-          (prin1 function)
-          (princ " is ")
-          (describe-function-1 function)
-          (buffer-string)))
-      nil nil nil 0)))
-#+end_src
-
-#+begin_src emacs-lisp
-(defun convert-table-to-tsv-alist (file)
-  (let ((alist '()))
-    (with-temp-buffer
-      (insert-file-contents file)
-      (while (not (eobp))
-        (let* ((line (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
-               (split-line (split-string line "\t")))
-          (push (cons (nth 0 split-line) (nth 1 split-line)) alist))
-        (forward-line 1)))
-    alist))
-
-(setq my-org-definitions (convert-table-to-tsv-alist "/tmp/definitions.tsv"))
-
-(require 'popup)
-
-(defun my-org-define-at-point ()
-  (let* ((word (thing-at-point 'word t))
-         (lowercase-word (downcase word))
-         (definition (cdr (assoc lowercase-word
-                                 (mapcar (lambda (pair)
-                                           (cons (downcase (car pair)) (cdr pair)))
-                                         my-org-definitions)))))
-    (when definition
-      (popup-tip definition :around t :height 20 :scroll-bar t :margin t))))
-
-(add-hook 'org-mode-hook
-          (lambda ()
-            (setq-local eldoc-documentation-function 'my-org-define-at-point)
-            (eldoc-mode 1)))
-
-#+end_src
-****** Menus and interfaces
-- https://github.com/oantolin/embark
-- https://github.com/kickingvegas/casual
-- http://yummymelon.com/devnull/announcing-casual-avy.html
-****** Programming
-:PROPERTIES:
-:ID:       576ada02-11e2-48d8-95de-11e8c31dad9c
-:END:
-- https://www.reddit.com/r/emacs/comments/1czgkk0/emacs_as_code_navigation_tool/
-- https://www.reddit.com/r/emacs/comments/1d3f5a7/do_you_use_tab_or_space_for_indenting_emacs_lisp/
-- https://testing.googleblog.com/2023/11/write-clean-code-to-reduce-cognitive.html
-- https://www.val.town/
-- https://www.youtube.com/c/arjancodes
-- https://abseil.io/resources/swe-book/html/ch02.html#blameless_postmortem_culture
-- https://processing.org/
-- https://blog.calebjay.com/posts/my-emacs-environment/#on-programming-in-emacs
-******* Coding workflow
-:PROPERTIES:
-:ID:       0fb4f5fc-60a1-4f26-a49a-22d283840ff8
-:END:
-- https://www.reddit.com/r/emacs/comments/v0kv5d/my_emacs_workflow_as_a_software_engineer_and/
-****** Package management
-- how to autoupdate packages?
-- :ensure t should install package if not already present on local
-- https://jwiegley.github.io/use-package/keywords/
-- https://dev.to/deciduously/how-i-emacs-and-so-can-you-packages-m9p
-- :diminish: keep off mod line
-- https://jwiegley.github.io/use-package/keywords/
-- https://www.reddit.com/r/emacs/comments/j2xezg/usepackage_best_practices/
-****** Ricing
-- ricing
-  #+begin_src emacs-lisp
-;(setq-default left-margin-width 2)
-;(setq-default right-margin-width 2)
-(set-fringe-mode 0)
-#+end_src
-  #+begin_src emacs-lisp
-(setq line-spacing 0.05)
-(setq header-line-format " ")
-(setq org-startup-indented t
-      ;;org-bullets-bullet-list '(" ") ;; no bullets, needs org-bullets package
-      ;;org-ellipsis "  " ;; folding symbol
-      ;;org-pretty-entities nil
-      ;;org-hide-emphasis-markers t
-      ;; show actually italicized text instead of /italicized text/
-      org-agenda-block-separator ""
-      ;;org-fontify-whole-heading-line t
-      ;;org-fontify-done-headline t
-      ;;org-fontify-quote-and-verse-blocks t
-)
-(setq org-agenda-remove-tags t)
-#+end_src
-****** rectangle commands
-:PROPERTIES:
-:ID:       3007a4a2-78d2-4953-8f0f-de820ec814c8
-:END:
-- Selection
-  - https://www.google.com/search?q=emacs+rectangle+paste
-http://xahlee.info/emacs/emacs/emacs_string-rectangle_ascii-art.html
-
-****** Snippets and templating
-:PROPERTIES:
-:ID:       64c78e3f-2d73-4d63-88a2-cc5dca985b29
-:END:
-- https://www.reddit.com/r/emacs/comments/wdbk34/emacss_native_templating_and_snippet_fuctionality/
-
-****** Terminal interface
-:PROPERTIES:
-:ID:       eaddf543-3698-4fa7-a977-3bc148bf03d3
-:END:
-- https://www.reddit.com/r/emacs/comments/vs3t76/emacs_as_your_terminal_multiplexer/
-****** Human language and writing
-:PROPERTIES:
-:ID:       4dd5f63a-dc89-4d57-a3cc-90389dbd3528
-:END:
-- https://github.com/pprevos/emacs-writing-studio
-- https://www.reddit.com/r/emacs/comments/dtciau/is_there_any_way_i_can_integrate_emacs_with/
-
-- Flyspell
-      - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Spelling.html][Flyspell]]
-      - also [[https://www.emacswiki.org/emacs/FlySpell][see these]] which are added to init
-      - https://www-sop.inria.fr/members/Manuel.Serrano/flyspell/flyspell.html
-      - Commands
-        | type       | function        | command |
-        |------------+-----------------+---------|
-        |            | suggest words   | M-$     |
-        |            | add word        | i       |
-        |            | check next word | M-s M-n |
-        | minibuffer | add to dict     | i       |
-- [[https://stackoverflow.com/a/10197062/6106936][input greek characters]]
-https://www.reddit.com/r/emacs/comments/1b1s7wk/grammarly_in_emacs/
-https://www.reddit.com/r/emacs/comments/1au10ha/i_want_to_learn_what_emacs_offers_for_editing/
-- https://www.reddit.com/r/emacs/comments/dtciau/is_there_any_way_i_can_integrate_emacs_with/
-
-[[id:dff4145a-8b64-458a-bb79-19c41792455c][Creating bibtex entries]]
-[[id:634ccd44-6f57-40c5-8868-a890cb4f3248][Paste line n times]]
-- https://www.reddit.com/r/emacs/comments/ysfcmx/advice_emacs_as_a_word_processor/
-- cut whole line <C-S-backspace> runs the command kill-whole-line
-- auto indent after written https://unix.stackexchange.com/questions/162057/can-i-have-emacs-automatically-indent-my-whole-code-after-it-is-all-written
-- https://www.google.com/search?q=emacs+remove+line+breaks
-- https://www.google.com/search?q=emacs+paste+without+line+breaks
-- https://www.google.com/search?q=emacs+replace+multiple+spaces+with+one
-- https://www.google.com/search?q=emacs+replace+regex+double+space
-- select word at cursor https://emacs.stackexchange.com/questions/35069/best-way-to-select-a-word
-******* Spell Check
-:PROPERTIES:
-:ID:       94AE454A-9369-46E4-914E-E6DC95E8FD16
-:END:
-#+BEGIN_SRC emacs-lisp
-
-(setq ispell-program-name "aspell")
-
-(add-to-list 'exec-path "/usr/local/bin")
-
-(setq ispell-dictionary-alist
-      '((nil
-	 "[A-Za-z]" "[^A-Za-z]" "[']" nil
-	 ("-B" "-d" "english" "--dict-dir"
-	  "/Library/Application Support/cocoAspell/aspell6-en-6.0-0")
-	 nil iso-8859-1)))
-
-(setq ispell-personal-dictionary "~/.aspell.en.pws")
-
-(setq ispell-program-name "aspell"
-      ispell-dictionary "english"
-      ispell-dictionary-alist
-      (let ((default '("[A-Za-z]" "[^A-Za-z]" "[']" nil
-                       ("-B" "-d" "english" "--dict-dir"
-                        "/Library/Application Support/cocoAspell/aspell6-en-6.0-0")
-                       nil iso-8859-1)))
-        `((nil ,@default)
-          ("english" ,@default))))
-;; Flyspell
-;;  Require flyspell for org-mode:
-
-(add-hook 'org-mode-hook 'turn-on-flyspell)
-(add-hook 'markdown-mode-hook 'flyspell-mode)
-;; easy spell check
-(global-set-key (kbd "<f8>") 'ispell-word)
-(global-set-key (kbd "C-S-<f8>") 'flyspell-mode)
-(global-set-key (kbd "C-M-<f8>") 'flyspell-buffer)
-(global-set-key (kbd "C-<f8>") 'flyspell-check-previous-highlighted-word)
-(defun flyspell-check-next-highlighted-word ()
-  "Custom function to spell check next highlighted word"
-  (interactive)
-  (flyspell-goto-next-error)
-  (ispell-word)
-  )
-(global-set-key (kbd "M-s M-n") 'flyspell-check-next-highlighted-word)
-
-(add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
-(add-to-list 'ispell-skip-region-alist '("#\\+BEGIN_SRC" . "#\\+END_SRC"))
-#+END_SRC
-****** Version control, backup, and file saving
-:PROPERTIES:
-:ID:       9b204c0f-c3ef-4d7b-ae86-8ff197f5bf39
-:END:
-- https://stackoverflow.com/questions/15254414/how-to-silently-save-all-buffers-in-emacs
-- https://alexpeits.github.io/emacs.d/#org4048a44
-- simple vc push pull https://www.gnu.org/software/emacs/manual/html_node/emacs/Pulling-_002f-Pushing.html
-****** Window and frame management
-:PROPERTIES:
-:ID:       1166a056-8f4a-4b18-9b27-2b670e735e70
-:END:
-- https://depp.brause.cc/shackle/
-- https://karthinks.com/software/emacs-window-management-almanac/
-https://www.reddit.com/r/emacs/comments/179t67l/window_management_share_your_displaybufferalist/
-****** Working with source code
-:PROPERTIES:
-:ID:       da42e3d1-224c-4955-b949-9266e922b84b
-:END:
-- [[https://www.google.com/search?q=org-mode+tangle+mkdir][google:org-mode tangle mkdir]]
-- [[id:ecb54a80-b177-4c9e-a3c9-47d1f680c7ac][Code indentation]]
 ****** Emacs sql
 leuvenleuven
 https://chatgpt.com/c/9d4cfab7-2187-4059-8b07-c72bc5ec5a83
@@ -10123,7 +10037,298 @@ sqlite3 -header -csv /tmp/inventory.db "SELECT * FROM inventory;"
 |  5 | USB Cable  |      100 |   9.99 |
 |  6 | Headphones |       25 |  89.99 |
 
+****** Email
+:PROPERTIES:
+:ID:       ea517dbd-d9d1-4e9f-b72d-c45ed8b6e1f3
+:END:
+- email https://www.reddit.com/r/emacs/comments/yx1q69/how_to_set_up_email_step_by_step_guide_for/
+****** External
+:PROPERTIES:
+:ID:       c56ee165-06f6-451b-8a5d-526e684367b6
+:END:
+  - emacs
+    - https://stackoverflow.com/questions/1008750/ide-emacs-mode-for-shell-scripting-in-bash-sh-etc
+    - http://www.skybert.net/emacs/bash-linting-in-emacs/
+- https://www.emacswiki.org/emacs/ComintMode
+- https://www.reddit.com/r/emacs/comments/ajwtcb/emacs_on_the_go/
+- https://xenodium.com/seamless-command-line-utils/
+- [[id:c5af6642-dbe2-43df-b672-eea684e96de6][Launching applications]]
+- tramp gdrive
+  - [currently not working] to goodle drive- https://www.gnu.org/software/tramp/#Using-Google-Drive
+****** External file annotation and notes
+:PROPERTIES:
+:ID:       5c955ca9-331f-4206-bbfd-735401e2f33d
+:END:
+- https://www.youtube.com/watch?app=desktop&v=P02FD63gGco&ab_channel=DmitryM
+****** Freehand drawing
+https://www.reddit.com/r/emacs/comments/pk5ad6/draw_and_scribble_in_gnu_emacs/
+****** GTD in Emacs
+:PROPERTIES:
+:ID:       c178c08c-ac3c-424d-8bae-ad96afc197df
+:END:
+https://github.com/rougier/emacs-gtd
+https://daryl.wakatara.com/emacs-gtd-flow-evolved/#structure---para
+- https://www.labri.fr/perso/nrougier/GTD/index.html
+****** Human language and writing
+:PROPERTIES:
+:ID:       4dd5f63a-dc89-4d57-a3cc-90389dbd3528
+:END:
+- https://chrismaiorana.com/my-freewrite-mode/
+- https://github.com/pprevos/emacs-writing-studio
+- https://www.reddit.com/r/emacs/comments/dtciau/is_there_any_way_i_can_integrate_emacs_with/
+
+- Flyspell
+      - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Spelling.html][Flyspell]]
+      - also [[https://www.emacswiki.org/emacs/FlySpell][see these]] which are added to init
+      - https://www-sop.inria.fr/members/Manuel.Serrano/flyspell/flyspell.html
+      - Commands
+        | type       | function        | command |
+        |------------+-----------------+---------|
+        |            | suggest words   | M-$     |
+        |            | add word        | i       |
+        |            | check next word | M-s M-n |
+        | minibuffer | add to dict     | i       |
+- [[https://stackoverflow.com/a/10197062/6106936][input greek characters]]
+https://www.reddit.com/r/emacs/comments/1b1s7wk/grammarly_in_emacs/
+https://www.reddit.com/r/emacs/comments/1au10ha/i_want_to_learn_what_emacs_offers_for_editing/
+- https://www.reddit.com/r/emacs/comments/dtciau/is_there_any_way_i_can_integrate_emacs_with/
+
+[[id:dff4145a-8b64-458a-bb79-19c41792455c][Creating bibtex entries]]
+[[id:634ccd44-6f57-40c5-8868-a890cb4f3248][Paste line n times]]
+- https://www.reddit.com/r/emacs/comments/ysfcmx/advice_emacs_as_a_word_processor/
+- cut whole line <C-S-backspace> runs the command kill-whole-line
+- auto indent after written https://unix.stackexchange.com/questions/162057/can-i-have-emacs-automatically-indent-my-whole-code-after-it-is-all-written
+- https://www.google.com/search?q=emacs+remove+line+breaks
+- https://www.google.com/search?q=emacs+paste+without+line+breaks
+- https://www.google.com/search?q=emacs+replace+multiple+spaces+with+one
+- https://www.google.com/search?q=emacs+replace+regex+double+space
+- select word at cursor https://emacs.stackexchange.com/questions/35069/best-way-to-select-a-word
+******* Spell Check
+:PROPERTIES:
+:ID:       94AE454A-9369-46E4-914E-E6DC95E8FD16
+:END:
+#+BEGIN_SRC emacs-lisp
+
+(setq ispell-program-name "aspell")
+
+(add-to-list 'exec-path "/usr/local/bin")
+
+(setq ispell-dictionary-alist
+      '((nil
+	 "[A-Za-z]" "[^A-Za-z]" "[']" nil
+	 ("-B" "-d" "english" "--dict-dir"
+	  "/Library/Application Support/cocoAspell/aspell6-en-6.0-0")
+	 nil iso-8859-1)))
+
+(setq ispell-personal-dictionary "~/.aspell.en.pws")
+
+(setq ispell-program-name "aspell"
+      ispell-dictionary "english"
+      ispell-dictionary-alist
+      (let ((default '("[A-Za-z]" "[^A-Za-z]" "[']" nil
+                       ("-B" "-d" "english" "--dict-dir"
+                        "/Library/Application Support/cocoAspell/aspell6-en-6.0-0")
+                       nil iso-8859-1)))
+        `((nil ,@default)
+          ("english" ,@default))))
+;; Flyspell
+;;  Require flyspell for org-mode:
+
+(add-hook 'org-mode-hook 'turn-on-flyspell)
+(add-hook 'markdown-mode-hook 'flyspell-mode)
+;; easy spell check
+(global-set-key (kbd "<f8>") 'ispell-word)
+(global-set-key (kbd "C-S-<f8>") 'flyspell-mode)
+(global-set-key (kbd "C-M-<f8>") 'flyspell-buffer)
+(global-set-key (kbd "C-<f8>") 'flyspell-check-previous-highlighted-word)
+(defun flyspell-check-next-highlighted-word ()
+  "Custom function to spell check next highlighted word"
+  (interactive)
+  (flyspell-goto-next-error)
+  (ispell-word)
+  )
+(global-set-key (kbd "M-s M-n") 'flyspell-check-next-highlighted-word)
+
+(add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
+(add-to-list 'ispell-skip-region-alist '("#\\+BEGIN_SRC" . "#\\+END_SRC"))
+#+END_SRC
+****** Integration with programming
+:PROPERTIES:
+:ID:       3b3db398-e82a-4a5d-b4cb-a8c10cc08aca
+:END:
+[[id:44347009-ee09-4cf1-9786-f0106a378a2e][sql integration]]
+[[id:5d29a241-3165-4a3b-a88c-c3fe122d2ff9][Jupyter integration]]
+[[id:e33cbb04-6299-4a46-bcbd-116bdd72e99d][Rmd integration]]
+[[id:e7806712-9607-4b78-8662-80a2659c203d][Python integration]]
+[[id:07b8634c-70a6-4a99-90b5-0f5083ccaf04][Emacs shell IDE]]
+****** LaTeX integration
+https://www.reddit.com/r/emacs/comments/1fw7jbb/karthink_emacs_latex/
+****** LLM integration
+- https://www.reddit.com/r/emacs/comments/1gxuewa/llms_are_made_for_emacs_using_ellama_ollama_is/
+****** llm integration
+:PROPERTIES:
+:ID:       907b0796-a3c5-4851-8cf7-272d6c9750d1
+:END:
+  - https://www.reddit.com/r/emacs/comments/17hvcsi/ellama_moved_to_llm_library_and_now_supports/
+  - https://melpa.org/#/chatgpt-shell
+  - https://www.reddit.com/r/emacs/comments/1459elk/llm_pal_ai_inside_emacs_via_lsp_locally_hosted/
+  - https://docs.khoj.dev/#/emacs
+  - https://github.com/ahyatt/llm
+****** Menus and interfaces
+- https://github.com/oantolin/embark
+- https://github.com/kickingvegas/casual
+- http://yummymelon.com/devnull/announcing-casual-avy.html
+****** Package management
+- how to autoupdate packages?
+- :ensure t should install package if not already present on local
+- https://jwiegley.github.io/use-package/keywords/
+- https://dev.to/deciduously/how-i-emacs-and-so-can-you-packages-m9p
+- :diminish: keep off mod line
+- https://jwiegley.github.io/use-package/keywords/
+- https://www.reddit.com/r/emacs/comments/j2xezg/usepackage_best_practices/
+****** Plain text diagraming
+- see mermaid
+- https://github.com/skuro/plantuml-mode
+****** Popups
+:PROPERTIES:
+:ID:       c82504a2-5be4-4ec0-b2e4-bb7080561e05
+:END:
+https://www.emacswiki.org/emacs/PosTip
+#+begin_src emacs-lisp
+ (require 'pos-tip)
+ (defun my-describe-function (function)
+   "Display the full documentation of FUNCTION (a symbol) in tooltip."
+   (interactive (list (function-called-at-point)))
+   (if (null function)
+       (pos-tip-show
+        "** You didn't specify a function! **" '("red"))
+     (pos-tip-show
+      (with-temp-buffer
+        (let ((standard-output (current-buffer))
+              (help-xref-following t))
+          (prin1 function)
+          (princ " is ")
+          (describe-function-1 function)
+          (buffer-string)))
+      nil nil nil 0)))
+#+end_src
+
+#+begin_src emacs-lisp
+(defun convert-table-to-tsv-alist (file)
+  (let ((alist '()))
+    (with-temp-buffer
+      (insert-file-contents file)
+      (while (not (eobp))
+        (let* ((line (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
+               (split-line (split-string line "\t")))
+          (push (cons (nth 0 split-line) (nth 1 split-line)) alist))
+        (forward-line 1)))
+    alist))
+
+(setq my-org-definitions (convert-table-to-tsv-alist "/tmp/definitions.tsv"))
+
+(require 'popup)
+
+(defun my-org-define-at-point ()
+  (let* ((word (thing-at-point 'word t))
+         (lowercase-word (downcase word))
+         (definition (cdr (assoc lowercase-word
+                                 (mapcar (lambda (pair)
+                                           (cons (downcase (car pair)) (cdr pair)))
+                                         my-org-definitions)))))
+    (when definition
+      (popup-tip definition :around t :height 20 :scroll-bar t :margin t))))
+
+(add-hook 'org-mode-hook
+          (lambda ()
+            (setq-local eldoc-documentation-function 'my-org-define-at-point)
+            (eldoc-mode 1)))
+
+#+end_src
+****** Programming
+:PROPERTIES:
+:ID:       576ada02-11e2-48d8-95de-11e8c31dad9c
+:END:
+- https://www.reddit.com/r/emacs/comments/1czgkk0/emacs_as_code_navigation_tool/
+- https://www.reddit.com/r/emacs/comments/1d3f5a7/do_you_use_tab_or_space_for_indenting_emacs_lisp/
+- https://testing.googleblog.com/2023/11/write-clean-code-to-reduce-cognitive.html
+- https://www.val.town/
+- https://www.youtube.com/c/arjancodes
+- https://abseil.io/resources/swe-book/html/ch02.html#blameless_postmortem_culture
+- https://processing.org/
+- https://blog.calebjay.com/posts/my-emacs-environment/#on-programming-in-emacs
+******* Coding workflow
+:PROPERTIES:
+:ID:       0fb4f5fc-60a1-4f26-a49a-22d283840ff8
+:END:
+- https://www.reddit.com/r/emacs/comments/v0kv5d/my_emacs_workflow_as_a_software_engineer_and/
+****** rectangle commands
+:PROPERTIES:
+:ID:       3007a4a2-78d2-4953-8f0f-de820ec814c8
+:END:
+- Selection
+  - https://www.google.com/search?q=emacs+rectangle+paste
+http://xahlee.info/emacs/emacs/emacs_string-rectangle_ascii-art.html
+
+****** Ricing
+- ricing
+  #+begin_src emacs-lisp
+;(setq-default left-margin-width 2)
+;(setq-default right-margin-width 2)
+(set-fringe-mode 0)
+#+end_src
+  #+begin_src emacs-lisp
+(setq line-spacing 0.05)
+(setq header-line-format " ")
+(setq org-startup-indented t
+      ;;org-bullets-bullet-list '(" ") ;; no bullets, needs org-bullets package
+      ;;org-ellipsis "  " ;; folding symbol
+      ;;org-pretty-entities nil
+      ;;org-hide-emphasis-markers t
+      ;; show actually italicized text instead of /italicized text/
+      org-agenda-block-separator ""
+      ;;org-fontify-whole-heading-line t
+      ;;org-fontify-done-headline t
+      ;;org-fontify-quote-and-verse-blocks t
+)
+(setq org-agenda-remove-tags t)
+#+end_src
+****** Snippets and templating
+:PROPERTIES:
+:ID:       64c78e3f-2d73-4d63-88a2-cc5dca985b29
+:END:
+- https://www.reddit.com/r/emacs/comments/wdbk34/emacss_native_templating_and_snippet_fuctionality/
+
+****** Terminal interface
+:PROPERTIES:
+:ID:       eaddf543-3698-4fa7-a977-3bc148bf03d3
+:END:
+- https://www.reddit.com/r/emacs/comments/vs3t76/emacs_as_your_terminal_multiplexer/
+****** Version control, backup, and file saving
+:PROPERTIES:
+:ID:       9b204c0f-c3ef-4d7b-ae86-8ff197f5bf39
+:END:
+- https://stackoverflow.com/questions/15254414/how-to-silently-save-all-buffers-in-emacs
+- https://alexpeits.github.io/emacs.d/#org4048a44
+- simple vc push pull https://www.gnu.org/software/emacs/manual/html_node/emacs/Pulling-_002f-Pushing.html
+****** White space and empty lines
+http://xahlee.info/emacs/emacs/elisp_compact_empty_lines.html
+****** Window and frame management
+:PROPERTIES:
+:ID:       1166a056-8f4a-4b18-9b27-2b670e735e70
+:END:
+- https://depp.brause.cc/shackle/
+- https://karthinks.com/software/emacs-window-management-almanac/
+https://www.reddit.com/r/emacs/comments/179t67l/window_management_share_your_displaybufferalist/
+****** Working with source code
+:PROPERTIES:
+:ID:       da42e3d1-224c-4955-b949-9266e922b84b
+:END:
+- [[https://www.google.com/search?q=org-mode+tangle+mkdir][google:org-mode tangle mkdir]]
+- [[id:ecb54a80-b177-4c9e-a3c9-47d1f680c7ac][Code indentation]]
 ***** General reference and miscellaneous
+- https://www.reddit.com/r/planetemacs/comments/1gw5oqy/protesilaos_stavrou_tutorials_and_demos_of/
+
 - https://lambdaland.org/posts/2024-05-30_top_emacs_packages/- https://www.reddit.com/r/emacs/comments/mqtwzx/creating_custom_minor_modes_learning_emacs_lisp_7/
 - https://github.com/emacs-tw/awesome-emacs
 - https://www.reddit.com/r/emacs/comments/1feaf37/minimal_emacsd_emacs_starter_kit_with_better/
@@ -10139,7 +10344,7 @@ sudo apt-get update
 sudo apt-get install emacs-snapshot
 #+end_src
 - Emacs from Scratch
-  - 
+  -
   - https://www.reddit.com/r/emacs/comments/k5cqwb/emacs_ide_python_development_configuration_live/
 - https://karthinks.com/software/batteries-included-with-emacs/
 - https://www.reddit.com/user/publicvoit/
@@ -10185,13 +10390,31 @@ sudo apt-get install emacs-snapshot
 - [[https://www.reddit.com/r/emacs/comments/60nb8b/favorite_builtin_emacs_commands/][reddit: favorite emacs command]]
 - https://github.com/rougier/svg-tag-mode
 - https://www.reddit.com/r/emacs/comments/ta6s74/steveys_tech_talk_e39_a_guided_tour_of_emacs/
-- 
+-
 https://www.reddit.com/r/emacs/comments/ucldkz/are_we_living_in_the_golden_age_of_emacs/
 - https://www.reddit.com/r/emacs/comments/1cvwqnc/maketabboxel/
 - https://www.reddit.com/r/emacs/comments/1benj4g/things_you_do_in_emacs_that_will_make_nonemacs/
 - Emacs use in science
   - https://github.com/rougier
 ***** Ideas
+#+begin_src emacs-lisp
+  ;; (defun my/load-startup-files ()
+  ;;   "Load specified files into buffers at startup."
+  ;;   (find-file-noselect "~/repos/org/bib.bib")
+
+  ;;   ;; Load all .org files in ~/repos/ and its immediate subdirectories
+  ;;   (dolist (dir (directory-files "~/repos/" t "\\`[^.]"))
+  ;;     (let ((org-files (directory-files dir t "\\.org\\'")))
+  ;;       (dolist (file org-files)
+  ;;         (find-file-noselect file))))
+
+  ;;   ;; Add any additional files you want to load on startup below
+  ;;   ;;(find-file-noselect "/path/to/another/file")
+  ;; )
+
+  ;; (add-hook 'after-init-hook 'my/load-startup-files)
+
+#+end_src
 ****** Paste without line breaks
 #+begin_src emacs-lisp
 (defun paste-without-line-breaks ()
@@ -10290,7 +10513,7 @@ https://chatgpt.com/c/6722326f-2360-8005-bb87-58ed4372e525
       (if (file-readable-p dir)
           (insert (format "\nDirectory '%s' is readable.\n" dir))
         (insert (format "Directory '%s' is NOT readable.\n" dir))))
-    
+
     ;; Return focus to the original frame and buffer
     (select-frame-set-input-focus original-frame)
     (switch-to-buffer original-buffer)))
@@ -10339,7 +10562,7 @@ Invoke by org-open-at-point like [[elisp:(run-gnome-ctrl)]]
 (make-frame '((minibuffer . only)))
 #+end_src
 
-****** Emacs packages :flat:
+****** Emacs packages                                                  :flat:
 :PROPERTIES:
 :ID:       a9ff4421-e3b7-47c1-8b65-bfc5a3b34e5d
 :END:
@@ -10384,7 +10607,7 @@ https://github.com/alphapapa/org-web-tools
    - https://yiufung.net/post/anki-org/
    - dependencies
      - [[https://github.com/FooSoft/anki-connect#installation][anki connect add-on]]
-******** anki.cloze :yas:
+******** anki.cloze                                                     :yas:
 :PROPERTIES:
 :ID:       1c768948-d494-47ba-b5f3-2629c072e527
 :END:
@@ -10524,6 +10747,23 @@ counsel-yank-pop
 
 https://www.reddit.com/r/emacs/comments/mdjrza/consult_key_features_and_some_tweaks/
 [[id:dd893353-0e1c-4d77-85af-7121845298ed][My Council / ivy / swiper setup]]
+******* org-edna
+:PROPERTIES:
+:ID:       2acfefa2-2fd1-465f-8c79-d14160de0284
+:END:
+blockers and counters are not respected in orgzly
+https://chatgpt.com/c/673a1bcb-dbe0-8005-b289-3292f7066d63
+https://www.nongnu.org/org-edna-el/
+- id syntax- can be a linker with [[id: , but cannot have a name like [[ ][
+#+begin_src emacs-lisp
+(use-package org-edna
+  :ensure t
+  :config
+  (org-edna-mode 1))
+#+end_src
+
+
+
 ******* Eglot
 :PROPERTIES:
 :ID:       f81485ff-a59f-4016-b294-fd2dc74669f2
@@ -10536,6 +10776,14 @@ https://www.reddit.com/r/emacs/comments/ye18nd/setting_up_eglot_for_python/
 :PROPERTIES:
 :ID:       5cd6f647-11ba-445a-bcde-07493b0e4fae
 :END:
+- switches elpy from using flymake to flycheck for error-checking in Python files.
+#+begin_src emacs-lisp
+;; Enable Flycheck
+(when (require 'flycheck nil t)
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (add-hook 'elpy-mode-hook 'flycheck-mode))
+#+end_src
+
 - [[id:79cc7fdf-5e4b-4d3a-ace2-60cae707f81b][My elpy config]]
 - Processes
   - Use [[id:b16d0202-8d35-472b-b538-87a7d6a6cef7][conda]] environment - call with M-x https://elpy.readthedocs.io/en/latest/concepts.html#virtual-envs
@@ -10553,6 +10801,24 @@ https://github.com/CeleritasCelery/emacs-native-shell-complete
 :PROPERTIES:
 :ID:       147724ad-7598-4be6-b8a9-725a19eb39fe
 :END:
+- ESS Frames setup
+  #+begin_src emacs-lisp
+;;;
+(setq inferior-ess-own-frame t)
+(setq inferior-ess-same-window nil)
+;;;
+;;;;;create a new frame for each help instance
+;;;
+(setq ess-help-own-frame t)
+;;;;;If you want all help
+;;;;; buffers to go into one frame do:
+;;;
+(setq ess-help-own-frame 'one)
+
+(setq ess-ask-for-ess-directory nil)
+(setq ess-local-process-name "R")
+
+#+end_src
 - no python support- https://github.com/emacs-ess/ESS/issues/910
 - ess-remote to docker R
 https://www.reddit.com/r/emacs/comments/op4fcm/send_command_to_vterm_and_execute_it/
@@ -10568,6 +10834,25 @@ https://www.reddit.com/r/emacs/comments/op4fcm/send_command_to_vterm_and_execute
 - cite:rossini2016
 - https://stat.ethz.ch/pipermail/ess-help/2010-January/005822.html
 - https://github.com/emacs-lsp/lsp-mode/issues/1383
+******* key-chord
+:PROPERTIES:
+:ID:       dab8038b-67bd-413e-88d5-25d168f29e9b
+:END:
+- [[https://github.com/emacsorphanage/key-chord][repo]]
+#+begin_src emacs-lisp
+(key-chord-mode 1)
+
+(key-chord-define-global ",." "<>\C-b")
+
+#+end_src
+<> <> ,.<sf>
+
+#+begin_src emacs-lisp
+(key-chord-define-global "xx"      'shell)
+(key-chord-define-global ",,"     'indent-for-comment)
+(key-chord-define-global "vv"     'vterm)
+#+end_src
+https://www.reddit.com/r/emacs/comments/22hzx7/what_are_your_keychord_abbreviations/
 ******* Evil
 :PROPERTIES:
 :ID:       1a23bec3-19e2-4340-b16f-ece6abd9c9e0
@@ -10632,6 +10917,30 @@ https://www.google.com/search?client=ubuntu&hs=vZc&sxsrf=ALeKk03r2GUTR1rKBPenicU
 :PROPERTIES:
 :ID:       df1ef82a-6cd8-4aee-beac-005873270c72
 :END:
+#+BEGIN_SRC emacs-lisp
+;(use-package flyspell
+;  :ensure t
+;  :config
+;  (setq ispell-dictionary "english"
+;        ispell-program-name "aspell"
+;        ; The personal dictionary links to https://github.com/jeszyman/basecamp-private/blob/master/resources/aspell.en.pws
+;        ispell-personal-dictionary "~/.aspell.en.pws")
+;  (add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
+;  (add-to-list 'ispell-skip-region-alist '("#\\+BEGIN_SRC" . "#\\+END_SRC"))
+;)
+
+;(add-hook 'org-mode-hook 'turn-on-flyspell)
+;(add-hook 'markdown-mode-hook 'flyspell-mode)
+
+(defun flyspell-check-next-highlighted-word ()
+  "Custom function to spell check next highlighted word"
+  (interactive)
+  (flyspell-goto-next-error)
+  (ispell-word)
+  )
+(global-set-key (kbd "M-s M-n") 'flyspell-check-next-highlighted-word)
+
+#+END_SRC
 - https://www.gnu.org/software/emacs/manual/html_node/emacs/Spelling.html
 - https://emacs.stackexchange.com/questions/17237/in-emacs-where-is-ispells-personal-dictionary-stored
 [[id:222ed471-b1b1-4c4a-b815-0fa01123ea64][My ispell setup]]
@@ -10647,10 +10956,7 @@ l - Look up the word in the dictionary.
 u - Undo the last replacement.
 x - Exit ispell.
 
-******* ob-async
-:PROPERTIES:
-:ID:       fe88c5c1-b149-4dc5-84b1-d56317ef82d2
-:END:
+
 ******* openwith
 :PROPERTIES:
 :ID:       738d7451-8370-4452-8262-2f825eac206f
@@ -10666,6 +10972,7 @@ https://github.com/abo-abo/org-download
 :PROPERTIES:
 :ID:       d7d54139-64d0-4cfe-ab3a-879b3617b226
 :END:
+http://yummymelon.com/devnull/styling-text-via-keyboard-in-org-and-markdown.html
 - checkbox intermediate state https://chat.openai.com/c/843ddbcd-a207-4e61-a613-2ff40e091430
 - https://github.com/jdtsmith/org-modern-indent
 - org map enteries example
@@ -10686,22 +10993,13 @@ https://github.com/abo-abo/org-download
 - https://www.reddit.com/r/orgmode/comments/ljem1v/is_it_possible_to_change_at_the_end_of_each/
 - http://orgmode.org/worg/dev/org-syntax.html
 - https://stackoverflow.com/questions/20033467/setting-a-local-file-variable-in-emacs-org-mode
-
 - http://endlessparentheses.com/use-org-mode-links-for-absolutely-anything.html
 - https://www.reddit.com/r/orgmode/comments/1gh7p92/how_do_you_use_properties/
 - https://github.com/tmurph/todo-sync
-- https://github.com/mengwong/org-asana
 - https://github.com/karlicoss/orgparse
-- cool formatting w/ scimax
-- sql from org data
-  - https://github.com/ndwarshuis/org-sql?tab=readme-ov-file
+- https://github.com/ndwarshuis/org-sql?tab=readme-ov-file
 - https://www.reddit.com/r/emacs/comments/1en7wap/find_your_tasks_instantly_when_you_need_to_5/
 - tangel w/ org as commnets https://eschulte.github.io/babel-dev/DONE-tangle-entire-org-mode-file-in-comments.html
-
-(ox-extras-activate '(ignore-headlines))
-
-
-- See for adding properties latex headers- need +!!!https://lists.gnu.org/archive/html/emacs-orgmode/2016-03/msg00054.html
 - General setup
   #+BEGIN_SRC emacs-lisp
 (add-to-list
@@ -10826,232 +11124,6 @@ https://github.com/abo-abo/org-download
    ("\\paragraph{%s}" . "\\paragraph*{%s}")
    ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
   #+END_SRC
-- https://joonro.github.io/Org-Coursepack/Lectures/05%20Exporting%20Slides%20and%20Handouts.html
-- https://www.reddit.com/r/emacs/comments/fkcgig/is_it_possible_to_search_annotations_text_with/
-
-- https://www.reddit.com/r/orgmode/comments/ljem1v/is_it_possible_to_change_at_the_end_of_each/
-- http://orgmode.org/worg/dev/org-syntax.html
-- https://stackoverflow.com/questions/20033467/setting-a-local-file-variable-in-emacs-org-mode
-- https://emacsclub.github.io/html/org_tutorial.html#sec-8
-- http://orgmode.org/manual/Specific-header-arguments.html#Specific-header-arguments
-- http://orgmode.org/manual/Using-header-arguments.html#Using-header-arguments
-- [[http://orgmode.org/manual/In_002dbuffer-settings.html][document headers]]
-- [[http://orgmode.org/manual/Language_002dspecific-header-arguments-in-Org-mode-properties.html#Language_002dspecific-header-arguments-in-Org-mode-properties][languacoge-specific headers in headline]]
-- [[http://orgmode.org/manual/Specific-header-arguments.html#Specific-header-arguments][specific headers]]
-- http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2-2
-- processes
-  - https://www.google.com/search?q=orgmode+table+hide+column
-- https://emacs.stackexchange.com/questions/20129/how-can-i-filter-table-in-org-mode
-- https://orgmode.org/worg/org-contrib/org-collector.html
-- https://www.reddit.com/r/emacs/comments/ok8tlq/editing_formulas_at_the_speed_of_light_the_org/
-- https://sachachua.com/blog/2015/01/getting-data-org-mode-tables/
-- [[https://stackoverflow.com/questions/21953037/compute-the-duration-of-appointment-in-an-org-mode-table?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Compute the duration of appointment in an org-mode table]]
-- import to R code block https://fairhaven.typepad.com/my_weblog/2015/12/org-mode-r-and-graphics.html
-- https://sachachua.com/blog/2015/01/getting-data-org-mode-tables/
-- [[https://stackoverflow.com/questions/33291580/calculate-time-range-in-org-mode-table][stack: Calculate time range in org-mode table]]
-- [[https://orgmode.org/worg/org-contrib/org-collector.html][org-collector.el]]
-- [[http://sachachua.com/blog/2015/01/getting-data-org-mode-tables/][chua: Getting data from Org Mode tables]]
-- [[http://orgmode.org/manual/Images-and-tables.html#Images-and-tables][11.4 Images and Tables]]
-- [[http://stackoverflow.com/questions/6688075/emacs-permanently-summing-a-column-in-org-mode-tables][stack: Permanently summing a column in an Org-mode table]]
-- [[http://orgmode.org/worg/org-tutorials/org-spreadsheet-intro.html][worg: Org as a spreadsheet system: a short introduction]]
-- orgtbl-mode
-  - [[http://stackoverflow.com/questions/8513966/converting-an-org-mode-table-to-latex][stack: Converting an org-mode table to LaTeX]]
-  - http://orgmode.org/manual/A-LaTeX-example.html
-- [[http://howardism.org/Technical/Emacs/spreadsheet.html][Lots of Small Spreadsheets]]
-- multi-line headers- place at break and M-<ENTER>
-
-- https://emacs.stackexchange.com/questions/19843/how-to-automatically-adjust-an-org-task-state-with-its-children-checkboxes
-- [[http://thomasf.github.io/solarized-css/test/org-hacks.html#sec-1-9][see easy customization todo colors]]
-- coding TODO state logging: https://www.youtube.com/watch?v=R4QSTDco_w8&index=11&list=PLVtKhBrRV_ZkPnBtt_TD1Cs9PJlU0IIdE
-  - #+SEQ_TODO: STATE(@) ANOTHER(t/!)
-    - @ - logs timestamp and note when entered
-    - ! - logs timestamp when exiting
-    - t - assigns hotkey
-  - cycle states with C-c C-t
-- https://www.reddit.com/r/orgmode/comments/5j9rmv/change_the_color_of_the_todo_keyword_you_use_to/
-- https://www.reddit.com/r/emacs/comments/5jdb7q/a_quick_guide_to_orgmode_todos/
-- https://www.reddit.com/r/orgmode/comments/5j9rmv/change_the_color_of_the_todo_keyword_you_use_to/
-- [[http://stackoverflow.com/questions/2464598/org-mode-schedule-weekly-event-for-a-period][more complicated scheduling]]
-org-todo-state-tags-triggers
-- [[https://github.com/oddious/org-habit-plus][github: Org Habit Plus]]
-- https://emacs.stackexchange.com/questions/5613/how-to-convert-lines-to-an-org-mode-checklist/5618
-- Processes
-  - set a repeating event by x weekday of month
-    - w/ specific time https://stackoverflow.com/questions/16946220/emacs-org-mode-how-to-set-date-and-time-on-the-first-wednesday-of-month
-  - w/ diary-float https://orgmode.org/manual/Timestamps.html#FOOT60
-  - e.g. [[id:ddf165b5-febd-4746-b55b-9a520adde5ac][WUSTL Spatial Fractionation Working Group Monthly Meeting 08:00-09:00:meeting:]]
-- https://writequit.org/denver-emacs/presentations/2017-04-11-time-clocking-with-org.html
-- clock reports can include archives
-  - https://emacs.stackexchange.com/questions/21388/including-archives-in-org-mode-clock-table
-- C-c C-x C-d org-clock-display
-- see default clock report parameters under org-agenda-clockreport-parameter-plist
-- [[https://stackoverflow.com/questions/33291580/calculate-time-range-in-org-mode-table][stack: Calculate time range in org-mode table]]
-- repeater format should be deadline with - then +
-- For scheduling on inconsistent days- use org-clone-subtree-wth-time-shift
-  - http://karl-voit.at/2017/01/15/org-clone-subtree-with-time-shift/
-  - https://emacs.stackexchange.com/questions/16472/how-to-repeat-an-appointment-within-an-interval
-  - [[http://stackoverflow.com/questions/28369833/emacs-org-mode-repeat-tasks-m-f-but-not-weekends][stack overflow: org scheduling repeats w/o weekends]]
-- [[http://karl-voit.at/2017/01/15/org-clone-subtree-with-time-shift/][recurring events with org-mode]]
-- [[https://emacs.stackexchange.com/questions/16680/org-mode-schedule-1-event-for-multiple-days][stack: Org-mode schedule 1 event for multiple days?]]
-- [[https://writequit.org/denver-emacs/presentations/2017-04-11-time-clocking-with-org.html][Clocking time with Org-mode]]
-- http://members.optusnet.com.au/~charles57/GTD/org_dates/
-- more complicated sexp scheduling:
-  - calendar-date-style is m/d/y
-  - http://orgmode.org/worg/org-faq.html#diary-sexp-in-org-files
-- clock table tags requires "" as here https://stackoverflow.com/questions/38545767/org-mode-clock-table-by-tag
-- [ ] how to show remaining effort per task?
-- https://github.com/progfolio/doct
-- archiving
-  - archive via #+ARCHIVE: myarchive.org
-  - [[https://www.reddit.com/r/orgmode/comments/9kunnv/archiving_practices/][Archiving practices]]
-  - [[http://orgmode.org/manual/Refile-and-copy.html#Refile-and-copy][9.5 Refile and copy]]
-
-
-- reference
-  - [[https://emacs.stackexchange.com/questions/2162/when-are-org-mode-attachments-preferable-to-file-hyperlinks][When are org-mode attachments preferable to file hyperlinks?]]
-
-
-- [[https://stackoverflow.com/questions/58820073/s-in-org-agenda-prefix-format-doesnt-display-dates-in-the-todo-view][expressions for TODO list prefixes]]
-- https://emacs.stackexchange.com/questions/30056/in-org-mode-agenda-view-dont-show-scheduled-if-time-is-provided
-- Commands
- - (setq org-agenda-columns-add-appointments-to-effort-sum t)
- - [[http://orgmode.org/manual/Special-agenda-views.html][shows agenda skip functions]]
- - [[http://orgmode.org/manual/Agenda-commands.html][10.5 Commands in Agenda Buffer]]
-- Guides
- - [[https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html][Bieber: An Agenda for Life with Org Mode]]
- - http://thomasf.github.io/solarized-css/test/org-hacks.html#sec-1-9
- - [[http://orgmode.org/worg/org-tutorials/org-custom-agenda-commands.html][worg: Custom Agenda Commands]]
-- Examples
- - [[http://pages.sachachua.com/.emacs.d/Sacha.html][Chua emacs config]]
- - http://doc.norang.ca/org-mode.html#CustomAgendaViews
- - https://www.reddit.com/r/emacs/comments/8wohqz/completely_custom_orgagenda_with_support_for_gtd/
-- [[https://lists.gnu.org/archive/html/emacs-orgmode/2014-01/msg01372.html][make certain tags not visible in agenda]]
-- 10.4 Presentation and sorting
- - https://orgmode.org/manual/Filtering_002flimiting-agenda-items.html
-- [[https://github.com/jchkoch/.emacs.d/issues/3][following symlinks]]
-  - [ ] add clock summaries in non-column view
-    - (org-agenda-clockreport-parameter-plist '(:maxlevel 1 :block today :tag +career :compact t :fileskip0))
-  - [[http://emacs.stackexchange.com/questions/18179/org-agenda-command-with-org-agenda-filter-by-tag-not-working][agenda template examples]]
-  - http://stackoverflow.com/questions/17066580/color-code-agenda-view-per-file
-  - https://www.google.com/search?q=org+agenda+color+by+tag&oq=org+agenda+color+by+tag&aqs=chrome..69i57.4238j0j7&sourceid=chrome&ie=UTF-8#safe=off&q=org+agenda+font+by+tag
-  - [[https://www.google.com/search?q=org-mode+agenda&safe=off&espv=210&es_sm=91&source=lnms&tbm=isch&sa=X&ei=6oHZUv3iD5H9oATjpoHABA&ved=0CAkQ_AUoAQ&biw=1135&bih=1062#imgrc=_][maybe some good agenda tricks here?]]
-  - [[https://emacs.stackexchange.com/questions/28801/is-there-a-view-that-can-show-time-entered-per-day][stack: Is there a view that can show time entered per day?]]
-  - [[https://emacs.stackexchange.com/questions/20821/sum-efforts-in-org-mode-agenda-excluding-specific-tags][stack: Sum efforts in org-mode agenda, excluding specific tags]]
-  - ideas
-    - try to move to directory-based agenda file list
-  - [[https://emacs.stackexchange.com/questions/12839/use-formula-in-agenda-clockreport-to-convert-time-pomodoro-count-in-agenda][stack: Use formula in agenda clockreport to convert time?]]
-
-=code=
-~verbatim~
-/italic/
-_underline_
-+strike-through+
-;; https://superuser.com/questions/738492/org-mode-8-async-export-process-fails
-;;(setq org-export-async-init-file "~/.emacs.d/async.el")
-;;(setq org-export-async-debug t)
-;;(setq org-export-in-background t)
-;; https://stackoverflow.com/questions/11365739/how-to-cancel-the-hypersetup-in-0rg-mode-of-emacs/27219848#27219848
-
-https://emacs.stackexchange.com/questions/5889/how-to-highlight-text-permanently-in-org-mode
-- [[https://www.miskatonic.org/2016/10/03/orgexportbabelevaluate/][eval never export causes all header arguements to be ignored]]
-- https://www.reddit.com/r/orgmode/comments/kg6ydq/how_to_automatically_sort_a_checklist_based_on_x/
-- https://lists.gnu.org/archive/html/emacs-orgmode/2013-09/msg00060.html
-- insert tally w/ ‘[0/0]’
-- https://emacs.stackexchange.com/questions/17258/in-org-mode-how-to-move-point-to-next-checkbox-when-its-marked-completed
-- https://emacs.stackexchange.com/questions/19843/how-to-automatically-adjust-an-org-task-state-with-its-children-checkboxes/22147
-    - https://web.archive.org/web/20190715181853/http://www.i3s.unice.fr:80/~malapert/org/tips/emacs_orgmode.html
-  - Inheritance
-    - By default, if a heading has a certain tag, all subheadings will inherit the tag as well.
-
-
-  - [[https://lists.gnu.org/archive/html/emacs-orgmode/2010-11/msg01130.html][Enumerate all tags in org-mode]]
-  - Bulk change tags
-    - https://emacs.stackexchange.com/questions/19540/can-i-batchly-set-tags-in-org-mode
-  - Add or mod with C-c C-c at headline or C-c C-q inside
-- Reference
-  - http://blog.aaronbieber.com/2016/03/05/playing-tag-in-org-mode.html
-- Configuration
-  - Faces
-    #+BEGIN_SRC emacs-lisp
-  (setq org-tag-faces
-        '(
-          ("maintenance" . (:foreground "GoldenRod" :weight bold))
-          ("noexport" . (:foreground "LimeGreen" :weight bold))
-          )
-  )
-    #+END_SRC
-- https://www.reddit.com/r/orgmode/comments/qwwqdu/looking_for_placeholder_text_replacement/
-- [[https://stackoverflow.com/questions/61247999/literate-programming-setup-of-docker-programming-environment-with-org-mode-in-em][access property in text]]
-- https://www.reddit.com/r/emacs/comments/8za6m1/org_one_property_many_unique_values_possible/?utm_source=amp&utm_medium=&utm_content=comments_view_all
-- https://www.reddit.com/r/orgmode/comments/d035k6/can_org_column_view_show_the_difference_between/
-- https://www.reddit.com/r/orgmode/comments/i01qid/how_to_change_the_face_of_properties/
-- https://stackoverflow.com/questions/27937446/how-to-vote-for-a-heading-in-org-mode/28011161#28011161
-- [[https://orgmode.org/worg/org-contrib/org-collector.html][org-collector.el]]
-- [[https://www.miskatonic.org/2016/10/03/orgexportbabelevaluate/][eval never export causes all header arguements to be ignored]]
-- [[http://orgmode.org/manual/Property-syntax.html][special properties]]
-- 7.5 Columns view
-  -
-    #+BEGIN_SRC emacs-lisp
-(setq
- org-columns-default-format
- "%30ITEM(Task)
-  %2PRIORITY
-  %12DEADLINE
-  %12SCHEDULED
-  %12CLOCKSUM")
-#+END_SRC
-  - [[http://orgmode.org/worg/org-tutorials/org-column-view-tutorial.html][Emacs Org's Column View]]
-  - Define
-    - [[http://orgmode.org/manual/Column-attributes.html#Column-attributes][Column parameters]]
-
-- https://orgmode.org/manual/Using-the-property-API.html
-- https://www.reddit.com/r/orgmode/comments/1b3rckx/i_like_orgmode/
-https://chat.openai.com/c/20ac76ba-dd10-4c58-b670-420b2f38ef5d
-https://www.reddit.com/r/orgmode/comments/u2vj6c/org_agenda_doesnt_work_anymore/
-(require 'org)
-
-(defun my-tbl-export ()
-"Search for table named `NAME` and export."
-(interactive "s")
-(show-all)
-  (if (search-forward-regexp (concat("#\\+name: .*_input$") nil t)
-  (progn
-    (next-line)
-    (org-table-export (format "/tmp/%s.csv" name) "orgtbl-to-csv"))))
-
-(require 'org)
-
-(defun my-tbl-export (name)
-"Search for table named `NAME` and export."
-(interactive "s")
-(show-all)
-(let ((case-fold-search t))
-  (if (search-forward-regexp ("#\\+NAME: .*_name$") nil t)
-  (progn
-    (let (name (replace-match
-    (next-line)
-    (org-table-export (format "/tmp/%s.csv" name) "orgtbl-to-csv")))))
-
-org_tables=()
-org_tables=("experiments"
-          "cohorts"
-          "subjects"
-          "specimens"
-          "isolates"
-          "seq_runs"
-          "libraries"
-          "tarbase_targeting_gja1"
-          "lit_targeting_gja1"
-          "mirdb_targeting_human_gja1"
-          "mirdb_targeting_mouse_gja1"
-          "notch_rentschler")
-
-for table in "${org_tables[@]}";
-do
-  /usr/bin/emacs-snapshot --batch "/home/jeszyman/repos/card-rad-bio/card-rad-bio.org" -l "/home/jeszyman/repos/card-rad-bio/src/org_tbl_export.el" --eval '(my-tbl-export "'"$table"'")'
-done
-
-/usr/bin/emacs-snapshot --batch "/home/jeszyman/repos/card-rad-bio/card-rad-bio.org" -l "/home/jeszyman/repos/card-rad-bio/src/org_input_tbl_export.el" --eval '(my-tbl-export "'"input"'")'
 ******** Processes
 :PROPERTIES:
 :ID:       8b5c515e-689b-436d-ac09-f368ec6d87ef
@@ -11081,6 +11153,19 @@ This will stop the logbook from recording state transitions for that specific en
 (call-process "firefox" nil 0 nil "www.spacemacs.org")
 
 #+end_src
+
+
+#+begin_src bash :results replace :cache no 
+source ~/repos/basecamp/lib/basecamp_function.sh
+cd ~/repos/org && git_wkflow_up
+if [ $? -ne 0 ]; then
+    echo "Error running git_wkflow_up"
+    exit 1
+fi
+
+echo "Git upload workflow complete"        
+#+end_src
+
 ********** Command line (batch) export subtree to other doc type
 :PROPERTIES:
 :ID:       4572239e-35a5-4916-a5da-b605dcceb07a
@@ -11258,26 +11343,26 @@ examples:
 :END:
 - https://www.google.com/search?q=tangle+block+to+multiple+locations
 - https://emacs.stackexchange.com/questions/39032/tangle-the-same-src-block-to-different-files
-********* Importing and exporting in structured ways
-- https://orgmode.org/worg/org-contrib/org-collector.html
-********* Writing
-:PROPERTIES:
-:ID:       7f4e49a0-6139-43e5-9162-15e683f2ce4d
-:END:
-- [[https://www.reddit.com/r/emacs/comments/13wh55q/whats_everyone_using_for_grammar_checks/][Grammar linting]]
-********* Agenda
-:PROPERTIES:
-:ID:       0fd12a50-644b-4c41-a693-04a693c0ed88
-:END:
-C-u-c-s
-[[https://www.google.com/search?q=orgmode+agenda+clear+scheduled][google:orgmode agenda clear scheduled]]
+********* Org-down
+- http://orgmode.org/worg/dev/org-syntax.html
+********* Archiving
+- archiving
+  - archive via #+ARCHIVE: myarchive.org
+  - [[https://www.reddit.com/r/orgmode/comments/9kunnv/archiving_practices/][Archiving practices]]
+  - [[http://orgmode.org/manual/Refile-and-copy.html#Refile-and-copy][9.5 Refile and copy]]
 ********* Appearance
 :PROPERTIES:
 :ID:       33ff8cf2-a702-4401-ab9d-3555b56476ad
 :END:
+- https://www.reddit.com/r/orgmode/comments/5j9rmv/change_the_color_of_the_todo_keyword_you_use_to/
+- Emphasis
+  =code=
+  ~verbatim~
+  /italic/
+  _underline_
+  +strike-through+
 - https://www.reddit.com/r/emacs/comments/13y4gg0/nano_modeline_10_now_with_buttons/
 - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Visual-Line-Mode.html][default visual line mode]]
-https://lepisma.xyz/2017/10/28/ricing-org-mode/
 - Themes
   - https://github.com/minad/org-modern
 - Code blocks
@@ -11289,20 +11374,17 @@ https://lepisma.xyz/2017/10/28/ricing-org-mode/
 ;  :config ; add late to hook
 ;  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 #+end_src
-********* Capture templates
-:PROPERTIES:
-:ID:       a3520e71-8dbb-409a-b618-d312405aab81
-:END:
-- https://www.reddit.com/r/emacs/comments/fzuv4f/my_prettified_orgcapture/
-- capture template formatting
-  - [[https://emacs.stackexchange.com/questions/27486/orgmode-capture-template-adding-sub-headers][stack: orgmode capture template adding subheaders]]
-  - org capture template notes
-    - https://emacs.stackexchange.com/search?q=%5Borg-mode%5D+capture
-    - https://emacs.stackexchange.com/questions/27486/orgmode-capture-template-adding-sub-headers
-    - https://www.youtube.com/watch?v=Af4NVJbNAB4&list=PLVtKhBrRV_ZkPnBtt_TD1Cs9PJlU0IIdE&index=13
-    - [[http://sachachua.com/blog/2008/01/outlining-your-notes-with-org/][sacha: outlining notes with org]]
-  - [[https://www.reddit.com/r/emacs/comments/5jhwlu/getting_things_from_outside_emacs_into/][reddit: org capture setups]]
-  - https://www.reddit.com/r/emacs/comments/7zqc7b/share_your_org_capture_templates/
+- Tag faces
+  #+BEGIN_SRC emacs-lisp
+  (setq org-tag-faces
+        '(
+          ("maintenance" . (:foreground "GoldenRod" :weight bold))
+          ("noexport" . (:foreground "LimeGreen" :weight bold))
+          )
+  )
+    #+END_SRC
+********** Ricing
+- https://lepisma.xyz/2017/10/28/ricing-org-mode/
 ********* Calendar sync
 :PROPERTIES:
 :ID:       91fd993a-aea5-4e05-b16a-ee3aa4e01eac
@@ -11313,36 +11395,126 @@ https://www.reddit.com/r/orgmode/comments/ux9f78/a_python_script_to_sync_from_go
   - https://orgmode.org/worg/org-tutorials/org-google-sync.html
   - https://github.com/rjhorniii/ical2org
   - https://orgmode.org/worg/org-translators.html
+********* [[id:b67dea45-0f1c-44b7-a76d-efc6dd1f2a75][Completion frameworks]]
 ********* Checkboxes
 :PROPERTIES:
 :ID:       de8f6607-db62-449f-bf57-02221bff0da5
 :END:
-org mode checkbox root checked all
-********* Command line org table export
+- 
+- toggle whole tree https://lists.gnu.org/archive/html/emacs-orgmode/2013-09/msg00060.html
+********* Code and IDE
+- [[https://www.miskatonic.org/2016/10/03/orgexportbabelevaluate/][eval never export causes all header arguements to be ignored]]
+********** Running code blocks
+
+>/dev/null 2>&1 to prevent popups from shell 
+********** Shell and bash IDE
 :PROPERTIES:
-:ID:       4963dce3-c8a6-4199-b71b-a3d0e20ce920
+:ID:       e5d344fd-3edb-4fc9-af5b-8827e9abdc68
 :END:
-#+begin_src bash :tangle ./tools/shell/make_manual_input_tables.sh
-#!/usr/bin/env bash
+http://xahlee.info/emacs/emacs/emacs_unix.html
+- https://www.reddit.com/r/emacs/comments/xyo2fo/orgmode_vterm_tmux/
 
-# Script variables
+- https://chatgpt.com/c/674ccb05-39f0-8005-9e17-f6f897ebf851
+  #+begin_src emacs-lisp
+(defun my-get-shell-process ()
+  "Get the shell process associated with the current Org-babel session."
+  (let ((session (org-babel-get-session)))
+    (if session
+        (let ((process-name (format "*%s*" session)))
+          (or (get-process process-name)
+              (progn
+                (shell process-name)
+                (get-process process-name))))
+      ;; Fallback if no session is specified
+      (process-shell-choose))))
 
-org_file="${1}"
-table_suffix="${2:-manualInputTable}"
-out_dir="${3:-/tmp}"
-org_tsv_exporter="${4:-~/repos/basecamp/tools/lisp/org_tsv_export.el}"
-org_exc="${5:-/usr/local/bin/emacs}"
+(defun pipe-line-to-shell (&optional step)
+  "Evaluates the current line to the shell."
+  (interactive)
+  (setq com (buffer-substring (point-at-bol) (point-at-eol)))
+  (if (> (length com) 0)
+      (progn
+        (setq sprocess (my-get-shell-process))
+        (shell-eval-line sprocess com)
+        (when step (essh-next-code-line)))
+    (message "No command in this line")))
 
-tables_array=()
-mapfile -t tables_array < <(cat $org_file |
-                                egrep $table_suffix |
-                                sed 's/^.*\ //g')
-
-for table in "${tables_array[@]}";
-do
-    $org_exc --batch $org_file -l $org_tsv_exporter --eval '(my-tbl-export "'"$table"'" "'"$out_dir"'")'
-done
 #+end_src
+#+begin_src bash :session TEST
+cd ~/
+ls
+#+end_src
+#+BEGIN_SRC sh :session my-shell-session
+echo "Hello from my-shell-session"
+ls
+#+END_SRC
+
+********** Working with source code
+:PROPERTIES:
+:ID:       7544c0ca-7fd5-499d-84e5-6217fd63be2a
+:END:
+
+- [[id:72d6c025-d799-473a-b8bc-979f4bd1d0b4][Header arguements]]
+- examples
+  - [[https://eschulte.github.io/org-scraps/][Schulte snippets examples]]
+  - [[https://github.com/dfeich/org-babel-examples][examples with many languages]]
+  - [[http://orgmode.org/worg/org-contrib/babel/intro.html#spreadsheet][seems like a hassle]]
+  - [[http://orgmode.org/worg/org-contrib/babel/languages/ob-doc-sql.html][SQL Source Code Blocks in Org Mode]]
+  - [[http://orgmode.org/worg/org-contrib/babel/uses.html][Source Code Blocks: Uses]]
+- note that cache requires results to work
+- [[http://orgmode.org/worg/org-contrib/babel/intro.html][Worg Babel Introduction]]
+- https://www.reddit.com/r/orgmode/comments/omcc82/orggithooks_export_and_tangle_when_you_commit_new/
+
+- https://github.com/erikriverson/org-mode-R-tutorial
+https://orgmode.org/worg/org-tools/
+- From http://www.howardism.org/Technical/Emacs/literate-programming-tutorial.html
+- [[https://emacs.stackexchange.com/questions/17926/python-org-mode-source-block-output-is-always-none][for python outputs in babel]]
+  - http://kitchingroup.cheme.cmu.edu/blog/2016/05/29/Expanding-orgmode-py-to-get-better-org-python-integration/
+
+- http://emacs.stackexchange.com/questions/20949/formatting-output-of-inline-org-mode-source-blocks
+
+- [[https://www.gnu.org/software/emacs/manual/html_node/org/Blocks.html][notation to show/hide code blocks on startup]]
+- [[https://emacs.stackexchange.com/questions/7211/collapse-src-blocks-in-org-mode-by-default][stack: option to collapse code block with shortcut]]
+- https://www.reddit.com/r/emacs/comments/huiqt6/executeandnextsourceblock_in_org_babel/
+- https://emacs.stackexchange.com/questions/39032/tangle-the-same-src-block-to-different-files
+- https://www.reddit.com/r/orgmode/comments/5u8z2e/obasync_asynchronous_srcblock_execution_for/
+
+https://www.reddit.com/r/emacs/comments/huiqt6/executeandnextsourceblock_in_org_babel/
+- https://emacs.stackexchange.com/questions/3785/how-to-specify-default-header-arguments-in-orgmode-code-blocks
+- https://www.reddit.com/r/orgmode/comments/ptzcbj/modify_the_src_blocks_markers_to_much_more_eyes/
+- 15.8 Extracting Source Code
+  - https://emacs.stackexchange.com/questions/46479/how-to-set-a-tangled-parent-directory-for-each-subtree-in-org-mode
+  - https://emacs.stackexchange.com/questions/20001/is-it-possible-to-read-user-input-from-stdin-while-tangling-a-source-block
+  - https://emacs.stackexchange.com/questions/45164/does-org-have-any-inverse-tangle-operations-e-g-for-collaborating-with-non-or
+https://emacs.stackexchange.com/questions/4- 15.8 Extracting Source Code
+  - https://emacs.stackexchange.com/questions/46479/how-to-set-a-tangled-parent-directory-for-each-subtree-in-org-mode
+  - https://emacs.stackexchange.com/questions/20001/is-it-possible-to-read-user-input-from-stdin-while-tangling-a-source-block
+  - https://emacs.stackexchange.com/questions/45164/does-org-have-any-inverse-tangle-operations-e-g-for-collaborating-with-non-or1922/accessing-properties-in-org-babel-source-code-blocks
+https://emacs.stackexchange.com/questions/54497/how-to-set-tab-behavior-in-org-mode-source-blocks-when-the-language-isnt-suppor
+- Using org properties in source code block tangle- looks like complicated, no easy fix for now, maybe transclude?
+- https://gitlab.com/mtekman/org-tanglesync.el
+- 15.8 Extracting Source Code
+  - https://emacs.stackexchange.com/questions/46479/how-to-set-a-tangled-parent-directory-for-each-subtree-in-org-mode
+  - https://emacs.stackexchange.com/questions/20001/is-it-possible-to-read-user-input-from-stdin-while-tangling-a-source-block
+  - https://emacs.stackexchange.com/questions/45164/does-org-have-any-inverse-tangle-operations-e-g-for-collaborating-with-non-or
+*********** [[id:38e75166-d05e-4ef5-96eb-ed38b2f0ab10][Tangle to multiple locations]]
+:PROPERTIES:
+:ID:       89d833a8-68f1-4e4c-849d-5bd4ba302169
+:END:
+*********** [[id:3ef77d8f-3642-4ae5-b8f6-7fe2c017524c][Tangle source code from another org file using noweb]]
+:PROPERTIES:
+:ID:       71da6c35-921c-438d-a6d8-8f8aa7414d30
+:END:
+*********** [[id:72d6c025-d799-473a-b8bc-979f4bd1d0b4][Header arguements]]
+:PROPERTIES:
+:ID:       287bcbb7-46f5-46b8-9448-191f7fce0d52
+:END:
+********* Configuration examples
+- [[http://pages.sachachua.com/.emacs.d/Sacha.html][Chua emacs config]] 
+- https://github.com/sk8ingdom/.emacs.d/tree/master/org-mode-config
+********* Clock report
+- clock reports can include archives
+  - https://emacs.stackexchange.com/questions/21388/including-archives-in-org-mode-clock-table
 ********* Contacts
 :PROPERTIES:
 :ID:       fa151382-b2b5-4ef0-b7b4-82f7540ee756
@@ -11350,11 +11522,6 @@ done
 - [[https://julien.danjou.info/projects/emacs-packages#google-contacts][google contacts emacs package]]
 - Solution for contacts
   - http://www.hardakers.net/code/bbdb-to-org-contacts/
-********* Custom agenda
-:PROPERTIES:
-:ID:       1b7acedf-75c6-4231-8853-820c4bac38ba
-:END:
-https://emacs.stackexchange.com/questions/17323/org-mode-hide-tags-in-agenda
 ********* Emacs jupyter integration
 :PROPERTIES:
 :ID:       ad2bbe49-7ba1-413f-87b6-3705e9d20ca0
@@ -11384,6 +11551,41 @@ https://www.reddit.com/r/orgmode/comments/sngxpe/orgbabels_pythonsession_vs_emac
 :PROPERTIES:
 :ID:       5645fcce-dbf8-4233-9366-0f490ad83f46
 :END:
+#+begin_src emacs-lisp
+
+
+(defun my-tbl-export (name)
+"Search for table named `NAME` and export."
+(interactive "s")
+(show-all)
+(let ((case-fold-search t))
+  (if (search-forward-regexp ("#\\+NAME: .*_name$") nil t)
+  (progn
+    (let (name (replace-match
+    (next-line)
+    (org-table-export (format "/tmp/%s.csv" name) "orgtbl-to-csv")))))
+
+org_tables=()
+org_tables=("experiments"
+          "cohorts"
+          "subjects"
+          "specimens"
+          "isolates"
+          "seq_runs"
+          "libraries"
+          "tarbase_targeting_gja1"
+          "lit_targeting_gja1"
+          "mirdb_targeting_human_gja1"
+          "mirdb_targeting_mouse_gja1"
+          "notch_rentschler")
+
+for table in "${org_tables[@]}";
+do
+  /usr/bin/emacs-snapshot --batch "/home/jeszyman/repos/card-rad-bio/card-rad-bio.org" -l "/home/jeszyman/repos/card-rad-bio/src/org_tbl_export.el" --eval '(my-tbl-export "'"$table"'")'
+done
+#+end_src
+- https://stackoverflow.com/questions/11365739/how-to-cancel-the-hypersetup-in-0rg-mode-of-emacs/27219848#27219848
+- https://joonro.github.io/Org-Coursepack/Lectures/05%20Exporting%20Slides%20and%20Handouts.html
 - controlling exporter evals- [[https://www.miskatonic.org/2016/10/03/orgexportbabelevaluate/][in-depth no export functions]]
 - Ideas
   - continuous make build https://blog.mads-hartmann.com/2016/07/03/exporting-org-from-make.html
@@ -11392,6 +11594,7 @@ https://www.reddit.com/r/orgmode/comments/sngxpe/orgbabels_pythonsession_vs_emac
   - https://emacs.stackexchange.com/questions/16640/can-i-export-a-specific-table-in-an-org-file-to-csv-from-the-command-line
   - https://github.com/jkitchin/ox-ipynb
   - [[https://github.com/tomalexander/orgmode-mediawiki][github: orgmode-mediawiki export]]
+- - (ox-extras-activate '(ignore-headlines))
 
 ********** Export from shell with batch
 :PROPERTIES:
@@ -11444,6 +11647,73 @@ https://www.reddit.com/r/emacs/comments/y9udc6/looking_for_html_and_latex_templa
 https://dvolk.github.io/oolook/
 https://olmon.gitlab.io/org-themes/
 
+********** Command line org table export
+:PROPERTIES:
+:ID:       4963dce3-c8a6-4199-b71b-a3d0e20ce920
+:END:
+#+begin_src bash :tangle ./tools/shell/make_manual_input_tables.sh
+#!/usr/bin/env bash
+
+# Script variables
+
+org_file="${1}"
+table_suffix="${2:-manualInputTable}"
+out_dir="${3:-/tmp}"
+org_tsv_exporter="${4:-~/repos/basecamp/tools/lisp/org_tsv_export.el}"
+org_exc="${5:-/usr/local/bin/emacs}"
+
+tables_array=()
+mapfile -t tables_array < <(cat $org_file |
+                                egrep $table_suffix |
+                                sed 's/^.*\ //g')
+
+for table in "${tables_array[@]}";
+do
+    $org_exc --batch $org_file -l $org_tsv_exporter --eval '(my-tbl-export "'"$table"'" "'"$out_dir"'")'
+done
+#+end_src
+********** Org manual input table export to csv
+:PROPERTIES:
+:ID:       655164a2-53ee-40aa-8120-286b55f164b5
+:END:
+
+- Lisp export function
+  #+name: org_input_tbl_lisp_export
+  #+begin_src emacs-lisp
+(require 'org)
+
+(defun my-tbl-export (name)
+"Search for table named `NAME` and export."
+(interactive "s")
+(show-all)
+(let ((case-fold-search t))
+(if (search-forward-regexp (concat "#\\+NAME: +" name) nil t)
+(progn
+  (next-line)
+  (org-table-export (format "/tmp/%s.csv" name) "orgtbl-to-csv")))))
+
+#+end_src
+  #+name: org_input_tbl_lisp_export_wrapper
+  #+begin_src org :noweb yes
+<<org_input_tbl_lisp_export>>
+#+end_src
+- Bash to make the csvs
+  #+name: org_input_tbl_to_csv
+  #+begin_src bash
+# Insert tables as bash array named org_tables
+
+for table in "${org_tables[@]}";
+do
+/usr/bin/emacs-snapshot --batch "${org_file}" -l "${org_export_el}" --eval '(my-tbl-export "'"$table"'")'
+done
+
+mv /tmp/*_input.csv ${data_dir}/inputs/
+#+end_src
+  #+name: org_input_tbl_to_csv_wrapper
+  #+begin_src org :noweb yes
+<<org_input_tbl_to_csv>>
+#+end_src
+
 ********* General table from properties
 :PROPERTIES:
 :ID:       bdeac944-b8c1-4ebc-b821-409aea68cf7c
@@ -11463,22 +11733,36 @@ https://github.com/makuto/KeepToOrg
 :PROPERTIES:
 :ID:       8edb8028-c98d-47d4-8c61-902db646dd91
 :END:
+- [[id:0fd12a50-644b-4c41-a693-04a693c0ed88][Agenda]]
 - autorefresh agenda
 - https://www.reddit.com/r/orgmode/comments/uihyfz/notion_org_mode/
 - https://zolmok.org/posts/emacs-org-mode-developers/
 - https://www.reddit.com/r/orgmode/comments/hw6txn/a_newbie_needing_help_with_orgmode_for_gtd/
+********* Headers
+- multi-line headers- place at break and M-<ENTER>
 ********* Hand-drawn work
 :PROPERTIES:
 :ID:       36f78014-06d5-4b54-979c-a0359a06c266
 :END:
 - https://www.reddit.com/r/emacs/comments/m3fknu/introducing_orgxournalpp_based_on_orgkrita/
-********* Integration
-:PROPERTIES:
-:ID:       a82e259e-a1e9-4d90-b814-03310fbd49d4
-:END:
-- interactions
-  - see of getting juypter completion in code blocks - https://www.reddit.com/r/emacs/comments/i5xagf/ein_or_emacsjupyter_users_here/
-********* Links between org files
+********* Importing and exporting in structured ways
+- https://orgmode.org/worg/org-contrib/org-collector.html
+********* Images
+- Resize inline image with an attribute line. Default unit is pixels. Possible attributes are width, height, and scale. 
+
+  #+ATTR_ORG: :width 30
+  [[file:/usr/share/backgrounds/hp-wallpaper.jpg]]
+
+  #+ATTR_ORG: :width 300
+  [[file:/usr/share/backgrounds/hp-wallpaper.jpg]]
+
+
+********* Interfaces
+- https://github.com/mengwong/org-asana
+- Python https://github.com/karlicoss/orgparse
+- Jupyter- see of getting juypter completion in code blocks - https://www.reddit.com/r/emacs/comments/i5xagf/ein_or_emacsjupyter_users_here/
+********* Links
+********** Links between org files
 :PROPERTIES:
 :ID:       7a0c211b-168a-4821-aca6-4e0fad22d0f2
 :END:
@@ -11488,7 +11772,7 @@ https://emacs.stackexchange.com/questions/18688/radio-targets-in-external-org-mo
   - https://www.reddit.com/r/orgmode/comments/2qz4fb/question_radio_target_accross_multiple_files/
   - https://lists.gnu.org/archive/html/emacs-orgmode/2007-03/msg00024.html
 
-********* Link to specific place in external text file
+********** Link to specific place in external text file
 :PROPERTIES:
 :ID:       5a9ffdc1-65ee-4c16-80c9-7402fd61170c
 :END:
@@ -11502,19 +11786,6 @@ note brave doesn't do copy link to highlight
 - https://www.reddit.com/r/emacs/comments/n2dw4n/replacing_jupyter_notebook_with_org_mode/
 
 http://www.howardism.org/Technical/Emacs/literate-programming-tutorial.html
-********* Make a counter for TODO state changes
-:PROPERTIES:
-:ID:       54f78d43-dcec-4dbe-8f8e-4cb202f29dfa
-:END:
-- Make a counter for TODO state changes
-  - https://orgmode.org/worg/org-tutorials/org-effectiveness.html
-  - https://www.reddit.com/r/orgmode/comments/6exn7d/how_can_you_list_the_frequency_of_each_todo/
-  - https://emacs.stackexchange.com/questions/29127/make-statistics-of-the-tag-use-in-org-mode
-********* Make agenda link
-:PROPERTIES:
-:ID:       dc08fcb9-d20b-4ef5-8ebf-49adcc968158
-:END:
-e.g. elisp:(org-agenda nil "Xt")
 ********* Mobile access
 :PROPERTIES:
 :ID:       533cfba1-d18c-4cad-ae4c-ec69a50a9fd0
@@ -11538,6 +11809,9 @@ e.g. elisp:(org-agenda nil "Xt")
 :PROPERTIES:
 :ID:       6d27c2bc-1c39-4c22-aacb-e8f4541f6c30
 :END:
+- [[https://stackoverflow.com/questions/61247999/literate-programming-setup-of-docker-programming-environment-with-org-mode-in-em][access property in text]]
+
+org-set-property
 - access property values in text https://stackoverflow.com/questions/61247999/literate-programming-setup-of-docker-programming-environment-with-org-mode-in-em
 
 ********* References and citations
@@ -11546,149 +11820,7 @@ e.g. elisp:(org-agenda nil "Xt")
 :END:
 - references [[http://karl-voit.at/2015/12/26/reference-management-with-orgmode/][see this]], [[http://kitchingroup.cheme.cmu.edu/blog/category/org-mode/][Kitchin]], [[https://www.youtube.com/watch?v=fgizHHd7nOo][Kitchin youtube]]
 - https://blog.tecosaur.com/tmio/2021-07-31-citations.html#fn.3
-********* Searching
-:PROPERTIES:
-:ID:       05779876-092a-40e6-96d8-2611d35c422e
-:END:
-- paste into the search minibuffer with M-y
-- search options M-x occur, M-x lgrep, M-x ack
-
-- [ ] [[http://orgmode.org/worg/org-contrib/babel/intro.html][worg advanced searching]]
-
-https://orgmode.org/worg/org-tutorials/advanced-searching.html#:~:text=Org%2Dmode%20uses%20Emacs'%20multi,linked%20to%20its%20original%20location.
-[[id:F8997164-7995-405B-A065-266603146579][Search for tags]]
-
-********* Shell and bash IDE
-:PROPERTIES:
-:ID:       e5d344fd-3edb-4fc9-af5b-8827e9abdc68
-:END:
-http://xahlee.info/emacs/emacs/emacs_unix.html
-- https://www.reddit.com/r/emacs/comments/xyo2fo/orgmode_vterm_tmux/
-********* SQL in org
-:PROPERTIES:
-:ID:       8c50295a-e82b-4f1f-97f6-15d84f677155
-:END:
-https://bitspook.in/blog/using-org-mode-as-an-sql-playground/
-********* System alerts
-:PROPERTIES:
-:ID:       675d938a-8d31-4c52-8e4f-ad474bbcceef
-:END:
-- Alerts, Tags and Flags
-  - [[http://emacs.stackexchange.com/questions/3844/good-methods-for-setting-up-alarms-audio-visual-triggered-by-org-mode-events/5821#5821][alarms]]
-  - [[https://github.com/jwiegley/alert][alert]]
-  - [[http://emacs.stackexchange.com/questions/3844/good-methods-for-setting-up-alarms-audio-visual-triggered-by-org-mode-events][any tools for making UI-based or email-based DEADLINE notifications in org-mode?]]
-  - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Desktop-Notifications.html][emacs desktop notifications]]
-  - [[https://github.com/groksteve/org-alert][org-alert]]
-
-********* Tables
-:PROPERTIES:
-:ID:       68a0674a-55b3-4920-8414-c26fa76dc369
-:END:
-https://emacs.stackexchange.com/questions/11/how-to-add-a-prefix-to-every-line/13
-https://www.reddit.com/r/orgmode/comments/1b0mblv/use_org_tables_with_custom_elisp_functions/
-********* Time tracking
-:PROPERTIES:
-:ID:       e1865d4b-2924-498f-9bff-f934e7f7e219
-:END:
-- https://github.com/rksm/clj-org-analyzer
-  - https://www.reddit.com/r/orgmode/comments/czi4ug/org_analyzer_10_release/
-********* Working with external applications
-:PROPERTIES:
-:ID:       ab1009ff-4cde-4814-8b00-aa6a6b5bd135
-:END:
-https://orgmode.org/manual/Protocols.html
-********* Working with external files
-:PROPERTIES:
-:ID:       c5e8eb37-5a8c-4968-b85e-9803b914ee6b
-:END:
-https://www.reddit.com/r/emacs/comments/sfcl70/notmuch_like_mode_to_search_through_pdfs/
-********** Opening files
-:PROPERTIES:
-:ID:       8d1246cb-bf97-403a-993f-9b64b8a56999
-:END:
-https://emacs.stackexchange.com/questions/60708/how-to-open-a-folder-with-a-local-file-manager
-********* Working with LaTeX
-:PROPERTIES:
-:ID:       c905303f-fde9-493c-93ea-5bdf9a33a378
-:END:
-- https://www.reddit.com/r/orgmode/comments/ialsz3/using_tikz_in_orgmode/
-
-********* Working with raw text
-:PROPERTIES:
-:ID:       cd69d1e8-079e-40b9-b1db-a217c3cf055a
-:END:
-- edit protect lines
-    - password protect lines
-https://emacs.stackexchange.com/questions/48526/how-do-i-delete-all-blank-lines-in-a-buffer
-********* Working with source code
-:PROPERTIES:
-:ID:       7544c0ca-7fd5-499d-84e5-6217fd63be2a
-:END:
-
-- [[id:72d6c025-d799-473a-b8bc-979f4bd1d0b4][Header arguements]]
-- examples
-  - [[https://eschulte.github.io/org-scraps/][Schulte snippets examples]]
-  - [[https://github.com/dfeich/org-babel-examples][examples with many languages]]
-  - [[http://orgmode.org/worg/org-contrib/babel/intro.html#spreadsheet][seems like a hassle]]
-  - [[http://orgmode.org/worg/org-contrib/babel/languages/ob-doc-sql.html][SQL Source Code Blocks in Org Mode]]
-  - [[http://orgmode.org/worg/org-contrib/babel/uses.html][Source Code Blocks: Uses]]
-- note that cache requires results to work
-- [[http://orgmode.org/worg/org-contrib/babel/intro.html][Worg Babel Introduction]]
-- https://www.reddit.com/r/orgmode/comments/omcc82/orggithooks_export_and_tangle_when_you_commit_new/
-
-- https://github.com/erikriverson/org-mode-R-tutorial
-https://orgmode.org/worg/org-tools/
-- From http://www.howardism.org/Technical/Emacs/literate-programming-tutorial.html
-- [[https://emacs.stackexchange.com/questions/17926/python-org-mode-source-block-output-is-always-none][for python outputs in babel]]
-  - http://kitchingroup.cheme.cmu.edu/blog/2016/05/29/Expanding-orgmode-py-to-get-better-org-python-integration/
-
-- http://emacs.stackexchange.com/questions/20949/formatting-output-of-inline-org-mode-source-blocks
-
-- [[https://www.gnu.org/software/emacs/manual/html_node/org/Blocks.html][notation to show/hide code blocks on startup]]
-- [[https://emacs.stackexchange.com/questions/7211/collapse-src-blocks-in-org-mode-by-default][stack: option to collapse code block with shortcut]]
-- https://www.reddit.com/r/emacs/comments/huiqt6/executeandnextsourceblock_in_org_babel/
-- https://emacs.stackexchange.com/questions/39032/tangle-the-same-src-block-to-different-files
-- https://www.reddit.com/r/orgmode/comments/5u8z2e/obasync_asynchronous_srcblock_execution_for/
-
-https://www.reddit.com/r/emacs/comments/huiqt6/executeandnextsourceblock_in_org_babel/
-- https://emacs.stackexchange.com/questions/3785/how-to-specify-default-header-arguments-in-orgmode-code-blocks
-- https://www.reddit.com/r/orgmode/comments/ptzcbj/modify_the_src_blocks_markers_to_much_more_eyes/
-- 15.8 Extracting Source Code
-  - https://emacs.stackexchange.com/questions/46479/how-to-set-a-tangled-parent-directory-for-each-subtree-in-org-mode
-  - https://emacs.stackexchange.com/questions/20001/is-it-possible-to-read-user-input-from-stdin-while-tangling-a-source-block
-  - https://emacs.stackexchange.com/questions/45164/does-org-have-any-inverse-tangle-operations-e-g-for-collaborating-with-non-or
-https://emacs.stackexchange.com/questions/4- 15.8 Extracting Source Code
-  - https://emacs.stackexchange.com/questions/46479/how-to-set-a-tangled-parent-directory-for-each-subtree-in-org-mode
-  - https://emacs.stackexchange.com/questions/20001/is-it-possible-to-read-user-input-from-stdin-while-tangling-a-source-block
-  - https://emacs.stackexchange.com/questions/45164/does-org-have-any-inverse-tangle-operations-e-g-for-collaborating-with-non-or1922/accessing-properties-in-org-babel-source-code-blocks
-https://emacs.stackexchange.com/questions/54497/how-to-set-tab-behavior-in-org-mode-source-blocks-when-the-language-isnt-suppor
-- Using org properties in source code block tangle- looks like complicated, no easy fix for now, maybe transclude?
-- https://gitlab.com/mtekman/org-tanglesync.el
-- 15.8 Extracting Source Code
-  - https://emacs.stackexchange.com/questions/46479/how-to-set-a-tangled-parent-directory-for-each-subtree-in-org-mode
-  - https://emacs.stackexchange.com/questions/20001/is-it-possible-to-read-user-input-from-stdin-while-tangling-a-source-block
-  - https://emacs.stackexchange.com/questions/45164/does-org-have-any-inverse-tangle-operations-e-g-for-collaborating-with-non-or
-********** [[id:38e75166-d05e-4ef5-96eb-ed38b2f0ab10][Tangle to multiple locations]]
-:PROPERTIES:
-:ID:       89d833a8-68f1-4e4c-849d-5bd4ba302169
-:END:
-********** [[id:3ef77d8f-3642-4ae5-b8f6-7fe2c017524c][Tangle source code from another org file using noweb]]
-:PROPERTIES:
-:ID:       71da6c35-921c-438d-a6d8-8f8aa7414d30
-:END:
-********** [[id:72d6c025-d799-473a-b8bc-979f4bd1d0b4][Header arguements]]
-:PROPERTIES:
-:ID:       287bcbb7-46f5-46b8-9448-191f7fce0d52
-:END:
-********* Configuration examples
-- https://github.com/sk8ingdom/.emacs.d/tree/master/org-mode-config
-********* Comprehensive workflow suites
-********** scimax
-:PROPERTIES:
-:ID:       c1726ede-399f-4f0d-a457-cdb3ed41de1a
-:END:
-https://www.reddit.com/r/orgmode/comments/q82k5v/new_video_scimax_orgdb_searching_for_things_in/
-********* Search and query
+********* Search, query, and view
 https://github.com/alphapapa/org-ql?tab=readme-ov-file#org-ql-view
 #+begin_src emacs-lisp
 (require 'org-ql)
@@ -11750,48 +11882,154 @@ https://github.com/alphapapa/org-ql?tab=readme-ov-file#org-ql-view
 
 #+end_src
 
-********* Org manual input table export to csv
+********** Searching
 :PROPERTIES:
-:ID:       655164a2-53ee-40aa-8120-286b55f164b5
+:ID:       05779876-092a-40e6-96d8-2611d35c422e
 :END:
+- [[https://orgmode.org/worg/org-contrib/org-collector.html][org-collector.el]]
+- paste into the search minibuffer with M-y
+- search options M-x occur, M-x lgrep, M-x ack
 
-- Lisp export function
-  #+name: org_input_tbl_lisp_export
-  #+begin_src emacs-lisp
-(require 'org)
+- [ ] [[http://orgmode.org/worg/org-contrib/babel/intro.html][worg advanced searching]]
 
-(defun my-tbl-export (name)
-"Search for table named `NAME` and export."
-(interactive "s")
-(show-all)
-(let ((case-fold-search t))
-(if (search-forward-regexp (concat "#\\+NAME: +" name) nil t)
-(progn
-  (next-line)
-  (org-table-export (format "/tmp/%s.csv" name) "orgtbl-to-csv")))))
+https://orgmode.org/worg/org-tutorials/advanced-searching.html#:~:text=Org%2Dmode%20uses%20Emacs'%20multi,linked%20to%20its%20original%20location.
+[[id:F8997164-7995-405B-A065-266603146579][Search for tags]]
 
-#+end_src
-  #+name: org_input_tbl_lisp_export_wrapper
-  #+begin_src org :noweb yes
-<<org_input_tbl_lisp_export>>
-#+end_src
-- Bash to make the csvs
-  #+name: org_input_tbl_to_csv
-  #+begin_src bash
-# Insert tables as bash array named org_tables
+********** Custom agenda
+:PROPERTIES:
+:ID:       1b7acedf-75c6-4231-8853-820c4bac38ba
+:END:
+https://emacs.stackexchange.com/questions/17323/org-mode-hide-tags-in-agenda
+********** Columns view
+- 7.5 Columns view
+  -
+    #+BEGIN_SRC emacs-lisp
+(setq
+ org-columns-default-format
+ "%30ITEM(Task)
+  %2PRIORITY
+  %12DEADLINE
+  %12SCHEDULED
+  %12CLOCKSUM")
+#+END_SRC
+  - [[http://orgmode.org/worg/org-tutorials/org-column-view-tutorial.html][Emacs Org's Column View]]
+  - Define
+    - [[http://orgmode.org/manual/Column-attributes.html#Column-attributes][Column parameters]]
+********** Agenda
+:PROPERTIES:
+:ID:       0fd12a50-644b-4c41-a693-04a693c0ed88
+:END:
+- agenda prefix format syntax
+  - [[https://stackoverflow.com/questions/58820073/s-in-org-agenda-prefix-format-doesnt-display-dates-in-the-todo-view][expressions for TODO list prefixes]]
+- https://emacs.stackexchange.com/questions/30056/in-org-mode-agenda-view-dont-show-scheduled-if-time-is-provided
+- [[https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html][Bieber: An Agenda for Life with Org Mode]]
+- https://www.reddit.com/r/emacs/comments/8wohqz/completely_custom_orgagenda_with_support_for_gtd/
+- http://doc.norang.ca/org-mode.html#CustomAgendaViews
+- [[https://lists.gnu.org/archive/html/emacs-orgmode/2014-01/msg01372.html][make certain tags not visible in agenda]]
+C-u-c-s
+[[https://www.google.com/search?q=orgmode+agenda+clear+scheduled][google:orgmode agenda clear scheduled]]
+********* SQL in org
+:PROPERTIES:
+:ID:       8c50295a-e82b-4f1f-97f6-15d84f677155
+:END:
+https://bitspook.in/blog/using-org-mode-as-an-sql-playground/
+********* System alerts
+:PROPERTIES:
+:ID:       675d938a-8d31-4c52-8e4f-ad474bbcceef
+:END:
+- Alerts, Tags and Flags
+  - [[http://emacs.stackexchange.com/questions/3844/good-methods-for-setting-up-alarms-audio-visual-triggered-by-org-mode-events/5821#5821][alarms]]
+  - [[https://github.com/jwiegley/alert][alert]]
+  - [[http://emacs.stackexchange.com/questions/3844/good-methods-for-setting-up-alarms-audio-visual-triggered-by-org-mode-events][any tools for making UI-based or email-based DEADLINE notifications in org-mode?]]
+  - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Desktop-Notifications.html][emacs desktop notifications]]
+  - [[https://github.com/groksteve/org-alert][org-alert]]
 
-for table in "${org_tables[@]}";
-do
-/usr/bin/emacs-snapshot --batch "${org_file}" -l "${org_export_el}" --eval '(my-tbl-export "'"$table"'")'
-done
-
-mv /tmp/*_input.csv ${data_dir}/inputs/
-#+end_src
-  #+name: org_input_tbl_to_csv_wrapper
-  #+begin_src org :noweb yes
-<<org_input_tbl_to_csv>>
-#+end_src
-
+********* Tables
+:PROPERTIES:
+:ID:       68a0674a-55b3-4920-8414-c26fa76dc369
+:END:
+- https://emacs.stackexchange.com/questions/20129/how-can-i-filter-table-in-org-mode
+- [[http://sachachua.com/blog/2015/01/getting-data-org-mode-tables/][chua: Getting data from Org Mode tables]]
+- [[https://stackoverflow.com/questions/21953037/compute-the-duration-of-appointment-in-an-org-mode-table?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][stack: Compute the duration of appointment in an org-mode table]]
+- https://sachachua.com/blog/2015/01/getting-data-org-mode-tables/
+- [[http://orgmode.org/worg/org-tutorials/org-spreadsheet-intro.html][worg: Org as a spreadsheet system: a short introduction]]
+- [[http://howardism.org/Technical/Emacs/spreadsheet.html][Lots of Small Spreadsheets]]
+- [[http://stackoverflow.com/questions/6688075/emacs-permanently-summing-a-column-in-org-mode-tables][stack: Permanently summing a column in an Org-mode table]]
+- [[https://stackoverflow.com/questions/33291580/calculate-time-range-in-org-mode-table][stack: Calculate time range in org-mode table]]
+- https://emacs.stackexchange.com/questions/11/how-to-add-a-prefix-to-every-line/13
+- https://www.reddit.com/r/orgmode/comments/1b0mblv/use_org_tables_with_custom_elisp_functions/
+********* /TODO/ states
+********** Make a counter for TODO state changes
+:PROPERTIES:
+:ID:       54f78d43-dcec-4dbe-8f8e-4cb202f29dfa
+:END:
+- Make a counter for TODO state changes
+  - https://orgmode.org/worg/org-tutorials/org-effectiveness.html
+  - https://www.reddit.com/r/orgmode/comments/6exn7d/how_can_you_list_the_frequency_of_each_todo/
+  - https://emacs.stackexchange.com/questions/29127/make-statistics-of-the-tag-use-in-org-mode
+********* Tags
+- org-todo-state-tags-triggers
+- [[https://lists.gnu.org/archive/html/emacs-orgmode/2010-11/msg01130.html][Enumerate all tags in org-mode]]
+- Bulk change tags
+  - https://emacs.stackexchange.com/questions/19540/can-i-batchly-set-tags-in-org-mode
+- Add or mod with C-c C-c at headline or C-c C-q inside
+********* Variables
+- https://stackoverflow.com/questions/20033467/setting-a-local-file-variable-in-emacs-org-mode
+********* Scheduling and time
+- For scheduling on inconsistent days- use org-clone-subtree-wth-time-shift
+  - http://karl-voit.at/2017/01/15/org-clone-subtree-with-time-shift/
+  - https://emacs.stackexchange.com/questions/16472/how-to-repeat-an-appointment-within-an-interval
+  - [[http://stackoverflow.com/questions/28369833/emacs-org-mode-repeat-tasks-m-f-but-not-weekends][stack overflow: org scheduling repeats w/o weekends]]
+- [[http://karl-voit.at/2017/01/15/org-clone-subtree-with-time-shift/][recurring events with org-mode]]
+********** Timestamps
+- sexp can be used for scheduled, just can't change TODO state - [[https://emacs.stackexchange.com/questions/16680/org-mode-schedule-1-event-for-multiple-days][stack: Org-mode schedule 1 event for multiple days?]]
+- more complicated sexp scheduling:
+  - calendar-date-style is m/d/y
+  - http://orgmode.org/worg/org-faq.html#diary-sexp-in-org-files
+********** Time tracking
+:PROPERTIES:
+:ID:       e1865d4b-2924-498f-9bff-f934e7f7e219
+:END:
+- https://github.com/rksm/clj-org-analyzer
+  - https://www.reddit.com/r/orgmode/comments/czi4ug/org_analyzer_10_release/
+********** Make agenda link
+:PROPERTIES:
+:ID:       dc08fcb9-d20b-4ef5-8ebf-49adcc968158
+:END:
+e.g. elisp:(org-agenda nil "Xt")
+********* Working with external applications
+:PROPERTIES:
+:ID:       ab1009ff-4cde-4814-8b00-aa6a6b5bd135
+:END:
+https://orgmode.org/manual/Protocols.html
+********* Working with external files
+:PROPERTIES:
+:ID:       c5e8eb37-5a8c-4968-b85e-9803b914ee6b
+:END:
+https://www.reddit.com/r/emacs/comments/sfcl70/notmuch_like_mode_to_search_through_pdfs/
+********** Opening files
+:PROPERTIES:
+:ID:       8d1246cb-bf97-403a-993f-9b64b8a56999
+:END:
+https://emacs.stackexchange.com/questions/60708/how-to-open-a-folder-with-a-local-file-manager
+********* Working with LaTeX
+:PROPERTIES:
+:ID:       c905303f-fde9-493c-93ea-5bdf9a33a378
+:END:
+- https://www.reddit.com/r/orgmode/comments/ialsz3/using_tikz_in_orgmode/
+- See for adding properties latex headers- need +!!!https://lists.gnu.org/archive/html/emacs-orgmode/2016-03/msg00054.html
+********* Working with raw text
+:PROPERTIES:
+:ID:       cd69d1e8-079e-40b9-b1db-a217c3cf055a
+:END:
+- edit protect lines
+    - password protect lines
+https://emacs.stackexchange.com/questions/48526/how-do-i-delete-all-blank-lines-in-a-buffer
+********* Writing
+:PROPERTIES:
+:ID:       7f4e49a0-6139-43e5-9162-15e683f2ce4d
+:END:
+- [[https://www.reddit.com/r/emacs/comments/13wh55q/whats_everyone_using_for_grammar_checks/][Grammar linting]]
 ******** [[id:B171BCE2-2FF8-45C6-8958-8799B349E1B0][Org-Mode in basecamp-private]]
 :PROPERTIES:
 :ID:       b8cd229a-fe04-4c7b-a86b-812584ba7ff3
@@ -11804,7 +12042,7 @@ mv /tmp/*_input.csv ${data_dir}/inputs/
 :PROPERTIES:
 :ID:       ad0b8c23-a95b-429e-b787-a7b16afcd7b7
 :END:
-********* code.prop :yas:
+********* code.prop                                                     :yas:
 :PROPERTIES:
 :ID:       91b3ed13-d653-4424-a266-a3d1747841df
 :END:
@@ -11832,7 +12070,7 @@ $0
 :END:
 #+end_src
 
-********* 80 :yas:
+********* 80                                                            :yas:
 #+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/org-mode/80
 # -*- mode: snippet -*-
 # key: 80
@@ -12013,11 +12251,19 @@ https://www.reddit.com/r/orgmode/comments/x2e90r/there_really_needs_to_be_a_bett
 - [[http://orgmode.org/worg/org-glossary.html][Org glossary]]
 - [[http://orgmode.org/worg/org-contrib/babel/intro.html][worg advanced sarching]]
 - http://orgmode.org/worg/org-contrib/org-checklist.html
-******** Ideas :ideas:
+********* Comprehensive workflow suites
+********** scimax
+:PROPERTIES:
+:ID:       c1726ede-399f-4f0d-a457-cdb3ed41de1a
+:END:
+https://www.reddit.com/r/orgmode/comments/q82k5v/new_video_scimax_orgdb_searching_for_things_in/
+******** Ideas                                                        :ideas:
 :PROPERTIES:
 :ID:       bb80bf1c-de54-4ab5-8bdc-eb701bca5d36
 :END:
-- remove scheduled time for CLOSED 
+- checkboxes toggle child checkboxes
+  - https://chat.openai.com/c/20ac76ba-dd10-4c58-b670-420b2f38ef5d
+- remove scheduled time for CLOSED
 linting like https://github.com/loeffel-io/ls-lint
 ********* Prevent properti3es drawers in tangle with org comments
 :PROPERTIES:
@@ -12128,6 +12374,48 @@ https://github.com/vedang/pdf-tools
 :END:
 [[id:f15332ab-7af0-4c90-82a9-c8ec02d81ed0][My straight config]]
 ******* tramp
+https://www.reddit.com/r/emacs/comments/oh36yi/company_and_companyshell_super_slow_over_tramp/
+https://willschenk.com/articles/2020/tramp_tricks/
+#+begin_src emacs-lisp
+(setq tramp-default-method "ssh")
+#+end_src
+#+begin_src emacs-lisp
+;; https://willschenk.com/articles/2020/tramp_tricks/
+;; Open files in Docker containers like so: /docker:drunk_bardeen:/etc/passwd
+;; (push
+;;  (cons
+;;   "docker"
+;;   '((tramp-login-program "docker")
+;;     (tramp-login-args (("exec" "-it") ("%h") ("/bin/bash")))
+;;     (tramp-remote-shell "/bin/sh")
+;;     (tramp-remote-shell-args ("-i") ("-c"))))
+;;  tramp-methods)
+
+(defadvice tramp-completion-handle-file-name-all-completions
+  (around dotemacs-completion-docker activate)
+  "(tramp-completion-handle-file-name-all-completions \"\" \"/docker:\" returns
+    a list of active Docker container names, followed by colons."
+  (if (equal (ad-get-arg 1) "/docker:")
+      (let* ((dockernames-raw (shell-command-to-string "docker ps | awk '$NF != \"NAMES\" { print $NF \":\" }'"))
+             (dockernames (cl-remove-if-not
+                           #'(lambda (dockerline) (string-match ":$" dockerline))
+                           (split-string dockernames-raw "\n"))))
+        (setq ad-return-value dockernames))
+    ad-do-it))
+#+end_src
+
+https://emacs.stackexchange.com/questions/29286/tramp-unable-to-open-some-files
+#+begin_src emacs-lisp
+(setq tramp-copy-size-limit 10000000)
+#+end_src
+https://www.reddit.com/r/emacs/comments/ukyeb6/how_to_disable_emacs_from_trying_to_connect_to_a/
+  #+BEGIN_SRC emacs-lisp
+;;(setq tramp-ssh-controlmaster-options
+;;      "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+(require 'tramp)
+  #+END_SRC
+- [[id:e8f9e632-9fe5-47cd-bf4f-4f67433c6e11][Tramp waiting from prompts on remote shell]]
+
 - https://emacs.stackexchange.com/questions/24159/tramp-waiting-for-prompts-from-remote-shell
   #+begin_src bash
 case "$TERM" in
@@ -12151,7 +12439,7 @@ https://www.reddit.com/r/emacs/comments/17ydxhr/im_bumping_treesitauto_to_v10/
 :END:
 https://jwiegley.github.io/use-package/keywords/
 init is before pacakage load, config is after
-******* usepackage :yas:
+******* usepackage                                                      :yas:
 :PROPERTIES:
 :ID:       f0fb54e2-e3e2-42a7-9f59-26dbbb91c8b4
 :END:
@@ -12233,7 +12521,7 @@ https://github.com/joaotavora/yasnippet/issues/998
 - "there's no direct function in org-mode to get the level of the heading below the current position. It would involve complex navigation and manipulation which might not be feasible within a snippet."
 
 
-********* demo.org.header :yas:
+********* demo.org.header                                               :yas:
 :PROPERTIES:
 :ID:       47f0746c-880e-40c3-a20f-ca5e227663c9
 :END:
@@ -12468,8 +12756,8 @@ $0
 - https://www.reddit.com/r/emacs/comments/wcupae/lets_share_your_top_3_packages_that_you_cant_live/
 
 
-***** My public configuration 
-****** Initialization 
+***** My public configuration
+****** Initialization
 :PROPERTIES:
 :ID:       2750378f-d025-4f26-87c4-99ea711942c9
 :header-args: :tangle ./emacs/init.el
@@ -12555,14 +12843,14 @@ $0
 :END:
 - [[file:~/.emacs.d/backup-save-list/]]
 - for config rewrite https://chatgpt.com/c/e16840b5-355a-42e3-bd97-70693daa17c0
-- Visited files are backed up to =~/.emacs.d/backup-save-list=. 
+- Visited files are backed up to =~/.emacs.d/backup-save-list=.
 
 ******* [[file:config/public_emacs_config.el][Compiled elisp file]]
 ******* [[id:45e28300-51fd-4ce7-aed1-15dca15022d4][Org-mode]]
 ******* Base Emacs
 ******** Needed in --batch
 Code that needs to be tangled both here and into custom inits for batch export
-#+name need_in_batch 
+#+name need_in_batch
 #+begin_src emacs-lisp
 (setq large-file-warning-threshold most-positive-fixnum) ; disable large file warning
 (setq-default cache-long-scans nil)
@@ -12826,6 +13114,10 @@ Code that needs to be tangled both here and into custom inits for batch export
       (disable-theme 'leuven)
       (load-theme 'manoj-dark t))))
 #+end_src
+#+begin_src emacs-lisp
+(setq create-lockfiles nil)
+
+#+end_src
 
 ********* (open-texdoc-in-background)
 :PROPERTIES:
@@ -13057,9 +13349,9 @@ With prefix argument, also display headlines without a TODO keyword."
       '((directory . "/usr/bin/gnome-terminal --working-directory=\"%s\"")
         ("\\.pdf\\'" . "setsid -w xdg-open \"%s\"")
         ("\\.svg\\'" . "setsid -w xdg-open \"%s\"")
-	("\\.yaml\\'" . "emacsclient -c \"%s\"")	
+	("\\.yaml\\'" . "emacsclient -c \"%s\"")
 	("\\.list\\'" . emacsclient)
-        (auto-mode . emacsclient)	
+        (auto-mode . emacsclient)
         (t . "setsid -w xdg-open \"%s\"")
 	))
 
@@ -13336,7 +13628,8 @@ https://chatgpt.com/c/670d4cb7-5c08-8005-bec8-a2800e4bd0c4
 ********** org-blank-before-new-entry
 https://stackoverflow.com/questions/28351465/emacs-orgmode-do-not-insert-line-between-headers
 #+begin_src emacs-lisp
-(setf org-blank-before-new-entry '((heading . never) (plain-list-item . never)))
+(setq org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
+
 #+end_src
 
 ********** my-org-tree-to-indirect-buffer
@@ -13383,7 +13676,7 @@ When called with two prefix arguments, ARG, run the original function without pr
 #+begin_src emacs-lisp
 (require 'ox-latex)
 
-(customize-set-value 'org-latex-with-hyperref nil) 
+(customize-set-value 'org-latex-with-hyperref nil)
 
 (setq org-latex-logfiles-extensions (quote ("auto" "lof" "lot" "tex~" "aux" "idx" "log" "out" "toc" "nav" "snm" "vrb" "dvi" "fdb_latexmk" "blg" "brf" "fls" "entoc" "ps" "spl" "bbl")))
 
@@ -13543,36 +13836,35 @@ https://chatgpt.com/c/670d5b8e-aa7c-8005-946d-81409ee082d6
 #+begin_src emacs-lisp
 (defun browse-org-table-urls-by-name (table-name)
   "Browse URLs listed in an Org-mode table identified by TABLE-NAME.
-
-table-name Table name identified as #+name:
-
-Example usage:
-  (browse-org-table-urls-by-name the-table-name)"
+TABLE-NAME is the name of the table identified as #+name."
 
   (interactive "sEnter table name: ")
-  (let* ((element (org-element-map (org-element-parse-buffer) 'table
-                    (lambda (el)
-                      (when (string= (org-element-property :name el) table-name)
-                        el))
-                    nil t)))
+  (let* ((element (ignore-errors
+                    (org-element-map (org-element-parse-buffer) 'table
+                      (lambda (el)
+                        (when (string= (org-element-property :name el) table-name)
+                          el))
+                      nil t))))
     (if (not element)
         (message "Table with name %s not found" table-name)
-      (let ((table-content (buffer-substring-no-properties
-                            (org-element-property :contents-begin element)
-                            (org-element-property :contents-end element))))
-        (with-temp-buffer
-          (insert table-content)
-          (goto-char (point-min))
-          (let ((urls (org-table-to-lisp)))
-            (if (not urls)
-                (message "No URLs found in the table with name %s" table-name)
-              (let ((first-url (car (car urls))))
-                (start-process "brave-browser" nil "brave-browser" "--new-window" first-url)
-                (sit-for 2)  ; Wait for the new window to open
-                (dolist (url-row (cdr urls))
-                  (start-process "brave-browser" nil "brave-browser" (car url-row))
-                  (sit-for 0.5)))  ; Add a delay of 0.5 seconds between each URL
-              (message "Opened URLs from table with name %s" table))))))))
+      (let ((table-begin (org-element-property :contents-begin element))
+            (table-end (org-element-property :contents-end element)))
+        (if (or (null table-begin) (null table-end))
+            (message "No contents found for the table with name %s" table-name)
+          (let ((table-content (buffer-substring-no-properties table-begin table-end)))
+            (with-temp-buffer
+              (insert table-content)
+              (goto-char (point-min))
+              (let ((urls (org-table-to-lisp)))
+                (if (not urls)
+                    (message "No URLs found in the table with name %s" table-name)
+                  (let ((first-url (car (car urls))))
+                    (start-process "brave-browser" nil "brave-browser" "--new-window" first-url)
+                    (sit-for 2)  ;; Wait for the new window to open
+                    (dolist (url-row (cdr urls))
+                      (start-process "brave-browser" nil "brave-browser" (car url-row))
+                      (sit-for 0.5)))  ;; Delay between each URL
+                  (message "Opened URLs from table with name %s" table))))))))))
 
 #+end_src
 
@@ -13647,7 +13939,7 @@ https://claude.ai/chat/c775f0eb-fa91-45b4-82d6-e1a0df8b5526
 (with-eval-after-load 'org
   (require 'ol-plain))
 #+end_src
-********* Inline images refresh on code eval 
+********* Inline images refresh on code eval
 :PROPERTIES:
 :ID:       1b8e46c2-0fac-48c2-8b9e-58b1e903b222
 :END:
@@ -13724,7 +14016,7 @@ When set as a list as below, 300 pixels will be the default, but another width c
 :header-args:bash: :tangle no
 :END:
 
-- On [2024-06-27 Thu] I played around a little with also fetching abstract. The crossref metadata doesn't have that usually, although they built the functionality into their api. Instead, I can get abstract from pubmed like this:  
+- On [2024-06-27 Thu] I played around a little with also fetching abstract. The crossref metadata doesn't have that usually, although they built the functionality into their api. Instead, I can get abstract from pubmed like this:
 
 #+begin_src emacs-lisp
 (require 'url)
@@ -13761,8 +14053,8 @@ When set as a list as below, 300 pixels will be the default, but another width c
              (abstract (car (xml-get-children article 'Abstract)))
              (abstract-texts (xml-get-children abstract 'AbstractText)))
         (setq abstract-text
-              (mapconcat 
-               (lambda (a) 
+              (mapconcat
+               (lambda (a)
                  (xml-node-to-string a))
                abstract-texts
                " "))))
@@ -13787,7 +14079,7 @@ In solid tumor oncology, circulating tumor DNA (ctDNA) is poised to transform ca
 
 but i'm not able to get pubmed ID
 
-and the ncbi eutils can get pmid from doi: 
+and the ncbi eutils can get pmid from doi:
 
 #+begin_src bash
 ;curl "https://api.ncbi.nlm.nih.gov/lit/ctxp/v1/pubmed/?format=pubmed&id=10.1038/nature12373"
@@ -13852,7 +14144,7 @@ https://github.com/gregsexton/ob-ipython/issues/28
 
 - Make a ChatGPT query from emacs
   - https://chatgpt.com/c/d4f18f6b-2f09-4a69-93f1-8f8ab5b39cb0
-    
+
 #+begin_src emacs-lisp
 (defun open-chatgpt-query-in-new-browser-window (query &optional use-gpt-4)
   "Send a QUERY to ChatGPT and open the result in a new browser window.
@@ -13901,8 +14193,7 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
   (global-set-key (kbd "C-c C-SPC") 'mark-whole-word)
 #+end_src
 ******* AUCTeX
-******** [[id:eb4a0bb3-2e8a-4bf5-9186-11f972b2e06d][AUCTeX reference header]]
-******** Use-package
+- [[id:eb4a0bb3-2e8a-4bf5-9186-11f972b2e06d][AUCTeX reference header]]
 #+begin_src emacs-lisp
 (use-package tex
   :ensure auctex
@@ -13910,15 +14201,17 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
   (setenv "PATH" (concat "/usr/local/texlive/2021/bin/x86_64-linux:"
 			 (getenv "PATH")))
   (add-to-list 'exec-path "/usr/local/texlive/2021/bin/x86_64-linux")
-  (setq TeX-auto-save t
-	TeX-save-query nil
-	TeX-view-program-selection
-	'(((output-dvi has-no-display-manager) . "dvi2tty")
-	  ((output-dvi style-pstricks) . "dvips and gv")
-	  (output-pdf . "Okular")
-	  (output-dvi . "xdvi")
-	  (output-pdf . "Evince")
-	  (output-html . "xdg-open"))))
+  (setq
+   TeX-auto-save t
+   TeX-parse-self t
+   TeX-save-query nil
+   TeX-view-program-selection
+   '(((output-dvi has-no-display-manager) . "dvi2tty")
+     ((output-dvi style-pstricks) . "dvips and gv")
+     (output-pdf . "Okular")
+     (output-dvi . "xdvi")
+     (output-pdf . "Evince")
+     (output-html . "xdg-open"))))
 
 #+end_src
 ******* Blacken
@@ -13930,14 +14223,13 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 #+end_src
 
 ******* Company-mode
-******** [[id:c65678fd-8df9-4f16-929c-c960c7441cd0][Company mode reference header]]
-******** Use-package
+- [[id:c65678fd-8df9-4f16-929c-c960c7441cd0][Company mode reference header]]
 #+begin_src emacs-lisp
-(use-package company
-  :config
-  (global-company-mode)
-  (setq
-   company-dabbrev-downcase nil)) ; Don't downcase by default
+;; (use-package company
+;;   :config
+;;   (global-company-mode)
+;;   (setq
+;;    company-dabbrev-downcase nil)) ; Don't downcase by default
 
 #+end_src
 ******* Conda
@@ -13983,7 +14275,7 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 #+end_src
 
 ******* ESS
-******** [[id:147724ad-7598-4be6-b8a9-725a19eb39fe][ESS reference header]]
+- [[id:147724ad-7598-4be6-b8a9-725a19eb39fe][ESS reference header]]
 ******** Use-package
 #+begin_src emacs-lisp
 (use-package ess
@@ -14028,9 +14320,9 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 #+end_src
 
 ******* Elpy
-******** [[id:5cd6f647-11ba-445a-bcde-07493b0e4fae][Elpy reference header]]
-******** Use-pacakge
-#+begin_src emacs-lisp
+- [[id:5cd6f647-11ba-445a-bcde-07493b0e4fae][Elpy reference header]]
+- Use package
+  #+begin_src emacs-lisp
 (use-package elpy
   :init
   (advice-add 'python-mode :before 'elpy-enable)
@@ -14070,6 +14362,17 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
     (exec-path-from-shell-initialize)))
 
 #+end_src
+******* expand-region
+:PROPERTIES:
+:ID:       aa87da56-3f24-475c-adbe-d4d99a7376cc
+:END:
+https://github.com/magnars/expand-region.el
+#+begin_src emacs-lisp
+(use-package expand-region)
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
+#+end_src
+
 ******* flycheck
 ******** Use-package
 #+begin_src emacs-lisp
@@ -14083,8 +14386,7 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 
 #+end_src
 ******* flyspell
-******** [[id:df1ef82a-6cd8-4aee-beac-005873270c72][ispell reference header]]
-******** Use-package
+- [[id:df1ef82a-6cd8-4aee-beac-005873270c72][ispell reference header]]
 #+begin_src emacs-lisp
 (use-package flyspell
   :config
@@ -14092,8 +14394,7 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 
 #+end_src
 ******* Helm
-******** [[id:96c0f509-c06b-4e48-8f28-019cd2ca1a38][Helm reference header]]
-******** Use-package
+- [[id:96c0f509-c06b-4e48-8f28-019cd2ca1a38][Helm reference header]]
 #+begin_src emacs-lisp
 (use-package helm
   :config
@@ -14104,7 +14405,7 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
    helm-move-to-line-cycle-in-source nil)) ;; allow C-n through different sections
 #+end_src
 ******* helm-org
-******** Use-package
+
 #+begin_src emacs-lisp
 (use-package helm-org
   :config
@@ -14132,7 +14433,6 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 #+end_src
 
 ******* helm-org-rifle
-******** Use-package
 #+begin_src emacs-lisp
 (use-package helm-org-rifle
     :config
@@ -14158,7 +14458,6 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 #+end_src
 
 ******* marginalia
-******** Use-package
 #+begin_src emacs-lisp
 (use-package marginalia
   ;; Either bind `marginalia-cycle' globally or only in the minibuffer
@@ -14167,19 +14466,14 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
          ("M-A" . marginalia-cycle))
   ;; The :init configuration is always executed (Not lazy!)
   :init
-  (marginalia-mode))
+  (marginalia-mode)
+  :ensure t)
 #+end_src
 
 ******* Native complete
 ******** Use-package
 #+begin_src emacs-lisp
 (use-package native-complete)
-#+end_src
-******* ob-async
-
-******** Use-package
-#+begin_src emacs-lisp
-(use-package ob-async)
 #+end_src
 
 ******* orderless
@@ -14194,6 +14488,13 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
 
+#+end_src
+******* org-edna
+#+begin_src emacs-lisp
+(use-package org-edna
+  :ensure t
+  :config
+  (org-edna-mode 1))
 #+end_src
 
 ******* org-plus-contrib
@@ -14453,7 +14754,7 @@ https://github.com/jkitchin/org-ref/issues/938
   :init
   (add-hook 'vterm-mode-hook '(lambda () (setq-local cua-mode nil))))
   :config
-  (setq vterm-max-scrollback 100000)  
+  (setq vterm-max-scrollback 100000)
   (custom-set-faces
    '(vterm-color-blue ((t (:foreground "#477EFC" :background "#477EFC")))))
 
@@ -14534,7 +14835,7 @@ https://github.com/jkitchin/org-ref/issues/938
 :header-args:emacs-lisp: :tangle no
 :END:
 https://chatgpt.com/c/8e222105-a52a-4856-80d3-c37823f0efb1
-****** Load Last 
+****** Load Last
 :PROPERTIES:
 :ID:       78120684-eb8c-4970-836e-13d2cb624386
 :header-args: :tangle ./emacs/load-last.el
@@ -14569,7 +14870,7 @@ https://chatgpt.com/c/8e222105-a52a-4856-80d3-c37823f0efb1
 :PROPERTIES:
 :ID:       e6aab15d-36b0-4b08-93b8-ef9f6254d950
 :END:
-- 
+-
 - [[https://docs.globus.org/cli/][cli]]
   - [[https://docs.globus.org/cli/reference/][documentation]]
     - https://docs.globus.org/how-to/globus-connect-personal-linux/#globus-connect-personal-cli
@@ -14607,7 +14908,7 @@ https://chatgpt.com/c/8e222105-a52a-4856-80d3-c37823f0efb1
 :PROPERTIES:
 :ID:       7d4b8924-1d0d-4d9d-8be7-ee2d8de4f458
 :END:
-****** prop :yas:
+****** prop                                                             :yas:
 :PROPERTIES:
 :ID:       b1b4c4eb-ca81-4ef3-805f-2e3b8a0a4597
 :END:
@@ -15144,6 +15445,7 @@ https://github.com/axel-download-accelerator/axel
 :PROPERTIES:
 :ID:       670ed8f4-bb93-4d93-b9ea-a142a599169f
 :END:
+- Open to page via orgmode link, e.g. - [[cite:&ottolenghi2012jerusalem]]  [[shell:nohup okular --page 136 ~/library/ottolenghi2012jerusalem.pdf > /dev/null 2>&1 & disown][page 136]]
 - https://askubuntu.com/questions/1163761/how-to-flatten-comments-using-okular
 - merge
   - https://askubuntu.com/questions/2799/how-to-merge-several-pdf-files
@@ -15194,7 +15496,7 @@ done
 :PROPERTIES:
 :ID:       a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc
 :END:
-#+begin_src R 
+#+begin_src R
 #
 # Theme
 theme_general <- function () {
@@ -16100,7 +16402,7 @@ if __name__ == "__main__":
     main()
 
 #+end_src
-******* function :yas:
+******* function                                                        :yas:
 :PROPERTIES:
 :ID:       c3c12474-7191-4ef9-82cf-62e223311570
 :END:
@@ -16127,13 +16429,13 @@ def ${1:FUNCTIONNAME$$(replace-regexp-in-string " " "_" yas-text)}(${2:PARAM$$(r
 # -*- mode: snippet -*-
 # key: code.py
 # expand-env: ((yas-indent-line 'none))
-# condition: 'auto  
+# condition: 'auto
 # --
 ,#+begin_src python
 $0
 ,#+end_src
 #+end_src
-******* head1 :yas:
+******* head1                                                           :yas:
 #+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/python-mode/head1
 # -*- mode: snippet -*-
 # key: head1
@@ -16247,7 +16549,7 @@ def ${1: <FUNCTION NAME>}(${2: <ARGUMENT 1>}):
 - https://www.google.com/search?q=pandas+filter+column
 - https://www.google.com/search?q=pandas+import+csv
 - https://www.google.com/search?q=pandas+column+to+list
-******** :ref:
+********                                                                :ref:
 :PROPERTIES:
 :ID:       0a79d306-781d-484e-91f4-4d9b01d2609f
 :END:
@@ -16552,19 +16854,19 @@ $0
 
 #+end_src
 
-******* code.lisp :yas:
+******* code.lisp                                                       :yas:
 #+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/org-mode/code.lisp
 # -*- mode: snippet -*-
 # key: code.lisp
 # expand-env: ((yas-indent-line 'none))
-# condition: 'auto  
+# condition: 'auto
 # --
 ,#+begin_src emacs-lisp
 $0
 ,#+end_src
 #+end_src
 
-******* function :yas:
+******* function                                                        :yas:
 #+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/emacs-lisp-mode/function
 # -*- mode: snippet -*-
 # key: function
@@ -16739,7 +17041,7 @@ done
 
 #+end_src
 
-****** :ref:
+******                                                                  :ref:
 :PROPERTIES:
 :ID:       61bd59de-7f6b-4521-8bfa-c5755917d608
 :END:
@@ -17194,7 +17496,7 @@ $0
 ,#+end_src
 #+end_src
 
-******* Development :dev:
+******* Development                                                     :dev:
 :PROPERTIES:
 :header-args: :tangle no
 :ID:       57eeb820-d0b7-4387-b426-758c5cce2ba8
@@ -17289,9 +17591,9 @@ ${1:$$(replace-regexp-in-string " " "_" yas-text)}(){
 }
 
 #+end_src
-******* head1 :yas:
+******* head1                                                           :yas:
 
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/head1 :comments no 
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/head1 :comments no
 # -*- mode: snippet -*-
 # key: head1
 # expand-env: ((yas-indent-line 'none))
@@ -17309,7 +17611,7 @@ $0
 :PROPERTIES:
 :ID:       7bce1c80-34ca-4419-826c-99ac5af2bf6a
 :END:
-******* must.src :yas:
+******* must.src                                                        :yas:
 :PROPERTIES:
 :ID:       af579d0a-ea85-4538-a120-e06c0c19cc8a
 :END:
@@ -17367,7 +17669,7 @@ main "$@"
 
 
 #+end_src
-******* 80 :yas:
+******* 80                                                              :yas:
 #+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/80
 # -*- mode: snippet -*-
 # key: 80
@@ -17404,17 +17706,17 @@ print_usage(){
     cat <<- EOF
 
  Usage: ${1:${1:SCRIPT NAME}$$(replace-regexp-in-string " " "_" yas-text)} [OPTIONS] ${2:${2:REQUIRED OPERAND}$$(upcase yas-text)}  ${3:${3:[OPTIONAL OPERAND]}$$(upcase yas-text)}
- 
+
  ${4:<DESCRIPTION>}
- 
+
  Options:
    -h, --help    Show this help message and exit
 
  Arguements:
-   ${2:$(ignore-errors (format (yas-field-value 2)))} ${5: <OPERAND DESCRIPTION>} 
+   ${2:$(ignore-errors (format (yas-field-value 2)))} ${5: <OPERAND DESCRIPTION>}
 
  Example:
-   ${1:$(ignore-errors (format (yas-field-value 1)))} ${6: <EXAMPLE>} 
+   ${1:$(ignore-errors (format (yas-field-value 1)))} ${6: <EXAMPLE>}
 
 EOF
 }
@@ -17423,7 +17725,7 @@ EOF
 # return_usage_any
 #+end_src
 
-******* variables :yas:
+******* variables                                                       :yas:
 
 A variables function template for shell scripts
 
@@ -17473,7 +17775,7 @@ $1="$\{$2}"$0
 - https://stackoverflow.com/questions/22962591/how-to-prevent-direct-bash-script-execution-and-allow-only-usage-from-other-scri
 - https://unix.stackexchange.com/questions/10646/repeat-a-unix-command-every-x-seconds-forever
 ******** Check dependencies with which
-#+begin_src sh 
+#+begin_src sh
 dependencies=("docker" "wget" "bash")
 for i in ${dependencies[@]}; do
     if [ "$(which $i)" = "" ] ; then
@@ -17704,7 +18006,7 @@ https://www.google.com/search?q=bash+read+csv
   - https://duckduckgo.com/?q=multithread+grep&ia=qa
   - https://stackoverflow.com/questions/1455695/forking-multi-threaded-processes-bash
 ******* Scripts
-******** Error handling 
+******** Error handling
 ******* Setup
 :PROPERTIES:
 :ID:       12419776-9b0e-42e9-8392-8f17dc89a63f
@@ -18306,14 +18608,79 @@ pandoc -S $test | xclip -selection clipboard
 :PROPERTIES:
 :ID:       2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5
 :END:
-https://codebeautify.org/yaml-validator
+******* Example
+#+begin_src yaml :tangle /tmp/example.yaml
+# Simple YAML Example
+
+# Comment types
+
+# A standalone comment
+
+key: value # An inline comment
+
+
+# Scalars
+## Boolean
+enabled: true
+## String
+mode: auto
+
+# Numbers
+integer: 42
+float: 3.14
+scientific: 1e6
+
+# Null (empty values)
+unset: null
+missing_value: ~
+
+# Lists
+# Strings
+fruits:
+  - apple
+  - banana
+  - cherry
+
+# Inline format example for a list
+colors: [red, green, blue]
+
+# Dictionaries
+servers:
+  - name: web-server
+    ip: 192.168.1.1
+    status: active
+  - name: db-server
+    ip: 192.168.1.2
+    status: inactive
+
+# Nested
+nested_list:
+  - - - item1  # First element of the first innermost list
+      - item2  # Second element of the first innermost list
+    - - item3  # First element of the second innermost list
+      - item4  # Second element of the second innermost list
+  - - - item5  # First element of the third innermost list
+      - item6  # Second element of the third innermost list
+    - - item7  # First element of the fourth innermost list
+      - item8  # Second element of the fourth innermost list
+
+#+end_src
+
+******* Processes
+:PROPERTIES:
+:ID:       a7ab5383-e7c2-4341-ab78-48967db4c9ca
+:END:
+- validation https://codebeautify.org/yaml-validator
+- Cannot do string concatenation
+  - https://stackoverflow.com/questions/5484016/how-can-i-do-string-concatenation-or-string-replacement-in-yaml
+- https://www.google.com/search?q=yaml+make+value+from+other+values
 ******* General reference
 :PROPERTIES:
 :ID:       7e4af24b-2b05-44bc-b87c-a16393f1e9dc
 :END:
 - https://www.educative.io/blog/advanced-yaml-syntax-cheatsheet
 ******* Local YAS
-******* code.yaml :yas:
+******* code.yaml                                                       :yas:
 #+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/org-mode/code.yaml
 # -*- mode: snippet -*-
 # key: code.yaml
@@ -18325,13 +18692,6 @@ $0
 ,#+end_src
 #+end_src
 
-******* Processes
-:PROPERTIES:
-:ID:       a7ab5383-e7c2-4341-ab78-48967db4c9ca
-:END:
-- Cannot do string concatenation
-  - https://stackoverflow.com/questions/5484016/how-can-i-do-string-concatenation-or-string-replacement-in-yaml
-- https://www.google.com/search?q=yaml+make+value+from+other+values
 ***** JSON JavaScript Object Notation
 :PROPERTIES:
 :ID:       9E10CCC0-BC92-4C96-BBF2-99B54E88143D
@@ -19219,7 +19579,7 @@ fi
 - tutorial https://github.com/kyclark/make-tutorial
 - http://blog.byronjsmith.com/makefile-shortcuts.html
 - Processes
-  - Pass variables 
+  - Pass variables
 ****** gawk
 :PROPERTIES:
 :ID:       ec6a8328-2003-48ce-b8d0-fd11252d75cd
@@ -19404,6 +19764,12 @@ Lintr: An R package that provides static code analysis for R, similar to Python'
 
 These guides and tools offer a consensus on best practices for R coding, promoting a coding style that emphasizes clarity, simplicity, and consistency. While they may not be as universally adopted as PEP 8 in the Python world, they provide a solid foundation for writing clean and maintainable R code.
 **** [[id:593672e1-82b2-44e0-aa00-d28825860706][My programming style guide]]
+**** Tutorial
+- Get $HOSTNAME
+  #+begin_src R
+Sys.info()["nodename"]
+#+end_src
+
 **** Ideas
 :PROPERTIES:
 :ID:       d3e14906-80f0-409b-b8df-8d98da11f09f
@@ -19426,7 +19792,7 @@ if(Sys.info()["nodename"] %in%
    c("jeszyman-work","jeff-mac-book","jeff-mac-book","jeff-server"))
   (data_dir = file.path("/mnt/ris/cbergom"))
 
-***** R Processes :flat:
+***** R Processes                                                      :flat:
 :PROPERTIES:
 :ID:       d96c05c0-838a-45ec-b7c6-a8a7e5b3e71d
 :END:
@@ -19862,7 +20228,7 @@ https://github.com/thomasp85/patchwork/issues/136
 - https://www.reddit.com/r/rstats/comments/b4ol4z/unbin_data_to_make_histogram/
 - [[http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/][histogram]]
 - [[http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/#modifying-the-text-of-legend-titles-and-labels][modify ggplot2 legend text]]
-****** Processes :hierarchy:
+****** Processes                                                  :hierarchy:
 :PROPERTIES:
 :ID:       7b47a4fa-5c0e-4e36-9d88-61593540215b
 :END:
@@ -20216,7 +20582,7 @@ $0
 #+end_src
 
 
-***** 80 :yas:
+***** 80                                                                :yas:
 :PROPERTIES:
 :ID:       3e97b905-780b-4612-a5a1-18e9062dd8a8
 :END:
@@ -20286,7 +20652,7 @@ for (name in names(out)) {
 }
 
 #+end_src
-***** var :yas:
+***** var                                                               :yas:
 :PROPERTIES:
 :ID:       fa91bd4f-f2d9-4a17-8e02-6891c564204b
 :END:
@@ -20297,7 +20663,7 @@ for (name in names(out)) {
 # --
 $1 = args[$2]
 #+end_src
-***** make.opt :yas:
+***** make.opt                                                          :yas:
 :PROPERTIES:
 :ID:       5c6b366c-d0ca-45bd-a7a3-c649c8f94e11
 :END:
@@ -20309,7 +20675,7 @@ $1 = args[$2]
   make_option(c("--$1"), type = "character", default = "$2"),
 
 #+end_src
-***** optparse :yas:
+***** optparse                                                          :yas:
 :PROPERTIES:
 :ID:       49258803-a4f9-4fc1-b44d-2f5c7eda14a3
 :END:
@@ -20325,7 +20691,7 @@ option_list <- list(
 opts <- parse_args(OptionParser(option_list = option_list))
 
 #+end_src
-***** r.cmd :yas:
+***** r.cmd                                                             :yas:
 :PROPERTIES:
 :ID:       c204aa66-98eb-412f-8ffa-0227b42ed381
 :END:
@@ -20366,7 +20732,7 @@ ${1:FUNCTIONNAME$$(replace-regexp-in-string " " "_" yas-text)} = function(${2:VA
 :PROPERTIES:
 :ID:       b04e0542-9f48-4182-b093-f5bf0c9c8a5b
 :END:
-****** h2 :yas:
+****** h2                                                               :yas:
 :PROPERTIES:
 :ID:       27db6fe2-6bd4-4cbb-8eb2-83487d76ce20
 :END:
@@ -20401,7 +20767,7 @@ bash.file.size
 :ID:       d38e898b-e264-48b9-ad9e-fa4bea8d5a5d
 :END:
 # ##### Level 3: Handle Missing Values #####
-***** Ideas :ideas:
+***** Ideas                                                           :ideas:
 :PROPERTIES:
 :ID:       76669340-b70a-44dd-b5f2-54788140796d
 :END:
@@ -21018,7 +21384,73 @@ echo $PATH
 gcloud compute ssh jeszyman@instance-20240601-125838 --zone us-central1-a
 #+end_src
 
-** Development :dev:
+*** Ansible
+[[file:~/.ansible.cfg]]
+#+begin_src bash :results raw replace
+ansible --version
+#+end_src
+
+#+RESULTS[524f8f8fe424fc85e621187a6661c2067e356070]:
+ansible [core 2.11.12] 
+  config file = /home/jeszyman/.ansible.cfg
+  configured module search path = ['/home/jeszyman/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /home/jeszyman/.local/lib/python3.10/site-packages/ansible
+  ansible collection location = /home/jeszyman/.ansible/collections:/usr/share/ansible/collections
+  executable location = /home/jeszyman/.local/bin/ansible
+  python version = 3.10.12 (main, Nov  6 2024, 20:22:13) [GCC 11.4.0]
+  jinja version = 3.1.4
+  libyaml = True
+
+**** Cookbook
+:properties:
+:header-args:yaml: :tangle ./ansible/playbooks/ansible-cookbook.yaml :mkdirp yes
+:end:
+
+******** Preamble
+#+begin_src yaml
+---
+- name: Ansible cookbook
+  hosts: localhost
+  tasks:
+#+end_src
+******** Debugging info
+#+begin_src yaml
+    - name: Debug useful variable readouts
+      debug:
+        msg: |
+          Logged in as: {{ ansible_env.USER }}
+          
+          Home directory: {{ ansible_user_dir }}
+          
+          Environment HOME: {{ ansible_env.HOME }}
+          
+          PATH: {{ ansible_env.PATH }}
+          
+          OS: {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_os_family }})
+          
+          Hostname: {{ ansible_hostname }}
+          
+          FQDN: {{ ansible_fqdn }}
+          
+          Default IPv4: {{ ansible_default_ipv4.address }}
+          
+          Inventory Sources: {{ ansible_inventory_sources }}
+          
+          Package Manager: {{ ansible_pkg_mgr }}
+#+end_src
+
+**** Processes
+#+begin_src bash
+# Avoid cryptography deprecation warnings: 
+pip install --upgrade paramiko cryptography
+#+end_src
+#+begin_src bash
+npm i -g @ansible/ansible-language-server
+#+end_src
+**** Reference
+- https://sweworld.net/cheatsheets/ansible/
+
+** Development                                                          :dev:
 :PROPERTIES:
 :header-args: :tangle no
 :ID:       0f3dbadd-f6f3-4f89-8799-321fabc34031

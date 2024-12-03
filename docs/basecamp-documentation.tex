@@ -1,4 +1,4 @@
-% Created 2024-11-14 Thu 16:13
+% Created 2024-12-01 Sun 12:21
 % Intended LaTeX compiler: pdflatex
 \documentclass{article}
 \newcommand\foo{bar}
@@ -13,23 +13,23 @@
 \maketitle
 \tableofcontents
 
-% [[elisp:(run-latex-at-point)][compile]] using [[id:3975a173-ac71-4c02-b032-ef215329ca59][_run-latex-at-point]]_
+\href{(run-latex-at-point)}{compile} using \href{basecamp.org}{\_run-latex-at-point}\_\\[0pt]
 \vspace{5mm}
 \hfill Last compiled \today.
 % [[file:~/repos/latex/latex.org::#dd9bb77e-6ff7-44e0-9026-c371bdaf9603][Last compiled]]
 
 
 \section{Setup and Configuration}
-\label{sec:org3047978}
+\label{sec:org779932b}
 \subsection{General Information and Good Practice for Base Computing Setup}
-\label{sec:org7da33bb}
+\label{sec:orgb73ad3c}
 \begin{enumerate}
 \item Bash Configuration
-\label{sec:orgc451dff}
+\label{sec:org7bd5047}
 \href{file:///home/jeszyman/.bashrc}{.bashrc} is used for interactive shell customizations and \href{file:///home/jeszyman/.profile}{.profile} is used for setting up environment variables and system-wide settings needed during the login process.\\[0pt]
 \begin{enumerate}
 \item Bashrc
-\label{sec:org1574c7a}
+\label{sec:orgb00e924}
 \begin{itemize}
 \item The default bashrc lives at \emph{etc/skel}.bashrc.\\[0pt]
 \item Other programs such as singularity or conda may write directly to bashrc.\\[0pt]
@@ -50,17 +50,17 @@ done
 \end{enumerate}
 \end{enumerate}
 \subsection{An opinionated and incomplete base computing configuration}
-\label{sec:org6b81ae8}
+\label{sec:org993568e}
 \begin{enumerate}
 \item Base operating system
-\label{sec:orgce93390}
+\label{sec:org075265b}
 
 My base operating system is linux Ubuntu using a long-term support (LTS) version.\\[0pt]
 
 \item Bash
-\label{sec:orgb385905}
+\label{sec:orge8323f6}
 \item Git repositories
-\label{sec:org8294e76}
+\label{sec:org7acc91b}
 Git repos live in \$\{HOME\}/repos.\\[0pt]
 
 Git repos are modular using the git submodule structure.\\[0pt]
@@ -71,13 +71,13 @@ Git version control follows a simple trunk-based development strategy, with a si
 
 \begin{enumerate}
 \item Repositories where I am the main or sole author
-\label{sec:orge3c9a1c}
+\label{sec:orgb8c2b8c}
 
 Repository code is tangled from a single Org-mode file. Updates from others are through pull requests as tangling would overwrite any direct commits.\\[0pt]
 \end{enumerate}
 
 \item Core directory structure
-\label{sec:orgcbf0073}
+\label{sec:org949b346}
 -- /\\[0pt]
 \begin{center}
 \begin{tabular}{}
@@ -91,23 +91,23 @@ Repository code is tangled from a single Org-mode file. Updates from others are 
 
 \end{center}
 \item Data governance
-\label{sec:org4e146d8}
+\label{sec:orgf2d2a93}
 \begin{enumerate}
 \item Security
-\label{sec:org5273fbb}
+\label{sec:orgecd36ce}
 \item Architecture
-\label{sec:org9ec3f64}
+\label{sec:org06a960e}
 \item Lifecycle
-\label{sec:org86b7eac}
+\label{sec:org2501644}
 \item Management
-\label{sec:org13be226}
+\label{sec:org81f983d}
 \begin{enumerate}
 \item Backup
-\label{sec:org07df43e}
+\label{sec:org3d6aec2}
 \end{enumerate}
 \end{enumerate}
 \item Core applications
-\label{sec:orgab017da}
+\label{sec:org28a82c0}
 core components (incomplete)\\[0pt]
 \begin{itemize}
 \item installed via apt\\[0pt]
@@ -129,21 +129,21 @@ core components (incomplete)\\[0pt]
 \end{itemize}
 \begin{enumerate}
 \item R
-\label{sec:orge2e546a}
+\label{sec:org5d8e511}
 \begin{itemize}
 \item[{$\square$}] convert python and R to argparse \url{https://www.google.com/search?q=r+argparse+optparse\&oq=r+argparse+optparse\&gs\_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDg2MDFqMGo0qAIAsAIA\&sourceid=chrome-mobile\&ie=UTF-8}\\[0pt]
 \end{itemize}
 \item Python
-\label{sec:orgabd8366}
+\label{sec:orgb76031f}
 \begin{itemize}
 \item[{$\square$}] convert python and R to argparse \url{https://www.google.com/search?q=r+argparse+optparse\&oq=r+argparse+optparse\&gs\_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDg2MDFqMGo0qAIAsAIA\&sourceid=chrome-mobile\&ie=UTF-8}\\[0pt]
 \end{itemize}
 
 \item Emacs
-\label{sec:org46b51f9}
+\label{sec:orgf3f4226}
 \begin{enumerate}
 \item Initialization
-\label{sec:orge6bc9d0}
+\label{sec:org4f2217c}
 
 When my Emacs loads, several configuration files and directories are references by symbolic link from git repositories to the default \textasciitilde{}/.emacs.d directory:\\[0pt]
 
@@ -163,7 +163,7 @@ My public customized Emacs initialization is compiled from the Org-mode header \
 
 \begin{enumerate}
 \item Style and good practice
-\label{sec:org3c96cd9}
+\label{sec:org855e3f0}
 
 Use-package is my preferred package management system. By default, use-package loads are structured as:\\[0pt]
 
@@ -183,13 +183,13 @@ Each use-package keyword will expect a list or needs to be removed. Other keywor
 \end{enumerate}
 
 \item Org-mode
-\label{sec:org4422ab4}
+\label{sec:orge115506}
 \begin{enumerate}
 \item Policy, style, and good practice
-\label{sec:org36bcdfb}
+\label{sec:org1978fde}
 \begin{enumerate}
 \item Block structures, source code, and tangling
-\label{sec:org3270cc9}
+\label{sec:orgafed3e7}
 
 Lowercase is preferred for all block notation, \emph{e.g.}\\[0pt]
 
@@ -200,13 +200,13 @@ tangle defaults to ./\\[0pt]
 \end{enumerate}
 \end{enumerate}
 \item Templating with YASnippets
-\label{sec:org998f136}
+\label{sec:org1b5b55e}
 My public YASnippets are compiled from source code blocks across my Org-mode agenda files. These tangle into appropriate subdirectories of \href{emacs/public\_yasnippets/}{./emacs/public\_yasnippets}. Private snippets are tangled into appropriate subdirectories of \href{file:///home/jeszyman/repos/org/emacs/private\_yasnippets}{org/emacs/private\_yasnippets}.\\[0pt]
 \end{enumerate}
 \end{enumerate}
 \end{enumerate}
 \section{Pan-computing Good Practive and General Style Guide}
-\label{sec:org65b04b3}
+\label{sec:org04e2924}
 \begin{itemize}
 \item Directory names should be in hyphen-case, using only lowercase letters (a-z), digits (0-9), and hyphens (-) as separators. Use as few words as possible\\[0pt]
 \begin{itemize}
@@ -216,17 +216,17 @@ My public YASnippets are compiled from source code blocks across my Org-mode age
 \item For multi-word file and directory names, prefer a dash (-) separator (\emph{e.g.} a-longer-file-name.txt)\\[0pt]
 \end{itemize}
 \section{Conda}
-\label{sec:orgb368a6b}
+\label{sec:org8575cff}
 
 For repositories and projects with heavy use of Python and R, software should be managed through the Conda package manager.\\[0pt]
 \subsection{My Basecamp Conda Environment}
-\label{sec:orge24667c}
+\label{sec:org5bfa2da}
 
 A basecamp conda environment is stored in this repository at basecamp\_env.yaml.\\[0pt]
 \section{Emacs}
-\label{sec:orgd7e3609}
+\label{sec:org1803c1f}
 \subsection{Setup, configuration, and customization}
-\label{sec:org43fb8a5}
+\label{sec:orge874084}
 
 My setup assumes normal emacs initialization and package structure at \textasciitilde{}/.emacs.d. The \textasciitilde{}/.emacs.d/init.el ensures package management and then conditionally loads other lisp files, if they exist, in the following order:\\[0pt]
 
@@ -238,11 +238,22 @@ My setup assumes normal emacs initialization and package structure at \textascii
 
 The \textasciitilde{}/.emacs.d/config directory can contain symlinked lisp files from other locations. There is no assumed order within that directory.\\[0pt]
 
-All files mentioned here can be found in the \hyperref[sec:org7c6821c]{Lisp Files} appendix below.\\[0pt]
+All files mentioned here can be found in the \hyperref[sec:orgab7a51c]{Lisp Files} appendix below.\\[0pt]
 
 load-path is a list of directories that Emacs searches when you use functions like require, load, or when Emacs needs to find a library or package. When you add a directory to load-path, you're telling Emacs where to look for Emacs Lisp files when they need to be loaded. My load path is simply the default package location \textasciitilde{}/.emacs.d/elpa and also all files anywhere within \textasciitilde{}/.emacs.d/lisp\\[0pt]
+
+\begin{itemize}
+\item File backup\\[0pt]
+\begin{itemize}
+\item Local\\[0pt]
+\begin{itemize}
+\item Backup on save to \textasciitilde{}/.emacs.d/backup-save-list\\[0pt]
+\item Emacs auto-saves on default settings to \textasciitilde{}/.emacs.d/auto-save-list \\[0pt]
+\end{itemize}
+\end{itemize}
+\end{itemize}
 \subsection{Simple Emacs Lisp Tutorial}
-\label{sec:org6296f92}
+\label{sec:orgf67c5c8}
 Alist\\[0pt]
 
 
@@ -290,7 +301,7 @@ progn: special form to evaluate sequence of expressions\\[0pt]
 
 \end{minted}
 \subsection{Org-mode}
-\label{sec:org9c694ad}
+\label{sec:org341ab58}
 
 If you place an asterisk at the beginning of your search, Org-mode will search only headlines (and not entry text). E.g., to find all entries with "emacs" in the headline, you could type:\\[0pt]
 
@@ -300,17 +311,17 @@ C-c a s
 
 \end{minted}
 \subsection{Literate Programming with Emacs Org-mode}
-\label{sec:org292b6e8}
+\label{sec:orgeaa829d}
 
 Generally comments should reside within the Org-mode structure and outside of code blocks. Tangling with a header argument :comments org will include both the header text and text between the header and code block. For example:\\[0pt]
 
 (property drawers are excluded from tangling with custom-org-remove-properties-drawer)\\[0pt]
 \begin{enumerate}
 \item For example:
-\label{sec:orge92e50d}
+\label{sec:orgf582b06}
 \begin{enumerate}
 \item This header will be a comment
-\label{sec:org63fdfe2}
+\label{sec:org7dc608f}
 This text in org and below the header will be a comment\\[0pt]
 
 \begin{minted}[]{bash}
@@ -325,17 +336,17 @@ This comment will not appear in the tangled code\\[0pt]
 
 \begin{enumerate}
 \item Child headers are not comments unless they contain more code blocks
-\label{sec:org64810d5}
+\label{sec:org8f7765a}
 \end{enumerate}
 \item Result:
-\label{sec:org808e40a}
+\label{sec:orgcd9684c}
 
 ls\\[0pt]
 \end{enumerate}
 \end{enumerate}
 
 \subsection{YASnippets Style Guide and Good Practice}
-\label{sec:orgfdade43}
+\label{sec:org2fb40f6}
 \begin{itemize}
 \item \begin{itemize}
 \item snippets are associated with a specific major mode, use of bash mode is discouraged\\[0pt]
@@ -355,15 +366,24 @@ ls\\[0pt]
 \end{itemize}
 \end{itemize}
 \subsection{Notes}
-\label{sec:org961feca}
+\label{sec:orgf0b9c86}
 See also Emacs and Org-mode use in my \LaTeX{} repository (\href{https://github.com/jeszyman/latex}{GitHub}, local buffer).\\[0pt]
 \section{Appendices}
-\label{sec:org32317bf}
+\label{sec:org0b721cb}
 \subsection{Lisp Files}
-\label{sec:org7c6821c}
+\label{sec:orgab7a51c}
+\begin{enumerate}
+\item Initialization
+\label{sec:org2d448dd}
 \inputminted{emacs-lisp}{../emacs/init.el}
-
-\inputminted{emacs-lisp}{../emacs/load-first.el}
-
+\item Load First
+\label{sec:org5b97af1}
+\inputminted{emacs-lisp}{../emacs/init.el}
+\item Public configuration
+\label{sec:org9113a15}
+\inputminted{emacs-lisp}{../emacs/public_config.el}
+\item Load Last
+\label{sec:org7d8e5bf}
 \inputminted{emacs-lisp}{../emacs/load-last.el}
+\end{enumerate}
 \end{document}

@@ -4,7 +4,7 @@
 ;; :END:
 ;; - https://chatgpt.com/c/66f5c68c-8c4c-8005-b7c6-14665eadb848
 ;; - https://chatgpt.com/c/66f95df4-0dfc-8005-9e7b-c3f15c1ca924
-;; - [[id:9fa465f4-68f7-45c5-966e-80084e2c8a05][emacs_export_header_to_latex.py]]  
+;; - [[id:9fa465f4-68f7-45c5-966e-80084e2c8a05][emacs_export_header_to_latex.py]]
 
 (defun run-latex-at-point ()
   "Extract the ID from the Org properties and run emacs-save and emacs-latex for the current file."

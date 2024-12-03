@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # key: code.py
 # expand-env: ((yas-indent-line 'none))
-# condition: 'auto  
+# condition: 'auto
 # --
 #+begin_src python
 $0

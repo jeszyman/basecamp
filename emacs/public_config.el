@@ -242,6 +242,8 @@
       (disable-theme 'leuven)
       (load-theme 'manoj-dark t))))
 
+(setq create-lockfiles nil)
+
 (defun open-texdoc-in-background (docname)
   "Open a TEXDOC for DOCNAME in the background and close the terminal."
   (interactive "sEnter the name of the document: ")
@@ -403,9 +405,9 @@ With prefix argument, also display headlines without a TODO keyword."
       '((directory . "/usr/bin/gnome-terminal --working-directory=\"%s\"")
         ("\\.pdf\\'" . "setsid -w xdg-open \"%s\"")
         ("\\.svg\\'" . "setsid -w xdg-open \"%s\"")
-	("\\.yaml\\'" . "emacsclient -c \"%s\"")	
+	("\\.yaml\\'" . "emacsclient -c \"%s\"")
 	("\\.list\\'" . emacsclient)
-        (auto-mode . emacsclient)	
+        (auto-mode . emacsclient)
         (t . "setsid -w xdg-open \"%s\"")
 	))
 
@@ -528,6 +530,29 @@ With prefix argument, also display headlines without a TODO keyword."
    (default . ancestors))
 )
 
+(defun org-hide-all-src-blocks ()
+  "Hide all source blocks in the current Org buffer."
+  (interactive)
+  (org-babel-map-src-blocks nil
+    (save-excursion
+      (goto-char (org-babel-where-is-src-block-head))
+      (org-hide-block-toggle t))))
+
+
+
+(defun my-collapse-all-drawers (&optional arg)
+  (interactive "P")  ;; "P" means that the function accepts a prefix argument and passes it as ARG
+  (org-hide-drawer-all)
+  (when arg  ;; When ARG is non-nil (when called with C-u), execute `org-cycle-global`.
+    (org-cycle-global)
+    (org-hide-all-src-blocks)
+    (beginning-of-buffer))
+  )
+
+(global-set-key (kbd "C-c d") 'my-collapse-all-drawers)
+;; You might want to remove the hook if you don't want this function to run every time you open an org file
+(add-hook 'org-mode-hook 'my-collapse-all-drawers)
+
 (setq org-cycle-separator-lines 0)
 (setq yas-indent-line 'fixed)
 
@@ -568,25 +593,13 @@ With prefix argument, also display headlines without a TODO keyword."
 (setq org-src-window-setup 'current-window)
 (setq org-export-async-debug nil)
 
-(defun my-collapse-all-drawers (&optional arg)
-  (interactive "P")  ;; "P" means that the function accepts a prefix argument and passes it as ARG
-  (org-hide-drawer-all)
-  (when arg  ;; When ARG is non-nil (when called with C-u), execute `org-cycle-global`.
-    (org-cycle-global)
-    (beginning-of-buffer))
-  )
-
-(global-set-key (kbd "C-c d") 'my-collapse-all-drawers)
-;; You might want to remove the hook if you don't want this function to run every time you open an org file
-(add-hook 'org-mode-hook 'my-collapse-all-drawers)
-
 ;; ensures that any file with the .org extension will automatically open in org-mode
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
 ;; Make heading regex include tags
 (setq org-heading-regexp "^[[:space:]]*\\(\\*+\\)\\(?: +\\(.*?\\)\\)?[ \t]*\\(:[[:alnum:]_@#%:]+:\\)?[ \t]*$")
 
-(setf org-blank-before-new-entry '((heading . never) (plain-list-item . never)))
+(setq org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
 
 (defun my-org-tree-to-indirect-buffer (&optional arg)
   "Open current org tree in indirect buffer, using one prefix argument.
@@ -614,9 +627,11 @@ When called with two prefix arguments, ARG, run the original function without pr
       org-export-with-tags nil
       org-export-with-todo-keywords nil)
 
+(setq org-odt-preferred-output-format "docx")
+
 (require 'ox-latex)
 
-(customize-set-value 'org-latex-with-hyperref nil) 
+(customize-set-value 'org-latex-with-hyperref nil)
 
 (setq org-latex-logfiles-extensions (quote ("auto" "lof" "lot" "tex~" "aux" "idx" "log" "out" "toc" "nav" "snm" "vrb" "dvi" "fdb_latexmk" "blg" "brf" "fls" "entoc" "ps" "spl" "bbl")))
 
@@ -745,36 +760,35 @@ When called with two prefix arguments, ARG, run the original function without pr
 
 (defun browse-org-table-urls-by-name (table-name)
   "Browse URLs listed in an Org-mode table identified by TABLE-NAME.
-
-table-name Table name identified as #+name:
-
-Example usage:
-  (browse-org-table-urls-by-name the-table-name)"
+TABLE-NAME is the name of the table identified as #+name."
 
   (interactive "sEnter table name: ")
-  (let* ((element (org-element-map (org-element-parse-buffer) 'table
-                    (lambda (el)
-                      (when (string= (org-element-property :name el) table-name)
-                        el))
-                    nil t)))
+  (let* ((element (ignore-errors
+                    (org-element-map (org-element-parse-buffer) 'table
+                      (lambda (el)
+                        (when (string= (org-element-property :name el) table-name)
+                          el))
+                      nil t))))
     (if (not element)
         (message "Table with name %s not found" table-name)
-      (let ((table-content (buffer-substring-no-properties
-                            (org-element-property :contents-begin element)
-                            (org-element-property :contents-end element))))
-        (with-temp-buffer
-          (insert table-content)
-          (goto-char (point-min))
-          (let ((urls (org-table-to-lisp)))
-            (if (not urls)
-                (message "No URLs found in the table with name %s" table-name)
-              (let ((first-url (car (car urls))))
-                (start-process "brave-browser" nil "brave-browser" "--new-window" first-url)
-                (sit-for 2)  ; Wait for the new window to open
-                (dolist (url-row (cdr urls))
-                  (start-process "brave-browser" nil "brave-browser" (car url-row))
-                  (sit-for 0.5)))  ; Add a delay of 0.5 seconds between each URL
-              (message "Opened URLs from table with name %s" table))))))))
+      (let ((table-begin (org-element-property :contents-begin element))
+            (table-end (org-element-property :contents-end element)))
+        (if (or (null table-begin) (null table-end))
+            (message "No contents found for the table with name %s" table-name)
+          (let ((table-content (buffer-substring-no-properties table-begin table-end)))
+            (with-temp-buffer
+              (insert table-content)
+              (goto-char (point-min))
+              (let ((urls (org-table-to-lisp)))
+                (if (not urls)
+                    (message "No URLs found in the table with name %s" table-name)
+                  (let ((first-url (car (car urls))))
+                    (start-process "brave-browser" nil "brave-browser" "--new-window" first-url)
+                    (sit-for 2)  ;; Wait for the new window to open
+                    (dolist (url-row (cdr urls))
+                      (start-process "brave-browser" nil "brave-browser" (car url-row))
+                      (sit-for 0.5)))  ;; Delay between each URL
+                  (message "Opened URLs from table with name %s" table))))))))))
 
 (setq org-agenda-repeating-timestamp-show-all nil)
 (setq org-sort-agenda-notime-is-late nil)
@@ -849,6 +863,9 @@ Example usage:
     (command-error-default-function data context caller)))
 
 (setq command-error-function #'my-command-error-function)
+
+;;https://emacs.stackexchange.com/questions/12701/kill-a-line-deletes-the-line-but-leaves-a-blank-newline-character
+(setq kill-whole-line t)
 
 (setq reftex-default-bibliography '("~/repos/org/bib.bib"))
 
@@ -939,25 +956,29 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
   (setenv "PATH" (concat "/usr/local/texlive/2021/bin/x86_64-linux:"
 			 (getenv "PATH")))
   (add-to-list 'exec-path "/usr/local/texlive/2021/bin/x86_64-linux")
-  (setq TeX-auto-save t
-	TeX-save-query nil
-	TeX-view-program-selection
-	'(((output-dvi has-no-display-manager) . "dvi2tty")
-	  ((output-dvi style-pstricks) . "dvips and gv")
-	  (output-pdf . "Okular")
-	  (output-dvi . "xdvi")
-	  (output-pdf . "Evince")
-	  (output-html . "xdg-open"))))
+  (setq
+   TeX-auto-save t
+   TeX-parse-self t
+   TeX-save-query nil
+   TeX-view-program-selection
+   '(((output-dvi has-no-display-manager) . "dvi2tty")
+     ((output-dvi style-pstricks) . "dvips and gv")
+     (output-pdf . "Okular")
+     (output-dvi . "xdvi")
+     (output-pdf . "Evince")
+     (output-html . "xdg-open"))))
 
 (use-package blacken
   :after elpy
   :hook (elpy-mode . blacken-mode))
 
-(use-package company
-  :config
-  (global-company-mode)
-  (setq
-   company-dabbrev-downcase nil)) ; Don't downcase by default
+;; (use-package company
+;;   :config
+;;   (global-company-mode)
+;;   (setq
+;;    company-dabbrev-downcase nil)) ; Don't downcase by default
+
+(setenv "WORKON_HOME" "~/miniconda3/envs")
 
 (use-package eglot
   :ensure t
@@ -1053,6 +1074,10 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
   (when (daemonp)
     (exec-path-from-shell-initialize)))
 
+(use-package expand-region)
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
+
 (use-package flycheck
   :hook
   (org-src-mode . my-org-mode-flycheck-hook)
@@ -1112,11 +1137,10 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
          ("M-A" . marginalia-cycle))
   ;; The :init configuration is always executed (Not lazy!)
   :init
-  (marginalia-mode))
+  (marginalia-mode)
+  :ensure t)
 
 (use-package native-complete)
-
-(use-package ob-async)
 
 (use-package orderless
   :init
@@ -1126,6 +1150,11 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
+
+(use-package org-edna
+  :ensure t
+  :config
+  (org-edna-mode 1))
 
 (require 'org-checklist)
 (require 'ox-extra)
@@ -1332,7 +1361,7 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
   :init
   (add-hook 'vterm-mode-hook '(lambda () (setq-local cua-mode nil))))
   :config
-  (setq vterm-max-scrollback 100000)  
+  (setq vterm-max-scrollback 100000)
   (custom-set-faces
    '(vterm-color-blue ((t (:foreground "#477EFC" :background "#477EFC")))))
 

@@ -111,11 +111,11 @@ unmute() {
 volume-up() {
     # Check if speakers are muted
     mute_status=$(amixer -D pulse get Master | grep -o '\[off\]')
-    
+
     if [[ -n "$mute_status" ]]; then
         echo "WARNING: Speakers are currently muted. Unmute them to hear audio."
     else
-	amixer -D pulse sset Master 5%+	    
+	amixer -D pulse sset Master 5%+
     fi
 }
 # volume-down
@@ -123,7 +123,7 @@ volume-up() {
 volume-down() {
     # Check if speakers are muted
     mute_status=$(amixer -D pulse get Master | grep -o '\[off\]')
-    
+
     if [[ -n "$mute_status" ]]; then
         echo "WARNING: Speakers are currently muted. Unmute them to hear audio."
     else
@@ -137,16 +137,16 @@ emacs-start() {
     cat <<- EOF
 
  Usage: emacs-start
- 
+
  Invokes the emacsclient systemd daemon if not already running.
- 
+
  Options:
    -h, --help    Show this help message and exit
 
- Arguements: This function takes no arguements. 
+ Arguements: This function takes no arguements.
 
  Example:
-   emacs-start   
+   emacs-start
 
 EOF
 }
@@ -171,7 +171,7 @@ EOF
             return 1
         fi
     fi
-    
+
 }
 # emacs-stop()
 
@@ -180,13 +180,13 @@ emacs-stop() {
     cat <<- EOF
 
  Usage: emacs-stop
- 
+
  Terminates the emacsclient systemd daemon if running.
- 
+
  Options:
    -h, --help    Show this help message and exit
 
- Arguements: This function takes no arguements. 
+ Arguements: This function takes no arguements.
 
  Example:
    emacs-stop
@@ -207,7 +207,7 @@ EOF
     else
         echo "Emacs daemon is not running. Nothing to do."
     fi
-    
+
 }
 # ubuntu-settings()
 
@@ -565,9 +565,9 @@ pptx-to-pdf() {
     cat <<- EOF
 
  Usage: pptx-to-pdf PPTX
- 
+
  Converts a Powerpoint ppt file to PDF using unoconv. The PDF file will be
- written to the same location as the pptx, but with a .pdf extension. 
+ written to the same location as the pptx, but with a .pdf extension.
 
  Options:
    -h, --help    Show this help message and exit
@@ -586,15 +586,15 @@ EOF
         print_usage
         return 1
     fi
-    
+
     # Return usage if the argument is a help flag
     if [[ "$1" == "-h" || "$1" == "--help" ]]; then
         print_usage
         return 0
     fi
-        
+
   unoconv -f pdf $1
-  
+
 }
 # logout
 
@@ -602,18 +602,18 @@ logout() {
     print_usage(){
         cat <<- EOF
 
- Usage: logout 
+ Usage: logout
 
  Logs out of i3 using i3lock. If emacsclient is running, will save all buffers prior to
- logout. 
+ logout.
 
  Options:
    -h, --help    Show this help message and exit
 
- Arguements: This function takes no arguements. 
-       
+ Arguements: This function takes no arguements.
+
  Example:
-   logout  
+   logout
 
 EOF
     }
@@ -625,14 +625,14 @@ EOF
     fi
 
     pgrep emacsclient && emacs-save && i3lock -c 000000 || i3lock -c 000000
- 
+
 }
 # ls-size()
 
 ls-size(){
     print_usage(){
         cat <<- EOF
-	
+
  Usage: ls-size
 
  Lists files in the current directory, sorted by size in descending order, with file
@@ -653,7 +653,7 @@ EOF
         print_usage
         return 0
     fi
-    
+
     ls -lrS1 --block-size=M
 }
 # ls_recursive()
@@ -833,7 +833,7 @@ EOF
     fi
 
     # Calculate size, suppressing errors
-    size=$(du -s -B1 -L "$1" 2>/dev/null | cut -f1)    
+    size=$(du -s -B1 -L "$1" 2>/dev/null | cut -f1)
 
     # If size is greater than or equal to 1 GB, show in GB, otherwise in MB
     if [ "$size" -ge $((1024**3)) ]; then

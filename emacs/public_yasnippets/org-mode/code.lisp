@@ -3,7 +3,7 @@
 # -*- mode: snippet -*-
 # key: code.lisp
 # expand-env: ((yas-indent-line 'none))
-# condition: 'auto  
+# condition: 'auto
 # --
 #+begin_src emacs-lisp
 $0

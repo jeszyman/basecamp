@@ -49,31 +49,3 @@
 
 ;; Load late configuration
 (safe-load-file-if-exists "~/.emacs.d/load-last.el")
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ess-R-font-lock-keywords
-   '((ess-R-fl-keyword:modifiers . t)
-     (ess-R-fl-keyword:fun-defs . t)
-     (ess-R-fl-keyword:keywords . t)
-     (ess-R-fl-keyword:assign-ops . t)
-     (ess-R-fl-keyword:constants . t)
-     (ess-fl-keyword:fun-calls . t)
-     (ess-fl-keyword:numbers . t)
-     (ess-fl-keyword:operators . t)
-     (ess-fl-keyword:delimiters . t)
-     (ess-fl-keyword:= . t)
-     (ess-R-fl-keyword:F&T . t)
-     (ess-R-fl-keyword:%op% . t)))
- '(package-selected-packages
-   '(key-chord yaml-mode yaml ws-butler web-mode vertico use-package undo-tree tree-sitter-langs sqlite3 snakemake-mode smex smart-mode-line rainbow-mode rainbow-delimiters pydoc pos-tip pdf-tools org-sql org-ros org-ref org-notify org-gcal org-contrib org-anki org-alert orderless openwith ob-mermaid ob-async oauth2 native-complete mustache multiple-cursors multi-vterm move-text marginalia magit lsp-ui lispy ivy-yasnippet ivy-xref ivy-hydra ivy-bibtex ivy-avy ibuffer-projectile helm-org-rifle helm-org-ql helm-lsp helm-bibtex gptel google-this git-messenger ggtags flyspell-correct-ivy flycheck-eglot flx expand-region exec-path-from-shell esup ess emacsql-sqlite emacsql elpy ellama elfeed drag-stuff diminish dashboard counsel-projectile consult conda button-lock blacken auctex anki-editor anki-connect aggressive-indent)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:family "Hack" :height 114 :weight light))))
- '(org-scheduled-today ((t (:foreground "cyan"))))
- '(vterm-color-blue ((t (:foreground "#477EFC" :background "#477EFC")))))
