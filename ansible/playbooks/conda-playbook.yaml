@@ -1,0 +1,71 @@
+---
+- name: Install Conda 
+  hosts: localhost
+  tasks:
+
+    - name: Check if Miniconda is installed by searching for 'conda' in PATH
+      shell: "command -v conda"
+      register: conda_check
+      ignore_errors: yes
+      changed_when: false
+      failed_when: false
+      
+    - name: Set Miniconda installation needed fact
+      set_fact:
+        miniconda_needed: "{{ conda_check.rc ==127 }}"
+
+    - name: Verify if Miniconda installation is needed
+      debug:
+        msg: "Miniconda installation needed: {{ miniconda_needed }}"        
+        
+    - name: Debug conda_check result
+      debug:
+        var: conda_check.rc
+  
+    - name: Download Miniconda installer if not installed
+      get_url:
+        url: https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+        dest: /tmp/miniconda.sh
+        mode: '0755'
+      when: miniconda_needed
+
+    - name: Debug user's home directory
+      debug:
+        msg: "User's home directory is {{ ansible_user_dir }},Running as user: {{ ansible_env.USER }}, home: {{ ansible_env.HOME }}"
+      
+    - name: Install Miniconda if not installed
+      command: "bash /tmp/miniconda.sh -u -b -p {{ ansible_env.HOME }}/miniconda"
+      args:
+        creates: "{{ ansible_env.HOME }}/miniconda/bin/conda"        
+      when: miniconda_needed
+
+    - name: Check if Conda is already initialized
+      shell: "grep -q '>>> conda initialize >>>' {{ ansible_env.HOME }}/.bashrc"
+      register: miniconda_initialized
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Initialize Miniconda for bash
+      shell: "{{ ansible_env.HOME }}/miniconda/bin/conda init bash"
+      args:
+        executable: /bin/bash
+      when: miniconda_initialized.rc !=0
+
+    - name: Prevent automatic activation of the base environment in conda
+      shell: "{{ ansible_env.HOME }}/miniconda/bin/conda config --set auto_activate_base false"
+      args:
+        executable: /bin/bash
+
+    - name: Update conda
+      shell: "{{ ansible_env.HOME }}/miniconda/bin/conda update conda --yes"
+      args:
+        executable: /bin/bash
+      environment:
+        PATH: "{{ ansible_env.HOME }}/miniconda/bin:{{ ansible_env.PATH }}"
+
+    - name: Install Mamba using Conda
+      shell: "{{ ansible_env.HOME }}/miniconda/bin/conda install -y mamba -c conda-forge"
+      args:
+        executable: /bin/bash
+      environment:
+        PATH: "{{ ansible_env.HOME }}/miniconda/bin:{{ ansible_env.PATH }}"
