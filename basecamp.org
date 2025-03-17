@@ -393,7 +393,7 @@ wget_downloads:
 #+end_src
 ** Ansible
 - See [[id:1169cb65-4a18-43d3-9643-67ac3e85f0d1][general ansible reference]]
-*** Public common playbook
+*** Public common playbook :ansipb:
 :PROPERTIES:
 :ID:       42a1c7e4-9b67-41b6-8336-83e061da7154
 :header-args:yaml: :tangle ./ansible/playbooks/public-common-playbook.yaml :mkdirp yes
@@ -533,6 +533,103 @@ wget_downloads:
 #+end_src
 
 ****** R
+*** Emacs29 :ansipb:
+CLOSED: [2024-11-27 Wed 11:20]
+:LOGBOOK:
+- State "RAN_IDEMPOTENT" from "RAN_INITIAL" [2024-11-27 Wed 11:20]
+- State "RAN_INITIAL" from "DRAFT"      [2024-11-27 Wed 11:20]
+- State "DRAFT"      from              [2024-11-27 Wed 11:20]
+:END:
+#+begin_src yaml :tangle ./ansible/playbooks/emacs29-playbook.yaml
+---
+- name: Install Emacs 29.4
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Ensure required dependencies are installed
+      apt:
+        name:
+          - libwebp-dev
+          - xaw3dg
+          - libxpm4
+          - libpng16-16
+          - zlib1g
+          - libjpeg8
+          - libtiff-dev
+          - libgif7
+          - libgif-dev
+          - texinfo
+          - libgnutls28-dev
+          - libncurses-dev
+          - librsvg2-2
+          - librsvg2-dev
+          - libsqlite3-dev
+          - liblcms2-dev
+          - imagemagick
+          - libmagickwand-dev
+          - pkg-config
+          - libxaw7-dev
+          - libgpm-dev
+          - libm17n-dev
+          - libotf-dev
+          - libxft-dev
+          - libsystemd-dev
+          - libjansson-dev
+          - libtree-sitter-dev
+          - libgtk-3-dev
+          - libwebkit2gtk-4.1-dev
+          - libacl1-dev
+        state: present
+        update_cache: yes
+
+    - name: Check if Emacs 29.4 source archive already exists
+      stat:
+        path: /tmp/emacs-29.4.tar.xz
+      register: stat_result
+
+    - name: Download Emacs 29.4 source archive
+      get_url:
+        url: https://mirrors.ocf.berkeley.edu/gnu/emacs/emacs-29.4.tar.xz
+        dest: /tmp/emacs-29.4.tar.xz
+        mode: '0644'
+      when: not stat_result.stat.exists
+
+    - name: Extract Emacs 29.4 source archive
+      ansible.builtin.unarchive:
+        src: /tmp/emacs-29.4.tar.xz
+        dest: /tmp
+        remote_src: yes
+      args:
+        creates: /tmp/emacs-29.4
+
+    - name: Configure Emacs build
+      shell: ./configure --prefix=/usr/local --with-xwidgets --with-imagemagick
+      args:
+        chdir: /tmp/emacs-29.4
+        creates: /tmp/emacs-29.4/Makefile
+
+    - name: Build Emacs
+      shell: make
+      args:
+        chdir: /tmp/emacs-29.4
+        creates: /tmp/emacs-29.4/src/emacs
+
+    - name: Install Emacs
+      shell: make install
+      args:
+        chdir: /tmp/emacs-29.4
+        creates: /usr/local/bin/emacs
+
+    - name: Verify Emacs installation
+      command: emacs --version
+      register: emacs_version
+      changed_when: false
+
+    - name: Display installed Emacs version
+      debug:
+        msg: "Installed Emacs version: {{ emacs_version.stdout }}"
+
+#+end_src
 ** Install and setup
 #+begin_src bash :results replace
 pip install 'python-lsp-server[all]'
@@ -4189,6 +4286,7 @@ sudo chmod -R g+s /opt/miniconda3
 :PROPERTIES:
 :ID:       d9e04105-39ef-465c-9e91-fee12c86645b
 :END:
+******** Startup without base
 ******** Update conda env from github location yaml
 :PROPERTIES:
 :ID:       2fe724ad-3cd2-4598-aae2-38d468535fa7
@@ -6325,12 +6423,24 @@ https://github.nih.gov/learn
 :ID:       a21144ea-1793-466e-87da-a88f3a540c25
 :END:
 
+******* Flat
+- git clone https://github.com/jeszyman/basecamp.git my_basecamp
 - pull specific text file from github https://stackoverflow.com/a/31844340/6106936
 - git filter-branch --tree-filter 'rm -rf path/to/your/file' HEAD
   - https://stackoverflow.com/questions/33330771/git-lfs-this-exceeds-githubs-file-size-limit-of-100-00-mb
 - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
 - https://www.google.com/search?q=github+leave+a+repo+closed+notice
 - https://www.google.com/search?q=github+new+repository
+
+******** Create a remote
+- e.g.
+  #+begin_src bash
+gh auth status
+
+git status
+
+gh repo create mouse-cfdna --private --source=/home/jeszyman/repos/mouse-cfdna --push
+#+end_src
 ******* Authorization and API
 #+begin_src bash
 # Load the GitHub token from the YAML file
@@ -6350,15 +6460,6 @@ curl -u jeszyman:$GITHUB_TOKEN -s https://api.github.com/repos/jeszyman/sci | gr
 curl -u jeszyman:$GITHUB_TOKEN -s https://api.github.com/repos/jeszyman/sci 
 #+end_src
 
-******* Create a remote
-- e.g.
-  #+begin_src bash
-gh auth status
-
-git status
-
-gh repo create mouse-cfdna --private --source=/home/jeszyman/repos/mouse-cfdna --push
-#+end_src
 ****** [[id:E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6][Git]]
 ****** General reference                                                :ref:
 :PROPERTIES:
@@ -22246,6 +22347,7 @@ gsutil -m cp -n -c -L /mnt/data/projects/pnst/logs/gcloud-transfer-2025-02-03.tx
 :PROPERTIES:
 :ID:       1169cb65-4a18-43d3-9643-67ac3e85f0d1
 :END:
+**** Playbooks
 **** Ansible Cookbook                                              :cookbook:
 :properties:
 :header-args:yaml: :tangle ./ansible/playbooks/ansible-cookbook.yaml :mkdirp yes

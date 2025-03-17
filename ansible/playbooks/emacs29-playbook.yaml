@@ -1,0 +1,87 @@
+---
+- name: Install Emacs 29.4
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Ensure required dependencies are installed
+      apt:
+        name:
+          - libwebp-dev
+          - xaw3dg
+          - libxpm4
+          - libpng16-16
+          - zlib1g
+          - libjpeg8
+          - libtiff-dev
+          - libgif7
+          - libgif-dev
+          - texinfo
+          - libgnutls28-dev
+          - libncurses-dev
+          - librsvg2-2
+          - librsvg2-dev
+          - libsqlite3-dev
+          - liblcms2-dev
+          - imagemagick
+          - libmagickwand-dev
+          - pkg-config
+          - libxaw7-dev
+          - libgpm-dev
+          - libm17n-dev
+          - libotf-dev
+          - libxft-dev
+          - libsystemd-dev
+          - libjansson-dev
+          - libtree-sitter-dev
+          - libgtk-3-dev
+          - libwebkit2gtk-4.1-dev
+          - libacl1-dev
+        state: present
+        update_cache: yes
+
+    - name: Check if Emacs 29.4 source archive already exists
+      stat:
+        path: /tmp/emacs-29.4.tar.xz
+      register: stat_result
+
+    - name: Download Emacs 29.4 source archive
+      get_url:
+        url: https://mirrors.ocf.berkeley.edu/gnu/emacs/emacs-29.4.tar.xz
+        dest: /tmp/emacs-29.4.tar.xz
+        mode: '0644'
+      when: not stat_result.stat.exists
+
+    - name: Extract Emacs 29.4 source archive
+      ansible.builtin.unarchive:
+        src: /tmp/emacs-29.4.tar.xz
+        dest: /tmp
+        remote_src: yes
+      args:
+        creates: /tmp/emacs-29.4
+
+    - name: Configure Emacs build
+      shell: ./configure --prefix=/usr/local --with-xwidgets --with-imagemagick
+      args:
+        chdir: /tmp/emacs-29.4
+        creates: /tmp/emacs-29.4/Makefile
+
+    - name: Build Emacs
+      shell: make
+      args:
+        chdir: /tmp/emacs-29.4
+        creates: /tmp/emacs-29.4/src/emacs
+
+    - name: Install Emacs
+      shell: make install
+      args:
+        chdir: /tmp/emacs-29.4
+        creates: /usr/local/bin/emacs
+
+    - name: Verify Emacs installation
+      command: emacs --version
+      register: emacs_version
+      changed_when: false
+
+    - name: Display installed Emacs version
+      debug:
+        msg: "Installed Emacs version: {{ emacs_version.stdout }}"
