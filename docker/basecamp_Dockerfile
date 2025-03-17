@@ -17,7 +17,6 @@ FROM ubuntu:bionic
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Chicago
-
 #################
 ###    APT    ###
 #################
@@ -54,7 +53,6 @@ RUN apt-get install -yq --no-install-recommends --allow-unauthenticated --fix-mi
 RUN apt-get autoremove -y && \
     apt-get autoclean -y && \
     apt-get clean
-
 RUN apt-get update
 RUN apt-get install -y locales locales-all
 RUN echo "en_US.UTF-8 UTF-8" | tee -a /etc/locale.gen
@@ -67,7 +65,6 @@ ENV LANGUAGE en_US.UTF-8
 RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 RUN echo "LANG=en_US.UTF-8" > /etc/locale.conf
-
 #####################
 ###   Miniconda   ###
 #####################
@@ -78,7 +75,6 @@ RUN conda update conda
 
 RUN conda install -n base -c conda-forge mamba
 RUN conda install -c bioconda -c conda-forge snakemake
-
 #################################
 ###   R 4 and CRAN Packages   ###
 #################################

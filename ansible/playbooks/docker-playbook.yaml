@@ -2,10 +2,8 @@
 - name: Docker Playbook
   hosts: all
   tasks:
-
     - name: Perform sudo install tasks
       block:
-
         - name: Update package list
           apt:
             update_cache: yes
@@ -37,17 +35,14 @@
           apt:
             name: docker-ce
             state: latest
-
         - name: Ensure Docker service is enabled and running
           systemd:
             name: docker
             enabled: yes
             state: started
-
         - name: Add current user to the docker group
           user:
             name: "{{ ansible_user | default(ansible_env.USER) }}"
             groups: docker
             append: yes
-
       become: true

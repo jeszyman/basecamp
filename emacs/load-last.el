@@ -19,7 +19,6 @@
             (load-theme 'manoj-dark t)))
 
 (load-theme 'manoj-dark t)
-
 (require 'essh)
 (defun essh-sh-hook ()
   (define-key sh-mode-map "\C-c\C-r" 'pipe-region-to-shell)

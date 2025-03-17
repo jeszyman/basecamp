@@ -494,12 +494,6 @@ wget_downloads:
       loop: "{{ apt_packages }}"
       register: apt_install_results
       ignore_errors: true  # Ensures playbook continues even if a package is missing
-
-    - name: Warn about unavailable APT packages
-      debug:
-        msg: "WARNING: Package '{{ item.item }}' was not found and could not be installed."
-      loop: "{{ apt_install_results.results }}"
-      when: "'No package matching' in item.msg"
       
 #+end_src
 ***** Non-ATP Installs
@@ -680,7 +674,7 @@ open "$(find /tmp -type f -printf '%T@ %p\n' 2>/dev/null | sort -n | tail -1 | c
 
 **** General shell functions
 :PROPERTIES:
-:header-args: :tangle ./lib/basecamp_function.sh :comments org :padline no
+:header-args: :tangle ./lib/basecamp_function.sh 
 :ID:       cb3c499d-ed2f-4ee3-9965-ca3e1af81178
 :END:
 
@@ -11687,10 +11681,41 @@ https://www.reddit.com/r/orgmode/comments/1j2b2gx/update_orgsupertag_25_a_new_wa
       (alert "Timer finished!" :title "Emacs Timer"))))
 
 #+end_src
-
 - Edit sources as sudo
   - /sudo:root@localhost:<PATH>
   - e.g. [[/sudo:root@localhost:/etc/apt/sources.list][Edit apt sources in etc as sudo]]
+- See current state of variables
+  #+begin_src emacs-lisp :results replace
+(defun my/org-babel-print-all-header-args ()
+  "Display all possible Org Babel header arguments and their current values."
+  (interactive)
+  (let* ((default-args org-babel-default-header-args)
+         (possible-args (mapcar #'car org-babel-common-header-args-w-values))
+         (all-args (mapcar (lambda (arg)
+                             (cons arg (or (cdr (assoc arg default-args)) "unset")))
+                           possible-args))
+         (output (mapconcat (lambda (arg)
+                              (format "%s: %s" (car arg) (cdr arg)))
+                            all-args "\n")))
+    (message "All Possible Org Babel Header Arguments:\n%s" output)))
+
+
+(org-babel-print-active-header-args)
+#+end_src
+
+#+RESULTS[b9768b1deec545f81c19c2e864f982a868e93781]:
+: Active Org Babel Header Arguments:
+: :results: silent
+: :exports: none
+: :mkdirp: yes
+: :noweb: yes
+: :cache: yes
+: :tangle: no
+: :eval: no-export
+
+
+
+
 ********* Org-mode guide
 ********** Clock table
 
@@ -14162,14 +14187,16 @@ https://claude.ai/chat/1017ebf5-da7e-40fb-b05d-2247281826b9
 #+name: babel_default_header_args
 #+begin_src emacs-lisp
  
-(setq org-babel-default-header-args '((:results . "silent")
+(setq org-babel-default-header-args '(
+				      (:comments . "no")
+				      (:mkdirp . "yes")
+				      (:padline . "no")
+				      (:results . "silent")
+                                      (:cache . "no")
                                       (:eval . "no-export")
                                       (:exports . "none")
-                                      (:tangle . "no")
-                                      (:cache . "yes")
                                       (:noweb . "yes")
-				      (:mkdirp . "yes")
-                                      ;(:post-tangle . org-remove-properties-drawer)
+                                      (:tangle . "no")
 				      ))
 
 #+end_src

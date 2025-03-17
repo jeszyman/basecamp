@@ -28,14 +28,16 @@
 
 
  
-(setq org-babel-default-header-args '((:results . "silent")
+(setq org-babel-default-header-args '(
+				      (:comments . "no")
+				      (:mkdirp . "yes")
+				      (:padline . "no")
+				      (:results . "silent")
+                                      (:cache . "no")
                                       (:eval . "no-export")
                                       (:exports . "none")
-                                      (:tangle . "no")
-                                      (:cache . "yes")
                                       (:noweb . "yes")
-				      (:mkdirp . "yes")
-                                      ;(:post-tangle . org-remove-properties-drawer)
+                                      (:tangle . "no")
 				      ))
 
 ;; the below as nil fucks of export of inline code
@@ -106,7 +108,6 @@
                                     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                                     ("\\paragraph{%s}" . "\\paragraph*{%s}")
                                     ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
-
 ; ---   Org-ref   --- ;
 ; ------------------- ;
 
