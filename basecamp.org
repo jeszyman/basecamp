@@ -399,7 +399,7 @@ wget_downloads:
 #+end_src
 ** Ansible
 - See [[id:1169cb65-4a18-43d3-9643-67ac3e85f0d1][general ansible reference]]
-*** Public common playbook :ansipb:
+*** Public common playbook                                           :ansipb:
 :PROPERTIES:
 :ID:       42a1c7e4-9b67-41b6-8336-83e061da7154
 :header-args:yaml: :tangle ./ansible/playbooks/public-common-playbook.yaml :mkdirp yes
@@ -546,7 +546,7 @@ wget_downloads:
 #+end_src
 
 ****** R
-*** Emacs29 :ansipb:
+*** Emacs29                                                          :ansipb:
 CLOSED: [2024-11-27 Wed 11:20]
 :LOGBOOK:
 - State "RAN_IDEMPOTENT" from "RAN_INITIAL" [2024-11-27 Wed 11:20]
@@ -13504,7 +13504,6 @@ $0
   (org-cite-activate-processor 'citar)
 
   ;; Display formatting
-  (citar-indicators (list citar-indicator-files citar-indicator-notes-icons))
   (citar-display-transform-functions '((t . citar-clean-string)))
 
   (citar-templates
@@ -14099,19 +14098,6 @@ https://chatgpt.com/c/fe962d8c-eb34-42fe-b362-032a61d8b728
 
 ********* Searching customizations
 
-********** Create links to org tags
-http://endlessparentheses.com/use-org-mode-links-for-absolutely-anything.html
-Example: tag:rdata
-#+BEGIN_SRC emacs-lisp
-(defun endless/follow-tag-link (tag)
-  "Display a list of TODO headlines with tag TAG.
-With prefix argument, also display headlines without a TODO keyword."
-  (org-tags-view current-prefix-arg tag))
-
-(org-add-link-type
- "tag" 'endless/follow-tag-link)
-
-  #+END_SRC
 ********* org-image-actual-width
 :PROPERTIES:
 :ID:       a760d06b-c2b2-4b54-a0b6-375a13a20538
@@ -15582,6 +15568,23 @@ https://claude.ai/chat/1017ebf5-da7e-40fb-b05d-2247281826b9
 
 (add-to-list 'org-src-lang-modes '("yaml" . yaml))
 #+end_src
+******* Create links to org tags
+http://endlessparentheses.com/use-org-mode-links-for-absolutely-anything.html
+Example: tag:rdata
+#+BEGIN_SRC emacs-lisp
+(defun endless/follow-tag-link (tag)
+  "Display a list of TODO headlines with tag TAG.
+With prefix argument, also display headlines without a TODO keyword."
+  (org-tags-view current-prefix-arg tag))
+
+(org-add-link-type
+ "tag" 'endless/follow-tag-link)
+
+  #+END_SRC
+
+  #+RESULTS:
+  : Created tag link.
+
 ******* Essh
 https://www.emacswiki.org/emacs/download/essh.el
 #+begin_src emacs-lisp 

@@ -16,7 +16,6 @@
   (org-cite-activate-processor 'citar)
 
   ;; Display formatting
-  (citar-indicators (list citar-indicator-files citar-indicator-notes-icons))
   (citar-display-transform-functions '((t . citar-clean-string)))
 
   (citar-templates
@@ -467,13 +466,6 @@
 (add-hook 'before-save-hook 'org-table-recalculate-buffer-tables)
 (setq org-startup-align-all-tables t)
 (setq org-startup-shrink-all-tables t)
-(defun endless/follow-tag-link (tag)
-  "Display a list of TODO headlines with tag TAG.
-With prefix argument, also display headlines without a TODO keyword."
-  (org-tags-view current-prefix-arg tag))
-
-(org-add-link-type
- "tag" 'endless/follow-tag-link)
 (setq org-image-actual-width '(300))
 (defun shk-fix-inline-images ()
   (when org-inline-image-overlays
