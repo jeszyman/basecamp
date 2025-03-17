@@ -116,7 +116,3 @@
 
     - name: Refresh font cache
       command: fc-cache -fv
-
-    - name: Display output
-      debug:
-        msg: "{{ fc_cache.stdout_lines }}"

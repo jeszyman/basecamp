@@ -538,10 +538,6 @@ wget_downloads:
 
     - name: Refresh font cache
       command: fc-cache -fv
-
-    - name: Display output
-      debug:
-        msg: "{{ fc_cache.stdout_lines }}"      
       
 #+end_src
 
@@ -13484,13 +13480,6 @@ $0
 [[file:emacs/public_config.el]]
 
 - for config rewrite https://chatgpt.com/c/e16840b5-355a-42e3-bd97-70693daa17c0
-******* anki-editor
-- NEEDS ANKI 23 and / or reverted anki connect
-#+begin_src emacs-lisp
-(use-package anki-editor
-  :vc (:fetcher github :repo anki-editor/anki-editor))
-
-#+end_src
 ******* citar
 #+begin_src emacs-lisp
 ;; Citar configuration for org-cite integration
@@ -15927,7 +15916,18 @@ https://github.com/jkitchin/org-ref/issues/938
 
 
 #+end_src
+***** Dev
+:properties:
+:header-args: :tangle no
+:end:
 
+****** anki-editor
+- NEEDS ANKI 23 and / or reverted anki connect
+#+begin_src emacs-lisp
+(use-package anki-editor
+  :vc (:fetcher github :repo anki-editor/anki-editor))
+
+#+end_src
 **** See [[id:BF9D824A-02EF-4580-97A1-B887299AD461][Lisp]]
 ****** (custom-org-open-link)
 #+begin_src emacs-lisp

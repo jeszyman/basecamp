@@ -1,5 +1,3 @@
-(use-package anki-editor
-  :vc (:fetcher github :repo anki-editor/anki-editor))
 ;; Citar configuration for org-cite integration
 (use-package citar
   :after org
