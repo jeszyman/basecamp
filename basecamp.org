@@ -14128,45 +14128,7 @@ When set as a list as below, 300 pixels will be the default, but another width c
 #+end_src
 
 ********* Source code and tangle
-********** Declare Babel languages
-:PROPERTIES:
-:ID:       32dc9158-01f6-4303-b4eb-3901fe98f8d8
-:END:
-
-
-#+begin_src emacs-lisp
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '(
-   (ditaa . t)
-   (dot .t)
-   (emacs-lisp . t)
-   (latex . t)
-   (mermaid .t)
-   (org . t)
-   (python . t)
-   (R . t)
-   (shell . t)
-   (sql .t)
-   (sqlite . t)
-   ))
-#+end_src
-
-https://claude.ai/chat/1017ebf5-da7e-40fb-b05d-2247281826b9
-
-#+begin_src emacs-lisp
-(require 'ob-shell)
-(require 'yaml-mode)
-
-(defun org-babel-execute:yaml (body params)
-  "Execute a block of YAML code with org-babel."
-  (let ((temp-file (org-babel-temp-file "yaml-")))
-    (with-temp-file temp-file
-      (insert body))
-    (org-babel-eval (format "cat %s" temp-file) "")))
-
-(add-to-list 'org-src-lang-modes '("yaml" . yaml))
-#+end_src
+********** [[id:32dc9158-01f6-4303-b4eb-3901fe98f8d8][Declare Babel languages]]
 ********** Default header arguments
 #+name: babel_default_header_args
 #+begin_src emacs-lisp
@@ -15576,6 +15538,45 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 
 (load-theme 'manoj-dark t)
 
+#+end_src
+******* Declare Babel languages
+:PROPERTIES:
+:ID:       32dc9158-01f6-4303-b4eb-3901fe98f8d8
+:END:
+
+
+#+begin_src emacs-lisp
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '(
+   (ditaa . t)
+   (dot .t)
+   (emacs-lisp . t)
+   (latex . t)
+   (mermaid .t)
+   (org . t)
+   (python . t)
+   (R . t)
+   (shell . t)
+   (sql .t)
+   (sqlite . t)
+   ))
+#+end_src
+
+https://claude.ai/chat/1017ebf5-da7e-40fb-b05d-2247281826b9
+
+#+begin_src emacs-lisp
+(require 'ob-shell)
+(require 'yaml-mode)
+
+(defun org-babel-execute:yaml (body params)
+  "Execute a block of YAML code with org-babel."
+  (let ((temp-file (org-babel-temp-file "yaml-")))
+    (with-temp-file temp-file
+      (insert body))
+    (org-babel-eval (format "cat %s" temp-file) "")))
+
+(add-to-list 'org-src-lang-modes '("yaml" . yaml))
 #+end_src
 ******* Essh
 https://www.emacswiki.org/emacs/download/essh.el

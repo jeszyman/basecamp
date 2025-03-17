@@ -481,32 +481,6 @@ With prefix argument, also display headlines without a TODO keyword."
 
 (with-eval-after-load 'org
   (add-hook 'org-babel-after-execute-hook 'shk-fix-inline-images))
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '(
-   (ditaa . t)
-   (dot .t)
-   (emacs-lisp . t)
-   (latex . t)
-   (mermaid .t)
-   (org . t)
-   (python . t)
-   (R . t)
-   (shell . t)
-   (sql .t)
-   (sqlite . t)
-   ))
-(require 'ob-shell)
-(require 'yaml-mode)
-
-(defun org-babel-execute:yaml (body params)
-  "Execute a block of YAML code with org-babel."
-  (let ((temp-file (org-babel-temp-file "yaml-")))
-    (with-temp-file temp-file
-      (insert body))
-    (org-babel-eval (format "cat %s" temp-file) "")))
-
-(add-to-list 'org-src-lang-modes '("yaml" . yaml))
 (setq org-babel-default-header-args '(
 				      (:comments . "no")
 				      (:mkdirp . "yes")

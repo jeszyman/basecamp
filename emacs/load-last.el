@@ -19,6 +19,32 @@
             (load-theme 'manoj-dark t)))
 
 (load-theme 'manoj-dark t)
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '(
+   (ditaa . t)
+   (dot .t)
+   (emacs-lisp . t)
+   (latex . t)
+   (mermaid .t)
+   (org . t)
+   (python . t)
+   (R . t)
+   (shell . t)
+   (sql .t)
+   (sqlite . t)
+   ))
+(require 'ob-shell)
+(require 'yaml-mode)
+
+(defun org-babel-execute:yaml (body params)
+  "Execute a block of YAML code with org-babel."
+  (let ((temp-file (org-babel-temp-file "yaml-")))
+    (with-temp-file temp-file
+      (insert body))
+    (org-babel-eval (format "cat %s" temp-file) "")))
+
+(add-to-list 'org-src-lang-modes '("yaml" . yaml))
 (require 'essh)
 (defun essh-sh-hook ()
   (define-key sh-mode-map "\C-c\C-r" 'pipe-region-to-shell)
