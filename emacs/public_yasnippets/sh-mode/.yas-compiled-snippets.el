@@ -8,7 +8,7 @@
 		       ("var" "$1=\"$\\{$2}\"$0\n" "var" nil nil
 			((yas-indent-line 'none))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/sh-mode/var" nil nil)
-		       ("usage" "print_usage(){\n    cat <<- EOF\n\n Usage: ${1:${1:SCRIPT NAME}$$(replace-regexp-in-string \" \" \"_\" yas-text)} [OPTIONS] ${2:${2:REQUIRED OPERAND}$$(upcase yas-text)}  ${3:${3:[OPTIONAL OPERAND]}$$(upcase yas-text)}\n \n ${4:<DESCRIPTION>}\n \n Options:\n   -h, --help    Show this help message and exit\n\n Arguements:\n   ${2:$(ignore-errors (format (yas-field-value 2)))} ${5: <OPERAND DESCRIPTION>} \n\n Example:\n   ${1:$(ignore-errors (format (yas-field-value 1)))} ${6: <EXAMPLE>} \n\nEOF\n}\n\n# See print usage caller yas\n# return_usage_any\n" "usage" nil nil
+		       ("usage" "print_usage(){\n    cat <<- EOF\n\n Usage: ${1:${1:SCRIPT NAME}$$(replace-regexp-in-string \" \" \"_\" yas-text)} [OPTIONS] ${2:${2:REQUIRED OPERAND}$$(upcase yas-text)}  ${3:${3:[OPTIONAL OPERAND]}$$(upcase yas-text)}\n\n ${4:<DESCRIPTION>}\n\n Options:\n   -h, --help    Show this help message and exit\n\n Arguements:\n   ${2:$(ignore-errors (format (yas-field-value 2)))} ${5: <OPERAND DESCRIPTION>}\n\n Example:\n   ${1:$(ignore-errors (format (yas-field-value 1)))} ${6: <EXAMPLE>}\n\nEOF\n}\n\n# See print usage caller yas\n# return_usage_any\n" "usage" nil nil
 			((yas-indent-line 'fixed))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/sh-mode/usage" nil nil)
 		       ("script" "#!/usr/bin/env bash\n\nhead1\n\n# Block comment here\n\nset -o errexit   # abort on nonzero exitstatus\nset -o nounset   # abort on unbound variable\nset -o pipefail  # don't hide errors within pipes\n\nusage\n\nvariables\n\nmain(){\n    variables /$1\n}\n\nmain \"$@\"\n" "script" nil nil nil "/home/jeszyman/.emacs.d/snippets/public_yasnippets/sh-mode/script" nil nil)
@@ -33,4 +33,4 @@
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/sh-mode/80" nil nil)))
 
 
-;;; Do not edit! File generated at Mon Nov  4 07:58:32 2024
+;;; Do not edit! File generated at Thu Jan 23 21:47:46 2025

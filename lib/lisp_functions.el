@@ -1,3 +1,58 @@
+;; defun org-execute-named-block-anywhere
+;; :PROPERTIES:
+;; :ID:       5ace2dd4-9dfb-41b9-a7ec-5ca32aaf94ae
+;; :END:
+;; https://claude.ai/chat/c12f61f1-0d93-4658-8d52-be64f45a12e0
+
+(defun org-execute-named-block-anywhere (file block-name)
+  "Execute a named source block from specified org file.
+FILE is the path to the org file containing the block.
+BLOCK-NAME is the name of the block to execute."
+  (interactive "fFile: \nsBlock name: ")
+  (let* ((original-buffer (current-buffer))
+         (target-buffer (or (get-file-buffer file)
+                           (find-file-noselect file)))
+         info)
+    (with-current-buffer target-buffer
+      (save-excursion
+        (goto-char (point-min))
+        (if (re-search-forward (concat "^[ \t]*#\\+name:[ \t]*" 
+                                      (regexp-quote block-name) "[ \t]*$") nil t)
+            (progn
+              (setq info (org-babel-get-src-block-info t))
+              (org-babel-execute-src-block nil info))
+          (error "Named block %s not found" block-name))))
+    (when (and (not (eq target-buffer original-buffer))
+               (not (buffer-modified-p target-buffer))
+               (not (get-file-buffer file)))
+      (kill-buffer target-buffer))))
+
+;; find-duplicate-lines
+
+
+(defun find-duplicate-lines ()
+  "Find and list all duplicate lines in the current buffer."
+  (interactive)
+  (let ((lines (make-hash-table :test 'equal))
+        duplicates)
+    (save-excursion
+      (goto-char (point-min))
+      (while (not (eobp))
+        (let ((line (buffer-substring-no-properties
+                     (line-beginning-position) (line-end-position))))
+          (if (gethash line lines)
+              (push line duplicates)
+            (puthash line t lines)))
+        (forward-line 1)))
+    (if duplicates
+        (progn
+          (with-output-to-temp-buffer "*Duplicate Lines*"
+            (dolist (line (delete-dups duplicates))
+              (princ line)
+              (terpri)))
+          (message "Duplicate lines found and listed in *Duplicate Lines* buffer."))
+      (message "No duplicate lines found."))))
+
 ;; run-latex-at-point
 ;; :PROPERTIES:
 ;; :ID:       3975a173-ac71-4c02-b032-ef215329ca59

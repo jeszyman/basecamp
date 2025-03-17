@@ -7,6 +7,7 @@
 ** [[id:89576FD2-F863-4220-BAD7-D4E179AEA644][Bash and shell]]
 ** [[id:a49abc44-8e71-4a1a-bd35-a77849427c94][Emacs]]
 ** [[id:cd560390-aa1e-4c9e-8317-08610e5de42a][Linux]]
+** [[id:88337952-4c36-402e-882f-6ccd6c7ff6a1][Org-mode and Emacs cookbook]]
 ** [[id:28ed3017-eedb-4a6c-94e5-f477353170c8][Public emacs configuration]]
 ** [[id:CA21AAC9-F147-4086-A24C-64451EE349F3][Python]]
 ** [[id:F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD][R Statistical Computing]]
@@ -22,7 +23,7 @@
 :ID:       fb93d43a-f6ad-490f-8262-01f6b8ff10d0
 :CUSTOM_ID:       fb93d43a-f6ad-490f-8262-01f6b8ff10d0
 :END:
-Files in this repository are managed through [[ https://orgmode.org/manual/Extracting-Source-Code.html][extracting ("tangling") code]] within source code blocks of Emacs Org-mode text files. Tangling overwrites existing target files.
+Code files in this repository are managed through [[ https://orgmode.org/manual/Extracting-Source-Code.html][extracting ("tangling") code]] within source code blocks of Emacs Org-mode text files. Tangling overwrites existing target files.
 ** Documentation
 :properties:
 :export_date:
@@ -346,24 +347,196 @@ See also Emacs and Org-mode use in my LaTeX repository ([[https://github.com/jes
 #+begin_export latex
 \inputminted{emacs-lisp}{../emacs/load-last.el}
 #+end_export
-** Install and setup
-- apt
-       - installs
-         - sudo apt-get update -y && sudo apt-get install -y syncthing vim pandoc emacs curl
-#+begin_src bash
-sudo apt install texlive-full
-sudo apt install okular
-sudo apt install fonts-firacode
-#+end_src
-#+begin_src bash
-sudo apt install ttf-mscorefonts-installer
+** Configuration files
+#+begin_src yaml :tangle ./config/config.yaml
+#########1#########1#########1#########1#########1#########1#########1#########1
+apt_packages:
+  - ansible                   # Provisioning automation tool
+  - brave-browser             # Web browser
+  - curl                      # Command-line tool for HTTP requests
+  - fonts-firacode            # Monospaced font with ligatures
+  - git                       # Version control system
+  - htop                      # Interactive process viewer
+  - hunspell                  # Spell checker library
+  - hunspell-en-us            # English dictionary for Hunspell
+  - jq                        # JSON processor
+  - okular                    # Universal document viewer (PDF, ePub, etc.)
+  - pandoc                    # Document converter (Markdown, LaTeX, etc.)
+  - syncthing                 # Continuous file synchronization
+  - texlive-full              # Complete LaTeX distribution
+  - tree                      # Directory structure viewer
+  - ttf-mscorefonts-installer # Microsoft TrueType fonts
+  - vim                       # Advanced text editor
+  
+directory_structure:
+  - "${HOME}/repos"
+  
+public_symlinks:
+  - src: "${HOME}/repos/basecamp/emacs/init.el"
+    dest: "${HOME}/.emacs.d/init.el"
+  - src: "${HOME}/repos/basecamp/emacs/load-first.el"
+    dest: "${HOME}/.emacs.d/load-first.el"
+  - src: "${HOME}/repos/basecamp/emacs/load-last.el"
+    dest: "${HOME}/.emacs.d/load-last.el"
+  - src: "${HOME}/repos/basecamp/emacs/public_yasnippets"
+    dest: "${HOME}/.emacs.d/public_yasnippets"
+  - src: "${HOME}/repos/basecamp/lib/lisp_functions.el"
+    dest: "${HOME}/.emacs.d/lisp/lisp_functions.el"
+  - src: "${HOME}/repos/basecamp/emacs/public_config.el"
+    dest: "${HOME}/.emacs.d/config/public_config.el"
+  - src: "${HOME}/repos/basecamp/emacs/essh.el"
+    dest: "${HOME}/.emacs.d/lisp/essh.el"
 
-sudo fc-cache -fv
+wget_downloads:
+  - src: https://www.emacswiki.org/emacs/download/essh.el
+    dest: "${HOME}/repos/basecamp/emacs/essh.el"
 #+end_src
+** Ansible
+- See [[id:1169cb65-4a18-43d3-9643-67ac3e85f0d1][general ansible reference]]
+*** Public common playbook
+:PROPERTIES:
+:ID:       42a1c7e4-9b67-41b6-8336-83e061da7154
+:header-args:yaml: :tangle ./ansible/playbooks/public-common-playbook.yaml :mkdirp yes
+:END:
+[[file:ansible/playbooks/public-common-playbook.yaml]]
+**** Preamble
+#+begin_src yaml
+---
+- name: Common Public Playbook
+  hosts: all
+  gather_facts: true
+
+  tasks:
+#+end_src
+**** [[id:537315c8-951a-42bc-99af-c3977c19e812][Debugging info]]
+#+begin_src yaml
+<#~/repos/basecamp/basecamp.org:ansible-debugging-info()#>
+#+end_src
+**** Include variables from the basecamp repo config file
+#+begin_src yaml
+    - name: Include config yaml
+      include_vars:
+        file: "{{ ansible_env.HOME }}/repos/basecamp/config/config.yaml"
+#+end_src
+**** Make directory structure
+#+begin_src yaml
+    - name: Ensure directories are created without changing existing permissions
+      file:
+        path: "{{ item | expanduser }}"
+        state: directory
+      loop: "{{ directory_structure }}"
+      vars:
+        directory_structure: "{{ directory_structure | default([]) }}"
+    
+#+end_src
+**** Download from urls
+#+begin_src yaml
+    - name: Ensure destination directory exists
+      file:
+        path: "{{ item.dest | dirname }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ wget_downloads }}"
+
+    - name: Download file only if changed
+      get_url:
+        url: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        mode: '0644'
+        force: no  # Ensures re-download only if file is missing or modified
+      loop: "{{ wget_downloads }}"
+#+end_src
+
+**** Make symlinks
+#+begin_src yaml
+    - name: Check symlink sources
+      ansible.builtin.stat:
+        path: "{{ item.src }}"
+      register: symlink_sources
+      loop: "{{ public_symlinks }}"
+      no_log: true
+
+    - name: Output missing symlink sources
+      debug:
+        msg: "Missing source: {{ item.item.src }}"
+      loop: "{{ symlink_sources.results | selectattr('stat.exists', 'equalto', false) | list }}"
+
+    - name: Make public symlinks for existing sources
+      ansible.builtin.file:
+        src: "{{ item.item.src }}"
+        dest: "{{ item.item.dest }}"
+        state: link
+        force: yes
+        follow: false
+      loop: "{{ symlink_sources.results }}"
+      when: item.stat.exists
+      no_log: true
+      
+#+end_src
+**** Install software
+***** ATP installs
+#+begin_src yaml
+    - name: Ensure APT packages are installed
+      apt:
+        name: "{{ apt_packages }}"
+        state: latest 
+        update_cache: yes
+      become: true  
+#+end_src
+***** Non-ATP Installs
+****** yq
+#+begin_src yaml
+    - name: Download yq binary
+      become: true
+      ansible.builtin.get_url:
+        url: https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+        dest: /usr/local/bin/yq
+        mode: '0755'
+        force: no
+
+    - name: Verify yq installation
+      become: true
+      ansible.builtin.command: yq --version
+      register: yq_version
+      failed_when: "'version' not in yq_version.stdout.lower()"
+
+    - name: Debug yq version
+      ansible.builtin.debug:
+        msg: "yq successfully installed: {{ yq_version.stdout }}"
+#+end_src
+
+****** Python 
+****** Nerd fonts
+#+begin_src yaml
+    - name: Ensure fonts directory exists
+      file:
+        path: "{{ ansible_env.HOME }}/.local/share/fonts"
+        state: directory
+        mode: '0755'
+
+    - name: Download and extract Nerd Fonts
+      shell: |
+        cd {{ ansible_env.HOME }}/.local/share/fonts
+        curl -LO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraCode.zip
+        unzip -o FiraCode.zip
+        rm FiraCode.zip
+      args:
+        creates: "{{ ansible_env.HOME }}/.local/share/fonts/FiraCode-Regular.ttf"
+
+    - name: Refresh font cache
+      command: fc-cache -fv
+
+    - name: Display output
+      debug:
+        msg: "{{ fc_cache.stdout_lines }}"      
+      
+#+end_src
+
+****** R
+** Install and setup
 #+begin_src bash :results replace
 pip install 'python-lsp-server[all]'
 pip install flake8
-
 #+end_src
 
 #+begin_src R
@@ -379,44 +552,16 @@ mkdir -p "${HOME}/repos"
 
 apt-get install xauth
 
-** Org-mode guide
-*** Clock table
-
-#+BEGIN: clocktable :scope file :maxlevel 6 :match "tagin" :tstart "<2024-10-01>" :tend "<2024-10-03>" :fileskip0 t
-#+CAPTION: Clock summary at [2024-10-14 Mon 12:14]
-| Headline                   | Time   |      |      |      |      |
-|----------------------------+--------+------+------+------+------|
-| *Total time*               | *0:16* |      |      |      |      |
-|----------------------------+--------+------+------+------+------|
-| Basecamp                   | 0:16   |      |      |      |      |
-| \_  Org-mode guide         |        | 0:16 |      |      |      |
-| \_    Clock table          |        |      | 0:16 |      |      |
-| \_      Clock table events |        |      |      | 0:16 |      |
-| \_        Included event 1 |        |      |      |      | 0:08 |
-| \_        Included event 2 |        |      |      |      | 0:08 |
-#+END:
-
-**** Clock table events
-***** Included event 1                                                :tagin:
-:LOGBOOK:
-CLOCK: [2024-10-01 Tue 12:00]--[2024-10-01 Tue 12:08] =>  0:08
-:END:
-***** Included event 2                                                :tagin:
-:LOGBOOK:
-CLOCK: [2024-10-02 Wed 13:00]--[2024-10-02 Wed 13:08] =>  0:08
-:END:
-***** Excluded event 1                                               :tagout:
-:LOGBOOK:
-CLOCK: [2024-10-02 Wed 12:00]--[2024-10-02 Wed 12:08] =>  0:08
-:END:
-
-
 ** lib
 :PROPERTIES:
 :ID:       861fb855-7bac-4601-87b9-a5bb7a6db293
 :END:
 *** Shell
 https://chatgpt.com/c/66f5b550-66f0-8005-b5a1-733d20a01aed
+**** Ideas
+kill -9 $(pgrep brave)
+open "$(find /tmp -type f -printf '%T@ %p\n' 2>/dev/null | sort -n | tail -1 | cut -d' ' -f2-)"
+
 **** General shell functions
 :PROPERTIES:
 :header-args: :tangle ./lib/basecamp_function.sh :comments org :padline no
@@ -438,7 +583,7 @@ Each function has it's own Org-mode header.
 
 connect_scrcpy() {
     # Default device IP and port
-    local DEVICE_IP="192.168.1.12"
+    local DEVICE_IP="192.168.1.9"
     local DEVICE_PORT="5555"
 
     # Function to display usage information
@@ -540,8 +685,10 @@ mute(){
 #+end_src
 ****** unmute()
 #+begin_src bash
-unmute() {
+unmute () {
     amixer set Master unmute
+    amixer set Master 30% unmute
+    amixer set Speaker 30% unmute  # If 'Master' doesn't work
     amixer set Capture cap
 }
 #+end_src
@@ -1715,9 +1862,68 @@ EOF
 :header-args: :tangle ./lib/lisp_functions.el :tangle-mode (identity #o555) :mkdirp yes :noweb yes :comments org
 :ID:       2fc1a6f1-093c-4250-a905-1bf42b7b9eee
 :END:
+[[file:lib/lisp_functions.el]]
 - Emacs
   - Custom functions with names that would clash with existing function names from base emacs or packages shall be prefixed with "custom-"
   - Referencing external variables https://chatgpt.com/c/c9789fc7-81f8-4af4-96a2-82ffd94db68c
+**** defun org-execute-named-block-anywhere
+:PROPERTIES:
+:ID:       5ace2dd4-9dfb-41b9-a7ec-5ca32aaf94ae
+:END:
+https://claude.ai/chat/c12f61f1-0d93-4658-8d52-be64f45a12e0
+#+begin_src emacs-lisp
+(defun org-execute-named-block-anywhere (file block-name)
+  "Execute a named source block from specified org file.
+FILE is the path to the org file containing the block.
+BLOCK-NAME is the name of the block to execute."
+  (interactive "fFile: \nsBlock name: ")
+  (let* ((original-buffer (current-buffer))
+         (target-buffer (or (get-file-buffer file)
+                           (find-file-noselect file)))
+         info)
+    (with-current-buffer target-buffer
+      (save-excursion
+        (goto-char (point-min))
+        (if (re-search-forward (concat "^[ \t]*#\\+name:[ \t]*" 
+                                      (regexp-quote block-name) "[ \t]*$") nil t)
+            (progn
+              (setq info (org-babel-get-src-block-info t))
+              (org-babel-execute-src-block nil info))
+          (error "Named block %s not found" block-name))))
+    (when (and (not (eq target-buffer original-buffer))
+               (not (buffer-modified-p target-buffer))
+               (not (get-file-buffer file)))
+      (kill-buffer target-buffer))))
+#+end_src
+
+**** find-duplicate-lines
+
+#+begin_src emacs-lisp
+(defun find-duplicate-lines ()
+  "Find and list all duplicate lines in the current buffer."
+  (interactive)
+  (let ((lines (make-hash-table :test 'equal))
+        duplicates)
+    (save-excursion
+      (goto-char (point-min))
+      (while (not (eobp))
+        (let ((line (buffer-substring-no-properties
+                     (line-beginning-position) (line-end-position))))
+          (if (gethash line lines)
+              (push line duplicates)
+            (puthash line t lines)))
+        (forward-line 1)))
+    (if duplicates
+        (progn
+          (with-output-to-temp-buffer "*Duplicate Lines*"
+            (dolist (line (delete-dups duplicates))
+              (princ line)
+              (terpri)))
+          (message "Duplicate lines found and listed in *Duplicate Lines* buffer."))
+      (message "No duplicate lines found."))))
+
+#+end_src
+
 **** run-latex-at-point
 :PROPERTIES:
 :ID:       3975a173-ac71-4c02-b032-ef215329ca59
@@ -1766,7 +1972,6 @@ EOF
 hard to get the touch to work here
 https://chat.openai.com/c/22b1d5c5-5d9b-4ced-98cf-860f7eb493c8
 ** Processes
-
 *** Flat
 **** Free drawing
 - https://excalidraw.com/
@@ -2769,6 +2974,8 @@ https://old.reddit.com/r/dataisbeautiful/comments/jkadd0/oc_distribution_of_emot
   - cite:fayyad1996
 - support vectors
   - https://stats.stackexchange.com/questions/13194/support-vector-machines-and-regression
+*** Large language models LLMs
+https://www.reddit.com/r/ChatGPT/comments/1hzmg1s/professor_stuart_russell_highlights_the/
 *** PCA for ML feature input
 :PROPERTIES:
 :ID:       41eb5607-7d2f-4dc4-9c3c-42af7223b1c0
@@ -3459,8 +3666,6 @@ ShowSidebar=false
 :ID:       A91BF233-F14E-4E91-A1E9-B39802A9ED2D
 :CREATED:  [2019-07-03 Wed 08:13]
 :END:
-
-
 *** Software
 :PROPERTIES:
 :ID:       9E19E626-9D6C-4296-BEDB-80033A846CF4
@@ -3626,7 +3831,7 @@ hostname --long
 : jeszyman-work
 
 - piped link for sudo files [[/ssh:localhost|sudo:localhost:/etc/group]]
-**** Software                                                          :flat:
+**** Flat
 :PROPERTIES:
 :ID:       9d48f3fb-3d70-4844-aeca-4f22d2f38ccb
 :END:
@@ -3635,6 +3840,10 @@ hostname --long
 :PROPERTIES:
 :ID:       f36a370c-c4ba-4ddc-81b7-79c12b601255
 :END:
+
+sudo nano /etc/apt/sources.list
+[[/sudo:root@localhost:/etc/apt/sources.list][Edit sources.list as root]]
+
 sudo -E bash -c 'export DEBIAN_FRONTEND=noninteractive && yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade > /tmp/log.log 2>&1; if grep -q "0 upgraded, 0 newly installed" /tmp/log.log; then echo "System is already up to date."; else tail -f /tmp/log.log; fi'
 https://chatgpt.com/c/670c0b1f-11a4-8005-baa2-71f9d595d568
 - processes
@@ -3708,26 +3917,13 @@ cmake -version
 :PROPERTIES:
 :ID:       b16d0202-8d35-472b-b538-87a7d6a6cef7
 :END:
-
-#+begin_src bash
-getent group conda
-
-sudo groupadd conda
-sudo usermod -aG conda $(whoami)
-sudo chown -R :conda /opt/miniconda3
-sudo chmod -R g+rwx /opt/miniconda3
-sudo chmod -R g+s /opt/miniconda3
-#+end_src
-
 ****** Ansible
-ansible-playbook -c local ansible/playbooks/conda-playbook.yaml
-
 ******* Conda install and provisioning playbook
 :properties:
 :header-args:yaml: :tangle ./ansible/playbooks/conda-playbook.yaml :mkdirp yes
 :ID:       7ab1917d-8962-4527-a4ac-5cdf7352f7a3
 :end:
-[[file:ansible/playbooks/conda-playbook.yaml]]
+- [[file:ansible/playbooks/conda-playbook.yaml]]
 ******** Preamble
 #+begin_src yaml
 ---
@@ -3921,6 +4117,16 @@ ansible-playbook -c local ansible/playbooks/conda-playbook.yaml
 :PROPERTIES:
 :ID:       be60258f-2023-42c4-bc3e-86d2095c4199
 :END:
+******* Conda system-wide install
+#+begin_src bash
+getent group conda
+
+sudo groupadd conda
+sudo usermod -aG conda $(whoami)
+sudo chown -R :conda /opt/miniconda3
+sudo chmod -R g+rwx /opt/miniconda3
+sudo chmod -R g+s /opt/miniconda3
+#+end_src
 ******* Uninstall
 - https://docs.anaconda.com/miniconda/uninstall/
 ******* Add channel
@@ -3975,24 +4181,18 @@ ansible-playbook -c local ansible/playbooks/conda-playbook.yaml
   conda config --set auto_activate_base false
 #+end_src
 ******* [[https://www.google.com/search?q=conda+install+specific+version+of+package][google:conda install specific version of package]]
-******* list package versions
-:PROPERTIES:
-:ID:       97a3db1a-9433-4a8c-b866-9a26dcecc2b6
-:END:
-https://stackoverflow.com/questions/43222407/how-to-list-package-versions-available-with-conda
 ******* [[https://www.google.com/search?q=conda+install+multiple+versions+of+package][google:conda install multiple versions of package]]
 :PROPERTIES:
 :ID:       2211bbde-de2b-4f94-8a31-4ed1a6bab3b1
-:END:
-******* Remove environment - conda env remove -n ENV_NAME
-:PROPERTIES:
-:ID:       3b2600e5-4198-4f05-a4dc-308a6096ea1c
 :END:
 ******* 0 Flat
 :PROPERTIES:
 :ID:       d9e04105-39ef-465c-9e91-fee12c86645b
 :END:
 ******** Update conda env from github location yaml
+:PROPERTIES:
+:ID:       2fe724ad-3cd2-4598-aae2-38d468535fa7
+:END:
 - conda env update --name biotools --file https://raw.githubusercontent.com/jeszyman/basecamp/v1.0.0/basecamp_env.yaml
 - mamba cannot update from urls, instead do something like
   curl -o /tmp/basecamp_env.yaml https://raw.githubusercontent.com/jeszyman/basecamp/v1.0.0/basecamp_env.yaml && mamba env update --name biotools --file /tmp/basecamp_env.yaml
@@ -4059,6 +4259,33 @@ https://github.com/conda/conda/issues/5821
 
     #########1#########2#########3#########4#########5#########6#########7#########8
 #+end_src
+******** List package versions
+:PROPERTIES:
+:ID:       97a3db1a-9433-4a8c-b866-9a26dcecc2b6
+:END:
+https://stackoverflow.com/questions/43222407/how-to-list-package-versions-available-with-conda
+******** Remove environment - conda env remove -n ENV_NAME
+:PROPERTIES:
+:ID:       3b2600e5-4198-4f05-a4dc-308a6096ea1c
+:END:
+****** Conda                                                       :cookbook:
+:PROPERTIES:
+:ID:       cfeaf875-745c-44a4-8a52-963433f2fff1
+:header-args: :results replace
+:END:
+- Check available versions
+  #+begin_src bash :results raw
+conda search yq
+
+#+end_src
+- Remove a package from an environment
+  #+begin_src bash
+mamba install -c conda-forge -n breast -y yq 
+conda activate breast
+conda remove -y yq
+#+end_src
+
+
 ****** [[id:fb5f258b-cf75-46d1-9196-adc80d1ff6ff][Functions]]
 ****** Documentation
 :PROPERTIES:
@@ -4216,7 +4443,7 @@ dependencies:
   - r-rstatix            # pipe-friendly framework for basic statistical tests #
   - r-svglite                                   # Provides svg graphics output #
   - r-tidyverse
-  - r-rtsne   # t-distributed stochastic neighbor embedding dimension reduction #
+  - r-rtsne  # t-distributed stochastic neighbor embedding dimension reduction #
   - r-upsetr       # Visualizations of intersecting sets using a matrix design #
   - r-writexl                                    # Export data frames to Excel #
   - r-yaml                    # Impliments libyaml YAML 1.1 parser and emitter #
@@ -4240,61 +4467,141 @@ https://www.freecodecamp.org/news/learn-data-visualization-in-this-free-17-hour-
 :ID:       D2FAA88D-70CC-4450-BBB3-8A446CB43AF3
 :CREATED:  [2019-07-07 Sun 09:05]
 :END:
-- https://medium.com/axon-technologies/installing-a-windows-virtual-machine-in-a-linux-docker-container-c78e4c3f9ba1
-
-#+begin_src bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-# Interactive docker initialization
-  docker_interactive() {
-    repo="USER INPUT"
-    read -p "repo name: " repo
-    case $HOSTNAME in
-        (radonc-cancerbio) docker run -it \
-                                  --env HOME=${HOME} \
-                                  --hostname ${HOSTNAME} \
-                                  --user $(id -u ${USER}) \
-                                  --volume /home/:/home/ \
-                                  --volume /mnt/:/mnt/ \
-                                  --volume /tmp/:/tmp/ \
-                                  jeszyman/$repo \
-                                  /bin/bash;;
-        (jeszyman-*) docker run -it \
-                            --env HOME=/home/jeszyman \
-                            --hostname ${HOSTNAME} \
-                            --user $(id -u ${USER}) \
-                            --volume /home/:/home/ \
-                            --volume /mnt/:/mnt/ \
-                            --volume /tmp/:/tmp/ \
-                            jeszyman/$repo \
-                            /bin/bash;;
-        (acl*) docker run -it \
-                      -v /drive3/:/drive3/ \
-                      -v /duo4/:/duo4/ \
-                      -v /home/:/home/ \
-                      -u $(id -u ${USER}) \
-                      jeszyman/$repo \
-                      /bin/bash;;
-        (ACL*) docker run -it \
-                      -v /home/:/home/ \
-                      -v /duo4/:/duo4/ \
-                      -u $(id -u ${USER}):$(id -g ${USER}) \
-                      -h=${HOSTNAME} \
-                      jeszyman/$repo \
-                      /bin/bash;;
-        (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$repo"')' /bin/bash;;
-    esac
-}
-#
-
-#+end_src
-https://stackoverflow.com/questions/35594987/how-to-force-docker-for-a-clean-build-of-an-image
-https://stackoverflow.com/questions/39433480/dockerfile-versioning-best-practice
-- [[*singularity][singularity]]
-- always need apt update prior to gets https://askubuntu.com/questions/1159096/ubuntu-18-04-throws-404-error-while-fetching-dependencies
-****** Local transclusion
+****** Ansible install playbook
 :PROPERTIES:
-:ID:       04c1735c-332a-47dc-aedb-24adfc8f76e2
+:ID:       e15a03de-c529-4229-b763-7df28213f1e0
+:header-args:yaml: :tangle ./ansible/playbooks/docker-playbook.yaml
 :END:
+[[file:ansible/playbooks/docker-playbook.yaml]]
+******* Preamble
+#+begin_src yaml
+---
+- name: Docker Playbook
+  hosts: all
+  tasks:
+#+end_src
+******* Install block
+******** Header
+#+begin_src yaml
+    - name: Perform sudo install tasks
+      block:
+#+end_src
+******** APT install
+#+begin_src yaml
+        - name: Update package list
+          apt:
+            update_cache: yes
+
+        - name: Install required packages
+          apt:
+            name:
+              - apt-transport-https
+              - ca-certificates
+              - curl
+              - software-properties-common
+            state: present
+
+        - name: Add Docker's official GPG key
+          apt_key:
+            url: https://download.docker.com/linux/ubuntu/gpg
+            state: present
+
+        - name: Add Docker repository
+          apt_repository:
+            repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+            state: present
+
+        - name: Update package list after adding Docker repo
+          apt:
+            update_cache: yes
+
+        - name: Install Docker CE
+          apt:
+            name: docker-ce
+            state: latest
+        
+#+end_src
+******** Ensure systemctl service
+#+begin_src yaml
+        - name: Ensure Docker service is enabled and running
+          systemd:
+            name: docker
+            enabled: yes
+            state: started
+#+end_src
+******** Add current user
+#+begin_src yaml
+        - name: Add current user to the docker group
+          user:
+            name: "{{ ansible_user | default(ansible_env.USER) }}"
+            groups: docker
+            append: yes
+#+end_src
+******** Footer to allow sudo throughout the block 
+#+begin_src yaml
+      become: true
+#+end_src
+****** State check
+#+begin_src python :tangle /tmp/test.py
+import os
+import subprocess
+
+def run_command(command):
+    """Run a shell command and return its output."""
+    try:
+        output = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True, text=True)
+        return output.strip()
+    except subprocess.CalledProcessError as e:
+        return f"Error: {e.output.strip()}"
+
+def check_docker_status():
+    """Check Docker service status using systemctl."""
+    print("=== Docker Service Status ===")
+    print(run_command("systemctl status docker | grep -E 'Active|Loaded'"))
+
+def list_docker_images():
+    """List all available Docker images."""
+    print("\n=== Available Docker Images ===")
+    print(run_command("docker images --format 'table {{.Repository}}\t{{.Tag}}\t{{.Size}}'"))
+
+def list_running_containers():
+    """List all running Docker containers."""
+    print("\n=== Running Docker Containers ===")
+    containers = run_command("docker ps --format 'table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'")
+    if not containers.strip():
+        print("No running containers.")
+    else:
+        print(containers)
+
+def list_all_containers():
+    """List all Docker containers (running and stopped)."""
+    print("\n=== All Docker Containers ===")
+    containers = run_command("docker ps -a --format 'table {{.ID}}\t{{.Image}}\t{{.Status}}'")
+    if not containers.strip():
+        print("No containers found.")
+    else:
+        print(containers)
+
+def show_docker_disk_usage():
+    """Show Docker disk usage."""
+    print("\n=== Docker Disk Usage ===")
+    print(run_command("docker system df"))
+
+def check_docker_version():
+    """Show Docker version."""
+    print("\n=== Docker Version ===")
+    print(run_command("docker --version"))
+
+if __name__ == "__main__":
+    print("Docker Resource Status Script\n")
+    check_docker_status()
+    list_docker_images()
+    list_running_containers()
+    list_all_containers()
+    show_docker_disk_usage()
+    check_docker_version()
+#+end_src
+****** [[*singularity][singularity]]
 ****** Local YAS
 :PROPERTIES:
 :ID:       b477cbfd-b5fe-4297-9429-584de1f21144
@@ -4362,6 +4669,55 @@ singularity
 :PROPERTIES:
 :ID:       e209c427-c926-4a90-bbfe-38ee396db4be
 :END:
+- https://stackoverflow.com/questions/39433480/dockerfile-versioning-best-practice
+- https://stackoverflow.com/questions/35594987/how-to-force-docker-for-a-clean-build-of-an-image
+- per-env runs  
+  #+begin_src bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+# Interactive docker initialization
+  docker_interactive() {
+    repo="USER INPUT"
+    read -p "repo name: " repo
+    case $HOSTNAME in
+        (radonc-cancerbio) docker run -it \
+                                  --env HOME=${HOME} \
+                                  --hostname ${HOSTNAME} \
+                                  --user $(id -u ${USER}) \
+                                  --volume /home/:/home/ \
+                                  --volume /mnt/:/mnt/ \
+                                  --volume /tmp/:/tmp/ \
+                                  jeszyman/$repo \
+                                  /bin/bash;;
+        (jeszyman-*) docker run -it \
+                            --env HOME=/home/jeszyman \
+                            --hostname ${HOSTNAME} \
+                            --user $(id -u ${USER}) \
+                            --volume /home/:/home/ \
+                            --volume /mnt/:/mnt/ \
+                            --volume /tmp/:/tmp/ \
+                            jeszyman/$repo \
+                            /bin/bash;;
+        (acl*) docker run -it \
+                      -v /drive3/:/drive3/ \
+                      -v /duo4/:/duo4/ \
+                      -v /home/:/home/ \
+                      -u $(id -u ${USER}) \
+                      jeszyman/$repo \
+                      /bin/bash;;
+        (ACL*) docker run -it \
+                      -v /home/:/home/ \
+                      -v /duo4/:/duo4/ \
+                      -u $(id -u ${USER}):$(id -g ${USER}) \
+                      -h=${HOSTNAME} \
+                      jeszyman/$repo \
+                      /bin/bash;;
+        (virtual-workstation*.gsc.wustl.edu) bsub -Is -q docker-interactive -a 'docker(jeszyman/'"$repo"')' /bin/bash;;
+    esac
+}
+#
+
+#+end_src
+- https://medium.com/axon-technologies/installing-a-windows-virtual-machine-in-a-linux-docker-container-c78e4c3f9ba1
 - [[https://www.google.com/search?q=docker+see+dockerfile+for+dockerhub][google:docker see dockerfile for dockerhub]]
 - create singularity containers https://stackoverflow.com/questions/60314664/how-to-build-singularity-container-from-dockerfile
 - https://stackoverflow.com/questions/38118791/can-t-delete-docker-image-with-dependent-child-images/50650745
@@ -4635,9 +4991,6 @@ cd
 docker run jeszyman/test
 #+end_src
 ****** [[id:14a1f321-73c7-4dbb-be33-f7377ae38cdd][LINK TO Research Infrastructure Services (RIS)]]
-:PROPERTIES:
-:ID:       7f8dbd62-2a75-424f-93c4-320216d8f556
-:END:
 ****** Platform
 :PROPERTIES:
 :ID:       c2748bca-6dd1-458c-b58c-4e1b00324cb8
@@ -5051,6 +5404,7 @@ find . -type l | sed -e s'/^\.\///g' >> .gitignore
 :PROPERTIES:
 :ID:       f10536f7-729b-4c47-aa91-3f5e890fb5e7
 :END:
+******** Find a deleted file 
 ******** git file names beginning w/ hyphen
 :PROPERTIES:
 :ID:       4e995ab8-4060-43b7-89da-87a10feb74b2
@@ -6340,6 +6694,8 @@ i3-msg 'resize set 66 ppt'
 - https://www.reddit.com/r/i3wm/comments/95z285/opening_all_terminal_applications_directly_from/
 - https://faq.i3wm.org/question/4074/changing-window-title.1.html
 - https://faq.i3wm.org/question/1730/warning-popup-when-battery-very-low.1.html
+****** Ideas
+- show every second, not every 5
 ****** [[file:~/repos/basecamp-private/basecamp-private.org::*My i3 configuration][My i3 configuration in basecamp-private]]
 :PROPERTIES:
 :ID:       e2b3a949-7809-486f-b8b1-c443b069b7dd
@@ -6356,6 +6712,13 @@ i3-msg 'resize set 66 ppt'
 :PROPERTIES:
 :ID:       9c53c904-8b30-45e4-95fc-f997154198bb
 :END:
+******* Collect all windows to current workspace
+- https://chatgpt.com/c/67c2204c-1ae0-8005-a8ed-fa37b01b164a
+#+begin_src bash
+i3-msg '[class=".*"] move to workspace current'
+
+#+end_src
+
 ******* scratchpad
 :PROPERTIES:
 :ID:       1539abed-3ec8-4dcf-b9b8-5873c467191a
@@ -6566,10 +6929,19 @@ pandoc -o /home/jeszyman/repos/mpnst-data/readme.pdf -f markdown -t latex /home/
 :ID:       22db5b8c-0699-498e-9dfb-c72a41315f6e
 :END:
 https://stackoverflow.com/questions/17776582/split-a-pdf-in-two
+- See [[id:670ed8f4-bb93-4d93-b9ea-a142a599169f][PDF file processes]]
+***** [[id:F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD][R Statistical Computing]]
 ***** rclone
 :PROPERTIES:
 :ID:       be76a873-d2fe-447f-a43c-b84c52a8e77b
 :END:
+
+#+begin_src bash :results replace
+rclone listremotes
+rclone lsd box:
+
+#+end_src
+
 - [[https://www.google.com/search?q=rclone+glob+pattern][google:rclone glob pattern]]
 - box rclone mount
   - [2019-06-20 Thu]
@@ -7879,6 +8251,48 @@ CLOCK: [2019-03-04 Mon 14:59]--[2019-03-04 Mon 15:17] =>  0:18
     - Allows custom file location at [[file:~/data/library/]]
 - Performance- manual entry lag
   - [[https://forums.zotero.org/discussion/16733/manual-citation-entry-clunky][No answers, but question asked]]
+****** Ansible install zotero
+:PROPERTIES:
+:ID:       cc61d5d6-981d-4013-a571-1cc15cf758bc
+:END:
+#+begin_src yaml
+    - name: Check if Zotero is already installed
+      command: ls /opt/Zotero_linux-x86_64/zotero
+      register: zotero_installed
+      failed_when: false
+      changed_when: false
+
+    - name: Download Zotero tarball
+      get_url:
+        url: "https://www.zotero.org/download/client/dl?channel=release&platform=linux-x86_64&version=7.0.11"
+        dest: "/tmp/zotero.tar.bz2"
+      when: zotero_installed.rc != 0
+
+    - name: Extract Zotero
+      ansible.builtin.unarchive:
+        src: "/tmp/zotero.tar.bz2"
+        dest: "/opt/"
+        remote_src: yes
+      when: zotero_installed.rc != 0
+      become: yes
+
+    - name: Create symlink for Zotero in /usr/local/bin
+      file:
+        src: /opt/Zotero_linux-x86_64/zotero
+        dest: /usr/local/bin/zotero
+        state: link
+      become: yes
+
+#+end_src
+
+***** Globus
+:PROPERTIES:
+:ID:       e6aab15d-36b0-4b08-93b8-ef9f6254d950
+:END:
+-
+- [[https://docs.globus.org/cli/][cli]]
+  - [[https://docs.globus.org/cli/reference/][documentation]]
+    - https://docs.globus.org/how-to/globus-connect-personal-linux/#globus-connect-personal-cli
 **** Google
 :PROPERTIES:
 :ID:       bc60974d-3e95-4d60-8240-a3a2a7b5d36d
@@ -8372,6 +8786,8 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :END:
 default applications defined in - [[file:~/.config/mimeapps.list]]
 https://www.reddit.com/r/commandline/comments/1epjppl/10_cli_tools_that_made_the_biggest_impact_on/
+******** Linux cookbook
+********* APT
 ******** Processes- see [[id:b33a7727-70b2-4743-a8cf-025a0803c3cc][Ubuntu Processes]]
 :PROPERTIES:
 :ID:       523b0a71-a7b3-48af-be83-35f64616f844
@@ -8981,20 +9397,10 @@ https://abseil.io/resources/swe-book
 :PROPERTIES:
 :ID:       a49abc44-8e71-4a1a-bd35-a77849427c94
 :END:
-***** [[id:d7d54139-64d0-4cfe-ab3a-879b3617b226][Org-mode]]
-***** Scripts
-:PROPERTIES:
-:ID:       14a9e27b-c960-42cb-b052-536eaf6a22da
-:END:
-****** org_export_to_beamer.sh
-:PROPERTIES:
-:ID:       3aa1ed51-12ed-4ca3-b0fb-6462c0a2ce5a
-:END:
-#+begin_src bash :tangle ./scripts/org_export_to_beamer.sh
-emacsclient -e "(progn (find-file \"$1\") \
-                       (org-id-goto \"$2\") \
-                       (org-beamer-export-to-pdf nil t))"
-#+end_src
+https://joostkremers.github.io/ebib/
+https://github.com/jamescherti/minimal-emacs.d
+https://lambdaland.org/posts/2024-12-14_emacs_catchup/
+***** [[id:88337952-4c36-402e-882f-6ccd6c7ff6a1][Org-mode and Emacs cookbook]]
 ***** Processes
 :PROPERTIES:
 :ID:       55964bf9-dba0-44b4-9b78-1ec6731822b0
@@ -9003,11 +9409,52 @@ emacsclient -e "(progn (find-file \"$1\") \
 :PROPERTIES:
 :ID:       8d6e65d5-aa51-4dfa-804f-8ce9126f8ae9
 :END:
-******* Widget buttons
+- make minibuffer window
+  #+begin_src emacs-lisp
+(make-frame '((minibuffer . only)))
+#+end_src
+
+******* Backup
 :PROPERTIES:
-:ID:       b4829129-9568-49d5-89bf-f58d5b707ee4
+:ID:       b781b0bf-9382-414f-9e2c-4c17c61e2a73
 :END:
-https://www.reddit.com/r/emacs/comments/18mvqez/how_can_i_create_inputs_and_buttons_like_the/
+- https://www.reddit.com/r/emacs/comments/10l2glx/is_there_a_way_to_keep_backup_files_without/
+
+******* Code indentation
+:PROPERTIES:
+:ID:       ecb54a80-b177-4c9e-a3c9-47d1f680c7ac
+:END:
+- Code indentation
+  - https://stackoverflow.com/questions/18778894/emacs-24-3-python-cant-guess-python-indent-offset-using-defaults-4/51966682
+******* Create global keybinding
+:PROPERTIES:
+:ID:       7d013a0d-4e46-47da-a570-dbd6b86493d8
+:END:
+[[https://www.google.com/search?q=emacs+create+global+keybinding][google:emacs create global keybinding]]
+
+(global-set-key (kbd "C-c r") 'replace-string)
+******* Creating bibtex entries
+:PROPERTIES:
+:ID:       dff4145a-8b64-458a-bb79-19c41792455c
+:END:
+- https://www.reddit.com/r/emacs/comments/y36uf2/replicating_zoteroconnector_functionality_in/
+******* [[https://www.google.com/search?q=emacs+open+file+location+instead+of+file][google:emacs open file location instead of file]]
+:PROPERTIES:
+:ID:       11bcaec4-fdfa-4c2d-93f8-46fed7694db9
+:END:
+******* If exists, then
+#+begin_src emacs-lisp
+
+(defun load-file-if-exists (file)
+  (if (file-exists-p file)
+      (progn
+	(load-file file)
+	(message "Loaded %s" file))
+    (message "File %s was not found" file)))
+
+(load-file-if-exists "~/.emacs.d/public_config.el")
+(load-file-if-exists "~/.emacs.d/private_config.el")
+#+end_src
 ******* Install
 I install a more recent, non-apt emacs version from https://ftp.wayne.edu/gnu/emacs/ (v29.4 as of [2024-07-05 Fri]).
   #+begin_src bash
@@ -9032,19 +9479,29 @@ make
 sudo make install
 
 #+end_src
-******* If exists, then
-#+begin_src emacs-lisp
+******* Jupyter integration
+:PROPERTIES:
+:ID:       87aa79ac-8a7b-43fb-b291-340fa4e7ebb3
+:END:
+- https://www.reddit.com/r/emacs/comments/13qmo1u/jupyter_in_the_emacs_universe/
+:PROPERTIES:
+:ID:       5d29a241-3165-4a3b-a88c-c3fe122d2ff9
+:END:
+******* Launching applications
+:PROPERTIES:
+:ID:       c5af6642-dbe2-43df-b672-eea684e96de6
+:END:
+- https://lchsk.com/launching-applications-from-emacs
+******* Line wrap https://www.reddit.com/r/emacs/comments/1n5s5g/perhaps_a_stupid_question_enforcing_a_line_width/
+:PROPERTIES:
+:ID:       c748276e-4756-40ec-a1d1-33dbc16c211f
+:END:
 
-(defun load-file-if-exists (file)
-  (if (file-exists-p file)
-      (progn
-	(load-file file)
-	(message "Loaded %s" file))
-    (message "File %s was not found" file)))
-
-(load-file-if-exists "~/.emacs.d/public_config.el")
-(load-file-if-exists "~/.emacs.d/private_config.el")
-#+end_src
+******* LLM integration
+:PROPERTIES:
+:ID:       43b84eb3-717d-4850-a62c-dec6db2909c3
+:END:
+https://www.reddit.com/r/emacs/comments/185n3yo/emacs_meets_chatgpt_for_flawless_grammar_and/
 ******* Make mu
 :PROPERTIES:
 :ID:       e28c7c07-f71d-47e0-9e1b-2721872aae73
@@ -9059,114 +9516,65 @@ sudo make install
 
 #+end_src
 μ
+******* Modify write permission from within buffer w/ C-x C-q
+:PROPERTIES:
+:ID:       19e68685-1e50-4b8f-9da0-61f9b8565153
+:END:
+https://unix.stackexchange.com/questions/47724/how-to-modify-write-permission-on-current-buffer-in-emacs
+******* Paste line n times
+:PROPERTIES:
+:ID:       634ccd44-6f57-40c5-8868-a890cb4f3248
+:END:
+- https://www.google.com/search?q=emacs+paste+line+n+times
+******* Python linting in emacs
+:PROPERTIES:
+:ID:       ad70c5be-29a9-4077-a18b-c3f7eb97029b
+:END:
+- https://www.google.com/search?q=python+linting+in+emacs&oq=python+linting+in+emacs&aqs=chrome..69i57.11381j0j4&sourceid=chrome-mobile&ie=UTF-8
+******* R linting in emacs
+:PROPERTIES:
+:ID:       e2bf9fdc-9745-4081-997b-d73d9949d408
+:END:
+- https://www.google.com/search?q=r+linting+in+emacs&sxsrf=ALiCzsZVGCOPi3tH5qIIUWdvxCGB6HalWw%3A1661434268625&ei=nHkHY6zsJbyD0PEP7Lm8kAM&oq=r+linting+in+emacs&gs_lcp=ChNtb2JpbGUtZ3dzLXdpei1zZXJwEAMyBwgAEB4QogQyBQgAEKIEOgcIABBHELADSgQIQRgAUI0SWN4dYP0laAFwAXgAgAGwAYgB2waSAQMwLjeYAQCgAQHIAQjAAQE&sclient=mobile-gws-wiz-serp
+******* Rmd integration
+:PROPERTIES:
+:ID:       e33cbb04-6299-4a46-bcbd-116bdd72e99d
+:END:
+- https://plantarum.ca/2021/10/03/emacs-tutorial-rmarkdown/
+******* Set fringe color
+:PROPERTIES:
+:ID:       5510fe9b-8878-4ac6-86be-6035043b31f3
+:END:
+- https://www.google.com/search?q=emacs+set+fringe+color
 ******* sql integration
 :PROPERTIES:
 :ID:       44347009-ee09-4cf1-9786-f0106a378a2e
 :END:
 - https://www.reddit.com/r/emacs/comments/15lad2v/extending_emacs_29_sqlitemode_cell_navigation_edit/
 
-******* Jupyter integration
-:PROPERTIES:
-:ID:       87aa79ac-8a7b-43fb-b291-340fa4e7ebb3
-:END:
-- https://www.reddit.com/r/emacs/comments/13qmo1u/jupyter_in_the_emacs_universe/
-:PROPERTIES:
-:ID:       5d29a241-3165-4a3b-a88c-c3fe122d2ff9
-:END:
-******* Rmd integration
-:PROPERTIES:
-:ID:       e33cbb04-6299-4a46-bcbd-116bdd72e99d
-:END:
-- https://plantarum.ca/2021/10/03/emacs-tutorial-rmarkdown/
-******* Line wrap https://www.reddit.com/r/emacs/comments/1n5s5g/perhaps_a_stupid_question_enforcing_a_line_width/
-:PROPERTIES:
-:ID:       c748276e-4756-40ec-a1d1-33dbc16c211f
-:END:
-
-******* Backup
-:PROPERTIES:
-:ID:       b781b0bf-9382-414f-9e2c-4c17c61e2a73
-:END:
-- https://www.reddit.com/r/emacs/comments/10l2glx/is_there_a_way_to_keep_backup_files_without/
-
 ******* Syntax highlighting
 :PROPERTIES:
 :ID:       feee4e46-5654-42c1-ab94-ebb3c59d6d10
 :END:
 https://wilkesley.org/~ian/xah/emacs/elisp_syntax_coloring.html
-******* [[https://www.google.com/search?q=emacs+open+file+location+instead+of+file][google:emacs open file location instead of file]]
+******* systemd server start
 :PROPERTIES:
-:ID:       11bcaec4-fdfa-4c2d-93f8-46fed7694db9
+:ID:       c70cfb48-b027-4b4f-8e0c-5fbc3d4222a0
 :END:
+[[https://www.google.com/search?q=emacs+systemd+server+start][google:emacs systemd server start]]
 ******* Tangle on save
 :PROPERTIES:
 :ID:       9c204dc9-be19-4699-bbb6-af0ac05fd3fc
 :END:
 https://github.com/yilkalargaw/org-auto-tangle/blob/master/org-auto-tangle.el
 [[https://www.google.com/search?q=emacs+org-mode+tangle+on+save][google:emacs org-mode tangle on save]]
-******* systemd server start
+******* Widget buttons
 :PROPERTIES:
-:ID:       c70cfb48-b027-4b4f-8e0c-5fbc3d4222a0
+:ID:       b4829129-9568-49d5-89bf-f58d5b707ee4
 :END:
-[[https://www.google.com/search?q=emacs+systemd+server+start][google:emacs systemd server start]]
-******* LLM integration
-:PROPERTIES:
-:ID:       43b84eb3-717d-4850-a62c-dec6db2909c3
-:END:
-https://www.reddit.com/r/emacs/comments/185n3yo/emacs_meets_chatgpt_for_flawless_grammar_and/
-******* Create global keybinding
-:PROPERTIES:
-:ID:       7d013a0d-4e46-47da-a570-dbd6b86493d8
-:END:
-[[https://www.google.com/search?q=emacs+create+global+keybinding][google:emacs create global keybinding]]
-
-(global-set-key (kbd "C-c r") 'replace-string)
-******* Launching applications
-:PROPERTIES:
-:ID:       c5af6642-dbe2-43df-b672-eea684e96de6
-:END:
-- https://lchsk.com/launching-applications-from-emacs
-******* Creating bibtex entries
-:PROPERTIES:
-:ID:       dff4145a-8b64-458a-bb79-19c41792455c
-:END:
-- https://www.reddit.com/r/emacs/comments/y36uf2/replicating_zoteroconnector_functionality_in/
-******* Code indentation
-:PROPERTIES:
-:ID:       ecb54a80-b177-4c9e-a3c9-47d1f680c7ac
-:END:
-- Code indentation
-  - https://stackoverflow.com/questions/18778894/emacs-24-3-python-cant-guess-python-indent-offset-using-defaults-4/51966682
-******* Paste line n times
-:PROPERTIES:
-:ID:       634ccd44-6f57-40c5-8868-a890cb4f3248
-:END:
-- https://www.google.com/search?q=emacs+paste+line+n+times
-******* Set fringe color
-:PROPERTIES:
-:ID:       5510fe9b-8878-4ac6-86be-6035043b31f3
-:END:
-- https://www.google.com/search?q=emacs+set+fringe+color
-******* Python linting in emacs
-:PROPERTIES:
-:ID:       ad70c5be-29a9-4077-a18b-c3f7eb97029b
-:END:
-- https://www.google.com/search?q=python+linting+in+emacs&oq=python+linting+in+emacs&aqs=chrome..69i57.11381j0j4&sourceid=chrome-mobile&ie=UTF-8
-******* Spelling and grammar check
-:PROPERTIES:
-:ID:       068b3ee4-2197-4729-8eb0-37d549fa64a4
-:END:
-https://www.reddit.com/r/emacs/comments/185n3yo/emacs_meets_chatgpt_for_flawless_grammar_and/
-******* R linting in emacs
-:PROPERTIES:
-:ID:       e2bf9fdc-9745-4081-997b-d73d9949d408
-:END:
-- https://www.google.com/search?q=r+linting+in+emacs&sxsrf=ALiCzsZVGCOPi3tH5qIIUWdvxCGB6HalWw%3A1661434268625&ei=nHkHY6zsJbyD0PEP7Lm8kAM&oq=r+linting+in+emacs&gs_lcp=ChNtb2JpbGUtZ3dzLXdpei1zZXJwEAMyBwgAEB4QogQyBQgAEKIEOgcIABBHELADSgQIQRgAUI0SWN4dYP0laAFwAXgAgAGwAYgB2waSAQMwLjeYAQCgAQHIAQjAAQE&sclient=mobile-gws-wiz-serp
-******* Modify write permission from within buffer w/ C-x C-q
-:PROPERTIES:
-:ID:       19e68685-1e50-4b8f-9da0-61f9b8565153
-:END:
-https://unix.stackexchange.com/questions/47724/how-to-modify-write-permission-on-current-buffer-in-emacs
+https://www.reddit.com/r/emacs/comments/18mvqez/how_can_i_create_inputs_and_buttons_like_the/
+****** REPLs
+- https://www.reddit.com/r/emacs/comments/1hsky98/universal_repls_in_emacs_by_means_of_lsp_or/
 ****** Appearance
 :PROPERTIES:
 :ID:       990e6299-2050-44ad-ab5e-e95ac1b03c12
@@ -9179,10 +9587,15 @@ https://unix.stackexchange.com/questions/47724/how-to-modify-write-permission-on
     (scroll-bar-mode -1)
     ;;
     ;;  Set finge color to background
-    (defun my-tone-down-fringes ()
-      (set-face-attribute 'fringe nil
-                          :foreground (face-foreground 'default)
-                          :background (face-background 'default)))
+(defun my-tone-down-fringes ()
+  (set-face-attribute 'fringe nil
+                      :foreground (face-foreground 'default)
+                      :background (or (face-background 'default) 'unspecified)))
+
+    ;; (defun my-tone-down-fringes ()
+    ;;   (set-face-attribute 'fringe nil
+    ;;                       :foreground (face-foreground 'default)
+    ;;                       :background (face-background 'default)))
     ;;  (custom-set-faces '(fringe ((t (:background "black")))))
     ;; to resolve "cannot decrease the face height more..."
     ;;; solution from (define-key special-event-map [config-changed-event] #'ignore)
@@ -9254,6 +9667,7 @@ https://unix.stackexchange.com/questions/47724/how-to-modify-write-permission-on
     (use-package rainbow-delimiters
       :hook (prog-mode . rainbow-delimiters-mode))
 #+END_SRC
+- https://gist.githubusercontent.com/rougier/8d5a712aa43e3cc69e7b0e325c84eab4/raw/f35fa854ab651a0799a8bf8fc4b78c9168b57241/nano.el
 - https://stackoverflow.com/questions/14760567/emacs-auto-load-color-theme-by-time
 - https://kitchingroup.cheme.cmu.edu/blog/2017/04/07/Object-oriented-font-locking-in-emacs-lisp/
 - font lock mods for highlighting text
@@ -9459,8 +9873,6 @@ active process."
                       (process-list)))))
   (process-send-region tws-process-target beg end))
 #+end_src
-****** Interfaces
-- https://github.com/emacs-slack/emacs-slack/
 ****** Bibtex
 :PROPERTIES:
 :ID:       b9213e5b-1c3a-4da0-a648-10eed94179c4
@@ -9524,6 +9936,7 @@ active process."
 :PROPERTIES:
 :ID:       0df2f01d-54a1-45a2-a7aa-272d6fcf7bf8
 :END:
+- https://github.com/karthink/.emacs.d/blob/master/lisp/setup-dired.el
 - https://www.reddit.com/r/emacs/comments/1h1zyhz/emacs_a_basic_and_capable_configuration/
 - https://github.com/Likhon-baRoy/.emacs.d
 - [[http://emacs.stackexchange.com/questions/28772/manage-same-init-file-for-linux-and-windows][same init for multiple platforms]]
@@ -9588,12 +10001,13 @@ active process."
 - https://www.reddit.com/r/emacs/comments/m9zxw6/444_days_of_literate_configuration_450_days_using/
 - https://github.com/DiamondBond/emacs
 ****** Debugging, troubleshooting
+- https://www.reddit.com/r/emacs/comments/1hsxub9/how_to_know_what_is_slowing_down_emacs/
 - 27.6 Running Debuggers
-    - Debugging
-      - - https://www.reddit.com/r/emacs/comments/6uc7g5/just_figured_out_why_emacs_pauses_sometimes/
-      - - M-x toggle-debug-on-error
-      - https://www.reddit.com/r/emacs/comments/2dmv85/invalid_search_bound_wrong_side_of_point_whenever/
-    - bactrace with (setq debug-on-error t)
+  - Debugging
+    - - https://www.reddit.com/r/emacs/comments/6uc7g5/just_figured_out_why_emacs_pauses_sometimes/
+    - - M-x toggle-debug-on-error
+    - https://www.reddit.com/r/emacs/comments/2dmv85/invalid_search_bound_wrong_side_of_point_whenever/
+  - bactrace with (setq debug-on-error t)
 - Troubleshooting- M-x profiler-start / profiler-report
 ****** Emacs as a genreal IDE
 :PROPERTIES:
@@ -9705,6 +10119,7 @@ https://www.gnu.org/software/tramp/#Overview
 :ID:       011e15b9-66d4-4b3f-adaf-a95941f9e502
 :END:
 - https://github.com/rougier/notebook-mode
+- https://github.com/lf-araujo/workbenchless  
 ****** Emacs Interfaces
 :PROPERTIES:
 :ID:       0c0667a7-dcb3-4ef8-98c1-8fa1b9cc3116
@@ -9730,6 +10145,7 @@ https://www.gnu.org/software/tramp/#Overview
 :PROPERTIES:
 :ID:       e7806712-9607-4b78-8662-80a2659c203d
 :END:
+- https://blog.serghei.pl/posts/emacs-python-ide/
 - python
   - https://realpython.com/emacs-the-best-python-editor/
   - https://www.reddit.com/r/emacs/comments/d2mhx7/nonprogrammer_here_looking_to_learn_python_should/
@@ -10041,6 +10457,8 @@ sqlite3 -header -csv /tmp/inventory.db "SELECT * FROM inventory;"
 :PROPERTIES:
 :ID:       ea517dbd-d9d1-4e9f-b72d-c45ed8b6e1f3
 :END:
+https://www.reddit.com/r/emacs/comments/1i0jgma/managing_microsoft_email_in_emacs/
+https://github.com/pdobsan/oama
 - email https://www.reddit.com/r/emacs/comments/yx1q69/how_to_set_up_email_step_by_step_guide_for/
 ****** External
 :PROPERTIES:
@@ -10060,6 +10478,10 @@ sqlite3 -header -csv /tmp/inventory.db "SELECT * FROM inventory;"
 :ID:       5c955ca9-331f-4206-bbfd-735401e2f33d
 :END:
 - https://www.youtube.com/watch?app=desktop&v=P02FD63gGco&ab_channel=DmitryM
+****** File and directory manipulation and viewing in Dired
+- See [[id:b3bd2685-ea78-4097-ae4c-e4a5e7a422ea][public configuration Dired settings]]
+- Use casual-dired-tmenu
+- https://sachachua.com/blog/2025/01/using-image-dired-to-browse-the-latest-screenshots-from-multiple-directories/  
 ****** Freehand drawing
 https://www.reddit.com/r/emacs/comments/pk5ad6/draw_and_scribble_in_gnu_emacs/
 ****** GTD in Emacs
@@ -10073,6 +10495,8 @@ https://daryl.wakatara.com/emacs-gtd-flow-evolved/#structure---para
 :PROPERTIES:
 :ID:       4dd5f63a-dc89-4d57-a3cc-90389dbd3528
 :END:
+- Spell check
+  - https://github.com/minad/jinx
 - https://chrismaiorana.com/my-freewrite-mode/
 - https://github.com/pprevos/emacs-writing-studio
 - https://www.reddit.com/r/emacs/comments/dtciau/is_there_any_way_i_can_integrate_emacs_with/
@@ -10152,6 +10576,8 @@ https://www.reddit.com/r/emacs/comments/1au10ha/i_want_to_learn_what_emacs_offer
 (add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
 (add-to-list 'ispell-skip-region-alist '("#\\+BEGIN_SRC" . "#\\+END_SRC"))
 #+END_SRC
+****** Image manipulation
+- http://yummymelon.com/devnull/announcing-casual-image.html
 ****** Integration with programming
 :PROPERTIES:
 :ID:       3b3db398-e82a-4a5d-b4cb-a8c10cc08aca
@@ -10161,19 +10587,22 @@ https://www.reddit.com/r/emacs/comments/1au10ha/i_want_to_learn_what_emacs_offer
 [[id:e33cbb04-6299-4a46-bcbd-116bdd72e99d][Rmd integration]]
 [[id:e7806712-9607-4b78-8662-80a2659c203d][Python integration]]
 [[id:07b8634c-70a6-4a99-90b5-0f5083ccaf04][Emacs shell IDE]]
+****** Interfaces
+- https://github.com/emacs-slack/emacs-slack/
 ****** LaTeX integration
 https://www.reddit.com/r/emacs/comments/1fw7jbb/karthink_emacs_latex/
-****** LLM integration
-- https://www.reddit.com/r/emacs/comments/1gxuewa/llms_are_made_for_emacs_using_ellama_ollama_is/
 ****** llm integration
 :PROPERTIES:
 :ID:       907b0796-a3c5-4851-8cf7-272d6c9750d1
 :END:
-  - https://www.reddit.com/r/emacs/comments/17hvcsi/ellama_moved_to_llm_library_and_now_supports/
-  - https://melpa.org/#/chatgpt-shell
-  - https://www.reddit.com/r/emacs/comments/1459elk/llm_pal_ai_inside_emacs_via_lsp_locally_hosted/
-  - https://docs.khoj.dev/#/emacs
-  - https://github.com/ahyatt/llm
+- https://github.com/chep/copilot-chat.el
+- https://www.reddit.com/r/emacs/comments/17hvcsi/ellama_moved_to_llm_library_and_now_supports/
+- https://melpa.org/#/chatgpt-shell
+- https://www.reddit.com/r/emacs/comments/1459elk/llm_pal_ai_inside_emacs_via_lsp_locally_hosted/
+- https://docs.khoj.dev/#/emacs
+- https://github.com/ahyatt/llm
+- https://github.com/dolmens/gptel-aibo
+- https://www.reddit.com/r/emacs/comments/1gxuewa/llms_are_made_for_emacs_using_ellama_ollama_is/
 ****** Menus and interfaces
 - https://github.com/oantolin/embark
 - https://github.com/kickingvegas/casual
@@ -10245,6 +10674,8 @@ https://www.emacswiki.org/emacs/PosTip
             (eldoc-mode 1)))
 
 #+end_src
+****** Private and hidden information 
+- https://www.reddit.com/r/emacs/comments/1hwjkm4/emacs_passwords_how_are_people_managing_their/
 ****** Programming
 :PROPERTIES:
 :ID:       576ada02-11e2-48d8-95de-11e8c31dad9c
@@ -10268,7 +10699,7 @@ https://www.emacswiki.org/emacs/PosTip
 :END:
 - Selection
   - https://www.google.com/search?q=emacs+rectangle+paste
-http://xahlee.info/emacs/emacs/emacs_string-rectangle_ascii-art.html
+- http://xahlee.info/emacs/emacs/emacs_string-rectangle_ascii-art.html
 
 ****** Ricing
 - ricing
@@ -10324,11 +10755,28 @@ https://www.reddit.com/r/emacs/comments/179t67l/window_management_share_your_dis
 :PROPERTIES:
 :ID:       da42e3d1-224c-4955-b949-9266e922b84b
 :END:
+- https://karthinks.com/software/a-consistent-structural-editing-interface/#example-a-lispy-lite-without-lispy
 - [[https://www.google.com/search?q=org-mode+tangle+mkdir][google:org-mode tangle mkdir]]
 - [[id:ecb54a80-b177-4c9e-a3c9-47d1f680c7ac][Code indentation]]
+***** [[id:d7d54139-64d0-4cfe-ab3a-879b3617b226][Org-mode]]
+***** Scripts
+:PROPERTIES:
+:ID:       14a9e27b-c960-42cb-b052-536eaf6a22da
+:END:
+****** org_export_to_beamer.sh
+:PROPERTIES:
+:ID:       3aa1ed51-12ed-4ca3-b0fb-6462c0a2ce5a
+:END:
+#+begin_src bash :tangle ./scripts/org_export_to_beamer.sh
+emacsclient -e "(progn (find-file \"$1\") \
+                       (org-id-goto \"$2\") \
+                       (org-beamer-export-to-pdf nil t))"
+#+end_src
 ***** General reference and miscellaneous
+- https://arxiv.org/pdf/2008.06030
+- https://www.reddit.com/r/emacs/comments/1h5c778/which_emacsconf_2024_talks_have_your_attention/
 - https://www.reddit.com/r/planetemacs/comments/1gw5oqy/protesilaos_stavrou_tutorials_and_demos_of/
-
+- https://emacsconf.org/2024/talks/
 - https://lambdaland.org/posts/2024-05-30_top_emacs_packages/- https://www.reddit.com/r/emacs/comments/mqtwzx/creating_custom_minor_modes_learning_emacs_lisp_7/
 - https://github.com/emacs-tw/awesome-emacs
 - https://www.reddit.com/r/emacs/comments/1feaf37/minimal_emacsd_emacs_starter_kit_with_better/
@@ -10396,7 +10844,18 @@ https://www.reddit.com/r/emacs/comments/ucldkz/are_we_living_in_the_golden_age_o
 - https://www.reddit.com/r/emacs/comments/1benj4g/things_you_do_in_emacs_that_will_make_nonemacs/
 - Emacs use in science
   - https://github.com/rougier
+****** General reference
+:PROPERTIES:
+:ID:       1ead3d35-2700-49fc-859e-d7e887d2f30e
+:END:
+- https://www.reddit.com/r/emacs/comments/1bkw1j6/use_information_theory_to_choose_better/
+- https://www.reddit.com/r/emacs/comments/1bnj5xe/announcing_casual_an_opinionated_porcelain_for/
+- https://karthinks.com/software/batteries-included-with-emacs/
+- https://www.reddit.com/r/emacs/comments/wcupae/lets_share_your_top_3_packages_that_you_cant_live/
+
+
 ***** Ideas
+- make a custom transient menu https://github.com/karthink/calc-transient/blob/master/calc-transient.el
 #+begin_src emacs-lisp
   ;; (defun my/load-startup-files ()
   ;;   "Load specified files into buffers at startup."
@@ -10552,16 +11011,12 @@ Example usage:
 #+end_src
 
 Invoke by org-open-at-point like [[elisp:(run-gnome-ctrl)]]
-***** Emacs Packages and modes
+***** Packages and modes
 :PROPERTIES:
 :ID:       60c3beed-f228-4707-9033-4cce38ca5b00
 :END:
+- https://github.com/alexluigit/dirvish
 - https://www.masteringemacs.org/article/how-to-get-started-tree-sitter
-- make minibuffer window
-  #+begin_src emacs-lisp
-(make-frame '((minibuffer . only)))
-#+end_src
-
 ****** Emacs packages                                                  :flat:
 :PROPERTIES:
 :ID:       a9ff4421-e3b7-47c1-8b65-bfc5a3b34e5d
@@ -10603,6 +11058,8 @@ https://github.com/alphapapa/org-web-tools
 :PROPERTIES:
 :ID:       037ae1d1-f3b6-4b63-8d43-4d642b947c71
 :END:
+- anki editor is working- save the .el https://github.com/anki-editor/anki-editor
+
  - General reference
    - https://yiufung.net/post/anki-org/
    - dependencies
@@ -10913,49 +11370,10 @@ https://www.google.com/search?client=ubuntu&hs=vZc&sxsrf=ALeKk03r2GUTR1rKBPenicU
 :ID:       e1e64cad-ce98-4e7e-872c-ebef38d556ab
 :END:
   - https://www.reddit.com/r/emacs/comments/vhqewj/lspbridge_is_good/
-******* ispell
-:PROPERTIES:
-:ID:       df1ef82a-6cd8-4aee-beac-005873270c72
-:END:
-#+BEGIN_SRC emacs-lisp
-;(use-package flyspell
-;  :ensure t
-;  :config
-;  (setq ispell-dictionary "english"
-;        ispell-program-name "aspell"
-;        ; The personal dictionary links to https://github.com/jeszyman/basecamp-private/blob/master/resources/aspell.en.pws
-;        ispell-personal-dictionary "~/.aspell.en.pws")
-;  (add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
-;  (add-to-list 'ispell-skip-region-alist '("#\\+BEGIN_SRC" . "#\\+END_SRC"))
-;)
-
-;(add-hook 'org-mode-hook 'turn-on-flyspell)
-;(add-hook 'markdown-mode-hook 'flyspell-mode)
-
-(defun flyspell-check-next-highlighted-word ()
-  "Custom function to spell check next highlighted word"
-  (interactive)
-  (flyspell-goto-next-error)
-  (ispell-word)
-  )
-(global-set-key (kbd "M-s M-n") 'flyspell-check-next-highlighted-word)
-
-#+END_SRC
-- https://www.gnu.org/software/emacs/manual/html_node/emacs/Spelling.html
-- https://emacs.stackexchange.com/questions/17237/in-emacs-where-is-ispells-personal-dictionary-stored
-[[id:222ed471-b1b1-4c4a-b815-0fa01123ea64][My ispell setup]]
-
-Here is a quick reference for the keybindings while running ispell-buffer or ispell-region:
-
-SPACE - Accept the word for this session and continue.
-i - Insert the word into the session dictionary and continue.
-a - Accept the word for the rest of this session (ignore all occurrences).
-r - Replace the word.
-R - Replace the word globally.
-l - Look up the word in the dictionary.
-u - Undo the last replacement.
-x - Exit ispell.
-
+******* Magit
+#+begin_src emacs-lisp
+(use-package magit)
+#+end_src
 
 ******* openwith
 :PROPERTIES:
@@ -10972,8 +11390,25 @@ https://github.com/abo-abo/org-download
 :PROPERTIES:
 :ID:       d7d54139-64d0-4cfe-ab3a-879b3617b226
 :END:
-http://yummymelon.com/devnull/styling-text-via-keyboard-in-org-and-markdown.html
-- checkbox intermediate state https://chat.openai.com/c/843ddbcd-a207-4e61-a613-2ff40e091430
+#+begin_src emacs-lisp
+(defun org-sort-by-deadline ()
+  "Sort headings by the DEADLINE property."
+  (interactive)
+  (org-sort-entries nil ?f
+                    (lambda ()
+                      (let ((deadline (org-entry-get nil "DEADLINE")))
+                        (if deadline
+                            (time-to-seconds (org-time-string-to-time deadline))
+                          most-positive-fixnum)))))
+
+;; Bind the function to a key if desired
+;(global-set-key (kbd "C-c s d") 'org-sort-by-deadline)
+(org-sort-by-deadline)
+#+end_src
+https://www.reddit.com/r/orgmode/comments/1j2b2gx/update_orgsupertag_25_a_new_way_think_about_tag/
+- https://sachachua.com/blog/2024/11/excerpts-from-a-conversation-with-john-wiegley-johnw-and-adam-porter-alphapapa-about-personal-information-management/
+- https://github.com/yibie/org-supertag/
+- https://www.reddit.com/r/orgmode/comments/1hqlspw/reusing_a_code_block_with_different_file_arguments/
 - https://github.com/jdtsmith/org-modern-indent
 - org map enteries example
   #+begin_src emacs-lisp
@@ -10983,7 +11418,7 @@ http://yummymelon.com/devnull/styling-text-via-keyboard-in-org-and-markdown.html
   (org-map-entries
    (lambda ()
      (when (string-equal (org-get-todo-state) "PLANNED")
-       (org-todo "UNPLANNED")))
+       (org-todo "TODO")))
    t 'agenda))
 
 
@@ -10995,11 +11430,6 @@ http://yummymelon.com/devnull/styling-text-via-keyboard-in-org-and-markdown.html
 - https://stackoverflow.com/questions/20033467/setting-a-local-file-variable-in-emacs-org-mode
 - http://endlessparentheses.com/use-org-mode-links-for-absolutely-anything.html
 - https://www.reddit.com/r/orgmode/comments/1gh7p92/how_do_you_use_properties/
-- https://github.com/tmurph/todo-sync
-- https://github.com/karlicoss/orgparse
-- https://github.com/ndwarshuis/org-sql?tab=readme-ov-file
-- https://www.reddit.com/r/emacs/comments/1en7wap/find_your_tasks_instantly_when_you_need_to_5/
-- tangel w/ org as commnets https://eschulte.github.io/babel-dev/DONE-tangle-entire-org-mode-file-in-comments.html
 - General setup
   #+BEGIN_SRC emacs-lisp
 (add-to-list
@@ -11124,6 +11554,58 @@ http://yummymelon.com/devnull/styling-text-via-keyboard-in-org-and-markdown.html
    ("\\paragraph{%s}" . "\\paragraph*{%s}")
    ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
   #+END_SRC
+******** Org-mode and Emacs cookbook                               :cookbook:
+:PROPERTIES:
+:ID:       88337952-4c36-402e-882f-6ccd6c7ff6a1
+:export_file_name: /tmp/test
+:END:
+- Run a simple timer
+  #+begin_src emacs-lisp
+(run-at-time "1 min" nil 
+  (lambda () 
+    (progn 
+      (ding) 
+      (alert "Timer finished!" :title "Emacs Timer"))))
+
+#+end_src
+
+- Edit sources as sudo
+  - /sudo:root@localhost:<PATH>
+  - e.g. [[/sudo:root@localhost:/etc/apt/sources.list][Edit apt sources in etc as sudo]]
+********* Org-mode guide
+********** Clock table
+
+#+BEGIN: clocktable :scope file :maxlevel 6 :match "tagin" :tstart "<2024-10-01>" :tend "<2024-10-03>" :fileskip0 t
+#+CAPTION: Clock summary at [2024-10-14 Mon 12:14]
+| Headline                   | Time   |      |      |      |      |
+|----------------------------+--------+------+------+------+------|
+| *Total time*               | *0:16* |      |      |      |      |
+|----------------------------+--------+------+------+------+------|
+| Basecamp                   | 0:16   |      |      |      |      |
+| \_  Org-mode guide         |        | 0:16 |      |      |      |
+| \_    Clock table          |        |      | 0:16 |      |      |
+| \_      Clock table events |        |      |      | 0:16 |      |
+| \_        Included event 1 |        |      |      |      | 0:08 |
+| \_        Included event 2 |        |      |      |      | 0:08 |
+#+END:
+
+*********** Clock table events
+************ Included event 1                                         :tagin:
+:LOGBOOK:
+CLOCK: [2024-10-01 Tue 12:00]--[2024-10-01 Tue 12:08] =>  0:08
+:END:
+************ Included event 2                                         :tagin:
+:LOGBOOK:
+CLOCK: [2024-10-02 Wed 13:00]--[2024-10-02 Wed 13:08] =>  0:08
+:END:
+************ Excluded event 1                                        :tagout:
+:LOGBOOK:
+CLOCK: [2024-10-02 Wed 12:00]--[2024-10-02 Wed 12:08] =>  0:08
+:END:
+********* Code and code blocks
+- Elisp processes can be invoked as links in Org-mode with the link type `:elisp`. E.g. =[[elisp:(save-some-buffers 'no-confirm t)][Save all emacs buffers]]=
+- My additions and modifications
+  - [[id:5ace2dd4-9dfb-41b9-a7ec-5ca32aaf94ae][org-execute-named-block-anywhere]] - allows execution of a code block from another agenda file
 ******** Processes
 :PROPERTIES:
 :ID:       8b5c515e-689b-436d-ac09-f368ec6d87ef
@@ -11132,6 +11614,8 @@ http://yummymelon.com/devnull/styling-text-via-keyboard-in-org-and-markdown.html
 :PROPERTIES:
 :ID:       1c3e70f6-1ca0-44bd-b2fa-2cf5fae2a126
 :END:
+********** Org-attach
+- https://emacs.stackexchange.com/questions/2162/when-are-org-mode-attachments-preferable-to-file-hyperlinks
 ********** Prevent log recording
 
 In emacs orgmode, how to prevent the logbook from recording state transitions for a specific header, is there a properties setting?
@@ -11343,7 +11827,13 @@ examples:
 :END:
 - https://www.google.com/search?q=tangle+block+to+multiple+locations
 - https://emacs.stackexchange.com/questions/39032/tangle-the-same-src-block-to-different-files
+********* Agenda
+- https://whhone.com/posts/org-agenda-repeated-tasks/
+- https://www.reddit.com/r/emacs/comments/1en7wap/find_your_tasks_instantly_when_you_need_to_5/
+- https://whhone.com/posts/org-agenda-repeated-tasks/
 ********* Org-down
+- https://github.com/karlicoss/orgparse
+- https://github.com/ndwarshuis/org-sql?tab=readme-ov-file
 - http://orgmode.org/worg/dev/org-syntax.html
 ********* Archiving
 - archiving
@@ -11354,6 +11844,8 @@ examples:
 :PROPERTIES:
 :ID:       33ff8cf2-a702-4401-ab9d-3555b56476ad
 :END:
+- https://github.com/lf-araujo/MxNotebook
+- https://github.com/rougier/notebook-mode/blob/master/notebook.el
 - https://www.reddit.com/r/orgmode/comments/5j9rmv/change_the_color_of_the_todo_keyword_you_use_to/
 - Emphasis
   =code=
@@ -11403,6 +11895,11 @@ https://www.reddit.com/r/orgmode/comments/ux9f78/a_python_script_to_sync_from_go
 - 
 - toggle whole tree https://lists.gnu.org/archive/html/emacs-orgmode/2013-09/msg00060.html
 ********* Code and IDE
+https://www.reddit.com/r/emacs/comments/1i1exdt/hiding_inline_src_in_org/
+- tangle w/ org as commnets https://eschulte.github.io/babel-dev/DONE-tangle-entire-org-mode-file-in-comments.html
+- https://www.reddit.com/r/emacs/comments/1hbi751/passing_data_between_org_source_blocks_a/
+- noweb references from another file , syntax is <#~/repos/basecamp/basecamp.org:ansible-include-vars-yaml()#>
+  https://stackoverflow.com/questions/47058372/in-org-mode-how-to-call-code-block-to-evaluate-from-other-org-file/61580716#61580716
 - [[https://www.miskatonic.org/2016/10/03/orgexportbabelevaluate/][eval never export causes all header arguements to be ignored]]
 ********** Running code blocks
 
@@ -11522,6 +12019,8 @@ https://emacs.stackexchange.com/questions/54497/how-to-set-tab-behavior-in-org-m
 - [[https://julien.danjou.info/projects/emacs-packages#google-contacts][google contacts emacs package]]
 - Solution for contacts
   - http://www.hardakers.net/code/bbdb-to-org-contacts/
+********* Dev Ops
+https://howardism.org/Technical/Emacs/literate-devops.html
 ********* Emacs jupyter integration
 :PROPERTIES:
 :ID:       ad2bbe49-7ba1-413f-87b6-3705e9d20ca0
@@ -11585,6 +12084,8 @@ do
 done
 #+end_src
 - https://stackoverflow.com/questions/11365739/how-to-cancel-the-hypersetup-in-0rg-mode-of-emacs/27219848#27219848
+- export property specification without suffix allows multiple export types at the same base path
+  - e.g. :export_file_name: /tmp/test
 - https://joonro.github.io/Org-Coursepack/Lectures/05%20Exporting%20Slides%20and%20Handouts.html
 - controlling exporter evals- [[https://www.miskatonic.org/2016/10/03/orgexportbabelevaluate/][in-depth no export functions]]
 - Ideas
@@ -11595,7 +12096,6 @@ done
   - https://github.com/jkitchin/ox-ipynb
   - [[https://github.com/tomalexander/orgmode-mediawiki][github: orgmode-mediawiki export]]
 - - (ox-extras-activate '(ignore-headlines))
-
 ********** Export from shell with batch
 :PROPERTIES:
 :ID:       36f3ec77-0930-4b5c-90db-a882bd957bab
@@ -11640,6 +12140,8 @@ emacs /tmp/present.org --batch -f org-latex-export-to-pdf
 :PROPERTIES:
 :ID:       2be55e2c-bc37-49a1-b17a-7e9a679dc2c4
 :END:
+- https://www.reddit.com/r/emacs/comments/1hbjq6n/package_niceorghtml/
+
 - Included elements
   - [[http://emacs.stackexchange.com/questions/27060/embed-image-as-base64-on-html-export-from-orgmode][html embedded image export]]
 https://www.reddit.com/r/emacs/comments/y9udc6/looking_for_html_and_latex_templates_for_orgmode/
@@ -11758,6 +12260,7 @@ https://github.com/makuto/KeepToOrg
 
 
 ********* Interfaces
+- Asana - https://github.com/tmurph/todo-sync
 - https://github.com/mengwong/org-asana
 - Python https://github.com/karlicoss/orgparse
 - Jupyter- see of getting juypter completion in code blocks - https://www.reddit.com/r/emacs/comments/i5xagf/ein_or_emacsjupyter_users_here/
@@ -12029,7 +12532,7 @@ https://emacs.stackexchange.com/questions/48526/how-do-i-delete-all-blank-lines-
 :PROPERTIES:
 :ID:       7f4e49a0-6139-43e5-9162-15e683f2ce4d
 :END:
-- [[https://www.reddit.com/r/emacs/comments/13wh55q/whats_everyone_using_for_grammar_checks/][Grammar linting]]
+- [[id:c5b813eb-f76b-4377-a483-ee6c932b4aa7][General writing and typesetting module]]
 ******** [[id:B171BCE2-2FF8-45C6-8958-8799B349E1B0][Org-Mode in basecamp-private]]
 :PROPERTIES:
 :ID:       b8cd229a-fe04-4c7b-a86b-812584ba7ff3
@@ -12261,6 +12764,7 @@ https://www.reddit.com/r/orgmode/comments/q82k5v/new_video_scimax_orgdb_searchin
 :PROPERTIES:
 :ID:       bb80bf1c-de54-4ab5-8bdc-eb701bca5d36
 :END:
+- checkbox intermediate state https://chat.openai.com/c/843ddbcd-a207-4e61-a613-2ff40e091430
 - checkboxes toggle child checkboxes
   - https://chat.openai.com/c/20ac76ba-dd10-4c58-b670-420b2f38ef5d
 - remove scheduled time for CLOSED
@@ -12746,16 +13250,6 @@ $0
 :END:
 - [[https://github.com/joostkremers/pandoc-mode][github]]
 - http://joostkremers.github.io/pandoc-mode/
-****** General reference
-:PROPERTIES:
-:ID:       1ead3d35-2700-49fc-859e-d7e887d2f30e
-:END:
-- https://www.reddit.com/r/emacs/comments/1bkw1j6/use_information_theory_to_choose_better/
-- https://www.reddit.com/r/emacs/comments/1bnj5xe/announcing_casual_an_opinionated_porcelain_for/
-- https://karthinks.com/software/batteries-included-with-emacs/
-- https://www.reddit.com/r/emacs/comments/wcupae/lets_share_your_top_3_packages_that_you_cant_live/
-
-
 ***** My public configuration
 ****** Initialization
 :PROPERTIES:
@@ -12763,6 +13257,7 @@ $0
 :header-args: :tangle ./emacs/init.el
 :END:
 [[file:emacs/init.el]]
+- [ ] https://chatgpt.com/c/6791429d-3338-8005-93d1-928d30b9a343
 #+begin_src emacs-lisp
 ;;-*- mode: elisp -*-
 
@@ -12780,16 +13275,16 @@ $0
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(defun add-to-load-path-if-exists (dir)
-  "Add DIR and its subdirectories to the Emacs load-path if DIR exists."
-  (if (file-directory-p dir)
-      (let ((default-directory dir))
-        (message "Adding %s and its subdirectories to load-path" dir)
-        (normal-top-level-add-to-load-path '("."))
-        (normal-top-level-add-subdirs-to-load-path))
-    (message "Directory %s does not exist, skipping." dir)))
+(defun load-directory (dir)
+  "Add DIR and its subdirectories to the load-path and load all .el files."
+  (when (file-directory-p dir)
+    (let ((default-directory dir))
+      (message "Adding %s and its subdirectories to load-path" dir)
+      (normal-top-level-add-to-load-path '("."))
+      (normal-top-level-add-subdirs-to-load-path))
+    (dolist (file (directory-files dir t "\\.el\\'"))
+      (load file nil 'nomessage))))
 
-(add-to-load-path-if-exists "~/.emacs.d/lisp/")
 
 ;; Function to safely load a file if it exists
 (defun safe-load-file-if-exists (filepath)
@@ -12836,18 +13331,111 @@ $0
 
 (setq org-export-backends '(ascii html latex odt icalendar md org)) ; This variable needs to be set before org.el is loaded.
 #+end_src
+
 ****** Public configuration
 :PROPERTIES:
 :ID:       28ed3017-eedb-4a6c-94e5-f477353170c8
 :header-args: :tangle ./emacs/public_config.el
 :END:
-- [[file:~/.emacs.d/backup-save-list/]]
-- for config rewrite https://chatgpt.com/c/e16840b5-355a-42e3-bd97-70693daa17c0
-- Visited files are backed up to =~/.emacs.d/backup-save-list=.
+[[file:emacs/public_config.el]]
 
-******* [[file:config/public_emacs_config.el][Compiled elisp file]]
-******* [[id:45e28300-51fd-4ce7-aed1-15dca15022d4][Org-mode]]
+- for config rewrite https://chatgpt.com/c/e16840b5-355a-42e3-bd97-70693daa17c0
+******* anki-editor
+- NEEDS ANKI 23 and / or reverted anki connect
+#+begin_src emacs-lisp
+(use-package anki-editor
+  :vc (:fetcher github :repo anki-editor/anki-editor))
+
+#+end_src
+******* citar
+#+begin_src emacs-lisp
+;; Citar configuration for org-cite integration
+(use-package citar
+  :after org
+  :init
+  (require 'oc)  ;; Ensure org-cite is loaded before configuring citar
+
+  :custom
+  ;; Bibliography paths
+  (org-cite-global-bibliography '("~/repos/org/bib.bib"))
+  (citar-bibliography org-cite-global-bibliography)
+  (citar-library-paths '("~/data/library/"))   ;; PDF storage
+
+  ;; Set citation processors
+  (org-cite-insert-processor 'citar)
+  (org-cite-follow-processor 'citar)
+  (org-cite-activate-processor 'citar)
+
+  ;; Display formatting
+  (citar-indicators (list citar-indicator-files citar-indicator-notes-icons))
+  (citar-display-transform-functions '((t . citar-clean-string)))
+
+  (citar-templates
+   '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
+     (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
+     (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+     (note . "Notes on ${author editor:%etal}, ${title}")))
+
+  ;; Visual configuration
+  (citar-symbols `((file . ?)))  ;; Icon for PDFs only
+
+  ;; Open PDFs and BibTeX entries
+  (citar-open-functions
+   '((file . (lambda (fpath) (call-process (if (eq system-type 'darwin) "open" "xdg-open") nil 0 nil fpath)))
+     (bibtex . citar-open-bibtex-entry)))  ;; Add BibTeX option
+
+  :config
+  (define-key org-mode-map (kbd "C-c ]") 'org-cite-insert))
+
+;; Configure file opening for citar
+(setq citar-file-open-functions
+      '(("html" . citar-file-open-external)
+        ("pdf" . citar-file-open-external)  ;; Use system default for PDFs
+        (t . find-file)))                   ;; Default to Emacs for others
+
+
+#+end_src
+#+begin_src emacs-lisp
+(use-package citar-embark
+  :after citar embark
+  :no-require
+  :config (citar-embark-mode))
+
+(setq citar-at-point-function 'embark-act)
+#+end_src
+https://blog.tecosaur.com/tmio/2021-07-31-citations.html
+https://kristofferbalintona.me/posts/202206141852/
+******* AUCTeX
+- [[id:eb4a0bb3-2e8a-4bf5-9186-11f972b2e06d][AUCTeX reference header]]
+#+begin_src emacs-lisp
+(use-package tex
+  :ensure auctex
+  :config
+  (setenv "PATH" (concat "/usr/local/texlive/2021/bin/x86_64-linux:"
+			 (getenv "PATH")))
+  (add-to-list 'exec-path "/usr/local/texlive/2021/bin/x86_64-linux")
+  (setq
+   TeX-auto-save t
+   TeX-parse-self t
+   TeX-save-query nil
+   TeX-view-program-selection
+   '(((output-dvi has-no-display-manager) . "dvi2tty")
+     ((output-dvi style-pstricks) . "dvips and gv")
+     (output-pdf . "Okular")
+     (output-dvi . "xdvi")
+     (output-pdf . "Evince")
+     (output-html . "xdg-open"))))
+
+#+end_src
 ******* Base Emacs
+******** Dired
+:PROPERTIES:
+:ID:       b3bd2685-ea78-4097-ae4c-e4a5e7a422ea
+:END:
+#+begin_src emacs-lisp
+(setq dired-kill-when-opening-new-dired-buffer t)
+
+#+end_src
 ******** Needed in --batch
 Code that needs to be tangled both here and into custom inits for batch export
 #+name need_in_batch
@@ -12855,7 +13443,11 @@ Code that needs to be tangled both here and into custom inits for batch export
 (setq large-file-warning-threshold most-positive-fixnum) ; disable large file warning
 (setq-default cache-long-scans nil)
 #+end_src
-
+******** Add to load paths
+#+begin_src emacs-lisp
+(setq exec-path (append exec-path '("/opt/miniconda3/bin")))
+(setenv "PATH" (concat (getenv "PATH") ":/opt/miniconda3/bin"))
+#+end_src
 ******** Appearance
 #+begin_src emacs-lisp
 ; ---   General   --- ;
@@ -12983,6 +13575,8 @@ Code that needs to be tangled both here and into custom inits for batch export
 
 #+end_src
 ******** On-save hooks and backup
+- Visited files are backed up to =~/.emacs.d/backup-save-list=.
+
 #+begin_src emacs-lisp
 ;; Shorthand for save all buffers
 ;;  https://stackoverflow.com/questions/15254414/how-to-silently-save-all-buffers-in-emacs
@@ -13141,7 +13735,7 @@ Code that needs to be tangled both here and into custom inits for batch export
 
 #+end_src
 https://chatgpt.com/c/7fac1ba4-f0a9-4d8f-8393-736e64e0ced1
-[[elisp:(open-texdoc-in-background "acronym")][acronym]]
+example: [[elisp:(open-texdoc-in-background "acronym")][acronym]]
 ******** Make header regions read-only via tag
 #+begin_src emacs-lisp
 (defun org-mark-readonly ()
@@ -13230,10 +13824,39 @@ https://chatgpt.com/c/fe962d8c-eb34-42fe-b362-032a61d8b728
 (setq org-startup-with-inline-images t)
 #+end_src
 
-********* Default reset check boxes
-https://chatgpt.com/c/67069939-5e04-8005-80b3-7865981a8843
-- currently an edit at point for all properties- NO!
+********* Add persistant highlights
+#+begin_src emacs-lisp
+(defun org-add-persistent-highlights ()
+  "Add persistent highlighting for custom markers in Org mode."
+  (font-lock-add-keywords
+   nil
+   '(("<{\\(.*?\\)}>" ; Match the pattern <{...}>
+      (1 '(:background "firebrick") t)))))
 
+(add-hook 'org-mode-hook #'org-add-persistent-highlights)
+
+(defun org-hide-markers-without-space ()
+  "Hide markers like << and >> in Org-mode without leaving empty space."
+  (font-lock-add-keywords
+   nil
+   '(("<{\\|}>"
+      (0 (progn (put-text-property (match-beginning 0) (match-end 0)
+                                   'display "")
+                'org-hide))))))
+
+(add-hook 'org-mode-hook #'org-hide-markers-without-space)
+
+#+end_src
+********** org.hl                                                       :yas:
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/org-mode/org.hl
+# -*- mode: snippet -*-
+# key: org.hl
+# expand-env: ((yas-indent-line 'none))
+# condition: 'auto
+# --
+<\{$1\}>
+#+end_src
+<{test}>
 ********* Tags
 #+BEGIN_SRC emacs-lisp
         (setq
@@ -13294,7 +13917,8 @@ https://chatgpt.com/c/67069939-5e04-8005-80b3-7865981a8843
 (setq org-default-priority 89)
 
 #+end_src
-********* open in same frame
+********* Opening things
+********** open in same frame
 #+begin_src emacs-lisp
 (setq org-link-frame-setup
       '((vm . vm-visit-folder)
@@ -13302,6 +13926,21 @@ https://chatgpt.com/c/67069939-5e04-8005-80b3-7865981a8843
         (gnus . org-gnus-no-new-news)
         (file . find-file)  ;; Open files in the same frame
         (wl . wl)))
+
+#+end_src
+********** Set org-file-apps to use xdg-open for all file extensions
+
+#+begin_src emacs-lisp
+;(setq process-connection-type nil) this breaks *shell*
+(setq org-file-apps
+      '((directory . "/usr/bin/gnome-terminal --working-directory=\"%s\"")
+        ("\\.pdf\\'" . "setsid -w xdg-open \"%s\"")
+        ("\\.svg\\'" . "setsid -w xdg-open \"%s\"")
+	("\\.yaml\\'" . "emacsclient -c \"%s\"")
+	("\\.list\\'" . emacsclient)
+        (auto-mode . emacsclient)
+        (t . "setsid -w xdg-open \"%s\"")
+	))
 
 #+end_src
 
@@ -13341,22 +13980,6 @@ With prefix argument, also display headlines without a TODO keyword."
  "tag" 'endless/follow-tag-link)
 
   #+END_SRC
-********* Set org-file-apps to use xdg-open for all file extensions
-
-#+begin_src emacs-lisp
-;(setq process-connection-type nil) this breaks *shell*
-(setq org-file-apps
-      '((directory . "/usr/bin/gnome-terminal --working-directory=\"%s\"")
-        ("\\.pdf\\'" . "setsid -w xdg-open \"%s\"")
-        ("\\.svg\\'" . "setsid -w xdg-open \"%s\"")
-	("\\.yaml\\'" . "emacsclient -c \"%s\"")
-	("\\.list\\'" . emacsclient)
-        (auto-mode . emacsclient)
-        (t . "setsid -w xdg-open \"%s\"")
-	))
-
-#+end_src
-
 ********* org-image-actual-width
 :PROPERTIES:
 :ID:       a760d06b-c2b2-4b54-a0b6-375a13a20538
@@ -13376,7 +13999,7 @@ When set as a list as below, 300 pixels will be the default, but another width c
 
 #+end_src
 
-********* Source code
+********* Source code and tangle
 ********** Declare Babel languages
 :PROPERTIES:
 :ID:       32dc9158-01f6-4303-b4eb-3901fe98f8d8
@@ -13418,26 +14041,17 @@ https://claude.ai/chat/1017ebf5-da7e-40fb-b05d-2247281826b9
 #+end_src
 ********** Default header arguments
 #+name: babel_default_header_args
-
-#+begin_src bash
-(defun org-remove-properties-drawer ()
-  "Remove PROPERTIES drawer from tangled files."
-  (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward "^# :PROPERTIES:\n\\(?:# .*\n\\)*?# :END:\n" nil t)
-      (replace-match "")))
-  (save-buffer)
-  )
-
-(add-hook 'org-babel-post-tangle-hook 'org-remove-properties-drawer)
-
+#+begin_src emacs-lisp
+ 
 (setq org-babel-default-header-args '((:results . "silent")
                                       (:eval . "no-export")
                                       (:exports . "none")
-                                      (:tangle . "yes")
+                                      (:tangle . "no")
                                       (:cache . "yes")
                                       (:noweb . "yes")
-                                      (:post-tangle . org-remove-properties-drawer)))
+				      (:mkdirp . "yes")
+                                      ;(:post-tangle . org-remove-properties-drawer)
+				      ))
 
 #+end_src
 
@@ -13497,22 +14111,30 @@ https://emacs.stackexchange.com/questions/39390/force-org-to-use-instead-of-begi
 (setq org-babel-noweb-wrap-start "<#"
       org-babel-noweb-wrap-end "#>")
 #+end_src
-********** (org-remove-properties-drawer)
-- https://claude.ai/chat/87d68d37-ff96-4a8f-9c5c-cd694ac78831
+********** Post-tangle hooks
+*********** stripe properties drawer on tangle
 #+begin_src emacs-lisp
-(defun my-org-remove-properties-drawer ()
-  "Remove PROPERTIES drawer from tangled files without triggering buffer modification warning."
-  (let ((buffer-modified-p (not (buffer-modified-p))))
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward "^# :PROPERTIES:\n\\(?:# .*\n\\)*?# :END:\n" nil t)
-        (replace-match "")))
-    (unless buffer-modified-p
-      (set-buffer-modified-p nil))))
+;; (defun my/org-babel-tangle-no-drawers ()
+;;   "Tangle with `:comments org`, removing property drawers entirely."
+;;   (interactive)
+;;   (let ((tangled-files (org-babel-tangle)))  ;; returns a list of file names
+;;     (dolist (f tangled-files)
+;;       (with-temp-buffer
+;;         (insert-file-contents f)
+;;         (goto-char (point-min))
+;;         ;; Remove everything from #.*:PROPERTIES: up to #.*:END:
+;;         (while (re-search-forward "^#.*:PROPERTIES:" nil t)
+;;           (let ((start (match-beginning 0)))
+;;             (when (re-search-forward "^#.*:END:" nil t)
+;;               (delete-region start (match-end 0)))))
+;;         ;; Remove extra blank lines
+;;         (goto-char (point-min))
+;;         (while (re-search-forward "\n\\{2,\\}" nil t)
+;;           (replace-match "\n"))
+;;         (write-region (point-min) (point-max) f)))))
 
-(advice-add 'org-remove-properties-drawer :override #'my-org-remove-properties-drawer)
 #+end_src
-
+https://chatgpt.com/c/675d9823-49a8-8005-840d-464e88f9c994?model=o1
 
 ********* Header views and cycling
 #+begin_src emacs-lisp
@@ -13541,16 +14163,18 @@ https://emacs.stackexchange.com/questions/39390/force-org-to-use-instead-of-begi
       (goto-char (org-babel-where-is-src-block-head))
       (org-hide-block-toggle t))))
 
-
-
 (defun my-collapse-all-drawers (&optional arg)
-  (interactive "P")  ;; "P" means that the function accepts a prefix argument and passes it as ARG
+  "Hide all drawers and optionally cycle global visibility.
+When called with a prefix ARG (C-u), also cycle global visibility, hide all src blocks, and jump to the beginning of the buffer."
+  (interactive "P")
   (org-hide-drawer-all)
-  (when arg  ;; When ARG is non-nil (when called with C-u), execute `org-cycle-global`.
+  (when arg
     (org-cycle-global)
     (org-hide-all-src-blocks)
-    (beginning-of-buffer))
-  )
+    (goto-char (point-min))) ;; Use `goto-char` instead of `beginning-of-buffer` for clarity
+  ;; Ensure tags are aligned after all visibility changes
+  (org-align-tags t)) ;; Pass `t` to align all tags in the buffer
+
 
 (global-set-key (kbd "C-c d") 'my-collapse-all-drawers)
 ;; You might want to remove the hook if you don't want this function to run every time you open an org file
@@ -13567,14 +14191,14 @@ https://emacs.stackexchange.com/questions/39390/force-org-to-use-instead-of-begi
 
 https://chatgpt.com/c/670d4cb7-5c08-8005-bec8-a2800e4bd0c4
 #+begin_src emacs-lisp
-(defun my-remove-trailing-newlines-in-tangled-blocks ()
-  "Remove trailing newlines from tangled block bodies."
-  (save-excursion
-    (goto-char (point-max))
-    (when (looking-back "\n" nil)
-      (delete-char -1))))
+;; (defun my-remove-trailing-newlines-in-tangled-blocks ()
+;;   "Remove trailing newlines from tangled block bodies."
+;;   (save-excursion
+;;     (goto-char (point-max))
+;;     (when (looking-back "\n" nil)
+;;       (delete-char -1))))
 
-(add-hook 'org-babel-post-tangle-hook #'my-remove-trailing-newlines-in-tangled-blocks)
+;; (add-hook 'org-babel-post-tangle-hook #'my-remove-trailing-newlines-in-tangled-blocks)
 
 #+end_src
 
@@ -13714,28 +14338,49 @@ When called with two prefix arguments, ARG, run the original function without pr
 
 #+end_src
 ********* Open URLs in new window with C-u C-c C-o
-https://chatgpt.com/c/670d5b8e-aa7c-8005-946d-81409ee082d6
 #+begin_src emacs-lisp
-(defun my-org-open-in-brave-new-window ()
-  "Open the link at point in Brave browser in a new window."
-  (interactive)
-  (let* ((context (org-element-context))
-         (link (and (eq (org-element-type context) 'link)
-                    (org-element-property :raw-link context))))
-    (if link
-        (start-process "brave-new-window" nil "brave-browser" "--new-window" link)
-      (message "No link at point"))))
+(defun my-org-open-in-brave-new-window (link)
+  "Open the LINK in Brave browser in a new window."
+  (start-process "brave-new-window" nil "brave-browser" "--new-window" link))
+
+(defun org-link-frame-open-id-or-file-in-new-frame (link)
+  "Open the FILE or ID LINK in a new frame."
+  (let ((location (cond
+                   ((string= (org-element-property :type (org-element-context)) "id")
+                    (org-id-find link 'marker))
+                   (t
+                    link)))) ; Assume it's a file link directly usable by `find-file-noselect`
+    (if (markerp location)
+        (with-current-buffer (marker-buffer location)
+          (select-frame (make-frame))
+          (goto-char location))
+      (select-frame (make-frame))
+      (find-file link))))
 
 (defun my-org-open-at-point (&optional arg)
-  "Open the link at point, using a new window in Brave if ARG is non-nil."
+  "Open the link at point.
+Use a new window in Brave if ARG is non-nil and the link is a URL.
+Open in a new Emacs frame if ARG is non-nil for ID or file links."
   (interactive "P")
-  (if arg
-      (my-org-open-in-brave-new-window)
-    (org-open-at-point)))
+  (let* ((context (org-element-context))
+         (link-type (org-element-property :type context))
+         (raw-link (org-element-property :raw-link context))
+         (link-path (org-element-property :path context)))
+    (if (and arg link-type)
+        (cond
+         ((or (string= link-type "http") (string= link-type "https"))
+          (my-org-open-in-brave-new-window raw-link))
+         ((or (string= link-type "id") (string= link-type "file"))
+          (org-link-frame-open-id-or-file-in-new-frame link-path))
+         (t
+          (message "No special handling for this link type: %s" link-type)))
+      (org-open-at-point))))
 
 ;; Rebind C-c C-o in org mode to our custom function
 (define-key org-mode-map (kbd "C-c C-o") 'my-org-open-at-point)
+
 #+end_src
+
 ********* Checkboxes
 
 #+begin_src emacs-lisp
@@ -13961,6 +14606,11 @@ When set as a list as below, 300 pixels will be the default, but another width c
 #+begin_src emacs-lisp
 (setq org-image-actual-width '(300))
 #+end_src
+********* Ideas
+********** Default reset check boxes
+https://chatgpt.com/c/67069939-5e04-8005-80b3-7865981a8843
+- currently an edit at point for all properties- NO!
+
 ******** custom-command-error-function
 #+begin_src emacs-lisp
 ;; https://emacs.stackexchange.com/questions/19742/is-there-a-way-to-disable-the-buffer-is-read-only-warning
@@ -13988,6 +14638,9 @@ When set as a list as below, 300 pixels will be the default, but another width c
 
 #+end_src
 ********* get-bibtex-from-doi
+:PROPERTIES:
+:ID:       f22974c3-ff99-4da0-b253-35ced07588bf
+:END:
 #+begin_src emacs-lisp
 ;; Amazing bibtex from doi fetcher
 ;; https://www.anghyflawn.net/blog/2014/emacs-give-a-doi-get-a-bibtex-entry/
@@ -14140,80 +14793,6 @@ https://github.com/gregsexton/ob-ipython/issues/28
 #+end_src
 
 
-******* open-chatgtp-query-in-new-browser-window
-
-- Make a ChatGPT query from emacs
-  - https://chatgpt.com/c/d4f18f6b-2f09-4a69-93f1-8f8ab5b39cb0
-
-#+begin_src emacs-lisp
-(defun open-chatgpt-query-in-new-browser-window (query &optional use-gpt-4)
-  "Send a QUERY to ChatGPT and open the result in a new browser window.
-With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
-  (interactive "sEnter your ChatGPT query: \nP")
-  (let* ((model (if use-gpt-4 "gpt-4" "gpt-4-turbo"))
-         (url (concat "https://chat.openai.com/?q=" (url-hexify-string query)
-                      "&model=" model)))
-    (start-process "brave-browser" nil "brave-browser" "--new-window" url)))
-
-(global-set-key (kbd "C-c C-g") 'open-chatgpt-query-in-new-browser-window)
-
-#+end_src
-
-******* mark-whole-word
-#+begin_src emacs-lisp
-  ;; https://emacs.stackexchange.com/questions/35069/best-way-to-select-a-word
-  (defun mark-whole-word (&optional arg allow-extend)
-    "Like `mark-word', but selects whole words and skips over whitespace.
-  If you use a negative prefix arg then select words backward.
-  Otherwise select them forward.
-
-  If cursor starts in the middle of word then select that whole word.
-
-  If there is whitespace between the initial cursor position and the
-  first word (in the selection direction), it is skipped (not selected).
-
-  If the command is repeated or the mark is active, select the next NUM
-  words, where NUM is the numeric prefix argument.  (Negative NUM
-  selects backward.)"
-    (interactive "P\np")
-    (let ((num  (prefix-numeric-value arg)))
-      (unless (eq last-command this-command)
-	(if (natnump num)
-	    (skip-syntax-forward "\\s-")
-	  (skip-syntax-backward "\\s-")))
-      (unless (or (eq last-command this-command)
-		  (if (natnump num)
-		      (looking-at "\\b")
-		    (looking-back "\\b")))
-	(if (natnump num)
-	    (left-word)
-	  (right-word)))
-      (mark-word arg allow-extend)))
-
-  (global-set-key (kbd "C-c C-SPC") 'mark-whole-word)
-#+end_src
-******* AUCTeX
-- [[id:eb4a0bb3-2e8a-4bf5-9186-11f972b2e06d][AUCTeX reference header]]
-#+begin_src emacs-lisp
-(use-package tex
-  :ensure auctex
-  :config
-  (setenv "PATH" (concat "/usr/local/texlive/2021/bin/x86_64-linux:"
-			 (getenv "PATH")))
-  (add-to-list 'exec-path "/usr/local/texlive/2021/bin/x86_64-linux")
-  (setq
-   TeX-auto-save t
-   TeX-parse-self t
-   TeX-save-query nil
-   TeX-view-program-selection
-   '(((output-dvi has-no-display-manager) . "dvi2tty")
-     ((output-dvi style-pstricks) . "dvips and gv")
-     (output-pdf . "Okular")
-     (output-dvi . "xdvi")
-     (output-pdf . "Evince")
-     (output-html . "xdg-open"))))
-
-#+end_src
 ******* Blacken
 ******** Use-package
 #+begin_src emacs-lisp
@@ -14232,12 +14811,41 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 ;;    company-dabbrev-downcase nil)) ; Don't downcase by default
 
 #+end_src
+******* [[file:config/public_emacs_config.el][Compiled elisp file]]
 ******* Conda
 
 #+begin_src emacs-lisp
 (setenv "WORKON_HOME" "~/miniconda3/envs")
 #+end_src
+******* Corfu
+#+begin_src emacs-lisp
+;; Corfu for completion UI
+(use-package corfu
+  :ensure t
+  :init
+  (global-corfu-mode) ;; Enable globally
+  :custom
+  (corfu-auto t)               ;; Enable auto completion
+  (corfu-auto-prefix 2)        ;; Start completing after typing 2 characters
+  (corfu-auto-delay 2.5)       ;; Delay before suggestions pop up
+  :config
+  ;; Free up keybindings for `completion-at-point`
+  (with-eval-after-load 'flyspell
+    (define-key flyspell-mode-map (kbd "C-M-i") nil)
+    (define-key flyspell-mode-map (kbd "M-TAB") nil))
+  (global-set-key (kbd "M-TAB") #'completion-at-point)) ;; Bind `M-TAB` globally
+#+end_src
+******* Dabbrev
+#+begin_src emacs-lisp
 
+;; Dynamic abbreviation completion
+(use-package dabbrev
+  :ensure nil
+  :config
+  (setq dabbrev-case-fold-search t) ;; Case-insensitive search
+  (setq dabbrev-upcase-means-case-search t)) ;; Respect case for uppercase words
+
+#+end_src
 ******* Eglot
 ******** Use-package
 #+begin_src emacs-lisp
@@ -14259,21 +14867,39 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 
 #+end_src
 
-******* Essh
-#+begin_src emacs-lisp
-(require 'essh)
-(defun essh-sh-hook ()
-  (define-key sh-mode-map "\C-c\C-r" 'pipe-region-to-shell)
-  (define-key sh-mode-map "\C-c\C-b" 'pipe-buffer-to-shell)
-  (define-key sh-mode-map "\C-c\C-j" 'pipe-line-to-shell)
-  (define-key sh-mode-map "\C-c\C-n" 'pipe-line-to-shell-and-step)
-  (define-key sh-mode-map "\C-c\C-f" 'pipe-function-to-shell)
-  (define-key sh-mode-map "\C-c\C-d" 'shell-cd-current-directory))
-(add-hook 'sh-mode-hook 'essh-sh-hook)
-
-(add-hook 'sh-mode-hook 'flycheck-mode)
+******* Elpy
+- [[id:5cd6f647-11ba-445a-bcde-07493b0e4fae][Elpy reference header]]
+- Use package
+  #+begin_src emacs-lisp
+(use-package elpy
+  :init
+  (advice-add 'python-mode :before 'elpy-enable)
+  :config
+  (define-key elpy-mode-map (kbd "C-c C-n") 'elpy-shell-send-statement-and-step)
+  (setenv "PATH" (concat "~/miniconda3/bin:" (getenv "PATH")))
+  (setenv "WORKON_HOME" "~/miniconda3/envs")
+  (setq exec-path (append '("~/miniconda3/bin") exec-path))
+  (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
+  (setq elpy-rpc-python-command "~/miniconda3/bin/python")
+)
 #+end_src
+- Open Python shells in a new frame
+  - https://chatgpt.com/c/67252540-09c0-8005-8b13-e8cac310cd3a
+  #+begin_src emacs-lisp
+(defun my-elpy-shell-display-buffer-in-new-frame (buffer alist)
+  "Display the Python shell buffer in a new frame."
+  (let ((display-buffer-alist
+         '(("*Python*" display-buffer-pop-up-frame))))
+    (display-buffer buffer alist)))
 
+(advice-add 'elpy-shell-send-statement-and-step :around
+            (lambda (orig-fun &rest args)
+              "Send statement and open the Python buffer in a new frame."
+              (let ((display-buffer-alist
+                     '(("*Python*" . (my-elpy-shell-display-buffer-in-new-frame)))))
+                (apply orig-fun args))))
+
+#+end_src
 ******* ESS
 - [[id:147724ad-7598-4be6-b8a9-725a19eb39fe][ESS reference header]]
 ******** Use-package
@@ -14319,39 +14945,6 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
      (ess-R-fl-keyword:%op% . t)))))
 #+end_src
 
-******* Elpy
-- [[id:5cd6f647-11ba-445a-bcde-07493b0e4fae][Elpy reference header]]
-- Use package
-  #+begin_src emacs-lisp
-(use-package elpy
-  :init
-  (advice-add 'python-mode :before 'elpy-enable)
-  :config
-  (define-key elpy-mode-map (kbd "C-c C-n") 'elpy-shell-send-statement-and-step)
-  (setenv "PATH" (concat "~/miniconda3/bin:" (getenv "PATH")))
-  (setenv "WORKON_HOME" "~/miniconda3/envs")
-  (setq exec-path (append '("~/miniconda3/bin") exec-path))
-  (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
-  (setq elpy-rpc-python-command "~/miniconda3/bin/python")
-)
-#+end_src
-- Open Python shells in a new frame
-  - https://chatgpt.com/c/67252540-09c0-8005-8b13-e8cac310cd3a
-  #+begin_src emacs-lisp
-(defun my-elpy-shell-display-buffer-in-new-frame (buffer alist)
-  "Display the Python shell buffer in a new frame."
-  (let ((display-buffer-alist
-         '(("*Python*" display-buffer-pop-up-frame))))
-    (display-buffer buffer alist)))
-
-(advice-add 'elpy-shell-send-statement-and-step :around
-            (lambda (orig-fun &rest args)
-              "Send statement and open the Python buffer in a new frame."
-              (let ((display-buffer-alist
-                     '(("*Python*" . (my-elpy-shell-display-buffer-in-new-frame)))))
-                (apply orig-fun args))))
-
-#+end_src
 ******* exec-path-from-shell
 - Ensures parts of Emacs inherit shell PATH when Emacs is runnng as a daemon
 ******** Use-package
@@ -14383,14 +14976,6 @@ https://github.com/magnars/expand-region.el
   (defun my-org-mode-flycheck-hook ()
     (when (derived-mode-p 'prog-mode) ;; Check if it's a programming mode
       (flycheck-mode 1))))
-
-#+end_src
-******* flyspell
-- [[id:df1ef82a-6cd8-4aee-beac-005873270c72][ispell reference header]]
-#+begin_src emacs-lisp
-(use-package flyspell
-  :config
-  (setq ispell-personal-dictionary "~/.aspell.en.pws"))
 
 #+end_src
 ******* Helm
@@ -14450,6 +15035,11 @@ https://github.com/magnars/expand-region.el
 (use-package htmlize)
 #+end_src
 
+******* Ideas
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle no
+:END:
+https://chatgpt.com/c/8e222105-a52a-4856-80d3-c37823f0efb1
 ******* ivy
 ******** Use-package
 #+begin_src emacs-lisp
@@ -14470,10 +15060,62 @@ https://github.com/magnars/expand-region.el
   :ensure t)
 #+end_src
 
+******* mark-whole-word
+#+begin_src emacs-lisp
+  ;; https://emacs.stackexchange.com/questions/35069/best-way-to-select-a-word
+  (defun mark-whole-word (&optional arg allow-extend)
+    "Like `mark-word', but selects whole words and skips over whitespace.
+  If you use a negative prefix arg then select words backward.
+  Otherwise select them forward.
+
+  If cursor starts in the middle of word then select that whole word.
+
+  If there is whitespace between the initial cursor position and the
+  first word (in the selection direction), it is skipped (not selected).
+
+  If the command is repeated or the mark is active, select the next NUM
+  words, where NUM is the numeric prefix argument.  (Negative NUM
+  selects backward.)"
+    (interactive "P\np")
+    (let ((num  (prefix-numeric-value arg)))
+      (unless (eq last-command this-command)
+	(if (natnump num)
+	    (skip-syntax-forward "\\s-")
+	  (skip-syntax-backward "\\s-")))
+      (unless (or (eq last-command this-command)
+		  (if (natnump num)
+		      (looking-at "\\b")
+		    (looking-back "\\b")))
+	(if (natnump num)
+	    (left-word)
+	  (right-word)))
+      (mark-word arg allow-extend)))
+
+  (global-set-key (kbd "C-c C-SPC") 'mark-whole-word)
+#+end_src
 ******* Native complete
 ******** Use-package
 #+begin_src emacs-lisp
 (use-package native-complete)
+#+end_src
+
+******* open-chatgtp-query-in-new-browser-window
+
+- Make a ChatGPT query from emacs
+  - https://chatgpt.com/c/d4f18f6b-2f09-4a69-93f1-8f8ab5b39cb0
+
+#+begin_src emacs-lisp
+(defun open-chatgpt-query-in-new-browser-window (query &optional use-gpt-4)
+  "Send a QUERY to ChatGPT and open the result in a new browser window.
+With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
+  (interactive "sEnter your ChatGPT query: \nP")
+  (let* ((model (if use-gpt-4 "gpt-4" "gpt-4-turbo"))
+         (url (concat "https://chat.openai.com/?q=" (url-hexify-string query)
+                      "&model=" model)))
+    (start-process "brave-browser" nil "brave-browser" "--new-window" url)))
+
+(global-set-key (kbd "C-c C-g") 'open-chatgpt-query-in-new-browser-window)
+
 #+end_src
 
 ******* orderless
@@ -14497,6 +15139,7 @@ https://github.com/magnars/expand-region.el
   (org-edna-mode 1))
 #+end_src
 
+******* [[id:45e28300-51fd-4ce7-aed1-15dca15022d4][Org-mode]]
 ******* org-plus-contrib
 ******** Use-package
 #+begin_src emacs-lisp
@@ -14508,69 +15151,6 @@ https://github.com/magnars/expand-region.el
 ******* org-ql
 #+begin_src emacs-lisp
 (use-package org-ql)
-#+end_src
-
-******* org-ref
-******** [[id:50da582a-7d75-4646-9a94-638244760b4a][Package notes]]
-******** Use-package
-#+begin_src emacs-lisp
-(use-package org-ref
-  :init
-  (require 'bibtex)
-  (require 'org-ref-ivy)
-  (require 'org-ref-bibtex)
-  (require 'org-ref-pubmed)
-  (require 'org-ref-scopus)
-  (require 'org-ref-wos)
-  :config
-  (setq
-   org-ref-default-bibliography '("~/repos/org/bib.bib")
-   org-ref-pdf-directory "~/library/"))
-#+end_src
-#+begin_src emacs-lisp
-(setq bibtex-completion-bibliography '("~/repos/org/bib.bib")
-      bibtex-completion-library-path '("~/data/library/")
-      bibtex-completion-additional-search-fields '(keywords)
-      bibtex-completion-display-formats
-      '((article       . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${journal:40}")
-	(inbook        . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} Chapter ${chapter:32}")
-	(incollection  . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
-	(inproceedings . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
-	(t             . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*}"))
-      bibtex-completion-pdf-open-function
-      (lambda (fpath)
-	(call-process "open" nil 0 nil fpath)))
-
-(define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link)
-
-(setq org-ref-show-broken-links nil)
-
-(setq org-ref-bibliography-notes "~/repo/org/notes"
-      org-ref-default-bibliography '("~/repos/org/bib.bib")
-      org-ref-pdf-directory "~/library")
-
-(require 'org-ref-ivy)
-(setq org-ref-insert-link-function 'org-ref-insert-link-hydra/body
-      org-ref-insert-cite-function 'org-ref-cite-insert-ivy
-      org-ref-insert-label-function 'org-ref-insert-label-link
-      org-ref-insert-ref-function 'org-ref-insert-ref-link
-      org-ref-cite-onclick-function (lambda (_) (org-ref-citation-hydra/body)))
-
-#+end_src
-******** Show citation info in minibuffer
-https://github.com/jkitchin/org-ref/issues/938
-#+begin_src emacs-lisp
-(defun org-ref-link-message (&optional a1 a2 a3)
-  (when (and (eq major-mode 'org-mode)
-   (eq (get-text-property (point) 'help-echo) 'org-ref-cite-tooltip))
-  (display-local-help)))
-
-(advice-add 'right-char :after 'org-ref-link-message)
-(advice-add 'left-char :after 'org-ref-link-message)
-(advice-add 'evil-forward-char :after 'org-ref-link-message)
-(advice-add 'evil-backward-char :after 'org-ref-link-message)
-
-
 #+end_src
 
 ******* ox-pandoc
@@ -14627,6 +15207,13 @@ https://github.com/jkitchin/org-ref/issues/938
     (tree-sitter-mode -1)))
 
 (add-hook 'tree-sitter-mode-hook #'disable-tree-sitter-for-org-mode)
+#+end_src
+
+******* vc-use-package
+#+begin_src emacs-lisp
+(unless (package-installed-p 'vc-use-package)
+  (package-vc-install "https://github.com/slotThe/vc-use-package"))
+(require 'vc-use-package)
 #+end_src
 
 ******* vertico
@@ -14752,11 +15339,11 @@ https://github.com/jkitchin/org-ref/issues/938
                ("C-z" . vterm-undo)
                ("C-v" . vterm-yank))
   :init
-  (add-hook 'vterm-mode-hook '(lambda () (setq-local cua-mode nil))))
+  (add-hook 'vterm-mode-hook (lambda () (setq-local cua-mode nil)))
   :config
   (setq vterm-max-scrollback 100000)
   (custom-set-faces
-   '(vterm-color-blue ((t (:foreground "#477EFC" :background "#477EFC")))))
+   '(vterm-color-blue ((t (:foreground "#477EFC" :background "#477EFC"))))))
 
 
 
@@ -14830,19 +15417,14 @@ https://github.com/jkitchin/org-ref/issues/938
 
 #+end_src
 
-******* Ideas
-:PROPERTIES:
-:header-args:emacs-lisp: :tangle no
-:END:
-https://chatgpt.com/c/8e222105-a52a-4856-80d3-c37823f0efb1
+
 ****** Load Last
 :PROPERTIES:
 :ID:       78120684-eb8c-4970-836e-13d2cb624386
 :header-args: :tangle ./emacs/load-last.el
 :END:
-
 #+begin_src emacs-lisp
-
+(load-directory "~/.emacs.d/lisp/")
 
 (run-with-idle-timer
  1 nil
@@ -14865,15 +15447,341 @@ https://chatgpt.com/c/8e222105-a52a-4856-80d3-c37823f0efb1
 (load-theme 'manoj-dark t)
 
 #+end_src
-**** Flat
-***** Globus
-:PROPERTIES:
-:ID:       e6aab15d-36b0-4b08-93b8-ef9f6254d950
-:END:
--
-- [[https://docs.globus.org/cli/][cli]]
-  - [[https://docs.globus.org/cli/reference/][documentation]]
-    - https://docs.globus.org/how-to/globus-connect-personal-linux/#globus-connect-personal-cli
+******* Essh
+https://www.emacswiki.org/emacs/download/essh.el
+#+begin_src emacs-lisp 
+(require 'essh)
+(defun essh-sh-hook ()
+  (define-key sh-mode-map "\C-c\C-r" 'pipe-region-to-shell)
+  (define-key sh-mode-map "\C-c\C-b" 'pipe-buffer-to-shell)
+  (define-key sh-mode-map "\C-c\C-j" 'pipe-line-to-shell)
+  (define-key sh-mode-map "\C-c\C-n" 'pipe-line-to-shell-and-step)
+  (define-key sh-mode-map "\C-c\C-f" 'pipe-function-to-shell)
+  (define-key sh-mode-map "\C-c\C-d" 'shell-cd-current-directory))
+(add-hook 'sh-mode-hook 'essh-sh-hook)
+
+(add-hook 'sh-mode-hook 'flycheck-mode)
+#+end_src
+
+***** Casual / transient test
+#+begin_src emacs-lisp
+(use-package casual
+  :ensure t
+  :config
+  ;; Additional configuration here
+)
+
+;(use-package casual-agenda)
+#+end_src
+
+#+begin_src emacs-lisp
+(require 'transient)
+
+(defun casual-bibtex-open-url ()
+  "Open the URL or DOI in the BibTeX entry at point."
+  (interactive)
+  (let ((url (bibtex-autokey-get-field "url")))
+    (if url
+        (browse-url url)
+      (message "No URL found in this entry."))))
+
+(defun casual-bibtex-copy-key ()
+  "Copy the citation key of the current BibTeX entry to the clipboard."
+  (interactive)
+  (let ((key (bibtex-autokey-get-field "key")))
+    (if key
+        (progn
+          (kill-new key)
+          (message "Copied citation key: %s" key))
+      (message "No citation key found in this entry."))))
+
+(defun casual-bibtex-check-duplicates ()
+  "Check for duplicate BibTeX entries in the buffer."
+  (interactive)
+  (bibtex-check-duplicates))
+
+(transient-define-prefix casual-bibtex-menu ()
+  "Casual menu for BibTeX."
+  [["Actions"
+    ("o" "Open URL" casual-bibtex-open-url)
+    ("c" "Copy Citation Key" casual-bibtex-copy-key)
+    ("d" "Check Duplicates" casual-bibtex-check-duplicates)
+    ("s" "Sort Entries" bibtex-sort-buffer)
+    ("v" "Validate Buffer" bibtex-validate)]])
+
+#+end_src
+
+***** Corfu test
+- https://github.com/minad/corfu
+#+begin_src emacs-lisp
+(use-package corfu
+  ;; Optional customizations
+  ;; :custom
+  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+
+  ;; Enable Corfu only for certain modes. See also `global-corfu-modes'.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
+  ;; Recommended: Enable Corfu globally.  This is recommended since Dabbrev can
+  ;; be used globally (M-/).  See also the customization variable
+  ;; `global-corfu-modes' to exclude certain modes.
+  :init
+  (global-corfu-mode)
+  (setq corfu-auto-delay 0.2) ;; Set delay for popup
+  (define-key corfu-map (kbd "C-n") #'corfu-next)
+  (define-key corfu-map (kbd "C-p") #'corfu-previous))
+
+
+;; A few more useful configurations...
+(use-package emacs
+  :custom
+  ;; TAB cycle if there are only few candidates
+  ;; (completion-cycle-threshold 3)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (tab-always-indent 'complete)
+
+  ;; Emacs 30 and newer: Disable Ispell completion function.
+  ;; Try `cape-dict' as an alternative.
+  (text-mode-ispell-word-completion nil)
+
+  ;; Hide commands in M-x which do not apply to the current mode.  Corfu
+  ;; commands are hidden, since they are not used via M-x. This setting is
+  ;; useful beyond Corfu.
+  (read-extended-command-predicate #'command-completion-default-include-p))
+#+end_src
+printers
+[[cite:&ottolenghi2012jerusalem]]
+
+#+begin_src emacs-lisp
+(use-package cape
+  :ensure t
+  :after corfu
+  :config
+  (defun my-cape-setup ()
+    ;; Here you can define specific completion functions you want to use.
+    (add-to-list 'completion-at-point-functions
+                 (list #'cape-dabbrev
+                       #'cape-file
+		       #'cape-dict
+                       #'cape-tex
+		       )))  ;; include other functions as needed
+
+  ;; Enable the setup for Org mode.
+  (add-hook 'org-mode-hook 'my-cape-setup))
+
+#+end_src
+
+#+begin_src R
+librar
+#+end_src
+prin
+printer
+#+begin_src emacs-lisp
+   (setq completion-styles '(orderless Partial-completion emacs))
+   (use-package company
+     :ensure t
+     :hook (after-init . global-company-mode)
+     :config
+     (setq company-idle-delay 0.2)  ;; Adjust delay as needed
+     (setq company-minimum-prefix-length 1))  ;; Minimal prefix length for suggestions
+
+#+end_src
+printer-driver-foo2zjs-common
+print(text)
+cfDNA-based
+#+begin_src emacs-lisp
+   (defun my-cape-setup ()
+     "Set up cape completions for Org mode."
+     (message "Cape setup for Org mode activated")  ;; Message for debugging
+     (setq-local completion-at-point-functions
+                 (list #'cape-dabbrev
+                       #'cape-file
+                       #'cape-tex
+		       #'cape-dict
+		       )))
+
+#+end_src
+#+begin_src emacs-lisp
+
+
+#+end_src
+#+begin_src emacs-lisp
+(defun my-cape-setup ()
+  (setq-local completion-at-point-functions
+                 (list #'cape-dabbrev
+                       #'cape-file
+                       #'cape-tex
+                       #'cape-dict)))  ;; Add dictionary completion
+(my-cape-setup)
+#+end_src
+prin
+#+begin_src emacs-lisp
+   (use-package cape
+     :ensure t
+     :after corfu
+     :config
+     (defun my-cape-setup ()
+       "Set up cape completions for Org mode."
+       (setq-local completion-at-point-functions
+                   (list #'cape-dabbrev
+                         #'cape-file
+                         #'cape-tex
+                         #'cape-dict)))  ;; Add other completion sources as needed
+
+     ;; Activate setup for Org mode
+     (add-hook 'org-mode-hook 'my-cape-setup))
+
+#+end_src
+prin
+#+begin_src emacs-lisp
+   (defun my-cape-setup ()
+     "Set up cape completions for Org mode."
+     (setq-local completion-at-point-functions
+                 (list #'cape-dabbrev
+                       #'cape-file
+                       #'cape-tex
+                       #'cape-dict))  ;; Add other completion sources
+     (message "Cape setup executed: %s" completion-at-point-functions))  ;; Debug message
+
+#+end_src
+prin
+prin
+
+[[cite:&wallis2021cnf]]
+***** Embark test
+- https://github.com/oantolin/embark
+- https://github.com/oantolin/embark
+- https://github.com/kickingvegas/casual
+- http://yummymelon.com/devnull/announcing-casual-avy.html
+#+begin_src emacs-lisp
+(use-package marginalia
+  :ensure t
+  :config
+  (marginalia-mode))
+
+(use-package embark
+  :ensure t
+
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings) ;; alternative for `describe-bindings'
+   (:map org-mode-map ;; Override org-mode specific binding
+         ("C-;" . embark-dwim)
+	 ("C-." . embark-act)
+   ))
+
+  :init
+
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  ;; Show the Embark target at point via Eldoc. You may adjust the
+  ;; Eldoc strategy, if you want to see the documentation from
+  ;; multiple providers. Beware that using this can be a little
+  ;; jarring since the message shown in the minibuffer can be more
+  ;; than one line, causing the modeline to move up and down:
+
+  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
+  :config
+
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+;; Consult users will also want the embark-consult package.
+(use-package embark-consult
+  :ensure t ; only need to install it, embark loads it after consult if found
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+#+end_src
+
+https://github.com/oantolin/embark
+***** Retired
+:properties:
+:header-args:emacs-lisp: :tangle no
+:end:
+
+****** org-ref
+:properties:
+:header-args:emacs-lisp: :tangle no
+:end:
+
+******* [[id:50da582a-7d75-4646-9a94-638244760b4a][Package notes]]
+******* Use-package
+#+begin_src emacs-lisp
+(use-package org-ref
+  :init
+  (require 'bibtex)
+  (require 'org-ref-ivy)
+  (require 'org-ref-bibtex)
+  (require 'org-ref-pubmed)
+  (require 'org-ref-scopus)
+  (require 'org-ref-wos)
+  :config
+  (setq
+   org-ref-default-bibliography '("~/repos/org/bib.bib")
+   org-ref-pdf-directory "~/library/"))
+#+end_src
+#+begin_src emacs-lisp
+(setq bibtex-completion-bibliography '("~/repos/org/bib.bib")
+      bibtex-completion-library-path '("~/data/library/")
+      bibtex-completion-additional-search-fields '(keywords)
+      bibtex-completion-display-formats
+      '((article       . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${journal:40}")
+	(inbook        . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} Chapter ${chapter:32}")
+	(incollection  . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
+	(inproceedings . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
+	(t             . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*}"))
+      bibtex-completion-pdf-open-function
+      (lambda (fpath)
+	(call-process "open" nil 0 nil fpath)))
+
+(define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link)
+
+(setq org-ref-show-broken-links nil)
+
+(setq org-ref-bibliography-notes "~/repo/org/notes"
+      org-ref-default-bibliography '("~/repos/org/bib.bib")
+      org-ref-pdf-directory "~/library")
+
+(require 'org-ref-ivy)
+(setq org-ref-insert-link-function 'org-ref-insert-link-hydra/body
+      org-ref-insert-cite-function 'org-ref-cite-insert-ivy
+      org-ref-insert-label-function 'org-ref-insert-label-link
+      org-ref-insert-ref-function 'org-ref-insert-ref-link
+      org-ref-cite-onclick-function (lambda (_) (org-ref-citation-hydra/body)))
+
+#+end_src
+******* Show citation info in minibuffer
+https://github.com/jkitchin/org-ref/issues/938
+#+begin_src emacs-lisp
+(defun org-ref-link-message (&optional a1 a2 a3)
+  (when (and (eq major-mode 'org-mode)
+   (eq (get-text-property (point) 'help-echo) 'org-ref-cite-tooltip))
+  (display-local-help)))
+
+(advice-add 'right-char :after 'org-ref-link-message)
+(advice-add 'left-char :after 'org-ref-link-message)
+(advice-add 'evil-forward-char :after 'org-ref-link-message)
+(advice-add 'evil-backward-char :after 'org-ref-link-message)
+
+
+#+end_src
+
 **** See [[id:BF9D824A-02EF-4580-97A1-B887299AD461][Lisp]]
 ****** (custom-org-open-link)
 #+begin_src emacs-lisp
@@ -15448,6 +16356,7 @@ https://github.com/axel-download-accelerator/axel
 - Open to page via orgmode link, e.g. - [[cite:&ottolenghi2012jerusalem]]  [[shell:nohup okular --page 136 ~/library/ottolenghi2012jerusalem.pdf > /dev/null 2>&1 & disown][page 136]]
 - https://askubuntu.com/questions/1163761/how-to-flatten-comments-using-okular
 - merge
+  - e.g. pdftk file1.pdf file2.pdf cat output merged.pdf
   - https://askubuntu.com/questions/2799/how-to-merge-several-pdf-files
 - https://www.google.com/search?q=ubuntu+pdf+rotate+page
 - Pages
@@ -16783,6 +17692,7 @@ rx_dict = {
 :PROPERTIES:
 :ID:       BF9D824A-02EF-4580-97A1-B887299AD461
 :END:
+https://www.reddit.com/r/emacs/comments/1hop56b/elisp_best_practices/
 ****** Processes
 :PROPERTIES:
 :ID:       64bf8adc-4e02-4c0a-b407-2fa458a07f33
@@ -16855,17 +17765,17 @@ $0
 #+end_src
 
 ******* code.lisp                                                       :yas:
-#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/org-mode/code.lisp
-# -*- mode: snippet -*-
+[[file:emacs/public_yasnippets/org-mode/code.lisp]]
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/org-mode/code.lisp :padline no
+# -*- mode: snippet; require-final-newline: nil; -*-
 # key: code.lisp
 # expand-env: ((yas-indent-line 'none))
 # condition: 'auto
 # --
 ,#+begin_src emacs-lisp
-$0
-,#+end_src
+$1
+,#+end_src$0
 #+end_src
-
 ******* function                                                        :yas:
 #+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/emacs-lisp-mode/function
 # -*- mode: snippet -*-
@@ -17041,139 +17951,12 @@ done
 
 #+end_src
 
-******                                                                  :ref:
-:PROPERTIES:
-:ID:       61bd59de-7f6b-4521-8bfa-c5755917d608
-:END:
-- https://old.reddit.com/r/emacs/comments/qcr432/elispemacs_tutorialbook_with_real_world_projects/
-- https://lgmoneda.github.io/2017/03/15/elisp-summary.html
-- https://learnxinyminutes.com/docs/elisp/
-- https://www.murilopereira.com/a-rabbit-hole-full-of-lisp/
-- https://www.reddit.com/r/emacs/comments/kt3mvf/introduction_to_emacs_lisp_bashs_live_18/
-- http://landoflisp.com/
-- http://sarabander.github.io/sicp/html/Chapter-1.xhtml#Chapter-1
-- [[https://www.youtube.com/watch?v=XYKRVNQ_MqE&app=desktop][Lisp course]]
-- [[https://github.com/hypernumbers/learn_elisp_the_hard_way/tree/master/contents][Learn e-lisp the hard way]]
-- https://www.reddit.com/r/emacs/comments/60tl6o/tips_on_reading_dense_emacs_lisp_code/
-- https://www.reddit.com/r/emacs/comments/62ykc9/i_guess_i_need_to_learn_elisp/
-- http://stackoverflow.com/questions/1614724/is-learning-lisp-useful-at-all-these-days
-- [[http://www.fincher.org/tips/Languages/Emacs.shtml][lisp guide]]
-- http://emacslife.com/how-to-read-emacs-lisp.html
-******* [[https://www.gnu.org/software/emacs/manual/html_node/elisp/index.html][GNU Emacs Lisp documentation]]
-:PROPERTIES:
-:ID:       885b75a1-97b2-4991-a610-3a48e41e2d63
-:END:
-- https://www.gnu.org/software/emacs/manual/html_node/eintr/
-- [[http://www.gnu.org/software/emacs/manual/html_mono/elisp.html#Simple-Macro][Emacs Lisp Manual]]
-  - Introduction
-  1. List Processing
-     1. Lisp Lists
-        #+BEGIN_SRC emacs-lisp
-        '(this is a list(with a list inside of it "and another by quotes"))
-        #+END_SRC
-
-        #+RESULTS:
-        | this | is | a | list | (with a list inside of it and another by quotes) |
-
-        - Words = atoms (indivisible)
-        - All amounts of whitespace are equivalent
-     2. Run a Program
-        - List are programs that do 1 of 3 things:
-          1. Do nothing except return to you the list itself
-          2. Send you an error message
-          3. Treat the first symbol in the list as a command to do something
-     3. Debugger!
-     4.
-     5. Byte-complied code can be created and is stored as .elc instead of .el
-     6.
-     7. Variables
-        - Note, something like fill-column is NOT a function, it's a variable
-        - Arguments can be variables such as fill column
-     8.
-        - The message function and message variables
-           #+BEGIN_SRC emacs-lisp
-  (message "The name of this buffer is: %s." (buffer-name))
- #+END_SRC
-     9. Setting the value of a variable with set/setq/let
-        - setq is just set<PLUS>a single quote to set value of var
-  2. Practicing Evaluation
-
-******* [[http://cl-cookbook.sourceforge.net/files.html][The common lisp cookbook]]
-:PROPERTIES:
-:ID:       c0b0c73d-e1a2-4132-b393-1bcb2c0cc467
-:END:
-******* MIT Structure and Interpretation of Computer Programs
-:PROPERTIES:
-:ID:       22A808FB-8D3E-4E04-B0FA-FE0AB698F4A2
-:END:
-- https://www.youtube.com/watch?v=XYKRVNQ_MqE&app=desktop
-- [[https://mitpress.mit.edu/sicp/][Course Website]]
-- [[https://mitpress.mit.edu/sicp/full-text/book/book-Z-H-4.html#%_toc_start][Course Textbook]]
-
-******** 1A: Overview: Introduction to Lisp
-:PROPERTIES:
-:ID:       CEFCF31D-513F-44BD-A4FB-29B1B8A7A17F
-:END:
-
-- [ ] add video
-- Declarative vs. imperative (how to do)  knowledge
-- Techniques for controlling complexity
-  - Black box abstraction
-    - suppress detail into a module
-    - generalize to a function
-- interfaces to plug modules together
-- language components
-  - primitive elements
-  - methods of combination
-  - methods of abstraction
-
-- Lisp primitive elements are algebric operators and numbers
-
-- Methods of combination:
-#+BEGIN_SRC emacs-lisp
-(+ 3 4 5)
-#+END_SRC
-
-#+RESULTS:
-: 12
-
-- with vertical operands:
-
-#+BEGIN_SRC emacs-lisp
-(+ (* 3 5)
-   (* 47
-      (- 20 6.8)) 12 )
-#+END_SRC
-
-#+RESULTS:
-: 647.4
-
-- Means of abstraction
-  - Define A to be the product of 5 + 5 and ask A+A
-
-#+BEGIN_SRC emacs-lisp
-(defvar A (* 5 5))
-(+ A A)
-
-(defvar B (+ A (* 5 A)))
-B
-#+END_SRC
-
-#+RESULTS:
-: 150
-
-- What about the general idea of squaring?
-  - Lambda: make a procedure
-
-#+BEGIN_SRC emacs-lisp
-(defvar (square2 (lambda (x) (* x x ))))
-(square2 10)
-#+END_SRC
-
 ***** Bash and shell
 :PROPERTIES:
 :ID:       89576FD2-F863-4220-BAD7-D4E179AEA644
 :END:
+https://www.reddit.com/r/bash/comments/1hz2kku/something_i_do_on_all_bash_scripts_i_write_what/
+https://www.reddit.com/r/bash/comments/1hshm3u/how_many_lines_is_your_bashrc_file_mine_is/
 ****** [[id:f2557e40-0d81-438a-93e9-6917a40c1d8e][Emacs as a bash IDE]]
 ****** [[file:~/repos/basecamp-private/basecamp-private.org::*Shell and bash setup][My shell and bash setup]]
 ****** General
@@ -17495,7 +18278,7 @@ $0
 $0
 ,#+end_src
 #+end_src
-
+[[file:emacs/public_yasnippets/org-mode/code.sh]]
 ******* Development                                                     :dev:
 :PROPERTIES:
 :header-args: :tangle no
@@ -18608,6 +19391,7 @@ pandoc -S $test | xclip -selection clipboard
 :PROPERTIES:
 :ID:       2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5
 :END:
+
 ******* Example
 #+begin_src yaml :tangle /tmp/example.yaml
 # Simple YAML Example
@@ -18691,7 +19475,6 @@ nested_list:
 $0
 ,#+end_src
 #+end_src
-
 ***** JSON JavaScript Object Notation
 :PROPERTIES:
 :ID:       9E10CCC0-BC92-4C96-BBF2-99B54E88143D
@@ -19744,10 +20527,100 @@ adb connect 192.168.1.12:5555
 
 #+end_src
 
-*** R Statistical Computing                                :career:hierarchy:
+*** R Statistical Computing                           
 :PROPERTIES:
 :ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
 :END:
+**** Ansible
+:properties:
+:header-args:yaml: :tangle ./ansible/playbooks/r-install.yaml
+:ID:       36efda17-d1ef-4632-bc33-732071455543
+:end:
+https://chatgpt.com/c/67d18bbf-d1ec-8005-bbbb-836fd4d82dd4
+#+begin_src yaml
+---
+- name: Install Latest R
+  hosts: all
+  become: yes
+  tasks:
+
+    - name: Install prerequisites
+      apt:
+        name:
+          - software-properties-common
+          - dirmngr
+          - gnupg
+          - curl
+          - ca-certificates
+        state: present
+        update_cache: yes
+
+    - name: Remove existing R installation if present
+      apt:
+        name: r-base
+        state: absent
+      ignore_errors: yes  # In case R is not installed
+
+    - name: Add CRAN GPG key
+      apt_key:
+        url: https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc
+        state: present
+
+    - name: Add CRAN R repository
+      apt_repository:
+        repo: "deb https://cloud.r-project.org/bin/linux/ubuntu {{ ansible_distribution_release }}-cran40/"
+        state: present
+        filename: "cran-r"
+
+    - name: Update package cache
+      apt:
+        update_cache: yes
+
+    - name: Install latest R base package
+      apt:
+        name: r-base
+        state: latest
+
+    - name: Verify R installation
+      command: R --version
+      register: r_version
+      changed_when: false
+
+    - name: Display installed R version
+      debug:
+        msg: "{{ r_version.stdout }}"
+#+end_src
+#+begin_src yaml
+
+    - name: Install system dependencies for tidyverse
+      apt:
+        name:
+          - libcurl4-openssl-dev
+          - libssl-dev
+          - libxml2-dev
+        state: present
+
+    - name: Install Tidyverse in R
+      command: sudo R -e 'install.packages("tidyverse", repos="https://cloud.r-project.org")'
+      args:
+        creates: /usr/local/lib/R/site-library/tidyverse  # Skip installation if already exists
+
+#+end_src
+
+**** [[id:4783cca8-92ea-4053-b3c8-7d79862e3939][R package installs in basecamp conda environment]]
+**** R Cookbook                                                    :cookbook:
+**** Tutorial
+- Get $HOSTNAME
+  #+begin_src R
+Sys.info()["nodename"]
+#+end_src
+
+**** Processes                                                    :hierarchy:
+:PROPERTIES:
+:ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
+:END:
+***** Style
+
 for style see
 https://chat.openai.com/c/8c852ec7-1709-4e61-ab17-9d8796daccc7
 The most notable among these are:
@@ -19763,41 +20636,53 @@ The R Journal's "A Few Tips for Writing Readable Code": This article in The R Jo
 Lintr: An R package that provides static code analysis for R, similar to Python's Pylint. It helps enforce coding standards and can be customized to follow a specific style guide.
 
 These guides and tools offer a consensus on best practices for R coding, promoting a coding style that emphasizes clarity, simplicity, and consistency. While they may not be as universally adopted as PEP 8 in the Python world, they provide a solid foundation for writing clean and maintainable R code.
-**** [[id:593672e1-82b2-44e0-aa00-d28825860706][My programming style guide]]
-**** Tutorial
-- Get $HOSTNAME
-  #+begin_src R
-Sys.info()["nodename"]
-#+end_src
 
-**** Ideas
+****** [[id:593672e1-82b2-44e0-aa00-d28825860706][My programming style guide]]
+****** Best practices, style
 :PROPERTIES:
-:ID:       d3e14906-80f0-409b-b8df-8d98da11f09f
+:ID:       419ba6f0-4977-4eed-9d25-93a45933ad56
 :END:
-:LOGBOOK:
-CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
-:END:
-  - script to check for install and install only if necessary
-  - ideas
-    - define path variables in r
-    - [ ] how to stop R ESS tab complete from pinging countries?
-
-**** R Processes                                                  :hierarchy:
+- See [[id:593672e1-82b2-44e0-aa00-d28825860706][My general programming style guide]]
+- https://stackoverflow.com/questions/6324568/function-commenting-conventions-in-r
+- Rscript format best practices
+  - Differentiate working and testing sections
+- Style guides
+  - [[https://google.github.io/styleguide/Rguide.xml][Google]]
+    - ideas
+      - for naming, use ICANN convention  specific <- general
+  - [[http://adv-r.had.co.nz/Style.html][Advanced R]] cite:wickham2014
+  - [[https://style.tidyverse.org/documentation.html][Tidyverse]]
+  - characters- "For portable R code (including that to be used in R packages) only A–Za–z0–9 should be used."
+  - two-space indentation
+  - spaces
+    - before and after =, +, -, <, etc.
+    - after comma
+  - variable_names_with_underscore
+- R style guides
+  - https://www.r-bloggers.com/2018/09/r-code-best-practices/
+  - https://swcarpentry.github.io/r-novice-inflammation/06-best-practices-R/
+  - https://style.tidyverse.org/index.html
+  - http://adv-r.had.co.nz/Style.html
+  - https://journal.r-project.org/archive/2012/RJ-2012-018/RJ-2012-018.pdf
+  - https://www.r-bloggers.com/consistent-naming-conventions-in-r/
+  - https://stackoverflow.com/questions/1944910/what-is-your-preferred-style-for-naming-variables-in-r
+  - https://stackoverflow.com/questions/10013545/are-there-any-official-naming-conventions-for-r
+  - http://jef.works/R-style-guide/
+  - https://csgillespie.wordpress.com/2010/11/23/r-style-guide/
+  - https://google.github.io/styleguide/Rguide.xml
+- examples
+  - https://github.com/TheEconomist/us-potus-model/blob/master/scripts/model/final_2016.R
+- https://google.github.io/styleguide/Rguide.html
+***** R Processes                                                      :flat:
 :PROPERTIES:
-:ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
+:ID:       d96c05c0-838a-45ec-b7c6-a8a7e5b3e71d
 :END:
-
+****** Set file.path variable by hostname
 # RIS mount location
 if(Sys.info()["nodename"] %in%
    c("jeszyman-work","jeff-mac-book","jeff-mac-book","jeff-server"))
   (data_dir = file.path("/mnt/ris/cbergom"))
 
-***** R Processes                                                      :flat:
-:PROPERTIES:
-:ID:       d96c05c0-838a-45ec-b7c6-a8a7e5b3e71d
-:END:
-
-- function with named vector output
 ****** Write a function with multiple outputs
 :PROPERTIES:
 :ID:       bd6496c7-8a45-448a-a6fb-27e1cc3e517e
@@ -19852,12 +20737,6 @@ https://stackoverflow.com/questions/32129687/list-files-all-files-in-directory-a
 :ID:       f92e9c8d-7c84-480b-a7fb-314a176f82a0
 :END:
 - https://stackoverflow.com/questions/15217758/remove-a-library-from-libpaths-permanently-without-rprofile-site
-****** Install R 4
-:PROPERTIES:
-:ID:       cce2c3be-bce7-40b0-b3e9-8c9d3cc731e6
-:END:
-https://genomespot.blogspot.com/2020/06/installing-r-40-on-ubuntu-1804.html
-https://www.digitalocean.com/community/tutorials/how-to-install-r-on-ubuntu-18-04-quickstart
 ***** Rscripts
 :PROPERTIES:
 :ID:       8601793b-7dfa-46e3-a658-da9624d40901
@@ -20460,7 +21339,7 @@ df
 :PROPERTIES:
 :ID:       218ef9c0-0a15-4984-afcf-a0b4cd1394e7
 :END:
-*****                                                                  :flat:
+***** Flat
 :PROPERTIES:
 :ID:       eb3608df-389c-451d-b563-143c1150f7df
 :END:
@@ -20580,8 +21459,6 @@ package.check = lapply(
 $0
 ,#+end_src
 #+end_src
-
-
 ***** 80                                                                :yas:
 :PROPERTIES:
 :ID:       3e97b905-780b-4612-a5a1-18e9062dd8a8
@@ -20836,41 +21713,6 @@ long.${2:$(let ((input (s-trim yas-text)))
            (s-wrap input 80 "\n"))}
 #+end_src
 
-**** Best practices, style
-:PROPERTIES:
-:ID:       419ba6f0-4977-4eed-9d25-93a45933ad56
-:END:
-- See [[id:593672e1-82b2-44e0-aa00-d28825860706][My general programming style guide]]
-- https://stackoverflow.com/questions/6324568/function-commenting-conventions-in-r
-- Rscript format best practices
-  - Differentiate working and testing sections
-- Style guides
-  - [[https://google.github.io/styleguide/Rguide.xml][Google]]
-    - ideas
-      - for naming, use ICANN convention  specific <- general
-  - [[http://adv-r.had.co.nz/Style.html][Advanced R]] cite:wickham2014
-  - [[https://style.tidyverse.org/documentation.html][Tidyverse]]
-  - characters- "For portable R code (including that to be used in R packages) only A–Za–z0–9 should be used."
-  - two-space indentation
-  - spaces
-    - before and after =, +, -, <, etc.
-    - after comma
-  - variable_names_with_underscore
-- R style guides
-  - https://www.r-bloggers.com/2018/09/r-code-best-practices/
-  - https://swcarpentry.github.io/r-novice-inflammation/06-best-practices-R/
-  - https://style.tidyverse.org/index.html
-  - http://adv-r.had.co.nz/Style.html
-  - https://journal.r-project.org/archive/2012/RJ-2012-018/RJ-2012-018.pdf
-  - https://www.r-bloggers.com/consistent-naming-conventions-in-r/
-  - https://stackoverflow.com/questions/1944910/what-is-your-preferred-style-for-naming-variables-in-r
-  - https://stackoverflow.com/questions/10013545/are-there-any-official-naming-conventions-for-r
-  - http://jef.works/R-style-guide/
-  - https://csgillespie.wordpress.com/2010/11/23/r-style-guide/
-  - https://google.github.io/styleguide/Rguide.xml
-- examples
-  - https://github.com/TheEconomist/us-potus-model/blob/master/scripts/model/final_2016.R
-- https://google.github.io/styleguide/Rguide.html
 **** Packages
 :PROPERTIES:
 :ID:       13053897-37D7-4068-B3D0-5A6660BA0CD3
@@ -21274,13 +22116,19 @@ myft
   - [[https://www.reddit.com/r/datascience/comments/8dpkih/my_favorite_function_in_r_is/?st=jgkzwj8p&sh=45b024c6][reddit: my favorite function in R is _]]
   - [[https://www.methodsconsultants.com/tutorial/what-does-it-mean-to-say-r-is-an-object-oriented-programming-language/][What Does it Mean to Say R is an Object-Oriented Programming Language?]]
 ***** [[LINK TO Machine Learning]]
-:PROPERTIES:
-:ID:       8063a40e-df60-449d-9641-6eea42e47f9c
-:END:
 ***** [[LINK TO Reproducible Research]]
+**** Ideas
 :PROPERTIES:
-:ID:       aa3f8528-0603-42b4-9e1e-8a27b9aaf8b3
+:ID:       d3e14906-80f0-409b-b8df-8d98da11f09f
 :END:
+:LOGBOOK:
+CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
+:END:
+  - script to check for install and install only if necessary
+  - ideas
+    - define path variables in r
+    - [ ] how to stop R ESS tab complete from pinging countries?
+
 *** Integrated development environments
 :PROPERTIES:
 :ID:       1f307f13-9795-4ae8-83d6-235db6e5d866
@@ -21361,6 +22209,9 @@ CLOCK: [2017-10-19 Thu 14:01]--[2017-10-19 Thu 15:01] =>  1:00
 :ID:       D2ABA474-BA09-4A1D-BFDE-C8404DD8AD0A
 :END:
 *** Google cloud
+:PROPERTIES:
+:ID:       5435d91b-864b-4644-a0c0-1ffb262db35b
+:END:
 - https://superuser.com/questions/691189/totally-unable-to-switch-google-accounts
 #+begin_src bash
 cd /tmp
@@ -21383,37 +22234,166 @@ echo $PATH
 
 gcloud compute ssh jeszyman@instance-20240601-125838 --zone us-central1-a
 #+end_src
+- gsutil is python app to access cloud storage
+  - gsutil cp - use for single files. it will always overwrite 
+  - gsutil rsync - use for dirs  
+    
+
+
+gsutil -m cp -n -c -L /mnt/data/projects/pnst/logs/gcloud-transfer-2025-02-03.txt gs://chaudhuri-lab-bucket1/ris/mpnst/inputs/seq/10_10NC60M_R1.fastq.gz   /mnt/data/projects/pnst/inputs/10_10NC60M_R1.fastq.gz
 
 *** Ansible
-[[file:~/.ansible.cfg]]
-#+begin_src bash :results raw replace
-ansible --version
-#+end_src
-
-#+RESULTS[524f8f8fe424fc85e621187a6661c2067e356070]:
-ansible [core 2.11.12] 
-  config file = /home/jeszyman/.ansible.cfg
-  configured module search path = ['/home/jeszyman/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
-  ansible python module location = /home/jeszyman/.local/lib/python3.10/site-packages/ansible
-  ansible collection location = /home/jeszyman/.ansible/collections:/usr/share/ansible/collections
-  executable location = /home/jeszyman/.local/bin/ansible
-  python version = 3.10.12 (main, Nov  6 2024, 20:22:13) [GCC 11.4.0]
-  jinja version = 3.1.4
-  libyaml = True
-
-**** Cookbook
+:PROPERTIES:
+:ID:       1169cb65-4a18-43d3-9643-67ac3e85f0d1
+:END:
+**** Ansible Cookbook                                              :cookbook:
 :properties:
 :header-args:yaml: :tangle ./ansible/playbooks/ansible-cookbook.yaml :mkdirp yes
 :end:
-
+- [[file:ansible/playbooks/ansible-cookbook.yaml]]
 ******** Preamble
 #+begin_src yaml
 ---
 - name: Ansible cookbook
-  hosts: localhost
+  # Hosts as all allows for either local or remote runs.
+  # Local runs should use the syntax:
+  # ANSIBLE_STDOUT_CALLBACK=yaml ansible-playbook -i localhost, --connection=local <PLAYBOOK.yaml>
+  # ANSIBLE_STDOUT_CALLBACK=yaml ensures better human-readable outputs
+  # -i localhost, (WITH comma) specifies implicit empty host file
+  # --connection=local bypasses ssh
+  #
+  # This setup allows hosts: all in the playbook but local runs via command line without
+  # an inventory. 
+  
+  hosts: all
   tasks:
 #+end_src
 ******** Debugging info
+:PROPERTIES:
+:ID:       537315c8-951a-42bc-99af-c3977c19e812
+:END:
+#+name: ansible-debugging-info
+#+begin_src yaml
+    - name: Debug useful variable readouts
+      debug:
+        msg: "
+          \n=== System Information ===\n\n
+          Logged in as: {{ ansible_env.USER }}
+          \n\nHome directory: {{ ansible_user_dir }}
+          \n\nEnvironment HOME: {{ ansible_env.HOME }}
+          \n\nPATH:
+            {{ ansible_env.PATH }}
+          \n\nOS: {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_os_family }})
+          \n\nHostname: {{ ansible_hostname }}
+          \n\nFQDN: {{ ansible_fqdn }}
+          \n\nDefault IPv4: {{ ansible_default_ipv4.address }}
+          \n\nInventory Sources: {{ ansible_inventory_sources }}
+          \n\nPackage Manager: {{ ansible_pkg_mgr }}
+          \n========================="
+#+end_src
+******** Include variables from a yaml file
+********* Declared the yaml file
+:PROPERTIES:
+:ID:       f23ee77d-a479-40be-8111-7a5ba70ba3fd
+:END:
+#+begin_src yaml :tangle ./ansible/group_vars/cookbook-apts.yaml
+apt_packages:
+  - tree
+  - htop
+#+end_src
+
+#+name: ansible-include-vars-yaml
+#+begin_src yaml
+# Note this is relative to the playbook location 
+    - name: Include yaml explicitly
+      include_vars:
+        file: ../group_vars/cookbook-apts.yaml
+#+end_src
+********* Access the variables from the declared yaml
+#+begin_src yaml
+    - name: Install apt packages
+      apt:
+        name: "{{ apt_packages }}"
+        state: present # state: latest for updates, state: present for checks
+        update_cache: yes
+      become: true
+#+end_src
+**** Processes
+- Avoid cryptography deprecation warnings
+  #+begin_src bash
+# Avoid cryptography deprecation warnings: 
+pip install --upgrade paramiko cryptography
+#+end_src
+- Install ansible language server
+  #+begin_src bash
+npm i -g @ansible/ansible-language-server
+#+end_src
+**** Configuration
+[[file:~/.ansible.cfg]]
+
+#+begin_src bash :results output replace
+ansible --version
+#+end_src
+
+#+RESULTS[87d82b76e65498498f92fb10a274e734b3bddd69]:
+: ansible [core 2.11.12] 
+:   config file = /home/jeszyman/.ansible.cfg
+:   configured module search path = ['/home/jeszyman/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+:   ansible python module location = /home/jeszyman/.local/lib/python3.10/site-packages/ansible
+:   ansible collection location = /home/jeszyman/.ansible/collections:/usr/share/ansible/collections
+:   executable location = /home/jeszyman/.local/bin/ansible
+:   python version = 3.10.12 (main, Nov  6 2024, 20:22:13) [GCC 11.4.0]
+:   jinja version = 3.1.4
+:   libyaml = True
+
+**** Reference
+- https://sweworld.net/cheatsheets/ansible/
+
+*** code.perl
+#+name: code.perl
+#+begin_src bash :tangle ./emacs/public_yasnippets/org-mode/code.perl
+# -*- mode: snippet -*-
+# key: code.perl
+# expand-env: ((yas-indent-line 'none))
+# condition: 'auto
+# --
+,#+begin_src perl
+$0
+,#+end_src
+#+end_src
+[[file:emacs/public_yasnippets/org-mode/code.perl]]
+
+*** Linux ansible playbook
+:properties:
+:header-args:yaml: :tangle ./ansible/playbooks/linux-playbook.yaml :mkdirp yes
+:end:
+**** group_vars
+#+begin_src yaml :tangle ./ansible/group_vars/all.yaml 
+apt_packages:
+  - ansible
+  - tree
+  - htop
+  - curl
+  - git
+  - vim
+
+#+end_src
+**** Preamble
+#+begin_src yaml
+---
+- name: Linux Basic Playbook
+  hosts: all
+  gather_facts: true
+
+  tasks:
+#+end_src
+**** Include variables from a declared yaml file
+#+begin_src yaml
+    - name: Include group_vars/all.yaml explicitly
+      include_vars:
+        file: ../group_vars/all.yaml
+#+end_src
+**** Debugging info
 #+begin_src yaml
     - name: Debug useful variable readouts
       debug:
@@ -21438,18 +22418,19 @@ ansible [core 2.11.12]
           
           Package Manager: {{ ansible_pkg_mgr }}
 #+end_src
+**** Install APT package list as an external file
+:PROPERTIES:
+:ID:       b6edf46b-f569-4f13-8eb2-dc6011700f96
+:END:
+#+begin_src yaml
+    - name: Ensure APT packages are installed
+      apt:
+        name: "{{ apt_packages }}"
+        state: present
+        update_cache: yes
+      become: true  # Use sudo to run the task
 
-**** Processes
-#+begin_src bash
-# Avoid cryptography deprecation warnings: 
-pip install --upgrade paramiko cryptography
 #+end_src
-#+begin_src bash
-npm i -g @ansible/ansible-language-server
-#+end_src
-**** Reference
-- https://sweworld.net/cheatsheets/ansible/
-
 ** Development                                                          :dev:
 :PROPERTIES:
 :header-args: :tangle no
@@ -21482,6 +22463,7 @@ git_setup:
 :PROPERTIES:
 :ID:       b3c4c653-9584-4084-9e0e-abf16f95ac52
 :END:
+- make org tangles run asyncronous
 - cast boox screen to linux or http
 2. [X] safe rm through [[http://pages.stern.nyu.edu/~marriaga/software/libtrash/][libtrash]]
 https://gitlab.com/Chocimier/tuir

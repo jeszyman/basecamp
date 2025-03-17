@@ -38,6 +38,9 @@
 		       ("prop" ":properties:\n$0\n:end:\n" "prop" nil nil
 			((yas-indent-line 'none))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/prop" nil nil)
+		       ("org.hl" "<\\{$1\\}>\n" "org.hl" 'auto nil
+			((yas-indent-line 'none))
+			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/org.hl" nil nil)
 		       ("open_choose" "#+begin_src bash\n\n#+end_src\n" "open_choose" nil nil
 			((yas-indent-line 'fixed))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/open_choose" nil nil)
@@ -71,10 +74,13 @@
 		       ("code.prop" ":PROPERTIES:\n:header-args:${1:`(yas-choose-value '(\"R\" \"bash\" \" \"))`}: :tangle $2\n:END:\n$0\n" "code.prop" nil nil
 			((yas-indent-line 'none))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/code.prop" nil nil)
-		       ("code.lisp" "#+begin_src emacs-lisp\n$0\n#+end_src\n" "code.lisp" 'auto nil
+		       ("code.perl" "#+begin_src perl\n$0\n#+end_src\n" "code.perl" 'auto nil
+			((yas-indent-line 'none))
+			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/code.perl" nil nil)
+		       ("code.lisp" "#+begin_src emacs-lisp\n$1\n#+end_src$0\n" "code.lisp" 'auto nil
 			((yas-indent-line 'none))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/code.lisp" nil nil)
-		       ("code.latex" "#+begin_src latex\n$0\n#+end_src\n" "code.latex" 'auto nil
+		       ("code.latex" "#+begin_src latex\n$0\n#+end_src" "code.latex" 'auto nil
 			((yas-indent-line 'none))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/code.latex" nil nil)
 		       ("code.js" "#+begin_src javascript\n$0\n#+end_src\n" "code.js" 'auto nil
@@ -88,4 +94,4 @@
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/80" nil nil)))
 
 
-;;; Do not edit! File generated at Mon Nov  4 07:58:32 2024
+;;; Do not edit! File generated at Thu Jan 23 21:47:46 2025

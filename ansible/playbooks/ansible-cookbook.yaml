@@ -1,27 +1,43 @@
 ---
 - name: Ansible cookbook
-  hosts: localhost
+  # Hosts as all allows for either local or remote runs.
+  # Local runs should use the syntax:
+  # ANSIBLE_STDOUT_CALLBACK=yaml ansible-playbook -i localhost, --connection=local <PLAYBOOK.yaml>
+  # ANSIBLE_STDOUT_CALLBACK=yaml ensures better human-readable outputs
+  # -i localhost, (WITH comma) specifies implicit empty host file
+  # --connection=local bypasses ssh
+  #
+  # This setup allows hosts: all in the playbook but local runs via command line without
+  # an inventory. 
+  
+  hosts: all
   tasks:
 
     - name: Debug useful variable readouts
       debug:
-        msg: |
+        msg: "
+          \n=== System Information ===\n\n
           Logged in as: {{ ansible_env.USER }}
-          
-          Home directory: {{ ansible_user_dir }}
-          
-          Environment HOME: {{ ansible_env.HOME }}
-          
-          PATH: {{ ansible_env.PATH }}
-          
-          OS: {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_os_family }})
-          
-          Hostname: {{ ansible_hostname }}
-          
-          FQDN: {{ ansible_fqdn }}
-          
-          Default IPv4: {{ ansible_default_ipv4.address }}
-          
-          Inventory Sources: {{ ansible_inventory_sources }}
-          
-          Package Manager: {{ ansible_pkg_mgr }}
+          \n\nHome directory: {{ ansible_user_dir }}
+          \n\nEnvironment HOME: {{ ansible_env.HOME }}
+          \n\nPATH:
+            {{ ansible_env.PATH }}
+          \n\nOS: {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_os_family }})
+          \n\nHostname: {{ ansible_hostname }}
+          \n\nFQDN: {{ ansible_fqdn }}
+          \n\nDefault IPv4: {{ ansible_default_ipv4.address }}
+          \n\nInventory Sources: {{ ansible_inventory_sources }}
+          \n\nPackage Manager: {{ ansible_pkg_mgr }}
+          \n========================="
+
+# Note this is relative to the playbook location 
+    - name: Include yaml explicitly
+      include_vars:
+        file: ../group_vars/cookbook-apts.yaml
+
+    - name: Install apt packages
+      apt:
+        name: "{{ apt_packages }}"
+        state: present # state: latest for updates, state: present for checks
+        update_cache: yes
+      become: true

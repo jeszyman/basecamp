@@ -1,7 +1,8 @@
 # -*- mode: snippet -*-
-# key: prop
+# key: code.perl
 # expand-env: ((yas-indent-line 'none))
+# condition: 'auto
 # --
-:properties:
+#+begin_src perl
 $0
-:end:
+#+end_src

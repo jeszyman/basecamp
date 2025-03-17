@@ -14,16 +14,16 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(defun add-to-load-path-if-exists (dir)
-  "Add DIR and its subdirectories to the Emacs load-path if DIR exists."
-  (if (file-directory-p dir)
-      (let ((default-directory dir))
-        (message "Adding %s and its subdirectories to load-path" dir)
-        (normal-top-level-add-to-load-path '("."))
-        (normal-top-level-add-subdirs-to-load-path))
-    (message "Directory %s does not exist, skipping." dir)))
+(defun load-directory (dir)
+  "Add DIR and its subdirectories to the load-path and load all .el files."
+  (when (file-directory-p dir)
+    (let ((default-directory dir))
+      (message "Adding %s and its subdirectories to load-path" dir)
+      (normal-top-level-add-to-load-path '("."))
+      (normal-top-level-add-subdirs-to-load-path))
+    (dolist (file (directory-files dir t "\\.el\\'"))
+      (load file nil 'nomessage))))
 
-(add-to-load-path-if-exists "~/.emacs.d/lisp/")
 
 ;; Function to safely load a file if it exists
 (defun safe-load-file-if-exists (filepath)

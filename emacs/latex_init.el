@@ -27,6 +27,16 @@
 (require 'ox-latex)
 
 
+ 
+(setq org-babel-default-header-args '((:results . "silent")
+                                      (:eval . "no-export")
+                                      (:exports . "none")
+                                      (:tangle . "no")
+                                      (:cache . "yes")
+                                      (:noweb . "yes")
+				      (:mkdirp . "yes")
+                                      ;(:post-tangle . org-remove-properties-drawer)
+				      ))
 
 ;; the below as nil fucks of export of inline code
 (setq org-export-babel-evaluate t)

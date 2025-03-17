@@ -1,0 +1,41 @@
+#########1#########1#########1#########1#########1#########1#########1#########1
+apt_packages:
+  - ansible                   # Provisioning automation tool
+  - brave-browser             # Web browser
+  - curl                      # Command-line tool for HTTP requests
+  - fonts-firacode            # Monospaced font with ligatures
+  - git                       # Version control system
+  - htop                      # Interactive process viewer
+  - hunspell                  # Spell checker library
+  - hunspell-en-us            # English dictionary for Hunspell
+  - jq                        # JSON processor
+  - okular                    # Universal document viewer (PDF, ePub, etc.)
+  - pandoc                    # Document converter (Markdown, LaTeX, etc.)
+  - syncthing                 # Continuous file synchronization
+  - texlive-full              # Complete LaTeX distribution
+  - tree                      # Directory structure viewer
+  - ttf-mscorefonts-installer # Microsoft TrueType fonts
+  - vim                       # Advanced text editor
+  
+directory_structure:
+  - "${HOME}/repos"
+  
+public_symlinks:
+  - src: "${HOME}/repos/basecamp/emacs/init.el"
+    dest: "${HOME}/.emacs.d/init.el"
+  - src: "${HOME}/repos/basecamp/emacs/load-first.el"
+    dest: "${HOME}/.emacs.d/load-first.el"
+  - src: "${HOME}/repos/basecamp/emacs/load-last.el"
+    dest: "${HOME}/.emacs.d/load-last.el"
+  - src: "${HOME}/repos/basecamp/emacs/public_yasnippets"
+    dest: "${HOME}/.emacs.d/public_yasnippets"
+  - src: "${HOME}/repos/basecamp/lib/lisp_functions.el"
+    dest: "${HOME}/.emacs.d/lisp/lisp_functions.el"
+  - src: "${HOME}/repos/basecamp/emacs/public_config.el"
+    dest: "${HOME}/.emacs.d/config/public_config.el"
+  - src: "${HOME}/repos/basecamp/emacs/essh.el"
+    dest: "${HOME}/.emacs.d/lisp/essh.el"
+
+wget_downloads:
+  - src: https://www.emacswiki.org/emacs/download/essh.el
+    dest: "${HOME}/repos/basecamp/emacs/essh.el"

@@ -1,5 +1,82 @@
+(use-package anki-editor
+  :vc (:fetcher github :repo anki-editor/anki-editor))
+
+;; Citar configuration for org-cite integration
+(use-package citar
+  :after org
+  :init
+  (require 'oc)  ;; Ensure org-cite is loaded before configuring citar
+
+  :custom
+  ;; Bibliography paths
+  (org-cite-global-bibliography '("~/repos/org/bib.bib"))
+  (citar-bibliography org-cite-global-bibliography)
+  (citar-library-paths '("~/data/library/"))   ;; PDF storage
+
+  ;; Set citation processors
+  (org-cite-insert-processor 'citar)
+  (org-cite-follow-processor 'citar)
+  (org-cite-activate-processor 'citar)
+
+  ;; Display formatting
+  (citar-indicators (list citar-indicator-files citar-indicator-notes-icons))
+  (citar-display-transform-functions '((t . citar-clean-string)))
+
+  (citar-templates
+   '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
+     (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
+     (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+     (note . "Notes on ${author editor:%etal}, ${title}")))
+
+  ;; Visual configuration
+  (citar-symbols `((file . ?)))  ;; Icon for PDFs only
+
+  ;; Open PDFs and BibTeX entries
+  (citar-open-functions
+   '((file . (lambda (fpath) (call-process (if (eq system-type 'darwin) "open" "xdg-open") nil 0 nil fpath)))
+     (bibtex . citar-open-bibtex-entry)))  ;; Add BibTeX option
+
+  :config
+  (define-key org-mode-map (kbd "C-c ]") 'org-cite-insert))
+
+;; Configure file opening for citar
+(setq citar-file-open-functions
+      '(("html" . citar-file-open-external)
+        ("pdf" . citar-file-open-external)  ;; Use system default for PDFs
+        (t . find-file)))                   ;; Default to Emacs for others
+
+(use-package citar-embark
+  :after citar embark
+  :no-require
+  :config (citar-embark-mode))
+
+(setq citar-at-point-function 'embark-act)
+
+(use-package tex
+  :ensure auctex
+  :config
+  (setenv "PATH" (concat "/usr/local/texlive/2021/bin/x86_64-linux:"
+			 (getenv "PATH")))
+  (add-to-list 'exec-path "/usr/local/texlive/2021/bin/x86_64-linux")
+  (setq
+   TeX-auto-save t
+   TeX-parse-self t
+   TeX-save-query nil
+   TeX-view-program-selection
+   '(((output-dvi has-no-display-manager) . "dvi2tty")
+     ((output-dvi style-pstricks) . "dvips and gv")
+     (output-pdf . "Okular")
+     (output-dvi . "xdvi")
+     (output-pdf . "Evince")
+     (output-html . "xdg-open"))))
+
+(setq dired-kill-when-opening-new-dired-buffer t)
+
 (setq large-file-warning-threshold most-positive-fixnum) ; disable large file warning
 (setq-default cache-long-scans nil)
+
+(setq exec-path (append exec-path '("/opt/miniconda3/bin")))
+(setenv "PATH" (concat (getenv "PATH") ":/opt/miniconda3/bin"))
 
 ; ---   General   --- ;
 ; ------------------- ;
@@ -319,6 +396,26 @@
 (setq org-startup-folded t)
 (setq org-startup-with-inline-images t)
 
+(defun org-add-persistent-highlights ()
+  "Add persistent highlighting for custom markers in Org mode."
+  (font-lock-add-keywords
+   nil
+   '(("<{\\(.*?\\)}>" ; Match the pattern <{...}>
+      (1 '(:background "firebrick") t)))))
+
+(add-hook 'org-mode-hook #'org-add-persistent-highlights)
+
+(defun org-hide-markers-without-space ()
+  "Hide markers like << and >> in Org-mode without leaving empty space."
+  (font-lock-add-keywords
+   nil
+   '(("<{\\|}>"
+      (0 (progn (put-text-property (match-beginning 0) (match-end 0)
+                                   'display "")
+                'org-hide))))))
+
+(add-hook 'org-mode-hook #'org-hide-markers-without-space)
+
         (setq
          org-tags-exclude-from-inheritance
          (list
@@ -381,6 +478,17 @@
         (file . find-file)  ;; Open files in the same frame
         (wl . wl)))
 
+;(setq process-connection-type nil) this breaks *shell*
+(setq org-file-apps
+      '((directory . "/usr/bin/gnome-terminal --working-directory=\"%s\"")
+        ("\\.pdf\\'" . "setsid -w xdg-open \"%s\"")
+        ("\\.svg\\'" . "setsid -w xdg-open \"%s\"")
+	("\\.yaml\\'" . "emacsclient -c \"%s\"")
+	("\\.list\\'" . emacsclient)
+        (auto-mode . emacsclient)
+        (t . "setsid -w xdg-open \"%s\"")
+	))
+
 (setq org-cycle-include-plain-lists 'integrate)
 (setq org-list-indent-offset 0)
 
@@ -399,17 +507,6 @@ With prefix argument, also display headlines without a TODO keyword."
 
 (org-add-link-type
  "tag" 'endless/follow-tag-link)
-
-;(setq process-connection-type nil) this breaks *shell*
-(setq org-file-apps
-      '((directory . "/usr/bin/gnome-terminal --working-directory=\"%s\"")
-        ("\\.pdf\\'" . "setsid -w xdg-open \"%s\"")
-        ("\\.svg\\'" . "setsid -w xdg-open \"%s\"")
-	("\\.yaml\\'" . "emacsclient -c \"%s\"")
-	("\\.list\\'" . emacsclient)
-        (auto-mode . emacsclient)
-        (t . "setsid -w xdg-open \"%s\"")
-	))
 
 (setq org-image-actual-width '(300))
 
@@ -448,24 +545,15 @@ With prefix argument, also display headlines without a TODO keyword."
 
 (add-to-list 'org-src-lang-modes '("yaml" . yaml))
 
-(defun org-remove-properties-drawer ()
-  "Remove PROPERTIES drawer from tangled files."
-  (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward "^# :PROPERTIES:\n\\(?:# .*\n\\)*?# :END:\n" nil t)
-      (replace-match "")))
-  (save-buffer)
-  )
-
-(add-hook 'org-babel-post-tangle-hook 'org-remove-properties-drawer)
-
 (setq org-babel-default-header-args '((:results . "silent")
                                       (:eval . "no-export")
                                       (:exports . "none")
-                                      (:tangle . "yes")
+                                      (:tangle . "no")
                                       (:cache . "yes")
                                       (:noweb . "yes")
-                                      (:post-tangle . org-remove-properties-drawer)))
+				      (:mkdirp . "yes")
+                                      ;(:post-tangle . org-remove-properties-drawer)
+				      ))
 
 (setq
  ;; Blocks inserted directly without additional formatting
@@ -505,17 +593,24 @@ With prefix argument, also display headlines without a TODO keyword."
 (setq org-babel-noweb-wrap-start "<#"
       org-babel-noweb-wrap-end "#>")
 
-(defun my-org-remove-properties-drawer ()
-  "Remove PROPERTIES drawer from tangled files without triggering buffer modification warning."
-  (let ((buffer-modified-p (not (buffer-modified-p))))
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward "^# :PROPERTIES:\n\\(?:# .*\n\\)*?# :END:\n" nil t)
-        (replace-match "")))
-    (unless buffer-modified-p
-      (set-buffer-modified-p nil))))
-
-(advice-add 'org-remove-properties-drawer :override #'my-org-remove-properties-drawer)
+;; (defun my/org-babel-tangle-no-drawers ()
+;;   "Tangle with `:comments org`, removing property drawers entirely."
+;;   (interactive)
+;;   (let ((tangled-files (org-babel-tangle)))  ;; returns a list of file names
+;;     (dolist (f tangled-files)
+;;       (with-temp-buffer
+;;         (insert-file-contents f)
+;;         (goto-char (point-min))
+;;         ;; Remove everything from #.*:PROPERTIES: up to #.*:END:
+;;         (while (re-search-forward "^#.*:PROPERTIES:" nil t)
+;;           (let ((start (match-beginning 0)))
+;;             (when (re-search-forward "^#.*:END:" nil t)
+;;               (delete-region start (match-end 0)))))
+;;         ;; Remove extra blank lines
+;;         (goto-char (point-min))
+;;         (while (re-search-forward "\n\\{2,\\}" nil t)
+;;           (replace-match "\n"))
+;;         (write-region (point-min) (point-max) f)))))
 
 (setq org-show-hierarchy-above t)
 
@@ -538,16 +633,18 @@ With prefix argument, also display headlines without a TODO keyword."
       (goto-char (org-babel-where-is-src-block-head))
       (org-hide-block-toggle t))))
 
-
-
 (defun my-collapse-all-drawers (&optional arg)
-  (interactive "P")  ;; "P" means that the function accepts a prefix argument and passes it as ARG
+  "Hide all drawers and optionally cycle global visibility.
+When called with a prefix ARG (C-u), also cycle global visibility, hide all src blocks, and jump to the beginning of the buffer."
+  (interactive "P")
   (org-hide-drawer-all)
-  (when arg  ;; When ARG is non-nil (when called with C-u), execute `org-cycle-global`.
+  (when arg
     (org-cycle-global)
     (org-hide-all-src-blocks)
-    (beginning-of-buffer))
-  )
+    (goto-char (point-min))) ;; Use `goto-char` instead of `beginning-of-buffer` for clarity
+  ;; Ensure tags are aligned after all visibility changes
+  (org-align-tags t)) ;; Pass `t` to align all tags in the buffer
+
 
 (global-set-key (kbd "C-c d") 'my-collapse-all-drawers)
 ;; You might want to remove the hook if you don't want this function to run every time you open an org file
@@ -556,14 +653,14 @@ With prefix argument, also display headlines without a TODO keyword."
 (setq org-cycle-separator-lines 0)
 (setq yas-indent-line 'fixed)
 
-(defun my-remove-trailing-newlines-in-tangled-blocks ()
-  "Remove trailing newlines from tangled block bodies."
-  (save-excursion
-    (goto-char (point-max))
-    (when (looking-back "\n" nil)
-      (delete-char -1))))
+;; (defun my-remove-trailing-newlines-in-tangled-blocks ()
+;;   "Remove trailing newlines from tangled block bodies."
+;;   (save-excursion
+;;     (goto-char (point-max))
+;;     (when (looking-back "\n" nil)
+;;       (delete-char -1))))
 
-(add-hook 'org-babel-post-tangle-hook #'my-remove-trailing-newlines-in-tangled-blocks)
+;; (add-hook 'org-babel-post-tangle-hook #'my-remove-trailing-newlines-in-tangled-blocks)
 
 (setq org-confirm-shell-link-function nil)
 
@@ -662,22 +759,42 @@ When called with two prefix arguments, ARG, run the original function without pr
                                     ("\\paragraph{%s}" . "\\paragraph*{%s}")
                                     ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 
-(defun my-org-open-in-brave-new-window ()
-  "Open the link at point in Brave browser in a new window."
-  (interactive)
-  (let* ((context (org-element-context))
-         (link (and (eq (org-element-type context) 'link)
-                    (org-element-property :raw-link context))))
-    (if link
-        (start-process "brave-new-window" nil "brave-browser" "--new-window" link)
-      (message "No link at point"))))
+(defun my-org-open-in-brave-new-window (link)
+  "Open the LINK in Brave browser in a new window."
+  (start-process "brave-new-window" nil "brave-browser" "--new-window" link))
+
+(defun org-link-frame-open-id-or-file-in-new-frame (link)
+  "Open the FILE or ID LINK in a new frame."
+  (let ((location (cond
+                   ((string= (org-element-property :type (org-element-context)) "id")
+                    (org-id-find link 'marker))
+                   (t
+                    link)))) ; Assume it's a file link directly usable by `find-file-noselect`
+    (if (markerp location)
+        (with-current-buffer (marker-buffer location)
+          (select-frame (make-frame))
+          (goto-char location))
+      (select-frame (make-frame))
+      (find-file link))))
 
 (defun my-org-open-at-point (&optional arg)
-  "Open the link at point, using a new window in Brave if ARG is non-nil."
+  "Open the link at point.
+Use a new window in Brave if ARG is non-nil and the link is a URL.
+Open in a new Emacs frame if ARG is non-nil for ID or file links."
   (interactive "P")
-  (if arg
-      (my-org-open-in-brave-new-window)
-    (org-open-at-point)))
+  (let* ((context (org-element-context))
+         (link-type (org-element-property :type context))
+         (raw-link (org-element-property :raw-link context))
+         (link-path (org-element-property :path context)))
+    (if (and arg link-type)
+        (cond
+         ((or (string= link-type "http") (string= link-type "https"))
+          (my-org-open-in-brave-new-window raw-link))
+         ((or (string= link-type "id") (string= link-type "file"))
+          (org-link-frame-open-id-or-file-in-new-frame link-path))
+         (t
+          (message "No special handling for this link type: %s" link-type)))
+      (org-open-at-point))))
 
 ;; Rebind C-c C-o in org mode to our custom function
 (define-key org-mode-map (kbd "C-c C-o") 'my-org-open-at-point)
@@ -908,66 +1025,6 @@ TABLE-NAME is the name of the table identified as #+name."
 
 (global-set-key (kbd "C-x a") (lambda () (interactive) (insert "α")))
 
-(defun open-chatgpt-query-in-new-browser-window (query &optional use-gpt-4)
-  "Send a QUERY to ChatGPT and open the result in a new browser window.
-With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
-  (interactive "sEnter your ChatGPT query: \nP")
-  (let* ((model (if use-gpt-4 "gpt-4" "gpt-4-turbo"))
-         (url (concat "https://chat.openai.com/?q=" (url-hexify-string query)
-                      "&model=" model)))
-    (start-process "brave-browser" nil "brave-browser" "--new-window" url)))
-
-(global-set-key (kbd "C-c C-g") 'open-chatgpt-query-in-new-browser-window)
-
-  ;; https://emacs.stackexchange.com/questions/35069/best-way-to-select-a-word
-  (defun mark-whole-word (&optional arg allow-extend)
-    "Like `mark-word', but selects whole words and skips over whitespace.
-  If you use a negative prefix arg then select words backward.
-  Otherwise select them forward.
-
-  If cursor starts in the middle of word then select that whole word.
-
-  If there is whitespace between the initial cursor position and the
-  first word (in the selection direction), it is skipped (not selected).
-
-  If the command is repeated or the mark is active, select the next NUM
-  words, where NUM is the numeric prefix argument.  (Negative NUM
-  selects backward.)"
-    (interactive "P\np")
-    (let ((num  (prefix-numeric-value arg)))
-      (unless (eq last-command this-command)
-	(if (natnump num)
-	    (skip-syntax-forward "\\s-")
-	  (skip-syntax-backward "\\s-")))
-      (unless (or (eq last-command this-command)
-		  (if (natnump num)
-		      (looking-at "\\b")
-		    (looking-back "\\b")))
-	(if (natnump num)
-	    (left-word)
-	  (right-word)))
-      (mark-word arg allow-extend)))
-
-  (global-set-key (kbd "C-c C-SPC") 'mark-whole-word)
-
-(use-package tex
-  :ensure auctex
-  :config
-  (setenv "PATH" (concat "/usr/local/texlive/2021/bin/x86_64-linux:"
-			 (getenv "PATH")))
-  (add-to-list 'exec-path "/usr/local/texlive/2021/bin/x86_64-linux")
-  (setq
-   TeX-auto-save t
-   TeX-parse-self t
-   TeX-save-query nil
-   TeX-view-program-selection
-   '(((output-dvi has-no-display-manager) . "dvi2tty")
-     ((output-dvi style-pstricks) . "dvips and gv")
-     (output-pdf . "Okular")
-     (output-dvi . "xdvi")
-     (output-pdf . "Evince")
-     (output-html . "xdg-open"))))
-
 (use-package blacken
   :after elpy
   :hook (elpy-mode . blacken-mode))
@@ -979,6 +1036,29 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 ;;    company-dabbrev-downcase nil)) ; Don't downcase by default
 
 (setenv "WORKON_HOME" "~/miniconda3/envs")
+
+;; Corfu for completion UI
+(use-package corfu
+  :ensure t
+  :init
+  (global-corfu-mode) ;; Enable globally
+  :custom
+  (corfu-auto t)               ;; Enable auto completion
+  (corfu-auto-prefix 2)        ;; Start completing after typing 2 characters
+  (corfu-auto-delay 2.5)       ;; Delay before suggestions pop up
+  :config
+  ;; Free up keybindings for `completion-at-point`
+  (with-eval-after-load 'flyspell
+    (define-key flyspell-mode-map (kbd "C-M-i") nil)
+    (define-key flyspell-mode-map (kbd "M-TAB") nil))
+  (global-set-key (kbd "M-TAB") #'completion-at-point)) ;; Bind `M-TAB` globally
+
+;; Dynamic abbreviation completion
+(use-package dabbrev
+  :ensure nil
+  :config
+  (setq dabbrev-case-fold-search t) ;; Case-insensitive search
+  (setq dabbrev-upcase-means-case-search t)) ;; Respect case for uppercase words
 
 (use-package eglot
   :ensure t
@@ -994,17 +1074,30 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 (with-eval-after-load 'eglot
   (define-key eglot-mode-map (kbd "C-c <tab>") #'company-complete))
 
-(require 'essh)
-(defun essh-sh-hook ()
-  (define-key sh-mode-map "\C-c\C-r" 'pipe-region-to-shell)
-  (define-key sh-mode-map "\C-c\C-b" 'pipe-buffer-to-shell)
-  (define-key sh-mode-map "\C-c\C-j" 'pipe-line-to-shell)
-  (define-key sh-mode-map "\C-c\C-n" 'pipe-line-to-shell-and-step)
-  (define-key sh-mode-map "\C-c\C-f" 'pipe-function-to-shell)
-  (define-key sh-mode-map "\C-c\C-d" 'shell-cd-current-directory))
-(add-hook 'sh-mode-hook 'essh-sh-hook)
+(use-package elpy
+  :init
+  (advice-add 'python-mode :before 'elpy-enable)
+  :config
+  (define-key elpy-mode-map (kbd "C-c C-n") 'elpy-shell-send-statement-and-step)
+  (setenv "PATH" (concat "~/miniconda3/bin:" (getenv "PATH")))
+  (setenv "WORKON_HOME" "~/miniconda3/envs")
+  (setq exec-path (append '("~/miniconda3/bin") exec-path))
+  (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
+  (setq elpy-rpc-python-command "~/miniconda3/bin/python")
+)
 
-(add-hook 'sh-mode-hook 'flycheck-mode)
+(defun my-elpy-shell-display-buffer-in-new-frame (buffer alist)
+  "Display the Python shell buffer in a new frame."
+  (let ((display-buffer-alist
+         '(("*Python*" display-buffer-pop-up-frame))))
+    (display-buffer buffer alist)))
+
+(advice-add 'elpy-shell-send-statement-and-step :around
+            (lambda (orig-fun &rest args)
+              "Send statement and open the Python buffer in a new frame."
+              (let ((display-buffer-alist
+                     '(("*Python*" . (my-elpy-shell-display-buffer-in-new-frame)))))
+                (apply orig-fun args))))
 
 (use-package ess
   :init
@@ -1044,31 +1137,6 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
      (ess-R-fl-keyword:F&T . t)
      (ess-R-fl-keyword:%op% . t)))))
 
-(use-package elpy
-  :init
-  (advice-add 'python-mode :before 'elpy-enable)
-  :config
-  (define-key elpy-mode-map (kbd "C-c C-n") 'elpy-shell-send-statement-and-step)
-  (setenv "PATH" (concat "~/miniconda3/bin:" (getenv "PATH")))
-  (setenv "WORKON_HOME" "~/miniconda3/envs")
-  (setq exec-path (append '("~/miniconda3/bin") exec-path))
-  (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
-  (setq elpy-rpc-python-command "~/miniconda3/bin/python")
-)
-
-(defun my-elpy-shell-display-buffer-in-new-frame (buffer alist)
-  "Display the Python shell buffer in a new frame."
-  (let ((display-buffer-alist
-         '(("*Python*" display-buffer-pop-up-frame))))
-    (display-buffer buffer alist)))
-
-(advice-add 'elpy-shell-send-statement-and-step :around
-            (lambda (orig-fun &rest args)
-              "Send statement and open the Python buffer in a new frame."
-              (let ((display-buffer-alist
-                     '(("*Python*" . (my-elpy-shell-display-buffer-in-new-frame)))))
-                (apply orig-fun args))))
-
 (use-package exec-path-from-shell
   :config
   (when (daemonp)
@@ -1085,10 +1153,6 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
   (defun my-org-mode-flycheck-hook ()
     (when (derived-mode-p 'prog-mode) ;; Check if it's a programming mode
       (flycheck-mode 1))))
-
-(use-package flyspell
-  :config
-  (setq ispell-personal-dictionary "~/.aspell.en.pws"))
 
 (use-package helm
   :config
@@ -1140,7 +1204,49 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
   (marginalia-mode)
   :ensure t)
 
+  ;; https://emacs.stackexchange.com/questions/35069/best-way-to-select-a-word
+  (defun mark-whole-word (&optional arg allow-extend)
+    "Like `mark-word', but selects whole words and skips over whitespace.
+  If you use a negative prefix arg then select words backward.
+  Otherwise select them forward.
+
+  If cursor starts in the middle of word then select that whole word.
+
+  If there is whitespace between the initial cursor position and the
+  first word (in the selection direction), it is skipped (not selected).
+
+  If the command is repeated or the mark is active, select the next NUM
+  words, where NUM is the numeric prefix argument.  (Negative NUM
+  selects backward.)"
+    (interactive "P\np")
+    (let ((num  (prefix-numeric-value arg)))
+      (unless (eq last-command this-command)
+	(if (natnump num)
+	    (skip-syntax-forward "\\s-")
+	  (skip-syntax-backward "\\s-")))
+      (unless (or (eq last-command this-command)
+		  (if (natnump num)
+		      (looking-at "\\b")
+		    (looking-back "\\b")))
+	(if (natnump num)
+	    (left-word)
+	  (right-word)))
+      (mark-word arg allow-extend)))
+
+  (global-set-key (kbd "C-c C-SPC") 'mark-whole-word)
+
 (use-package native-complete)
+
+(defun open-chatgpt-query-in-new-browser-window (query &optional use-gpt-4)
+  "Send a QUERY to ChatGPT and open the result in a new browser window.
+With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
+  (interactive "sEnter your ChatGPT query: \nP")
+  (let* ((model (if use-gpt-4 "gpt-4" "gpt-4-turbo"))
+         (url (concat "https://chat.openai.com/?q=" (url-hexify-string query)
+                      "&model=" model)))
+    (start-process "brave-browser" nil "brave-browser" "--new-window" url)))
+
+(global-set-key (kbd "C-c C-g") 'open-chatgpt-query-in-new-browser-window)
 
 (use-package orderless
   :init
@@ -1161,57 +1267,6 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 (ox-extras-activate '(ignore-headlines))
 
 (use-package org-ql)
-
-(use-package org-ref
-  :init
-  (require 'bibtex)
-  (require 'org-ref-ivy)
-  (require 'org-ref-bibtex)
-  (require 'org-ref-pubmed)
-  (require 'org-ref-scopus)
-  (require 'org-ref-wos)
-  :config
-  (setq
-   org-ref-default-bibliography '("~/repos/org/bib.bib")
-   org-ref-pdf-directory "~/library/"))
-
-(setq bibtex-completion-bibliography '("~/repos/org/bib.bib")
-      bibtex-completion-library-path '("~/data/library/")
-      bibtex-completion-additional-search-fields '(keywords)
-      bibtex-completion-display-formats
-      '((article       . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${journal:40}")
-	(inbook        . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} Chapter ${chapter:32}")
-	(incollection  . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
-	(inproceedings . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
-	(t             . "${=has-pdf=:1}${=has-note=:1} ${year:4} ${author:36} ${title:*}"))
-      bibtex-completion-pdf-open-function
-      (lambda (fpath)
-	(call-process "open" nil 0 nil fpath)))
-
-(define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link)
-
-(setq org-ref-show-broken-links nil)
-
-(setq org-ref-bibliography-notes "~/repo/org/notes"
-      org-ref-default-bibliography '("~/repos/org/bib.bib")
-      org-ref-pdf-directory "~/library")
-
-(require 'org-ref-ivy)
-(setq org-ref-insert-link-function 'org-ref-insert-link-hydra/body
-      org-ref-insert-cite-function 'org-ref-cite-insert-ivy
-      org-ref-insert-label-function 'org-ref-insert-label-link
-      org-ref-insert-ref-function 'org-ref-insert-ref-link
-      org-ref-cite-onclick-function (lambda (_) (org-ref-citation-hydra/body)))
-
-(defun org-ref-link-message (&optional a1 a2 a3)
-  (when (and (eq major-mode 'org-mode)
-   (eq (get-text-property (point) 'help-echo) 'org-ref-cite-tooltip))
-  (display-local-help)))
-
-(advice-add 'right-char :after 'org-ref-link-message)
-(advice-add 'left-char :after 'org-ref-link-message)
-(advice-add 'evil-forward-char :after 'org-ref-link-message)
-(advice-add 'evil-backward-char :after 'org-ref-link-message)
 
 (use-package ox-pandoc
   :after org
@@ -1252,6 +1307,10 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
     (tree-sitter-mode -1)))
 
 (add-hook 'tree-sitter-mode-hook #'disable-tree-sitter-for-org-mode)
+
+(unless (package-installed-p 'vc-use-package)
+  (package-vc-install "https://github.com/slotThe/vc-use-package"))
+(require 'vc-use-package)
 
 (use-package vertico)
 
@@ -1359,11 +1418,11 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
                ("C-z" . vterm-undo)
                ("C-v" . vterm-yank))
   :init
-  (add-hook 'vterm-mode-hook '(lambda () (setq-local cua-mode nil))))
+  (add-hook 'vterm-mode-hook (lambda () (setq-local cua-mode nil)))
   :config
   (setq vterm-max-scrollback 100000)
   (custom-set-faces
-   '(vterm-color-blue ((t (:foreground "#477EFC" :background "#477EFC")))))
+   '(vterm-color-blue ((t (:foreground "#477EFC" :background "#477EFC"))))))
 
 (use-package multi-vterm :ensure t)
 

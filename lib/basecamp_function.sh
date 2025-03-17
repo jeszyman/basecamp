@@ -6,7 +6,7 @@
 
 connect_scrcpy() {
     # Default device IP and port
-    local DEVICE_IP="192.168.1.12"
+    local DEVICE_IP="192.168.1.9"
     local DEVICE_PORT="5555"
 
     # Function to display usage information
@@ -102,8 +102,10 @@ mute(){
 }
 # unmute()
 
-unmute() {
+unmute () {
     amixer set Master unmute
+    amixer set Master 30% unmute
+    amixer set Speaker 30% unmute  # If 'Master' doesn't work
     amixer set Capture cap
 }
 # volume-up()

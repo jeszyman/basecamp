@@ -1,0 +1,64 @@
+---
+- name: Install Latest R
+  hosts: all
+  become: yes
+  tasks:
+
+    - name: Install prerequisites
+      apt:
+        name:
+          - software-properties-common
+          - dirmngr
+          - gnupg
+          - curl
+          - ca-certificates
+        state: present
+        update_cache: yes
+
+    - name: Remove existing R installation if present
+      apt:
+        name: r-base
+        state: absent
+      ignore_errors: yes  # In case R is not installed
+
+    - name: Add CRAN GPG key
+      apt_key:
+        url: https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc
+        state: present
+
+    - name: Add CRAN R repository
+      apt_repository:
+        repo: "deb https://cloud.r-project.org/bin/linux/ubuntu {{ ansible_distribution_release }}-cran40/"
+        state: present
+        filename: "cran-r"
+
+    - name: Update package cache
+      apt:
+        update_cache: yes
+
+    - name: Install latest R base package
+      apt:
+        name: r-base
+        state: latest
+
+    - name: Verify R installation
+      command: R --version
+      register: r_version
+      changed_when: false
+
+    - name: Display installed R version
+      debug:
+        msg: "{{ r_version.stdout }}"
+
+    - name: Install system dependencies for tidyverse
+      apt:
+        name:
+          - libcurl4-openssl-dev
+          - libssl-dev
+          - libxml2-dev
+        state: present
+
+    - name: Install Tidyverse in R
+      command: sudo R -e 'install.packages("tidyverse", repos="https://cloud.r-project.org")'
+      args:
+        creates: /usr/local/lib/R/site-library/tidyverse  # Skip installation if already exists

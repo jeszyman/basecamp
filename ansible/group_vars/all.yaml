@@ -1,0 +1,7 @@
+apt_packages:
+  - ansible
+  - tree
+  - htop
+  - curl
+  - git
+  - vim
