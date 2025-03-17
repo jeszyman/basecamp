@@ -5,6 +5,7 @@
 :END:
 ** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
 ** [[id:89576FD2-F863-4220-BAD7-D4E179AEA644][Bash and shell]]
+** [[id:b16d0202-8d35-472b-b538-87a7d6a6cef7][Conda]]
 ** [[id:a49abc44-8e71-4a1a-bd35-a77849427c94][Emacs]]
 ** [[id:cd560390-aa1e-4c9e-8317-08610e5de42a][Linux]]
 ** [[id:88337952-4c36-402e-882f-6ccd6c7ff6a1][Org-mode and Emacs cookbook]]
@@ -356,6 +357,7 @@ apt_packages:
   - curl                      # Command-line tool for HTTP requests
   - fonts-firacode            # Monospaced font with ligatures
   - git                       # Version control system
+  - gh                        # GitHub command line tool
   - htop                      # Interactive process viewer
   - hunspell                  # Spell checker library
   - hunspell-en-us            # English dictionary for Hunspell
@@ -461,6 +463,14 @@ wget_downloads:
         msg: "Missing source: {{ item.item.src }}"
       loop: "{{ symlink_sources.results | selectattr('stat.exists', 'equalto', false) | list }}"
 
+    - name: Ensure parent directories of symlink destinations exist
+      ansible.builtin.file:
+        path: "{{ item.item.dest | dirname }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ public_symlinks }}"
+      no_log: true
+      
     - name: Make public symlinks for existing sources
       ansible.builtin.file:
         src: "{{ item.item.src }}"
@@ -6422,7 +6432,6 @@ https://github.nih.gov/learn
 :PROPERTIES:
 :ID:       a21144ea-1793-466e-87da-a88f3a540c25
 :END:
-
 ******* Flat
 - git clone https://github.com/jeszyman/basecamp.git my_basecamp
 - pull specific text file from github https://stackoverflow.com/a/31844340/6106936

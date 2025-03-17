@@ -5,6 +5,7 @@ apt_packages:
   - curl                      # Command-line tool for HTTP requests
   - fonts-firacode            # Monospaced font with ligatures
   - git                       # Version control system
+  - gh                        # GitHub command line tool
   - htop                      # Interactive process viewer
   - hunspell                  # Spell checker library
   - hunspell-en-us            # English dictionary for Hunspell
