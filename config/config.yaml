@@ -36,7 +36,11 @@ public_symlinks:
     dest: "${HOME}/.emacs.d/config/public_config.el"
   - src: "${HOME}/repos/basecamp/emacs/essh.el"
     dest: "${HOME}/.emacs.d/lisp/essh.el"
+  - src: "${HOME}/repos/basecamp/emacs/ob-mermaid.el"
+    dest: "${HOME}/.emacs.d/lisp/ob-mermaid.el"
 
 wget_downloads:
   - src: https://www.emacswiki.org/emacs/download/essh.el
     dest: "${HOME}/repos/basecamp/emacs/essh.el"
+  - src: https://raw.githubusercontent.com/arnm/ob-mermaid/refs/heads/master/ob-mermaid.el
+    dest: "${HOME}/repos/basecamp/emacs/ob-mermaid.el"

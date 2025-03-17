@@ -388,10 +388,14 @@ public_symlinks:
     dest: "${HOME}/.emacs.d/config/public_config.el"
   - src: "${HOME}/repos/basecamp/emacs/essh.el"
     dest: "${HOME}/.emacs.d/lisp/essh.el"
+  - src: "${HOME}/repos/basecamp/emacs/ob-mermaid.el"
+    dest: "${HOME}/.emacs.d/lisp/ob-mermaid.el"
 
 wget_downloads:
   - src: https://www.emacswiki.org/emacs/download/essh.el
     dest: "${HOME}/repos/basecamp/emacs/essh.el"
+  - src: https://raw.githubusercontent.com/arnm/ob-mermaid/refs/heads/master/ob-mermaid.el
+    dest: "${HOME}/repos/basecamp/emacs/ob-mermaid.el"
 #+end_src
 ** Ansible
 - See [[id:1169cb65-4a18-43d3-9643-67ac3e85f0d1][general ansible reference]]
@@ -15190,7 +15194,7 @@ https://chatgpt.com/c/8e222105-a52a-4856-80d3-c37823f0efb1
 #+begin_src emacs-lisp
 (use-package native-complete)
 #+end_src
-
+******* ob-mermaid
 ******* open-chatgtp-query-in-new-browser-window
 
 - Make a ChatGPT query from emacs
