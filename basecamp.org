@@ -465,7 +465,7 @@ wget_downloads:
 
     - name: Ensure parent directories of symlink destinations exist
       ansible.builtin.file:
-        path: "{{ item.item.dest | dirname }}"
+        path: "{{ item.dest | dirname }}"
         state: directory
         mode: '0755'
       loop: "{{ public_symlinks }}"
