@@ -467,7 +467,6 @@
 (add-hook 'before-save-hook 'org-table-recalculate-buffer-tables)
 (setq org-startup-align-all-tables t)
 (setq org-startup-shrink-all-tables t)
-(require 'org-collector)
 (defun endless/follow-tag-link (tag)
   "Display a list of TODO headlines with tag TAG.
 With prefix argument, also display headlines without a TODO keyword."

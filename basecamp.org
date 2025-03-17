@@ -14093,11 +14093,6 @@ https://chatgpt.com/c/fe962d8c-eb34-42fe-b362-032a61d8b728
 (setq org-startup-shrink-all-tables t)
 #+END_SRC
 
-********* org-collector
-#+begin_src emacs-lisp
-(require 'org-collector)
-#+end_src
-
 ********* Searching customizations
 
 ********** Create links to org tags
@@ -15598,6 +15593,25 @@ https://www.emacswiki.org/emacs/download/essh.el
 (add-hook 'sh-mode-hook 'flycheck-mode)
 #+end_src
 
+****** Dev
+:properties:
+:header-args: :tangle no
+:end:
+
+******* anki-editor
+- vs not recognized
+- NEEDS ANKI 23 and / or reverted anki connect
+#+begin_src emacs-lisp
+(use-package anki-editor
+  :vc (:fetcher github :repo anki-editor/anki-editor))
+
+#+end_src
+******* org-collector
+needs an install? 
+#+begin_src emacs-lisp
+(require 'org-collector)
+#+end_src
+
 ***** Casual / transient test
 #+begin_src emacs-lisp
 (use-package casual
@@ -15914,18 +15928,6 @@ https://github.com/jkitchin/org-ref/issues/938
 (advice-add 'evil-forward-char :after 'org-ref-link-message)
 (advice-add 'evil-backward-char :after 'org-ref-link-message)
 
-
-#+end_src
-***** Dev
-:properties:
-:header-args: :tangle no
-:end:
-
-****** anki-editor
-- NEEDS ANKI 23 and / or reverted anki connect
-#+begin_src emacs-lisp
-(use-package anki-editor
-  :vc (:fetcher github :repo anki-editor/anki-editor))
 
 #+end_src
 **** See [[id:BF9D824A-02EF-4580-97A1-B887299AD461][Lisp]]
