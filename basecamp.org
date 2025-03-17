@@ -487,10 +487,20 @@ wget_downloads:
 #+begin_src yaml
     - name: Ensure APT packages are installed
       apt:
-        name: "{{ apt_packages }}"
-        state: latest 
+        name: "{{ item }}"
+        state: latest
         update_cache: yes
-      become: true  
+      become: true
+      loop: "{{ apt_packages }}"
+      register: apt_install_results
+      ignore_errors: true  # Ensures playbook continues even if a package is missing
+
+    - name: Warn about unavailable APT packages
+      debug:
+        msg: "WARNING: Package '{{ item.item }}' was not found and could not be installed."
+      loop: "{{ apt_install_results.results }}"
+      when: "'No package matching' in item.msg"
+      
 #+end_src
 ***** Non-ATP Installs
 ****** yq
