@@ -181,6 +181,476 @@ My public YASnippets are compiled from source code blocks across my Org-mode age
   - Can use more human-friendly title case and spaces with symlinks and shortcuts
 - Prefer single-word file and directory names
 - For multi-word file and directory names, prefer a dash (-) separator (/e.g./ a-longer-file-name.txt)
+*** Bash and shell
+**** Scripts
+My common Bash script style follows a main-first structure with modular components as functions. A generalized format is:
+
+#+begin_src bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+print_usage() {
+    cat <<EOF
+USAGE: script_name <REQUIRED_ARG> [OPTIONAL_ARG]
+
+DESCRIPTION:
+  A brief description of what the script does.
+
+REQUIRED ARGUMENTS:
+  <REQUIRED_ARG>   Explanation of the required argument.
+
+OPTIONAL ARGUMENTS:
+  [OPTIONAL_ARG]   Explanation of the optional argument (default: $default_dir).
+
+OPTIONS:
+  -h, --help       Show this help message.
+
+EXAMPLES:
+  script_name value1
+  script_name value1 /path/to/directory
+
+EOF
+}
+
+main() {
+    parse_args "$@"
+    echo "Processing with: $required_arg1, $optional_arg"
+    some_helper_function
+}
+
+parse_args() {
+    if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+        print_usage
+        exit 0
+    fi
+
+    if [[ $# -lt 1 ]]; then
+        echo "Error: Missing required argument."
+        print_usage
+        exit 1
+    fi
+
+    declare -g required_arg1="$1"
+    declare -g optional_arg="${2:-$default_dir}"
+}
+
+some_helper_function() {
+    echo "This is a supporting function."
+}
+
+# Main guard
+main "$@"
+
+#+end_src
+
+Components in order of appearance
+- Shebang
+  #+begin_src bash
+#!/usr/bin/env bash
+#+end_src
+  Uses env to locate Bash in the user's PATH environment variable helping to ensure compatibility across different systems.
+- Strict Mode
+  #+begin_src bash
+set -euo pipefail
+#+end_src
+  set -e: Exits the script immediately if any command fails (non-zero exit status).
+  set -u: Treats the use of unset variables as an error and exits the script.
+  set -o pipefail: Ensures the script fails if any command in a pipeline fails (not just the last one).
+- Usage Function
+  #+begin_src bash
+print_usage() {
+    cat <<EOF
+USAGE: script_name <REQUIRED_ARG> [OPTIONAL_ARG]
+
+DESCRIPTION:
+  A brief description of what the script does.
+
+REQUIRED ARGUMENTS:
+  <REQUIRED_ARG>   Explanation of the first required argument.
+
+OPTIONAL ARGUMENTS:
+  [OPTIONAL_ARG]   Explanation of the optional argument (default: $default_dir).
+
+OPTIONS:
+  -h, --help       Show this help message.
+
+EXAMPLES:
+  script_name value1
+  script_name value1 /path/to/directory
+
+EOF
+}
+#+end_src
+  Because Bash lacks robust and simple argument parsing, I prefer a set order of:
+    Required arguments first.
+    Optional arguments second.
+  For common scripts for simplicity, I do not use getopts. 
+  I prefer using a here-document (cat <<EOF) structure for the usage statement because it improves readability.
+- Main Function
+  #+begin_src bash
+main() {
+    parse_args "$@"
+    echo "Processing with: $required_arg1, $optional_arg"
+    some_helper_function
+}
+#+end_src
+  main defines the overall script logic and execution order.
+  It always starts by calling parse_args "$@" to process command-line arguments. Main will be executed below the main guard. 
+- Argument Parsing
+  #+begin_src bash
+parse_args() {
+    if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+        print_usage
+        exit 0
+    fi
+
+    if [[ $# -lt 1 ]]; then
+        echo "Error: Missing required argument."
+        print_usage
+        exit 1
+    fi
+
+    declare -g required_arg1="$1"
+    declare -g optional_arg="${2:-$default_dir}"
+}
+#+end_src
+  arg_parse handles input argument parsing, triggers usage, performs any argument checks, and 
+  
+Handles -h / --help first to ensure help is displayed before checking for missing arguments.
+Ensures at least one required argument (required_arg1).
+Uses default values (optional_arg="${2:-$default_dir}") for optional parameters.
+Supporting Functions
+javascript
+Copy
+Edit
+some_helper_function() {
+    echo "This is a supporting function."
+}
+Supporting functions are defined below parse_args and main to keep the script structured.
+
+Main Guard
+bash
+Copy
+Edit
+# Main guard
+main "$@"
+Ensures the script starts execution from main.
+Allows sourcing (source script.sh) without running main immediately.
+Keeps execution explicit and structured.
+
+Scripts
+
+My common bash script style follows a main-first structure with several common modular components as functions. A generalized format is: 
+
+,#+begin_src bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+print_usage() {
+    cat <<EOF
+USAGE: script_name <REQUIRED_ARG> [OPTIONAL_ARG]
+
+DESCRIPTION:
+  A brief description of what the script does.
+
+REQUIRED ARGUMENTS:
+  <REQUIRED_ARG>   Explanation of the required argument
+
+OPTIONAL ARGUMENTS:
+  [OPTIONAL_ARG]   Explanation of the optional argument (default: $default_dir)
+
+OPTIONS:
+  -h, --help       Show this help message
+
+EXAMPLES:
+  script_name value1
+  script_name value1 /path/to/directory
+
+EOF
+}
+
+parse_args() {
+    if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+        print_usage
+        exit 0
+    fi
+
+    if [[ $# -lt 1 ]]; then
+        echo "Error: Missing required argument."
+        print_usage
+        exit 1
+    fi
+
+    declare -g required_arg1="$1"
+    declare -g optional_arg="${2:-$default_dir}"
+}
+
+some_helper_function() {
+    echo "This is a supporting function."
+}
+
+main() {
+    parse_args "$@"
+    echo "Processing with: $required_arg1, $optional_arg"
+    some_helper_function
+}
+
+# Start the script
+main "$@"
+
+#+end_src
+
+Components
+Shebang
+#+begin_src bash
+#!/usr/bin/env bash
+#+end_src
+Uses env to locate bash in the user's PATH environment variable.
+
+
+#+begin_src bash
+set -euo pipefail
+
+#+end_src
+set -e: Exits the script immediately if any command fails (non-zero exit status).
+set -u: Treats the use of unset variables as an error and exits the script.
+set -o: Ensures the script fails if any command in a pipeline fails (not just the last one).
+
+#+begin_src bash
+print_usage() {
+    cat <<EOF
+USAGE: script_name <REQUIRED_ARG> [OPTIONAL_ARG]
+
+DESCRIPTION:
+  A brief description of what the script does.
+
+REQUIRED ARGUMENTS:
+  <REQUIRED_ARG>   Explanation of the required argument
+
+OPTIONAL ARGUMENTS:
+  [OPTIONAL_ARG]   Explanation of the optional argument (default: $default_dir)
+
+OPTIONS:
+  -h, --help       Show this help message
+
+EXAMPLES:
+  script_name value1
+  script_name value1 /path/to/directory
+
+EOF
+}
+#+end_src
+Usage
+for input arguements and usage statements, 
+bash lacks robust input arguement parsing, so I prefer a set order of required followed by optional arguements. (no getopts).  I prefer heredoc structure for the usage staetmetn.
+
+#+begin_src bash
+main() {
+    parse_args "$@"
+    echo "Processing with: $required_arg1, $optional_arg"
+    some_helper_function
+}
+
+#+end_src
+main shows the overall script logic and order. main is the wrapper function for the entire script. always starts with parse_args "$@"
+
+#+begin_src bash
+parse_args() {
+    if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+        print_usage
+        exit 0
+    fi
+
+    if [[ $# -lt 1 ]]; then
+        echo "Error: Missing required argument."
+        print_usage
+        exit 1
+    fi
+
+    declare -g required_arg1="$1"
+    declare -g optional_arg="${2:-$default_dir}"
+}
+
+some_helper_function() {
+    echo "This is a supporting function."
+}
+
+main() {
+    parse_args "$@"
+    echo "Processing with: $required_arg1, $optional_arg"
+    some_helper_function
+}
+
+# Start the script
+main "$@"
+
+#+end_src
+In parse_args usage is checked and returned and input arguments are parsed in parse_args
+
+#+begin_src bash
+some_helper_function() {
+    echo "This is a supporting function."
+}
+
+#+end_src
+Additional functions 
+
+#+begin_src bash
+
+# Main guard
+main "$@"
+
+#+end_src
+Main guard calls main. 
+
+#+begin_src bash
+print_usage() {
+    cat <<EOF
+USAGE: script_name <REQUIRED_ARG1> [OPTIONAL_ARG]
+
+DESCRIPTION:
+  Briefly describe what the script does.
+
+REQUIRED ARGUMENTS:
+  <REQUIRED_ARG1>  Description of the first required argument
+
+OPTIONAL ARGUMENTS:
+  [OPTIONAL_ARG]   Description of the optional argument (default: current directory)
+
+OPTIONS:
+  -h, --help       Show this help message
+
+EXAMPLES:
+  script_name value1
+  script_name value1 /path/to/directory
+
+EOF
+}
+
+#+end_src
+
+
+#+begin_src bash
+parse_args() {
+    if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+        print_usage
+        exit 0
+    fi
+
+    if [[ $# -lt 1 ]]; then
+        echo "Error: Missing required argument <REQUIRED_ARG1>."
+        print_usage
+        exit 1
+    fi
+
+    declare -g required_arg1="$1"       # Required
+    declare -g optional_arg="${2:-.}"   # Optional (defaults to current directory)
+}
+
+
+#+end_src
+
+main() {
+    parse_args "$@"
+    echo "Processing with: $required_arg1, $optional_arg"
+    
+    # Example command using the parsed arguments
+    grep -r --color=auto "$required_arg1" "$optional_arg"
+}
+
+main "$@"
+
+
+
+
+#+begin_src bash
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+# Default values (if any)
+default_dir="."
+required_arg1=""
+optional_arg=""
+
+main() {
+    parse_args "$@"
+    echo "Processing with: $required_arg1, $optional_arg"
+    some_helper_function
+}
+
+parse_args() {
+    if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+        print_usage
+        exit 0
+    fi
+
+    if [[ $# -lt 1 ]]; then
+        echo "Error: Missing required argument."
+        print_usage
+        exit 1
+    fi
+
+    declare -g required_arg1="$1"
+    declare -g optional_arg="${2:-$default_dir}"
+}
+
+print_usage() {
+    cat <<EOF
+USAGE: script_name <REQUIRED_ARG> [OPTIONAL_ARG]
+
+DESCRIPTION:
+  A brief description of what the script does.
+
+REQUIRED ARGUMENTS:
+  <REQUIRED_ARG>   Explanation of the required argument
+
+OPTIONAL ARGUMENTS:
+  [OPTIONAL_ARG]   Explanation of the optional argument (default: $default_dir)
+
+OPTIONS:
+  -h, --help       Show this help message
+
+EXAMPLES:
+  script_name value1
+  script_name value1 /path/to/directory
+
+EOF
+}
+
+some_helper_function() {
+    echo "This is a supporting function."
+}
+
+# Start the script
+main "$@"
+
+#+end_src
+
+
+
+#+begin_src bash
+#!/bin/bash
+
+main() {
+    greet
+    farewell
+}
+
+greet() {
+    echo "Hello!"
+}
+
+farewell() {
+    echo "Goodbye!"
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    main
+fi
+#+end_src
+
 *** Conda
 
 For repositories and projects with heavy use of Python and R, software should be managed through the Conda package manager.
@@ -353,17 +823,22 @@ See also Emacs and Org-mode use in my LaTeX repository ([[https://github.com/jes
 #########1#########1#########1#########1#########1#########1#########1#########1
 apt_packages:
   - ansible                   # Provisioning automation tool
+  - aria2                     # wget improvement 
   - brave-browser             # Web browser
   - curl                      # Command-line tool for HTTP requests
   - fonts-firacode            # Monospaced font with ligatures
+  - fonts-hack                #
   - git                       # Version control system
   - gh                        # GitHub command line tool
   - htop                      # Interactive process viewer
   - hunspell                  # Spell checker library
   - hunspell-en-us            # English dictionary for Hunspell
   - jq                        # JSON processor
+  - libtool-bin               # vterm prereq
   - okular                    # Universal document viewer (PDF, ePub, etc.)
   - pandoc                    # Document converter (Markdown, LaTeX, etc.)
+  - parallel
+  - rename
   - syncthing                 # Continuous file synchronization
   - texlive-full              # Complete LaTeX distribution
   - tree                      # Directory structure viewer
@@ -381,7 +856,7 @@ public_symlinks:
   - src: "${HOME}/repos/basecamp/emacs/load-last.el"
     dest: "${HOME}/.emacs.d/load-last.el"
   - src: "${HOME}/repos/basecamp/emacs/public_yasnippets"
-    dest: "${HOME}/.emacs.d/public_yasnippets"
+    dest: "${HOME}/.emacs.d/snippets/public_yasnippets"
   - src: "${HOME}/repos/basecamp/lib/lisp_functions.el"
     dest: "${HOME}/.emacs.d/lisp/lisp_functions.el"
   - src: "${HOME}/repos/basecamp/emacs/public_config.el"
@@ -4028,7 +4503,7 @@ cmake -version
 :ID:       b16d0202-8d35-472b-b538-87a7d6a6cef7
 :END:
 ****** Ansible
-******* Conda install and provisioning playbook
+******* Conda install and provisioning playbook                      :ansipb:
 :properties:
 :header-args:yaml: :tangle ./ansible/playbooks/conda-playbook.yaml :mkdirp yes
 :ID:       7ab1917d-8962-4527-a4ac-5cdf7352f7a3
@@ -13484,63 +13959,6 @@ $0
 [[file:emacs/public_config.el]]
 
 - for config rewrite https://chatgpt.com/c/e16840b5-355a-42e3-bd97-70693daa17c0
-******* citar
-#+begin_src emacs-lisp
-;; Citar configuration for org-cite integration
-(use-package citar
-  :after org
-  :init
-  (require 'oc)  ;; Ensure org-cite is loaded before configuring citar
-
-  :custom
-  ;; Bibliography paths
-  (org-cite-global-bibliography '("~/repos/org/bib.bib"))
-  (citar-bibliography org-cite-global-bibliography)
-  (citar-library-paths '("~/data/library/"))   ;; PDF storage
-
-  ;; Set citation processors
-  (org-cite-insert-processor 'citar)
-  (org-cite-follow-processor 'citar)
-  (org-cite-activate-processor 'citar)
-
-  ;; Display formatting
-  (citar-display-transform-functions '((t . citar-clean-string)))
-
-  (citar-templates
-   '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
-     (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
-     (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-     (note . "Notes on ${author editor:%etal}, ${title}")))
-
-  ;; Visual configuration
-  (citar-symbols `((file . ?)))  ;; Icon for PDFs only
-
-  ;; Open PDFs and BibTeX entries
-  (citar-open-functions
-   '((file . (lambda (fpath) (call-process (if (eq system-type 'darwin) "open" "xdg-open") nil 0 nil fpath)))
-     (bibtex . citar-open-bibtex-entry)))  ;; Add BibTeX option
-
-  :config
-  (define-key org-mode-map (kbd "C-c ]") 'org-cite-insert))
-
-;; Configure file opening for citar
-(setq citar-file-open-functions
-      '(("html" . citar-file-open-external)
-        ("pdf" . citar-file-open-external)  ;; Use system default for PDFs
-        (t . find-file)))                   ;; Default to Emacs for others
-
-
-#+end_src
-#+begin_src emacs-lisp
-(use-package citar-embark
-  :after citar embark
-  :no-require
-  :config (citar-embark-mode))
-
-(setq citar-at-point-function 'embark-act)
-#+end_src
-https://blog.tecosaur.com/tmio/2021-07-31-citations.html
-https://kristofferbalintona.me/posts/202206141852/
 ******* AUCTeX
 - [[id:eb4a0bb3-2e8a-4bf5-9186-11f972b2e06d][AUCTeX reference header]]
 #+begin_src emacs-lisp
@@ -13956,6 +14374,7 @@ https://chatgpt.com/c/fe962d8c-eb34-42fe-b362-032a61d8b728
 :END:
 ********* Startup
 #+begin_src emacs-lisp
+(require 'org)
 (setq org-startup-folded t)
 (setq org-startup-with-inline-images t)
 #+end_src
@@ -14883,6 +15302,63 @@ https://github.com/gregsexton/ob-ipython/issues/28
   :hook (elpy-mode . blacken-mode))
 #+end_src
 
+******* citar
+#+begin_src emacs-lisp
+;; Citar configuration for org-cite integration
+(use-package citar
+  :after org
+  :init
+  (require 'oc)  ;; Ensure org-cite is loaded before configuring citar
+
+  :custom
+  ;; Bibliography paths
+  (org-cite-global-bibliography '("~/repos/org/bib.bib"))
+  (citar-bibliography org-cite-global-bibliography)
+  (citar-library-paths '("~/data/library/"))   ;; PDF storage
+
+  ;; Set citation processors
+  (org-cite-insert-processor 'citar)
+  (org-cite-follow-processor 'citar)
+  (org-cite-activate-processor 'citar)
+
+  ;; Display formatting
+  (citar-display-transform-functions '((t . citar-clean-string)))
+
+  (citar-templates
+   '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
+     (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
+     (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+     (note . "Notes on ${author editor:%etal}, ${title}")))
+
+  ;; Visual configuration
+  (citar-symbols `((file . ?)))  ;; Icon for PDFs only
+
+  ;; Open PDFs and BibTeX entries
+  (citar-open-functions
+   '((file . (lambda (fpath) (call-process (if (eq system-type 'darwin) "open" "xdg-open") nil 0 nil fpath)))
+     (bibtex . citar-open-bibtex-entry)))  ;; Add BibTeX option
+
+  :config
+  (define-key org-mode-map (kbd "C-c ]") 'org-cite-insert))
+
+;; Configure file opening for citar
+(setq citar-file-open-functions
+      '(("html" . citar-file-open-external)
+        ("pdf" . citar-file-open-external)  ;; Use system default for PDFs
+        (t . find-file)))                   ;; Default to Emacs for others
+
+
+#+end_src
+#+begin_src emacs-lisp
+(use-package citar-embark
+  :after citar embark
+  :no-require
+  :config (citar-embark-mode))
+
+(setq citar-at-point-function 'embark-act)
+#+end_src
+https://blog.tecosaur.com/tmio/2021-07-31-citations.html
+https://kristofferbalintona.me/posts/202206141852/
 ******* Company-mode
 - [[id:c65678fd-8df9-4f16-929c-c960c7441cd0][Company mode reference header]]
 #+begin_src emacs-lisp
@@ -15225,6 +15701,12 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 ******* org-plus-contrib
 ******** Use-package
 #+begin_src emacs-lisp
+(use-package org-contrib
+  :ensure t)
+
+#+end_src
+
+#+begin_src emacs-lisp
 (require 'org-checklist)
 (require 'ox-extra)
 (ox-extras-activate '(ignore-headlines))
@@ -15448,6 +15930,10 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
          "\\.djhtml\\'"
          "\\.html?\\'"))
 
+#+end_src
+******* yaml
+#+begin_src emacs-lisp
+(use-package yaml-mode)
 #+end_src
 
 ******* YASnippets
@@ -18111,11 +18597,8 @@ done
 :PROPERTIES:
 :ID:       89576FD2-F863-4220-BAD7-D4E179AEA644
 :END:
-https://www.reddit.com/r/bash/comments/1hz2kku/something_i_do_on_all_bash_scripts_i_write_what/
-https://www.reddit.com/r/bash/comments/1hshm3u/how_many_lines_is_your_bashrc_file_mine_is/
 ****** [[id:f2557e40-0d81-438a-93e9-6917a40c1d8e][Emacs as a bash IDE]]
-****** [[file:~/repos/basecamp-private/basecamp-private.org::*Shell and bash setup][My shell and bash setup]]
-****** General
+****** General reference
 :PROPERTIES:
 :ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
 :END:
@@ -18945,6 +19428,8 @@ https://www.google.com/search?q=bash+read+csv
   - https://duckduckgo.com/?q=multithread+grep&ia=qa
   - https://stackoverflow.com/questions/1455695/forking-multi-threaded-processes-bash
 ******* Scripts
+- https://www.reddit.com/r/bash/comments/1hz2kku/something_i_do_on_all_bash_scripts_i_write_what/
+
 ******** Error handling
 ******* Setup
 :PROPERTIES:
@@ -19538,6 +20023,9 @@ test=out.docx
 pandoc -S $test | xclip -selection clipboard
 
 #+end_src
+
+******* Configuration and setup 
+- https://www.reddit.com/r/bash/comments/1hshm3u/how_many_lines_is_your_bashrc_file_mine_is/
 
 ***** Document markup langugaes
 :PROPERTIES:
@@ -20746,6 +21234,7 @@ https://chatgpt.com/c/67d18bbf-d1ec-8005-bbbb-836fd4d82dd4
       debug:
         msg: "{{ r_version.stdout }}"
 #+end_src
+- note the tidyverse install takes forever, but it does work
 #+begin_src yaml
 
     - name: Install system dependencies for tidyverse
