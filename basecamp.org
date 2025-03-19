@@ -15941,12 +15941,29 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 #+begin_src emacs-lisp
 (use-package yasnippet
   :init
+  ;; Ensure the snippets directory exists
+  (let ((snippets-dir "~/.emacs.d/snippets"))
+    (unless (file-directory-p snippets-dir)
+      (make-directory snippets-dir t)))
+
   ;; Dynamically add subdirectories in ~/.emacs.d/snippets to yas-snippet-dirs
   (setq yas-snippet-dirs
-        (directory-files "~/.emacs.d/snippets" t "^[^.]+")) ; Directories only, no append needed
-   :config
+        (directory-files "~/.emacs.d/snippets" t "^[^.]+")) ; Directories only
+  :config
   (yas-global-mode 1) ; Enable yasnippet globally
   (define-key yas-minor-mode-map (kbd "<C-tab>") 'yas-expand))
+
+#+end_src
+
+#+begin_src emacs-lisp
+;; (use-package yasnippet
+;;   :init
+;;   ;; Dynamically add subdirectories in ~/.emacs.d/snippets to yas-snippet-dirs
+;;   (setq yas-snippet-dirs
+;;         (directory-files "~/.emacs.d/snippets" t "^[^.]+")) ; Directories only, no append needed
+;;    :config
+;;   (yas-global-mode 1) ; Enable yasnippet globally
+;;   (define-key yas-minor-mode-map (kbd "<C-tab>") 'yas-expand))
 
 #+end_src
 

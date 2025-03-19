@@ -1,17 +1,22 @@
 #########1#########1#########1#########1#########1#########1#########1#########1
 apt_packages:
   - ansible                   # Provisioning automation tool
+  - aria2                     # wget improvement 
   - brave-browser             # Web browser
   - curl                      # Command-line tool for HTTP requests
   - fonts-firacode            # Monospaced font with ligatures
+  - fonts-hack                #
   - git                       # Version control system
   - gh                        # GitHub command line tool
   - htop                      # Interactive process viewer
   - hunspell                  # Spell checker library
   - hunspell-en-us            # English dictionary for Hunspell
   - jq                        # JSON processor
+  - libtool-bin               # vterm prereq
   - okular                    # Universal document viewer (PDF, ePub, etc.)
   - pandoc                    # Document converter (Markdown, LaTeX, etc.)
+  - parallel
+  - rename
   - syncthing                 # Continuous file synchronization
   - texlive-full              # Complete LaTeX distribution
   - tree                      # Directory structure viewer
@@ -29,7 +34,7 @@ public_symlinks:
   - src: "${HOME}/repos/basecamp/emacs/load-last.el"
     dest: "${HOME}/.emacs.d/load-last.el"
   - src: "${HOME}/repos/basecamp/emacs/public_yasnippets"
-    dest: "${HOME}/.emacs.d/public_yasnippets"
+    dest: "${HOME}/.emacs.d/snippets/public_yasnippets"
   - src: "${HOME}/repos/basecamp/lib/lisp_functions.el"
     dest: "${HOME}/.emacs.d/lisp/lisp_functions.el"
   - src: "${HOME}/repos/basecamp/emacs/public_config.el"
