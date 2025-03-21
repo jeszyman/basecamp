@@ -25,6 +25,10 @@ apt_packages:
   
 directory_structure:
   - "${HOME}/repos"
+  - "${HOME}/.emacs.d/snippets"
+  - "${HOME}/.emacs.d/lisp"
+  - "${HOME}/.emacs.d/config"
+
   
 public_symlinks:
   - src: "${HOME}/repos/basecamp/emacs/init.el"

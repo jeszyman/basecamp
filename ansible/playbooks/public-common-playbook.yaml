@@ -4,6 +4,7 @@
   gather_facts: true
 
   tasks:
+
     - name: Debug useful variable readouts
       debug:
         msg: "
@@ -20,9 +21,11 @@
           \n\nInventory Sources: {{ ansible_inventory_sources }}
           \n\nPackage Manager: {{ ansible_pkg_mgr }}
           \n========================="
+
     - name: Include config yaml
       include_vars:
         file: "{{ ansible_env.HOME }}/repos/basecamp/config/config.yaml"
+
     - name: Ensure directories are created without changing existing permissions
       file:
         path: "{{ item | expanduser }}"
@@ -30,6 +33,7 @@
       loop: "{{ directory_structure }}"
       vars:
         directory_structure: "{{ directory_structure | default([]) }}"
+
     - name: Ensure destination directory exists
       file:
         path: "{{ item.dest | dirname }}"
@@ -44,6 +48,7 @@
         mode: '0644'
         force: no  # Ensures re-download only if file is missing or modified
       loop: "{{ wget_downloads }}"
+
     - name: Check symlink sources
       ansible.builtin.stat:
         path: "{{ item.src }}"
@@ -73,15 +78,21 @@
       loop: "{{ symlink_sources.results }}"
       when: item.stat.exists
       no_log: true
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      become: true
+      
     - name: Ensure APT packages are installed
       apt:
         name: "{{ item }}"
         state: latest
-        update_cache: yes
       become: true
       loop: "{{ apt_packages }}"
       register: apt_install_results
       ignore_errors: true  # Ensures playbook continues even if a package is missing
+
     - name: Download yq binary
       become: true
       ansible.builtin.get_url:
@@ -99,6 +110,7 @@
     - name: Debug yq version
       ansible.builtin.debug:
         msg: "yq successfully installed: {{ yq_version.stdout }}"
+
     - name: Ensure fonts directory exists
       file:
         path: "{{ ansible_env.HOME }}/.local/share/fonts"
@@ -116,3 +128,40 @@
 
     - name: Refresh font cache
       command: fc-cache -fv
+
+    - name: Create systemd user dir
+      file:
+        path: ~/.config/systemd/user
+        state: directory
+        mode: '0755'
+
+    - name: Install Emacs user service
+      copy:
+        dest: ~/.config/systemd/user/emacs.service
+        mode: '0644'
+        content: |
+          [Unit]
+          Description=Emacs 29 text editor daemon
+          Documentation=man:emacs(1) info:Emacs
+          After=network.target
+
+          [Service]
+          Type=forking
+          ExecStart=/usr/local/bin/emacs --daemon
+          ExecStop=/usr/bin/emacsclient --eval "(kill-emacs)"
+          Restart=always
+          RestartSec=3
+
+          [Install]
+          WantedBy=default.target
+
+    - name: Reload user systemd daemon
+      shell: systemctl --user daemon-reexec && systemctl --user daemon-reload
+      environment:
+        XDG_RUNTIME_DIR: "/run/user/{{ ansible_user_uid }}"
+
+    - name: Enable and start Emacs user service
+      shell: |
+        systemctl --user enable --now emacs.service
+      environment:
+        XDG_RUNTIME_DIR: "/run/user/{{ ansible_user_uid }}"

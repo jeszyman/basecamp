@@ -847,6 +847,10 @@ apt_packages:
   
 directory_structure:
   - "${HOME}/repos"
+  - "${HOME}/.emacs.d/snippets"
+  - "${HOME}/.emacs.d/lisp"
+  - "${HOME}/.emacs.d/config"
+
   
 public_symlinks:
   - src: "${HOME}/repos/basecamp/emacs/init.el"
@@ -964,16 +968,20 @@ wget_downloads:
 **** Install software
 ***** ATP installs
 #+begin_src yaml
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      become: true
+      
     - name: Ensure APT packages are installed
       apt:
         name: "{{ item }}"
         state: latest
-        update_cache: yes
       become: true
       loop: "{{ apt_packages }}"
       register: apt_install_results
       ignore_errors: true  # Ensures playbook continues even if a package is missing
-      
+       
 #+end_src
 ***** Non-ATP Installs
 ****** yq
@@ -1021,6 +1029,48 @@ wget_downloads:
 #+end_src
 
 ****** R
+**** Systemd services
+***** Emacs
+#+begin_src yaml
+    - name: Create systemd user dir
+      file:
+        path: ~/.config/systemd/user
+        state: directory
+        mode: '0755'
+
+    - name: Install Emacs user service
+      copy:
+        dest: ~/.config/systemd/user/emacs.service
+        mode: '0644'
+        content: |
+          [Unit]
+          Description=Emacs 29 text editor daemon
+          Documentation=man:emacs(1) info:Emacs
+          After=network.target
+
+          [Service]
+          Type=forking
+          ExecStart=/usr/local/bin/emacs --daemon
+          ExecStop=/usr/bin/emacsclient --eval "(kill-emacs)"
+          Restart=always
+          RestartSec=3
+
+          [Install]
+          WantedBy=default.target
+
+    - name: Reload user systemd daemon
+      shell: systemctl --user daemon-reexec && systemctl --user daemon-reload
+      environment:
+        XDG_RUNTIME_DIR: "/run/user/{{ ansible_user_uid }}"
+
+    - name: Enable and start Emacs user service
+      shell: |
+        systemctl --user enable --now emacs.service
+      environment:
+        XDG_RUNTIME_DIR: "/run/user/{{ ansible_user_uid }}"
+
+#+end_src
+
 *** Emacs29                                                          :ansipb:
 CLOSED: [2024-11-27 Wed 11:20]
 :LOGBOOK:
@@ -2060,8 +2110,35 @@ EOF
     fi
 }
 #+end_src
+***** ansible_local()
+#+begin_src bash
+ansible_local() {
+    print_usage() {
+        cat <<EOF
+Usage: ansible_local <PLAYBOOK YAML>
 
-***** file_size()
+Runs ansible as a local process with human interpretable output.
+(ANSIBLE_STDOUT_CALLBACK=yaml ansible-playbook -i localhost, --connection=local <PLAYBOOK.yaml>)
+
+Example: ansible_local the-playbook.yaml
+EOF
+    }
+
+    main() {
+        # Check for help or incorrect argument count
+        if [[ $1 == "-h" || $1 == "--help" || $# -ne 1 ]]; then
+            print_usage
+            return 1
+        fi
+
+        ANSIBLE_STDOUT_CALLBACK=yaml ansible-playbook -i localhost, --connection=local "$1"
+    }
+
+    main "$@"
+}
+#+end_src
+
+***** file_sizes()
 :PROPERTIES:
 :ID:       0ba47641-2a7f-4ec3-b6f9-e3abbdb49864
 :END:
@@ -9372,6 +9449,8 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :CREATED:  [2020-01-09 Thu 15:46]
 :ID:       cd560390-aa1e-4c9e-8317-08610e5de42a
 :END:
+
+
 default applications defined in - [[file:~/.config/mimeapps.list]]
 https://www.reddit.com/r/commandline/comments/1epjppl/10_cli_tools_that_made_the_biggest_impact_on/
 ******** Linux cookbook
@@ -12222,6 +12301,8 @@ CLOCK: [2024-10-02 Wed 13:00]--[2024-10-02 Wed 13:08] =>  0:08
 CLOCK: [2024-10-02 Wed 12:00]--[2024-10-02 Wed 12:08] =>  0:08
 :END:
 ********* Code and code blocks
+- Results header args
+
 - Elisp processes can be invoked as links in Org-mode with the link type `:elisp`. E.g. =[[elisp:(save-some-buffers 'no-confirm t)][Save all emacs buffers]]=
 - My additions and modifications
   - [[id:5ace2dd4-9dfb-41b9-a7ec-5ca32aaf94ae][org-execute-named-block-anywhere]] - allows execution of a code block from another agenda file
