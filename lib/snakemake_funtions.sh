@@ -43,7 +43,6 @@ EOF
     echo "Error: Snakemake run failed."
   fi
 }
-
 # smk_draw() Draw a rulegraph
 # :PROPERTIES:
 # :ID:       04b1ca54-c0d8-4bf6-bc58-ea066b8f5216
@@ -69,7 +68,6 @@ EOF
               --quiet \
               --rulegraph | tee >(dot -Tpdf > "$out_pdf") | dot -Tpng > "$out_png"
 }
-
 smk_draw(){
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF
@@ -90,7 +88,6 @@ EOF
             --quiet \
             --rulegraph | tee >(dot -Tpdf -Gsize=11,8.5 > "$out_pdf") | dot -Tpng > "$out_png"
 }
-
 # smk_dry() Dry run
 # :PROPERTIES:
 # :ID:       93e3fd9b-cbee-4a5d-8da5-8b54774e2890
@@ -138,7 +135,6 @@ EOF
       echo "Error: Snakemake run failed."
   fi
 }
-
 # smk_forced() Forced run
 # :PROPERTIES:
 # :ID:       6b970126-99f6-426b-bcf9-f76d5fea5149
@@ -187,7 +183,6 @@ EOF
       echo "Error: Snakemake run failed."
   fi
 }
-
 # smk_run() Normal run
 # :PROPERTIES:
 # :ID:       9e31b37b-0ecc-4157-8705-d9e4d3481607

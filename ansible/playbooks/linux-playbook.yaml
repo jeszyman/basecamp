@@ -4,11 +4,9 @@
   gather_facts: true
 
   tasks:
-
     - name: Include group_vars/all.yaml explicitly
       include_vars:
         file: ../group_vars/all.yaml
-
     - name: Debug useful variable readouts
       debug:
         msg: |
@@ -31,7 +29,6 @@
           Inventory Sources: {{ ansible_inventory_sources }}
           
           Package Manager: {{ ansible_pkg_mgr }}
-
     - name: Ensure APT packages are installed
       apt:
         name: "{{ apt_packages }}"

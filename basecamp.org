@@ -3,6 +3,8 @@
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :RESET_CHECK_BOXES: t
 :END:
+Maybe python and argparae the shell commands
+
 ** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
 ** [[id:89576FD2-F863-4220-BAD7-D4E179AEA644][Bash and shell]]
 ** [[id:b16d0202-8d35-472b-b538-87a7d6a6cef7][Conda]]
@@ -826,6 +828,7 @@ apt_packages:
   - aria2                     # wget improvement 
   - brave-browser             # Web browser
   - curl                      # Command-line tool for HTTP requests
+  - ncdu                      # Disk usage TUI
   - fonts-firacode            # Monospaced font with ligatures
   - fonts-hack                #
   - git                       # Version control system
@@ -1072,19 +1075,30 @@ wget_downloads:
 #+end_src
 
 *** Emacs29                                                          :ansipb:
-CLOSED: [2024-11-27 Wed 11:20]
-:LOGBOOK:
-- State "RAN_IDEMPOTENT" from "RAN_INITIAL" [2024-11-27 Wed 11:20]
-- State "RAN_INITIAL" from "DRAFT"      [2024-11-27 Wed 11:20]
-- State "DRAFT"      from              [2024-11-27 Wed 11:20]
+:PROPERTIES:
+:ID:       eb85b179-db79-4bb4-a706-4cea5bbdb75e
+:header-args:yaml: :tangle ./ansible/playbooks/emacs29-playbook.yaml
 :END:
-#+begin_src yaml :tangle ./ansible/playbooks/emacs29-playbook.yaml
+[[file:ansible/playbooks/emacs29-playbook.yaml]]
+- See
+  - [[id:7bad42e4-2b92-4d08-8bd5-f340103ec58a][My i3 configuration]]
+  - lib shell functions to work with this daemon: 
+    - [[id:61072582-fc7d-4a89-a513-d6319dd55c97][emacs-start()]]
+    - [[id:6963f124-8e97-4d9c-a3e2-aae62cdc4837][emacs-stop()]]
+    - [[id:eb42ff61-b8db-45b6-ac8d-1cb0f8b83458][emacs-save()]]
+    - [[id:9dca8884-6100-4ea1-ac60-10e88d442238][emacs()]]
+**** Preamble
+#+begin_src yaml
 ---
 - name: Install Emacs 29.4
   hosts: localhost
-  become: yes
   tasks:
+#+end_src
+
+**** Install prerequisites 
+#+begin_src yaml 
     - name: Ensure required dependencies are installed
+      become: yes
       apt:
         name:
           - libwebp-dev
@@ -1119,55 +1133,125 @@ CLOSED: [2024-11-27 Wed 11:20]
           - libacl1-dev
         state: present
         update_cache: yes
+#+end_src
 
-    - name: Check if Emacs 29.4 source archive already exists
+**** Main install
+#+begin_src yaml :
+    - name: Check if Emacs is already installed at /usr/local/bin/emacs
       stat:
-        path: /tmp/emacs-29.4.tar.xz
-      register: stat_result
+        path: /usr/local/bin/emacs
+      register: emacs_installed
 
     - name: Download Emacs 29.4 source archive
+      become: yes      
       get_url:
         url: https://mirrors.ocf.berkeley.edu/gnu/emacs/emacs-29.4.tar.xz
         dest: /tmp/emacs-29.4.tar.xz
         mode: '0644'
-      when: not stat_result.stat.exists
+      when: not emacs_installed.stat.exists
 
     - name: Extract Emacs 29.4 source archive
+      become: yes      
       ansible.builtin.unarchive:
         src: /tmp/emacs-29.4.tar.xz
         dest: /tmp
         remote_src: yes
       args:
         creates: /tmp/emacs-29.4
+      when: not emacs_installed.stat.exists
 
     - name: Configure Emacs build
+      become: yes      
       shell: ./configure --prefix=/usr/local --with-xwidgets --with-imagemagick
       args:
         chdir: /tmp/emacs-29.4
         creates: /tmp/emacs-29.4/Makefile
+      when: not emacs_installed.stat.exists
 
     - name: Build Emacs
+      become: yes      
       shell: make
       args:
         chdir: /tmp/emacs-29.4
         creates: /tmp/emacs-29.4/src/emacs
+      when: not emacs_installed.stat.exists
 
     - name: Install Emacs
+      become: yes      
       shell: make install
       args:
         chdir: /tmp/emacs-29.4
         creates: /usr/local/bin/emacs
+      when: not emacs_installed.stat.exists
 
     - name: Verify Emacs installation
-      command: emacs --version
+      command: /usr/local/bin/emacs --version
       register: emacs_version
       changed_when: false
 
     - name: Display installed Emacs version
       debug:
         msg: "Installed Emacs version: {{ emacs_version.stdout }}"
+#+end_src
+
+**** Initialization with systemctl
+Explicit server-socket-dir to ~/.emacs.d/server, ensuring predictable, user-writable path for the daemon to communicate with emacsclient. This avoids runtime errors and makes emacsclient work consistently across systems. All client commands then use --socket-name ~/.emacs.d/server/server to connect.
+#+begin_src yaml
+    - name: Ensure ~/.emacs.d/server exists with correct permissions
+      file:
+        path: "{{ ansible_env.HOME }}/.emacs.d/server"
+        state: directory
+        mode: '0700'
+
+    - name: Ensure server-start and socket-dir is set in Emacs config
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.emacs.d/init.el"
+        create: yes
+        insertafter: EOF
+        line: "{{ item }}"
+      loop:
+        - '(require ''server)'
+        - "(setq server-socket-dir (expand-file-name \"~/.emacs.d/server\"))"
+        - "(unless (server-running-p) (server-start))"
+      notify: Restart emacs daemon
+
+    - name: Install systemd user unit for emacs
+      copy:
+        dest: "{{ ansible_env.HOME }}/.config/systemd/user/emacs.service"
+        mode: '0644'
+        content: |
+          [Unit]
+          Description=Emacs 29 text editor daemon
+          Documentation=man:emacs(1) info:Emacs
+          After=network.target
+
+          [Service]
+          Type=forking
+          ExecStart=/usr/local/bin/emacs --daemon
+          ExecStop=/usr/bin/emacsclient --eval "(kill-emacs)"
+          Restart=always
+          RestartSec=3
+
+          [Install]
+          WantedBy=default.target
+      notify: Restart emacs daemon
+
+    - name: Enable and start emacs daemon user service
+      systemd:
+        name: emacs.service
+        scope: user
+        enabled: yes
+        state: started
+
+  handlers:
+    - name: Restart emacs daemon
+      systemd:
+        name: emacs.service
+        scope: user
+        state: restarted
 
 #+end_src
+
 ** Install and setup
 #+begin_src bash :results replace
 pip install 'python-lsp-server[all]'
@@ -1297,14 +1381,19 @@ inkscape() { launch /usr/bin/inkscape; }
 okular() { launch /usr/bin/okular; }
 
 
-
-emacs() {
-    exec /usr/local/bin/emacsclient -c --no-wait &
-    disown
+#+end_src
+***** emacs()
+:PROPERTIES:
+:ID:       9dca8884-6100-4ea1-ac60-10e88d442238
+:END:
+#+begin_src bash
+emacs () {
+    emacsclient -c --no-wait & disown
     exit
 }
 
 #+end_src
+
 ***** Volume control with amixer
 #+begin_src bash
 #+end_src
@@ -1353,8 +1442,10 @@ volume-down() {
     fi
 }
 #+end_src
-***** Emacs and emacs daemon
-****** emacs-start()
+***** emacs-start()
+:PROPERTIES:
+:ID:       61072582-fc7d-4a89-a513-d6319dd55c97
+:END:
 #+begin_src bash
 emacs-start() {
     print_usage(){
@@ -1367,7 +1458,7 @@ emacs-start() {
  Options:
    -h, --help    Show this help message and exit
 
- Arguements: This function takes no arguements.
+ Arguments: This function takes no arguments.
 
  Example:
    emacs-start
@@ -1375,30 +1466,34 @@ emacs-start() {
 EOF
 }
 
-    # Return usage if any arguments are provided
     if [[ $# -gt 0 ]]; then
         print_usage
         return 0
     fi
 
-        # Check if emacsclient is running
-    if pgrep -x "emacs" > /dev/null
-    then
+    SOCKET="$HOME/.emacs.d/server/server"
+
+    if systemctl --user is-active --quiet emacs.service && [ -S "$SOCKET" ]; then
         echo "Emacs daemon is already running."
     else
-        echo "Emacs daemon is not running. Starting it now..."
-        systemctl start --user emacs
-        if [ $? -eq 0 ]; then
+        echo "Starting Emacs daemon via systemd user service..."
+        systemctl start --user emacs.service
+        sleep 1
+        if [ -S "$SOCKET" ]; then
             echo "Emacs daemon started successfully."
         else
-            echo "Failed to start Emacs daemon. Please check your systemd configuration."
+            echo "Failed to start Emacs daemon or socket not found: $SOCKET"
             return 1
         fi
     fi
-
 }
+
 #+end_src
-****** emacs-stop()
+
+***** emacs-stop()
+:PROPERTIES:
+:ID:       6963f124-8e97-4d9c-a3e2-aae62cdc4837
+:END:
 #+begin_src bash
 emacs-stop() {
     print_usage(){
@@ -1406,12 +1501,12 @@ emacs-stop() {
 
  Usage: emacs-stop
 
- Terminates the emacsclient systemd daemon if running.
+ Terminates the Emacs systemd daemon if running.
 
  Options:
    -h, --help    Show this help message and exit
 
- Arguements: This function takes no arguements.
+ Arguments: This function takes no arguments.
 
  Example:
    emacs-stop
@@ -1419,23 +1514,52 @@ emacs-stop() {
 EOF
 }
 
-    # Return usage if any arguments are provided
     if [[ $# -gt 0 ]]; then
         print_usage
         return 0
     fi
 
-        # Check if emacsclient is running
-    if pgrep -x "emacs" > /dev/null
-    then
-	systemctl stop --user emacs
+    SOCKET="$HOME/.emacs.d/server/server"
+
+    if systemctl --user is-active --quiet emacs.service && [ -S "$SOCKET" ]; then
+        echo "Stopping Emacs daemon..."
+        systemctl stop --user emacs.service
+        echo "Emacs daemon stopped."
     else
         echo "Emacs daemon is not running. Nothing to do."
     fi
-
 }
+
 #+end_src
-****** emacs-save()
+***** emacs-save()
+:PROPERTIES:
+:ID:       eb42ff61-b8db-45b6-ac8d-1cb0f8b83458
+:END:
+#+begin_src bash
+emacs-save () 
+{ 
+    [[ "$1" =~ (-h|--help) ]] && { 
+        cat <<EOF
+Usage: emacs-save
+
+Invokes emacsclient --eval '(save-some-buffers t)' to save all open buffers
+via the Emacs systemd daemon.
+
+EOF
+        return
+    }
+
+    SOCKET="$HOME/.emacs.d/server/server"
+    if [ -S "$SOCKET" ]; then
+        emacsclient --socket-name "$SOCKET" --eval '(save-some-buffers t)'
+    else
+        echo "Emacs daemon socket not found at $SOCKET"
+        return 1
+    fi
+}
+
+#+end_src
+
 ***** ubuntu-settings()
 #+begin_src bash
 ubuntu-settings(){
@@ -1652,24 +1776,63 @@ EOF
 }
 #+end_src
 
-***** emacs-save()
-:PROPERTIES:
-:ID:       a79a1266-7168-49da-861a-d06a497a44c8
-:END:
+***** find_last
 #+begin_src bash
+find_last() {
+    print_usage() {
+        cat <<- EOF
 
-emacs-save(){
-    [[ "$1" =~ (-h|--help) ]] && {
-    cat <<EOF
-Usage: emacs-save
-Invokes emacsclient --eval '(save-some-buffers t)' to save all open buffers.
+usage: find_last <PATH> [-n NUM]
+
+List the most recently modified files under PATH.
+PATH can be a directory or a file pattern (e.g., './src/*.py').
+
+Options:
+  -n NUM   Number of results to show (default: 10)
+
+Examples:
+  find_last ./docs
+  find_last './src/*.sh' -n 5
+
 EOF
-    return
-      }
-    emacsclient --eval '(save-some-buffers t)'
+    }
+
+    local path=""
+    local n=10
+
+    # Parse args
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -h|--help)
+                print_usage
+                return
+                ;;
+            -n)
+                n="$2"
+                shift 2
+                ;;
+            *)
+                if [[ -z "$path" ]]; then
+                    path="$1"
+                    shift
+                else
+                    echo "Unexpected argument: $1"
+                    return 1
+                fi
+                ;;
+        esac
+    done
+
+    if [[ -z "$path" ]]; then
+        print_usage
+        return 1
+    fi
+
+    find $path -type f -printf '%T@ %P\n' 2>/dev/null | sort -n | tail -n "$n" | cut -d' ' -f2-
 }
 
 #+end_src
+
 ***** find_in_files()
 :PROPERTIES:
 :ID:       bbe30f0b-9836-4459-bf8f-39dca3b38907
@@ -1811,6 +1974,56 @@ EOF
     git grep $regexp $(git rev-list --all)
 }
 #+end_src
+***** git_deleted_search
+#+begin_src bash
+git_deleted_search() {
+    print_usage(){
+    cat <<- EOF
+
+ Usage: git_deleted_search <filename_substring> [repo_path]
+
+ Search for most recent deletion dates of files matching a pattern in a Git repo.
+
+ Options:
+   -h, --help    Show this help message and exit
+
+ Arguments:
+   <filename_substring>   Substring to match (e.g., "pca")
+   [repo_path]            Optional. Path to git repo (default: current directory)
+
+ Example:
+   git_deleted_search pca
+   git_deleted_search pca ~/repos/card-rad-bio
+
+EOF
+}
+
+    if [[ "$1" == "-h" || "$1" == "--help" || $# -lt 1 ]]; then
+        print_usage
+        return 0
+    fi
+
+    local pattern="$1"
+    local repo="${2:-$(pwd)}"
+
+    cd "$repo" || { echo "Repo path not found: $repo"; return 1; }
+
+    echo -e "DELETED       FILE"
+    git log --diff-filter=D --name-only --pretty='format:%ad' --date=short | \
+    awk '
+    /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/ {date=$0; next}
+    /\.*/ {
+        if (!seen[$0]++) {
+            printf "%s %s\n", date, $0
+        }
+    }' | grep -i "$pattern"
+
+    echo
+    echo "To restore a deleted file:"
+    echo "  git checkout <commit_hash>^ -- <path/to/file>"
+}
+#+end_src
+
 ***** ppt-to-pdf()
 
 
@@ -2118,7 +2331,7 @@ ansible_local() {
 Usage: ansible_local <PLAYBOOK YAML>
 
 Runs ansible as a local process with human interpretable output.
-(ANSIBLE_STDOUT_CALLBACK=yaml ansible-playbook -i localhost, --connection=local <PLAYBOOK.yaml>)
+(ansible-playbook -i localhost, --connection=local <PLAYBOOK.yaml>)
 
 Example: ansible_local the-playbook.yaml
 EOF
@@ -2131,7 +2344,7 @@ EOF
             return 1
         fi
 
-        ANSIBLE_STDOUT_CALLBACK=yaml ansible-playbook -i localhost, --connection=local "$1"
+        ansible-playbook -i localhost, --connection=local "$1"
     }
 
     main "$@"
@@ -11755,7 +11968,6 @@ $0
 :PROPERTIES:
 :ID:       eb4a0bb3-2e8a-4bf5-9186-11f972b2e06d
 :END:
-[[file:~/repos/basecamp-private/basecamp-private.org::*AUCTeX][My AUCTeX setup]]
 - documentation
   - [[https://www.gnu.org/software/auctex/manual/auctex/Folding.html][3.2 Folding Macros and Environments]]
 - https://stackoverflow.com/questions/7587287/how-do-i-bind-latexmk-to-one-key-in-emacs-and-have-it-show-errors-if-there-are-a
@@ -12226,6 +12438,16 @@ https://www.reddit.com/r/orgmode/comments/1j2b2gx/update_orgsupertag_25_a_new_wa
 :ID:       88337952-4c36-402e-882f-6ccd6c7ff6a1
 :export_file_name: /tmp/test
 :END:
+
+#+begin_src emacs-lisp :results replace
+org-version 
+#+end_src
+
+#+RESULTS:
+: 9.6.15
+
+
+
 - Run a simple timer
   #+begin_src emacs-lisp
 (run-at-time "1 min" nil 
@@ -14049,19 +14271,27 @@ $0
   (setenv "PATH" (concat "/usr/local/texlive/2021/bin/x86_64-linux:"
 			 (getenv "PATH")))
   (add-to-list 'exec-path "/usr/local/texlive/2021/bin/x86_64-linux")
+
   (setq
    TeX-auto-save t
    TeX-parse-self t
    TeX-save-query nil
    TeX-view-program-selection
-   '(((output-dvi has-no-display-manager) . "dvi2tty")
-     ((output-dvi style-pstricks) . "dvips and gv")
-     (output-pdf . "Okular")
-     (output-dvi . "xdvi")
-     (output-pdf . "Evince")
-     (output-html . "xdg-open"))))
+   '(((output-dvi has-no-display-manager) . ("dvi2tty"))
+     ((output-dvi style-pstricks) . ("dvips and gv"))
+     (output-pdf . ("Okular"))
+     (output-dvi . ("xdvi"))
+     (output-pdf . ("Evince"))
+     (output-html . ("xdg-open")))))
 
 #+end_src
+#+begin_src emacs-lisp
+(setq TeX-view-program-selection '((output-pdf "Okular"))
+      TeX-view-program-list
+      '(("Okular" "okular %o")))
+
+#+end_src
+
 ******* Base Emacs
 ******** Dired
 :PROPERTIES:

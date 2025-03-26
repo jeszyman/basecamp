@@ -4,6 +4,7 @@ apt_packages:
   - aria2                     # wget improvement 
   - brave-browser             # Web browser
   - curl                      # Command-line tool for HTTP requests
+  - ncdu                      # Disk usage TUI
   - fonts-firacode            # Monospaced font with ligatures
   - fonts-hack                #
   - git                       # Version control system

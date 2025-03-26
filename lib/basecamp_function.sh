@@ -1,5 +1,4 @@
 # Basecamp General Shell Functions
-
 # Function: connect_scrcpy
 # Usage: connect_scrcpy [-i DEVICE_IP] [-p DEVICE_PORT]
 
@@ -68,7 +67,6 @@ connect_scrcpy() {
     echo "Successfully connected and started scrcpy."
     return 0
 }
-
 launch() {
     (nohup "$@" >/dev/null 2>&1 &)
     exit
@@ -78,29 +76,21 @@ brave() { launch /usr/bin/brave-browser; }
 chrome() { launch /usr/bin/brave-browser; }
 inkscape() { launch /usr/bin/inkscape; }
 okular() { launch /usr/bin/okular; }
-
-
-
-emacs() {
-    exec /usr/local/bin/emacsclient -c --no-wait &
-    disown
+emacs () {
+    emacsclient -c --no-wait & disown
     exit
 }
-
-
 
 mute(){
     amixer set Master mute
     amixer set Capture nocap
 }
-
 unmute () {
     amixer set Master unmute
     amixer set Master 30% unmute
     amixer set Speaker 30% unmute  # If 'Master' doesn't work
     amixer set Capture cap
 }
-
 volume-up() {
     # Check if speakers are muted
     mute_status=$(amixer -D pulse get Master | grep -o '\[off\]')
@@ -111,7 +101,6 @@ volume-up() {
 	amixer -D pulse sset Master 5%+
     fi
 }
-
 volume-down() {
     # Check if speakers are muted
     mute_status=$(amixer -D pulse get Master | grep -o '\[off\]')
@@ -122,7 +111,6 @@ volume-down() {
 	amixer -D pulse sset Master 5%-
     fi
 }
-
 emacs-start() {
     print_usage(){
     cat <<- EOF
@@ -134,7 +122,7 @@ emacs-start() {
  Options:
    -h, --help    Show this help message and exit
 
- Arguements: This function takes no arguements.
+ Arguments: This function takes no arguments.
 
  Example:
    emacs-start
@@ -142,41 +130,39 @@ emacs-start() {
 EOF
 }
 
-    # Return usage if any arguments are provided
     if [[ $# -gt 0 ]]; then
         print_usage
         return 0
     fi
 
-        # Check if emacsclient is running
-    if pgrep -x "emacs" > /dev/null
-    then
+    SOCKET="$HOME/.emacs.d/server/server"
+
+    if systemctl --user is-active --quiet emacs.service && [ -S "$SOCKET" ]; then
         echo "Emacs daemon is already running."
     else
-        echo "Emacs daemon is not running. Starting it now..."
-        systemctl start --user emacs
-        if [ $? -eq 0 ]; then
+        echo "Starting Emacs daemon via systemd user service..."
+        systemctl start --user emacs.service
+        sleep 1
+        if [ -S "$SOCKET" ]; then
             echo "Emacs daemon started successfully."
         else
-            echo "Failed to start Emacs daemon. Please check your systemd configuration."
+            echo "Failed to start Emacs daemon or socket not found: $SOCKET"
             return 1
         fi
     fi
-
 }
-
 emacs-stop() {
     print_usage(){
     cat <<- EOF
 
  Usage: emacs-stop
 
- Terminates the emacsclient systemd daemon if running.
+ Terminates the Emacs systemd daemon if running.
 
  Options:
    -h, --help    Show this help message and exit
 
- Arguements: This function takes no arguements.
+ Arguments: This function takes no arguments.
 
  Example:
    emacs-stop
@@ -184,26 +170,45 @@ emacs-stop() {
 EOF
 }
 
-    # Return usage if any arguments are provided
     if [[ $# -gt 0 ]]; then
         print_usage
         return 0
     fi
 
-        # Check if emacsclient is running
-    if pgrep -x "emacs" > /dev/null
-    then
-	systemctl stop --user emacs
+    SOCKET="$HOME/.emacs.d/server/server"
+
+    if systemctl --user is-active --quiet emacs.service && [ -S "$SOCKET" ]; then
+        echo "Stopping Emacs daemon..."
+        systemctl stop --user emacs.service
+        echo "Emacs daemon stopped."
     else
         echo "Emacs daemon is not running. Nothing to do."
     fi
-
 }
+emacs-save () 
+{ 
+    [[ "$1" =~ (-h|--help) ]] && { 
+        cat <<EOF
+Usage: emacs-save
 
+Invokes emacsclient --eval '(save-some-buffers t)' to save all open buffers
+via the Emacs systemd daemon.
+
+EOF
+        return
+    }
+
+    SOCKET="$HOME/.emacs.d/server/server"
+    if [ -S "$SOCKET" ]; then
+        emacsclient --socket-name "$SOCKET" --eval '(save-some-buffers t)'
+    else
+        echo "Emacs daemon socket not found at $SOCKET"
+        return 1
+    fi
+}
 ubuntu-settings(){
     env XDG_CURRENT_DESKTOP=GNOME gnome-control-center sound & exit
 }
-
 check_mnt(){
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF
@@ -219,7 +224,6 @@ EOF
         echo "The directory $directory is not a mountpoint."
     fi
 }
-
 function pomo() {
     arg1=$1
     shift
@@ -233,7 +237,6 @@ function pomo() {
         date '+%H:%M' && sleep "${sec:?}" && notify-send -u critical -t 0 -a pomo "${msg:?}"
     done
 }
-
 convert_pdf_to_png() {
     print_usage() {
         cat <<- EOF
@@ -265,7 +268,6 @@ EOF
     echo "Conversion complete. Output saved to $output_file"
 
 }
-
 convert_pdf_to_svg() {
     print_usage() {
         cat <<- EOF
@@ -296,7 +298,6 @@ EOF
 
     echo "Conversion complete. Output saved to $output_file with a white background."
 }
-
 cpout() {
     if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
         cat <<EOF
@@ -310,7 +311,6 @@ EOF
     fi
     "$@" 2>&1 | tee >(xclip -selection clipboard)
 }
-
 docx_to_pdf() {
     local in_docx="$1"
 
@@ -330,7 +330,6 @@ EOF
 
     echo "Conversion complete"
 }
-
 emacs-latex() {
     print_usage() {
 	cat <<- EOF
@@ -367,18 +366,58 @@ EOF
                         (kill-emacs))"
 
 }
+find_last() {
+    print_usage() {
+        cat <<- EOF
 
-emacs-save(){
-    [[ "$1" =~ (-h|--help) ]] && {
-    cat <<EOF
-Usage: emacs-save
-Invokes emacsclient --eval '(save-some-buffers t)' to save all open buffers.
+usage: find_last <PATH> [-n NUM]
+
+List the most recently modified files under PATH.
+PATH can be a directory or a file pattern (e.g., './src/*.py').
+
+Options:
+  -n NUM   Number of results to show (default: 10)
+
+Examples:
+  find_last ./docs
+  find_last './src/*.sh' -n 5
+
 EOF
-    return
-      }
-    emacsclient --eval '(save-some-buffers t)'
-}
+    }
 
+    local path=""
+    local n=10
+
+    # Parse args
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -h|--help)
+                print_usage
+                return
+                ;;
+            -n)
+                n="$2"
+                shift 2
+                ;;
+            *)
+                if [[ -z "$path" ]]; then
+                    path="$1"
+                    shift
+                else
+                    echo "Unexpected argument: $1"
+                    return 1
+                fi
+                ;;
+        esac
+    done
+
+    if [[ -z "$path" ]]; then
+        print_usage
+        return 1
+    fi
+
+    find $path -type f -printf '%T@ %P\n' 2>/dev/null | sort -n | tail -n "$n" | cut -d' ' -f2-
+}
 find_in_files(){
     print_usage(){
         cat <<- EOF
@@ -404,7 +443,6 @@ EOF
 
     grep -rnw "${dir}" -e "${term}"
 }
-
 screenshot(){
     print_usage(){
 	cat <<- EOF
@@ -429,7 +467,6 @@ EOF
     scrot -s -f --overwrite /tmp/screenshot.png && xclip -selection clipboard -t image/png -i /tmp/screenshot.png
 
 }
-
 debug(){
     print_usage(){
 	cat <<- EOF
@@ -471,7 +508,6 @@ EOF
         echo "Function '$fun_name' not found."
     fi
 }
-
 git_search_all(){
     print_usage(){
         cat <<- EOF
@@ -497,7 +533,52 @@ EOF
 
     git grep $regexp $(git rev-list --all)
 }
+git_deleted_search() {
+    print_usage(){
+    cat <<- EOF
 
+ Usage: git_deleted_search <filename_substring> [repo_path]
+
+ Search for most recent deletion dates of files matching a pattern in a Git repo.
+
+ Options:
+   -h, --help    Show this help message and exit
+
+ Arguments:
+   <filename_substring>   Substring to match (e.g., "pca")
+   [repo_path]            Optional. Path to git repo (default: current directory)
+
+ Example:
+   git_deleted_search pca
+   git_deleted_search pca ~/repos/card-rad-bio
+
+EOF
+}
+
+    if [[ "$1" == "-h" || "$1" == "--help" || $# -lt 1 ]]; then
+        print_usage
+        return 0
+    fi
+
+    local pattern="$1"
+    local repo="${2:-$(pwd)}"
+
+    cd "$repo" || { echo "Repo path not found: $repo"; return 1; }
+
+    echo -e "DELETED       FILE"
+    git log --diff-filter=D --name-only --pretty='format:%ad' --date=short | \
+    awk '
+    /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/ {date=$0; next}
+    /\.*/ {
+        if (!seen[$0]++) {
+            printf "%s %s\n", date, $0
+        }
+    }' | grep -i "$pattern"
+
+    echo
+    echo "To restore a deleted file:"
+    echo "  git checkout <commit_hash>^ -- <path/to/file>"
+}
 pptx-to-pdf() {
     print_usage(){
     cat <<- EOF
@@ -534,7 +615,6 @@ EOF
   unoconv -f pdf $1
 
 }
-
 logout() {
     print_usage(){
         cat <<- EOF
@@ -564,7 +644,6 @@ EOF
     pgrep emacsclient && emacs-save && i3lock -c 000000 || i3lock -c 000000
 
 }
-
 ls-size(){
     print_usage(){
         cat <<- EOF
@@ -592,7 +671,6 @@ EOF
 
     ls -lrS1 --block-size=M
 }
-
 ls_recursive() {
     print_usage() {
         cat <<- EOF
@@ -630,7 +708,6 @@ EOF
 
     find . -maxdepth "$level" -name "*${regex}*"
 }
-
 git_wkflow_up(){
     print_usage(){
           cat <<- EOF
@@ -673,7 +750,6 @@ EOF
         git commit -m "$commit_msg" && git push
     fi
 }
-
 open(){
     print_usage(){
 	cat <<- EOF
@@ -699,7 +775,6 @@ EOF
     esac
 
 }
-
 run_with_nohup() {
 
     print_usage() {
@@ -734,7 +809,6 @@ EOF
 
     main "$@" & disown
 }
-
 dir_size() {
     if [[ "$1" == "-h" || "$1" == "--help" || $# -ne 1 ]]; then
         cat <<EOF
@@ -759,14 +833,13 @@ EOF
         du -sh --block-size=MB -L "$1"
     fi
 }
-
 ansible_local() {
     print_usage() {
         cat <<EOF
 Usage: ansible_local <PLAYBOOK YAML>
 
 Runs ansible as a local process with human interpretable output.
-(ANSIBLE_STDOUT_CALLBACK=yaml ansible-playbook -i localhost, --connection=local <PLAYBOOK.yaml>)
+(ansible-playbook -i localhost, --connection=local <PLAYBOOK.yaml>)
 
 Example: ansible_local the-playbook.yaml
 EOF
@@ -779,12 +852,11 @@ EOF
             return 1
         fi
 
-        ANSIBLE_STDOUT_CALLBACK=yaml ansible-playbook -i localhost, --connection=local "$1"
+        ansible-playbook -i localhost, --connection=local "$1"
     }
 
     main "$@"
 }
-
 file_sizes() {
 
     print_usage() {
@@ -814,7 +886,6 @@ EOF
 
     main "$@"
 }
-
 tangle() {
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF

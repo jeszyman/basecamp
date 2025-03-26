@@ -1,9 +1,9 @@
 ---
 - name: Install Emacs 29.4
   hosts: localhost
-  become: yes
   tasks:
     - name: Ensure required dependencies are installed
+      become: yes
       apt:
         name:
           - libwebp-dev
@@ -38,50 +38,110 @@
           - libacl1-dev
         state: present
         update_cache: yes
-
-    - name: Check if Emacs 29.4 source archive already exists
+    - name: Check if Emacs is already installed at /usr/local/bin/emacs
       stat:
-        path: /tmp/emacs-29.4.tar.xz
-      register: stat_result
+        path: /usr/local/bin/emacs
+      register: emacs_installed
 
     - name: Download Emacs 29.4 source archive
+      become: yes      
       get_url:
         url: https://mirrors.ocf.berkeley.edu/gnu/emacs/emacs-29.4.tar.xz
         dest: /tmp/emacs-29.4.tar.xz
         mode: '0644'
-      when: not stat_result.stat.exists
+      when: not emacs_installed.stat.exists
 
     - name: Extract Emacs 29.4 source archive
+      become: yes      
       ansible.builtin.unarchive:
         src: /tmp/emacs-29.4.tar.xz
         dest: /tmp
         remote_src: yes
       args:
         creates: /tmp/emacs-29.4
+      when: not emacs_installed.stat.exists
 
     - name: Configure Emacs build
+      become: yes      
       shell: ./configure --prefix=/usr/local --with-xwidgets --with-imagemagick
       args:
         chdir: /tmp/emacs-29.4
         creates: /tmp/emacs-29.4/Makefile
+      when: not emacs_installed.stat.exists
 
     - name: Build Emacs
+      become: yes      
       shell: make
       args:
         chdir: /tmp/emacs-29.4
         creates: /tmp/emacs-29.4/src/emacs
+      when: not emacs_installed.stat.exists
 
     - name: Install Emacs
+      become: yes      
       shell: make install
       args:
         chdir: /tmp/emacs-29.4
         creates: /usr/local/bin/emacs
+      when: not emacs_installed.stat.exists
 
     - name: Verify Emacs installation
-      command: emacs --version
+      command: /usr/local/bin/emacs --version
       register: emacs_version
       changed_when: false
 
     - name: Display installed Emacs version
       debug:
         msg: "Installed Emacs version: {{ emacs_version.stdout }}"
+    - name: Ensure ~/.emacs.d/server exists with correct permissions
+      file:
+        path: "{{ ansible_env.HOME }}/.emacs.d/server"
+        state: directory
+        mode: '0700'
+
+    - name: Ensure server-start and socket-dir is set in Emacs config
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.emacs.d/init.el"
+        create: yes
+        insertafter: EOF
+        line: "{{ item }}"
+      loop:
+        - '(require ''server)'
+        - "(setq server-socket-dir (expand-file-name \"~/.emacs.d/server\"))"
+        - "(unless (server-running-p) (server-start))"
+      notify: Restart emacs daemon
+
+    - name: Install systemd user unit for emacs
+      copy:
+        dest: "{{ ansible_env.HOME }}/.config/systemd/user/emacs.service"
+        mode: '0644'
+        content: |
+          [Unit]
+          Description=Emacs 29 text editor daemon
+          Documentation=man:emacs(1) info:Emacs
+          After=network.target
+
+          [Service]
+          Type=forking
+          ExecStart=/usr/local/bin/emacs --daemon
+          ExecStop=/usr/bin/emacsclient --eval "(kill-emacs)"
+          Restart=always
+          RestartSec=3
+
+          [Install]
+          WantedBy=default.target
+      notify: Restart emacs daemon
+
+    - name: Enable and start emacs daemon user service
+      systemd:
+        name: emacs.service
+        scope: user
+        enabled: yes
+        state: started
+
+  handlers:
+    - name: Restart emacs daemon
+      systemd:
+        name: emacs.service
+        scope: user
+        state: restarted

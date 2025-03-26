@@ -2,7 +2,6 @@
 - name: Install Conda 
   hosts: localhost
   tasks:
-
     - name: Check if Miniconda is installed by searching for 'conda' in PATH
       shell: "command -v conda"
       register: conda_check
@@ -38,7 +37,6 @@
       args:
         creates: "{{ ansible_env.HOME }}/miniconda/bin/conda"        
       when: miniconda_needed
-
     - name: Check if Conda is already initialized
       shell: "grep -q '>>> conda initialize >>>' {{ ansible_env.HOME }}/.bashrc"
       register: miniconda_initialized
@@ -62,7 +60,6 @@
         executable: /bin/bash
       environment:
         PATH: "{{ ansible_env.HOME }}/miniconda/bin:{{ ansible_env.PATH }}"
-
     - name: Install Mamba using Conda
       shell: "{{ ansible_env.HOME }}/miniconda/bin/conda install -y mamba -c conda-forge"
       args:

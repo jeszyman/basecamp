@@ -8,7 +8,6 @@ channels:
 # Adding 'defaults' to channel list implicitly is deprecated and will be removed in 25.3.
 
 dependencies:
-
 # ---   Python   --- #
 # ------------------ #
 
@@ -25,7 +24,6 @@ dependencies:
   - scikit-learn=1.3                         # Python machine learning modules #
   - snakemake                              # Python workflow management system #
   - statsmodels                        # A stats package with causal inference #
-
 # ---   R   --- #
 # ------------- #
 

@@ -19,7 +19,6 @@
             (load-theme 'manoj-dark t)))
 
 (load-theme 'manoj-dark t)
-
 (org-babel-do-load-languages
  'org-babel-load-languages
  '(
@@ -35,7 +34,6 @@
    (sql .t)
    (sqlite . t)
    ))
-
 (require 'ob-shell)
 (require 'yaml-mode)
 
@@ -47,7 +45,6 @@
     (org-babel-eval (format "cat %s" temp-file) "")))
 
 (add-to-list 'org-src-lang-modes '("yaml" . yaml))
-
 (defun endless/follow-tag-link (tag)
   "Display a list of TODO headlines with tag TAG.
 With prefix argument, also display headlines without a TODO keyword."
@@ -55,7 +52,6 @@ With prefix argument, also display headlines without a TODO keyword."
 
 (org-add-link-type
  "tag" 'endless/follow-tag-link)
-
 (require 'essh)
 (defun essh-sh-hook ()
   (define-key sh-mode-map "\C-c\C-r" 'pipe-region-to-shell)
