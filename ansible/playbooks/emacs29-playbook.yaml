@@ -111,6 +111,12 @@
         - "(unless (server-running-p) (server-start))"
       notify: Restart emacs daemon
 
+    - name: Ensure systemd user unit directory exists
+      file:
+        path: "{{ ansible_env.HOME }}/.config/systemd/user"
+        state: directory
+        mode: '0755'      
+
     - name: Install systemd user unit for emacs
       copy:
         dest: "{{ ansible_env.HOME }}/.config/systemd/user/emacs.service"
