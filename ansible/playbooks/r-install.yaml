@@ -49,7 +49,6 @@
     - name: Display installed R version
       debug:
         msg: "{{ r_version.stdout }}"
-
     - name: Install system dependencies for tidyverse
       apt:
         name:

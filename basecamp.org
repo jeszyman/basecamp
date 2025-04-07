@@ -928,6 +928,8 @@ public_symlinks:
     dest: "${HOME}/.emacs.d/lisp/essh.el"
   - src: "${HOME}/repos/basecamp/emacs/ob-mermaid.el"
     dest: "${HOME}/.emacs.d/lisp/ob-mermaid.el"
+  - src: "${HOME}/repos/basecamp/lib/basecamp_functions.sh"
+    dest: "${HOME}/.local/lib/mylibs/basecamp_functions.sh"
 
 wget_downloads:
   - src: https://www.emacswiki.org/emacs/download/essh.el
@@ -1127,6 +1129,17 @@ wget_downloads:
         systemctl --user enable --now emacs.service
       environment:
         XDG_RUNTIME_DIR: "/run/user/{{ ansible_user_uid }}"
+
+#+end_src
+
+**** Update bashrc
+#+begin_src yaml
+    - name: Source custom shell scripts from ~/.local/lib/mylibs in .bashrc
+      lineinfile:
+        path: ~/.bashrc
+        insertafter: EOF
+        line: 'for f in ~/.local/lib/mylibs/*.sh; do [ -f "$f" ] && source "$f"; done'
+        state: present
 
 #+end_src
 
@@ -1429,6 +1442,10 @@ apt-get install xauth
 :ID:       861fb855-7bac-4601-87b9-a5bb7a6db293
 :END:
 *** Shell
+:properties:
+:header-args: :tangle ./lib/basecamp_functions.sh 
+:end:
+
 https://chatgpt.com/c/66f5b550-66f0-8005-b5a1-733d20a01aed
 **** Ideas
 kill -9 $(pgrep brave)
@@ -1436,7 +1453,6 @@ open "$(find /tmp -type f -printf '%T@ %p\n' 2>/dev/null | sort -n | tail -1 | c
 
 **** General shell functions
 :PROPERTIES:
-:header-args: :tangle ./lib/basecamp_function.sh 
 :ID:       cb3c499d-ed2f-4ee3-9965-ca3e1af81178
 :END:
 
@@ -2569,7 +2585,6 @@ EOF
 alias disksize="du -sh -- * | sort -h"
 **** Conda functions
 :PROPERTIES:
-:header-args:bash: :tangle ./lib/conda_functions.sh
 :ID:       fb5f258b-cf75-46d1-9196-adc80d1ff6ff
 :END:
 ***** [[id:b16d0202-8d35-472b-b538-87a7d6a6cef7][Conda and Miniconda]]
@@ -2624,7 +2639,6 @@ EOF
 #+end_src
 **** Snakemake
 :PROPERTIES:
-:header-args: :tangle ./lib/snakemake_funtions.sh :tangle-mode (identity #o555) :mkdirp yes :noweb yes :comments org
 :ID:       ac9b5205-f878-484b-b079-71fd58b8424f
 :END:
 ***** [[id:a8b27140-4b9e-40c5-86ab-ee5afeae723f][snakemake]]

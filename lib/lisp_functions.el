@@ -26,7 +26,6 @@ BLOCK-NAME is the name of the block to execute."
                (not (buffer-modified-p target-buffer))
                (not (get-file-buffer file)))
       (kill-buffer target-buffer))))
-
 ;; find-duplicate-lines
 
 
@@ -52,7 +51,6 @@ BLOCK-NAME is the name of the block to execute."
               (terpri)))
           (message "Duplicate lines found and listed in *Duplicate Lines* buffer."))
       (message "No duplicate lines found."))))
-
 ;; run-latex-at-point
 ;; :PROPERTIES:
 ;; :ID:       3975a173-ac71-4c02-b032-ef215329ca59
@@ -77,7 +75,6 @@ BLOCK-NAME is the name of the block to execute."
         (start-process-shell-command "latex-process" output-buffer command)
         ;; Display the output buffer
         (pop-to-buffer output-buffer)))))
-
 ;; export-org-table-by-name-to-csv
 
 (defun export-org-table-by-name-to-csv (org-file table-name csv-file)
@@ -87,7 +84,6 @@ BLOCK-NAME is the name of the block to execute."
     (when (re-search-forward (concat "^#\\+NAME: " (regexp-quote table-name)) nil t)
       (forward-line)
       (org-table-export csv-file "orgtbl-to-csv"))))
-
 (defun open-vterm-in-new-frame ()
   "Open a new vterm buffer in a new frame."
   (interactive)

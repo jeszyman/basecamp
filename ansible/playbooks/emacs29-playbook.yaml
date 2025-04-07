@@ -2,7 +2,6 @@
 - name: Install Emacs 29.4
   hosts: localhost
   tasks:
-
     - name: Ensure required dependencies are installed
       become: yes
       apt:
@@ -39,7 +38,6 @@
           - libacl1-dev
         state: present
         update_cache: yes
-
     - name: Check if Emacs is already installed at /usr/local/bin/emacs
       stat:
         path: /usr/local/bin/emacs
@@ -95,7 +93,6 @@
     - name: Display installed Emacs version
       debug:
         msg: "Installed Emacs version: {{ emacs_version.stdout }}"
-
     - name: Configure emacsclient as default for text files
       block:
 
@@ -178,7 +175,6 @@
           shell: update-mime-database ~/.local/share/mime
           args:
             executable: /bin/bash
-
     - name: Ensure ~/.emacs.d/server exists with correct permissions
       file:
         path: "{{ ansible_env.HOME }}/.emacs.d/server"
@@ -230,7 +226,6 @@
         scope: user
         enabled: yes
         state: started
-
   handlers:
     - name: Restart emacs daemon
       systemd:

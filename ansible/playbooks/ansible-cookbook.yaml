@@ -12,7 +12,6 @@
   
   hosts: all
   tasks:
-
     - name: Debug useful variable readouts
       debug:
         msg: "
@@ -29,12 +28,10 @@
           \n\nInventory Sources: {{ ansible_inventory_sources }}
           \n\nPackage Manager: {{ ansible_pkg_mgr }}
           \n========================="
-
 # Note this is relative to the playbook location 
     - name: Include yaml explicitly
       include_vars:
         file: ../group_vars/cookbook-apts.yaml
-
     - name: Install apt packages
       apt:
         name: "{{ apt_packages }}"

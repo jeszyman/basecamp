@@ -35,7 +35,6 @@ output_file=$(echo "$input_file" | sed 's/\.pdf$/.png/')
 convert -density 600 -background white -flatten "$input_file" "$output_file"
 
 echo "Conversion complete. Output saved to $output_file"
-
 #!/usr/bin/env bash
 
 # /etc/ImageMagick-6/policy.xml policy change allows work with PDF

@@ -48,6 +48,8 @@ public_symlinks:
     dest: "${HOME}/.emacs.d/lisp/essh.el"
   - src: "${HOME}/repos/basecamp/emacs/ob-mermaid.el"
     dest: "${HOME}/.emacs.d/lisp/ob-mermaid.el"
+  - src: "${HOME}/repos/basecamp/lib/basecamp_functions.sh"
+    dest: "${HOME}/.local/lib/mylibs/basecamp_functions.sh"
 
 wget_downloads:
   - src: https://www.emacswiki.org/emacs/download/essh.el

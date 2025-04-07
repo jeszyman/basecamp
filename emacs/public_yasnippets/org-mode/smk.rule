@@ -3,7 +3,6 @@
 # expand-env: ((yas-indent-line 'none))
 # --
 smk.rule.${1:$$(yas-choose-value '("bash" "r"))}
-
 # -*- mode: snippet -*-
 # key: smk.rule
 # expand-env: ((yas-indent-line 'none))
