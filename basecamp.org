@@ -3,6 +3,7 @@
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :RESET_CHECK_BOXES: t
 :END:
+
 Maybe python and argparae the shell commands
 #+begin_src bash
 grep -R "debian.sur5r.net/i3" /etc/apt/sources.list /etc/apt/sources.list.d/
@@ -18,6 +19,47 @@ xdg-mime query default text/plain
 
 #+RESULTS:
 : emacsclient.desktop
+
+#+begin_src emacs-lisp
+;;Anaconda support
+;(require 'conda)
+;(use-package conda)
+;; if you want interactive shell support, include:
+(conda-env-initialize-interactive-shells)
+;; if you want eshell support, include:
+(conda-env-initialize-eshell)
+;; if you want auto-activation (see below for details), include:
+(conda-env-autoactivate-mode t)
+
+(custom-set-variables
+ '(conda-anaconda-home "/opt/conda/"))
+
+(setq conda-env-home-directory (expand-file-name "/opt/conda") ;
+      conda-env-subdirectory "envs")
+
+(setq conda-env-home-directory "/opt/conda")
+;;get current environment--from environment variable CONDA_DEFAULT_ENV
+;;(conda-env-activate 'getenv "CONDA_DEFAULT_ENV")
+;;(conda-env-autoactivate-mode t)
+(setq-default mode-line-format (cons mode-line-format '(:exec conda-env-current-name)))
+
+(setenv "WORKON_HOME" "/opt/conda/envs")
+(pyvenv-mode 1)
+#+end_src
+
+  #+begin_src emacs-lisp
+(use-package elpy
+  :init
+  (advice-add 'python-mode :before 'elpy-enable)
+  :config
+  (define-key elpy-mode-map (kbd "C-c C-n") 'elpy-shell-send-statement-and-step)
+  (setenv "PATH" (concat "/opt/conda/bin:" (getenv "PATH")))
+  (setenv "WORKON_HOME" "/opt/conda/envs")
+  (setq exec-path (append '("/opt/conda/bin") exec-path))
+  (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
+  (setq elpy-rpc-python-command "/opt/conda/bin/python")
+)
+#+end_src
 
 ** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
 ** [[id:89576FD2-F863-4220-BAD7-D4E179AEA644][Bash and shell]]
@@ -12192,8 +12234,8 @@ $0
 - https://github.com/necaris/conda.el
 #+begin_src emacs-lisp
 ;;Anaconda support
-(require 'conda)
-
+;(require 'conda)
+;(use-package conda)
 ;; if you want interactive shell support, include:
 (conda-env-initialize-interactive-shells)
 ;; if you want eshell support, include:
