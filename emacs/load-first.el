@@ -1,4 +1,5 @@
 (add-to-list 'exec-path "/usr/local/bin")
+
 ;(cua-selection-mode t)
 ;(setq mark-even-if-inactive t) ;; Keep mark active even when buffer is inactive
 ;(transient-mark-mode 1) ;; Enable transient-mark-mode for visual selection

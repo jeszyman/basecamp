@@ -9,6 +9,7 @@
     (progn
       (next-line)
       (org-table-export (format "./data/inputs/%s.csv" name) "orgtbl-to-csv")))))
+
 (require 'org)
 
 (defun my-tbl-export (name)
@@ -20,6 +21,7 @@
   (progn
     (next-line)
     (org-table-export (format "data/inputs/%s.csv" name) "orgtbl-to-csv")))))
+
 (require 'org)
 
 (defun my-tbl-export ()
@@ -30,6 +32,7 @@
   (progn
     (next-line)
     (org-table-export (format "/tmp/%s.csv" name) "orgtbl-to-csv"))))
+
 (require 'org)
 
 (defun my-tbl-export (name)

@@ -27,10 +27,13 @@
 		       ("doc.fun" "  [[ \"\\$1\" =~ (-h|--help) || -z \"\\$1\" ]] && {\n    cat <<EOF\nUsage: ${1: <FUNCTION NAME>} ${2: <USAGE>}\n${3: <DESCRIPTION>}\nEOF\n    return\n  }\n" "doc.fun" nil nil
 			((yas-indent-line 'none))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/sh-mode/doc.fun" nil nil)
+		       ("comment.block" "`(let* ((input (read-string \"Comment block text: \"))\n        (fill-column 80)\n        (temp-buf (generate-new-buffer \"*yas-fill*\")))\n   (with-current-buffer temp-buf\n     (insert input)\n     (fill-region (point-min) (point-max))\n     (split-string (buffer-string) \"\\n\"))\n   (prog1\n       (mapconcat (lambda (line) (concat \"# \" line)) \n                  (with-temp-buffer\n                    (insert input)\n                    (fill-region (point-min) (point-max))\n                    (split-string (buffer-string) \"\\n\"))\n                  \"\\n\")\n     (kill-buffer temp-buf)))`\n" "comment.block" nil nil
+			((yas-indent-line 'none))
+			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/sh-mode/comment.block" nil nil)
 		       ("array.from.find" "${1:ARRAY NAME}=()\nwhile IFS=  read -r -d $'\\0'; do\n    $1+=(\"$REPLY\")\ndone < <(find ${2:FIND DIR} -name ${3:FIND TERM} -print0)\nprintf '%s\\n' \"\\${$1[@]}\"\n$0\n" "array.from.find" nil nil nil "/home/jeszyman/.emacs.d/snippets/public_yasnippets/sh-mode/array.from.find" nil nil)
 		       ("80" "##########1##########2##########3##########4##########5##########6##########7##########8\n$0\n" "80" nil nil
 			((yas-indent-line 'fixed))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/sh-mode/80" nil nil)))
 
 
-;;; Do not edit! File generated at Thu Jan 23 21:47:46 2025
+;;; Do not edit! File generated at Wed Apr  2 10:45:46 2025

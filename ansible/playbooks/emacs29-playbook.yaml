@@ -2,6 +2,7 @@
 - name: Install Emacs 29.4
   hosts: localhost
   tasks:
+
     - name: Ensure required dependencies are installed
       become: yes
       apt:
@@ -38,6 +39,7 @@
           - libacl1-dev
         state: present
         update_cache: yes
+
     - name: Check if Emacs is already installed at /usr/local/bin/emacs
       stat:
         path: /usr/local/bin/emacs
@@ -93,6 +95,90 @@
     - name: Display installed Emacs version
       debug:
         msg: "Installed Emacs version: {{ emacs_version.stdout }}"
+
+    - name: Configure emacsclient as default for text files
+      block:
+
+        - name: Ensure ~/.local/bin exists
+          file:
+            path: "{{ user_home | default('~') }}/.local/bin"
+            state: directory
+            mode: '0755'
+
+        - name: Create emacsclient-disown wrapper script
+          copy:
+            dest: "{{ user_home | default('~') }}/.local/bin/emacsclient-disown"
+            mode: '0755'
+            content: |
+              #!/bin/bash
+              setsid /usr/local/bin/emacsclient --socket-name "$HOME/.emacs.d/server/server" -c "$@" & disown
+
+        - name: Create local applications directory
+          file:
+            path: "{{ user_home | default('~') }}/.local/share/applications"
+            state: directory
+            mode: '0755'
+
+        - name: Create emacsclient desktop entry
+          copy:
+            dest: "{{ user_home | default('~') }}/.local/share/applications/emacsclient.desktop"
+            mode: '0644'
+            content: |
+              [Desktop Entry]
+              Name=Emacs Client
+              GenericName=Text Editor
+              Comment=Edit text files with emacsclient
+              MimeType=text/plain;text/yaml;application/x-yaml;text/x-chdr;text/x-csrc;text/x-c++hdr;text/x-c++src;text/x-java;text/x-dsrc;text/x-pascal;text/x-perl;text/x-python;application/x-php;application/x-httpd-php3;application/x-httpd-php4;application/x-httpd-php5;application/xml;application/javascript;application/x-shellscript;text/x-scheme;
+              Exec=/home/jeszyman/.local/bin/emacsclient-disown %f
+              Icon=emacs
+              Type=Application
+              Terminal=false
+              Categories=Development;TextEditor;
+              StartupWMClass=Emacs
+              Keywords=Text;Editor;
+
+        - name: Create custom MIME types file
+          copy:
+            dest: "{{ user_home | default('~') }}/.mime.types"
+            content: |
+              text/plain    block
+            mode: '0644'
+
+        - name: Add MIME_TYPES_USER to bashrc
+          lineinfile:
+            path: "{{ user_home | default('~') }}/.bashrc"
+            line: 'export MIME_TYPES_USER=~/.mime.types'
+            state: present
+
+        - name: Create local mime directory
+          file:
+            path: "{{ user_home | default('~') }}/.local/share/mime"
+            state: directory
+            mode: '0755'
+
+        - name: Ensure MIME packages directory exists
+          file:
+            path: "{{ user_home | default('~') }}/.local/share/mime/packages"
+            state: directory
+            mode: '0755'
+
+        - name: Set emacsclient as default for text files
+          shell: |
+            xdg-mime default emacsclient.desktop text/plain
+            xdg-mime default emacsclient.desktop text/yaml
+            xdg-mime default emacsclient.desktop application/x-yaml
+            xdg-mime default emacsclient.desktop text/x-python
+            xdg-mime default emacsclient.desktop text/x-shellscript
+            xdg-mime default emacsclient.desktop application/xml
+            xdg-mime default emacsclient.desktop application/javascript
+          args:
+            executable: /bin/bash
+
+        - name: Update MIME database
+          shell: update-mime-database ~/.local/share/mime
+          args:
+            executable: /bin/bash
+
     - name: Ensure ~/.emacs.d/server exists with correct permissions
       file:
         path: "{{ ansible_env.HOME }}/.emacs.d/server"

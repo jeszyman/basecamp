@@ -4,6 +4,20 @@
 :RESET_CHECK_BOXES: t
 :END:
 Maybe python and argparae the shell commands
+#+begin_src bash
+grep -R "debian.sur5r.net/i3" /etc/apt/sources.list /etc/apt/sources.list.d/
+sudo rm /etc/apt/sources.list.d/sur5r-i3.list
+sudo apt-get update
+
+#+end_src
+
+#+begin_src bash :results replace
+xdg-mime query default text/plain
+
+#+end_src
+
+#+RESULTS:
+: emacsclient.desktop
 
 ** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
 ** [[id:89576FD2-F863-4220-BAD7-D4E179AEA644][Bash and shell]]
@@ -1194,6 +1208,93 @@ wget_downloads:
         msg: "Installed Emacs version: {{ emacs_version.stdout }}"
 #+end_src
 
+**** Make Emacs as emacsclient the default application for text files
+#+begin_src yaml
+    - name: Configure emacsclient as default for text files
+      block:
+
+        - name: Ensure ~/.local/bin exists
+          file:
+            path: "{{ user_home | default('~') }}/.local/bin"
+            state: directory
+            mode: '0755'
+
+        - name: Create emacsclient-disown wrapper script
+          copy:
+            dest: "{{ user_home | default('~') }}/.local/bin/emacsclient-disown"
+            mode: '0755'
+            content: |
+              #!/bin/bash
+              setsid /usr/local/bin/emacsclient --socket-name "$HOME/.emacs.d/server/server" -c "$@" & disown
+
+        - name: Create local applications directory
+          file:
+            path: "{{ user_home | default('~') }}/.local/share/applications"
+            state: directory
+            mode: '0755'
+
+        - name: Create emacsclient desktop entry
+          copy:
+            dest: "{{ user_home | default('~') }}/.local/share/applications/emacsclient.desktop"
+            mode: '0644'
+            content: |
+              [Desktop Entry]
+              Name=Emacs Client
+              GenericName=Text Editor
+              Comment=Edit text files with emacsclient
+              MimeType=text/plain;text/yaml;application/x-yaml;text/x-chdr;text/x-csrc;text/x-c++hdr;text/x-c++src;text/x-java;text/x-dsrc;text/x-pascal;text/x-perl;text/x-python;application/x-php;application/x-httpd-php3;application/x-httpd-php4;application/x-httpd-php5;application/xml;application/javascript;application/x-shellscript;text/x-scheme;
+              Exec=/home/jeszyman/.local/bin/emacsclient-disown %f
+              Icon=emacs
+              Type=Application
+              Terminal=false
+              Categories=Development;TextEditor;
+              StartupWMClass=Emacs
+              Keywords=Text;Editor;
+
+        - name: Create custom MIME types file
+          copy:
+            dest: "{{ user_home | default('~') }}/.mime.types"
+            content: |
+              text/plain    block
+            mode: '0644'
+
+        - name: Add MIME_TYPES_USER to bashrc
+          lineinfile:
+            path: "{{ user_home | default('~') }}/.bashrc"
+            line: 'export MIME_TYPES_USER=~/.mime.types'
+            state: present
+
+        - name: Create local mime directory
+          file:
+            path: "{{ user_home | default('~') }}/.local/share/mime"
+            state: directory
+            mode: '0755'
+
+        - name: Ensure MIME packages directory exists
+          file:
+            path: "{{ user_home | default('~') }}/.local/share/mime/packages"
+            state: directory
+            mode: '0755'
+
+        - name: Set emacsclient as default for text files
+          shell: |
+            xdg-mime default emacsclient.desktop text/plain
+            xdg-mime default emacsclient.desktop text/yaml
+            xdg-mime default emacsclient.desktop application/x-yaml
+            xdg-mime default emacsclient.desktop text/x-python
+            xdg-mime default emacsclient.desktop text/x-shellscript
+            xdg-mime default emacsclient.desktop application/xml
+            xdg-mime default emacsclient.desktop application/javascript
+          args:
+            executable: /bin/bash
+
+        - name: Update MIME database
+          shell: update-mime-database ~/.local/share/mime
+          args:
+            executable: /bin/bash
+
+#+end_src
+
 **** Initialization with systemctl
 Explicit server-socket-dir to ~/.emacs.d/server, ensuring predictable, user-writable path for the daemon to communicate with emacsclient. This avoids runtime errors and makes emacsclient work consistently across systems. All client commands then use --socket-name ~/.emacs.d/server/server to connect.
 #+begin_src yaml
@@ -1249,6 +1350,10 @@ Explicit server-socket-dir to ~/.emacs.d/server, ensuring predictable, user-writ
         enabled: yes
         state: started
 
+
+#+end_src
+**** Handlers
+#+begin_src yaml
   handlers:
     - name: Restart emacs daemon
       systemd:
@@ -1394,7 +1499,7 @@ okular() { launch /usr/bin/okular; }
 :END:
 #+begin_src bash
 emacs () {
-    emacsclient -c --no-wait & disown
+    emacsclient -c --no-wait --socket-name ~/.emacs.d/server/server & disown
     exit
 }
 
@@ -2625,6 +2730,7 @@ EOF
       --cores 4 \
       --dry-run \
       --rerun-incomplete \
+      --resources concurrency=$(nproc) \
       --snakefile $snakefile
 
   # Check exit code and provide error message
@@ -2684,6 +2790,44 @@ EOF
   fi
 }
 #+end_src
+***** smk_nohup
+#+begin_src bash
+smk_nohup(){
+  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+    cat <<EOF
+
+Usage: smk_nohup <SNAKEFILE> [CONFIGFILE]
+
+Same as smk_run, but runs in background with nohup and logs output to smk_run.nohup.log
+
+Example: smk_nohup ./workflow/analysis1.smk
+         smk_nohup ./workflow/analysis1.smk ./config/custom_config.yaml
+
+EOF
+    return
+  }
+
+  local snakefile="$1"
+  local configfile="${2:-./config/${HOSTNAME}.yaml}"
+  local cores=$(nproc)
+
+  [[ ! -f "$snakefile" ]] && { echo "Error: Snakefile '$snakefile' does not exist."; return 1; }
+  [[ ! -f "$configfile" ]] && { echo "Error: Config file '$configfile' does not exist."; return 1; }
+
+  nohup snakemake \
+    --configfile "$configfile" \
+    --cores "$cores" \
+    --keep-going \
+    --rerun-incomplete \
+    --resources concurrency=100 \
+    --snakefile "$snakefile" \
+    > smk_run.nohup.log 2>&1 &
+
+  disown
+  echo "Snakemake running in background. Log: smk_run.nohup.log"
+}
+
+#+end_src
 
 ***** smk_run() Normal run
 :PROPERTIES:
@@ -2727,6 +2871,7 @@ EOF
       --cores "$cores" \
       --keep-going \
       --rerun-incomplete \
+      --resources concurrency=100 \
       --snakefile "$snakefile"
 
   # Check exit code and provide error message
@@ -4810,6 +4955,9 @@ cmake -version
 ---
 - name: Install Conda 
   hosts: localhost
+  vars:
+    miniconda_prefix: "{{ ansible_env.HOME }}/miniconda3"
+    
   tasks:
 #+end_src
 ******** Install
@@ -4845,9 +4993,9 @@ cmake -version
         msg: "User's home directory is {{ ansible_user_dir }},Running as user: {{ ansible_env.USER }}, home: {{ ansible_env.HOME }}"
       
     - name: Install Miniconda if not installed
-      command: "bash /tmp/miniconda.sh -u -b -p {{ ansible_env.HOME }}/miniconda"
+      command: "bash /tmp/miniconda.sh -u -b -p {{ miniconda_prefix }}"
       args:
-        creates: "{{ ansible_env.HOME }}/miniconda/bin/conda"        
+        creates: "{{ miniconda_prefix }}/bin/conda"        
       when: miniconda_needed
       
 #+end_src
@@ -4860,32 +5008,32 @@ cmake -version
       changed_when: false
 
     - name: Initialize Miniconda for bash
-      shell: "{{ ansible_env.HOME }}/miniconda/bin/conda init bash"
+      shell: "{{ miniconda_prefix }}/bin/conda init bash"
       args:
         executable: /bin/bash
       when: miniconda_initialized.rc !=0
 
     - name: Prevent automatic activation of the base environment in conda
-      shell: "{{ ansible_env.HOME }}/miniconda/bin/conda config --set auto_activate_base false"
+      shell: "{{ miniconda_prefix }}/bin/conda config --set auto_activate_base false"
       args:
         executable: /bin/bash
 
     - name: Update conda
-      shell: "{{ ansible_env.HOME }}/miniconda/bin/conda update conda --yes"
+      shell: "{{ miniconda_prefix }}/bin/conda update conda --yes"
       args:
         executable: /bin/bash
       environment:
-        PATH: "{{ ansible_env.HOME }}/miniconda/bin:{{ ansible_env.PATH }}"
+        PATH: "{{ miniconda_prefix }}/bin:{{ ansible_env.PATH }}"
       
 #+end_src
 ******** Add mamba
 #+begin_src yaml
     - name: Install Mamba using Conda
-      shell: "{{ ansible_env.HOME }}/miniconda/bin/conda install -y mamba -c conda-forge"
+      shell: "{{ miniconda_prefix }}/bin/conda install -y mamba -c conda-forge"
       args:
         executable: /bin/bash
       environment:
-        PATH: "{{ ansible_env.HOME }}/miniconda/bin:{{ ansible_env.PATH }}"
+        PATH: "{{ miniconda_prefix }}/bin:{{ ansible_env.PATH }}"
 
 #+end_src
 
@@ -14803,16 +14951,19 @@ https://chatgpt.com/c/fe962d8c-eb34-42fe-b362-032a61d8b728
 ********** Set org-file-apps to use xdg-open for all file extensions
 
 #+begin_src emacs-lisp
-;(setq process-connection-type nil) this breaks *shell*
 (setq org-file-apps
-      '((directory . "/usr/bin/gnome-terminal --working-directory=\"%s\"")
+      `((directory . "/usr/bin/gnome-terminal --working-directory=\"%s\"")
         ("\\.pdf\\'" . "setsid -w xdg-open \"%s\"")
         ("\\.svg\\'" . "setsid -w xdg-open \"%s\"")
-	("\\.yaml\\'" . "emacsclient -c \"%s\"")
-	("\\.list\\'" . emacsclient)
+        ("\\.\\(yaml\\|yml\\|txt\\|md\\|conf\\|list\\)\\'" .
+         (lambda (file path)
+           (start-process "emacsclient" nil
+                          "setsid"
+                          "/usr/local/bin/emacsclient"
+                          "--socket-name" "/home/jeszyman/.emacs.d/server/server"
+                          "-c" (expand-file-name file))))
         (auto-mode . emacsclient)
-        (t . "setsid -w xdg-open \"%s\"")
-	))
+        (t . "setsid -w xdg-open \"%s\"")))
 
 #+end_src
 
@@ -15688,7 +15839,6 @@ https://kristofferbalintona.me/posts/202206141852/
 #+end_src
 ******* [[file:config/public_emacs_config.el][Compiled elisp file]]
 ******* Conda
-
 #+begin_src emacs-lisp
 (setenv "WORKON_HOME" "~/miniconda3/envs")
 #+end_src
@@ -15758,6 +15908,14 @@ https://kristofferbalintona.me/posts/202206141852/
   (setq elpy-rpc-python-command "~/miniconda3/bin/python")
 )
 #+end_src
+
+
+note, need to
+conda activate base
+pip install 'python-lsp-server[all]'
+
+
+
 - Open Python shells in a new frame
   - https://chatgpt.com/c/67252540-09c0-8005-8b13-e8cac310cd3a
   #+begin_src emacs-lisp
@@ -15775,6 +15933,8 @@ https://kristofferbalintona.me/posts/202206141852/
                 (apply orig-fun args))))
 
 #+end_src
+
+
 ******* ESS
 - [[id:147724ad-7598-4be6-b8a9-725a19eb39fe][ESS reference header]]
 ******** Use-package
@@ -19252,6 +19412,49 @@ $0
 ,#+end_src
 #+end_src
 [[file:emacs/public_yasnippets/org-mode/code.sh]]
+******* comment.block
+******* comment.block                                                   :yas:
+#+name: sh-mode_comment.block
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/comment.block
+# -*- mode: snippet -*-
+# key: comment.block
+# expand-env: ((yas-indent-line 'none))
+# --
+`(let* ((input (read-string "Comment block text: "))
+        ;; wrap to 80 chars using fill-region
+        (fill-column 80)
+        (temp-buf (generate-new-buffer "*yas-fill*")))
+   ;; Fill text and split into lines
+   (prog1
+       (mapconcat (lambda (line) (concat "# " line)) 
+                  (with-temp-buffer
+                    (insert input)
+                    (fill-region (point-min) (point-max))
+                    (split-string (buffer-string) "\n"))
+                  "\n")
+     (kill-buffer temp-buf)))`
+#+end_src
+#+begin_src bash
+thes is
+a multi comment
+vlock 
+# ${1:your text here}
+# thet is 
+
+
+# orem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
+# # orem Ipsum is simply dummy text of the printing and typesetting industry.
+#   Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
+#   when an unknown printer took a galley of type and scrambled it to make a type
+#   specimen book. It has survived not only five centuries, but also the leap into
+#   electronic typesetting, remaining essentially unchanged. It was popularised in
+#   the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
+#   and more recently with desktop publishing software like Aldus PageMaker
+#   including versions of Lorem Ipsum.
+
+#+end_src
+
 ******* Development                                                     :dev:
 :PROPERTIES:
 :header-args: :tangle no
@@ -20442,7 +20645,12 @@ nested_list:
 :END:
 - https://www.educative.io/blog/advanced-yaml-syntax-cheatsheet
 ******* Local YAS
-******* code.yaml                                                       :yas:
+******** comment.block
+[[file:emacs/public_yasnippets/yaml-mode/comment.block]]
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/yaml-mode/comment.block
+<#~/repos/basecamp/basecamp.org:sh-mode_comment.block()#>
+#+end_src
+******** code.yaml                                                      :yas:
 #+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/org-mode/code.yaml
 # -*- mode: snippet -*-
 # key: code.yaml
