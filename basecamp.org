@@ -12459,11 +12459,6 @@ https://www.google.com/search?client=ubuntu&hs=vZc&sxsrf=ALeKk03r2GUTR1rKBPenicU
 :ID:       e1e64cad-ce98-4e7e-872c-ebef38d556ab
 :END:
   - https://www.reddit.com/r/emacs/comments/vhqewj/lspbridge_is_good/
-******* Magit
-#+begin_src emacs-lisp
-(use-package magit)
-#+end_src
-
 ******* openwith
 :PROPERTIES:
 :ID:       738d7451-8370-4452-8262-2f825eac206f
@@ -16446,10 +16441,6 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 
 #+end_src
 
-******** Mult-vterm
-#+begin_src emacs-lisp
-(use-package multi-vterm :ensure t)
-#+end_src
 ******* web-mode
 ******** Use-package
 #+begin_src emacs-lisp
@@ -16535,6 +16526,11 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 
 #+end_src
 
+
+******* Magit
+#+begin_src emacs-lisp
+(use-package magit)
+#+end_src
 
 ****** Load Last
 :PROPERTIES:

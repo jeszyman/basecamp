@@ -16,19 +16,14 @@
      (output-dvi . ("xdvi"))
      (output-pdf . ("Evince"))
      (output-html . ("xdg-open")))))
-
 (setq TeX-view-program-selection '((output-pdf "Okular"))
       TeX-view-program-list
       '(("Okular" "okular %o")))
-
 (setq dired-kill-when-opening-new-dired-buffer t)
-
 (setq large-file-warning-threshold most-positive-fixnum) ; disable large file warning
 (setq-default cache-long-scans nil)
-
 (setq exec-path (append exec-path '("/opt/miniconda3/bin")))
 (setenv "PATH" (concat (getenv "PATH") ":/opt/miniconda3/bin"))
-
 ; ---   General   --- ;
 ; ------------------- ;
 
@@ -107,7 +102,6 @@
 ;https://emacs.stackexchange.com/questions/72483/how-to-define-consult-faces-generically-for-minibuffer-highlighting-that-fits-wi
 (global-hl-line-mode 1)
 (set-face-attribute 'highlight nil :background "#294F6E")
-
 (setq tramp-default-method "ssh")
 
 
@@ -125,7 +119,6 @@
 
 ; https://emacs.stackexchange.com/questions/29286/tramp-unable-to-open-some-files
 (setq tramp-copy-size-limit 10000000)
-
 ; ASCII Arrows
 
 ; ---   ASCII Arrows   --- ;
@@ -146,7 +139,6 @@
 		(lambda () (interactive) (next-line 10)))
 (global-set-key (kbd "C-S-p")
 		(lambda () (interactive) (next-line -10)))
-
 ;; Shorthand for save all buffers
 ;;  https://stackoverflow.com/questions/15254414/how-to-silently-save-all-buffers-in-emacs
 (defun save-all ()
@@ -172,7 +164,6 @@
 
 (setq auto-save-file-name-transforms
       `((".*" ,(concat user-emacs-directory "auto-save-list/") t)))
-
 ; ---   Miscellaneous   --- ;
 ; ------------------------- ;
 
@@ -258,7 +249,6 @@
 ; ----------------- ;
 
 (setq require-final-newline nil)
-
 (defun toggle-theme ()
   "Toggle between dark and light themes."
   (interactive)
@@ -269,9 +259,7 @@
     (progn
       (disable-theme 'leuven)
       (load-theme 'manoj-dark t))))
-
 (setq create-lockfiles nil)
-
 (defun open-texdoc-in-background (docname)
   "Open a TEXDOC for DOCNAME in the background and close the terminal."
   (interactive "sEnter the name of the document: ")
@@ -286,7 +274,6 @@
                    (string= signal "exited\n"))
            (kill-buffer (process-buffer process)))))
       (bury-buffer))))
-
 (defun org-mark-readonly ()
   (interactive)
   (let ((buf-mod (buffer-modified-p)))
@@ -312,7 +299,6 @@
       (set-buffer-modified-p nil))))
 
 (add-hook 'org-mode-hook 'org-mark-readonly)
-
 (defun make-region-read-only (start end)
   (interactive "*r")
   (let ((inhibit-read-only t))
@@ -324,7 +310,6 @@
   (let ((inhibit-read-only t))
     (put-text-property start end 'read-only nil)
     (remove-text-properties start end '(font-lock-face nil))))
-
 (defun dont-ask-to-kill-shell-buffer ()
   "Don't ask for confirmation when killing *shell* buffer."
   (let ((buffer-name (buffer-name)))
@@ -334,20 +319,16 @@
                   kill-buffer-query-functions)))))
 
 (add-hook 'shell-mode-hook 'dont-ask-to-kill-shell-buffer)
-
 (cua-mode t)
-
 (defun remove-blank-lines ()
   "Remove all blank lines (including lines with only whitespace) in the current buffer."
   (interactive)
   (save-excursion
     (goto-char (point-min))
     (flush-lines "^[[:space:]]*$")))
-
 (require 'org)
 (setq org-startup-folded t)
 (setq org-startup-with-inline-images t)
-
 (defun org-add-persistent-highlights ()
   "Add persistent highlighting for custom markers in Org mode."
   (font-lock-add-keywords
@@ -367,7 +348,6 @@
                 'org-hide))))))
 
 (add-hook 'org-mode-hook #'org-hide-markers-without-space)
-
         (setq
          org-tags-exclude-from-inheritance
          (list
@@ -404,7 +384,6 @@
           "sci_rep"
           "stretch"
           "study"))
-
 (setq org-todo-keyword-faces
       (quote (("TODO" :background "red")
               ("NEXT" :foreground "black" :background "yellow"))))
@@ -422,14 +401,12 @@
 (setq org-highest-priority 65)
 (setq org-lowest-priority 89)
 (setq org-default-priority 89)
-
 (setq org-link-frame-setup
       '((vm . vm-visit-folder)
         (vm-imap . vm-visit-imap-folder)
         (gnus . org-gnus-no-new-news)
         (file . find-file)  ;; Open files in the same frame
         (wl . wl)))
-
 (setq org-file-apps
       `((directory . "/usr/bin/gnome-terminal --working-directory=\"%s\"")
         ("\\.pdf\\'" . "setsid -w xdg-open \"%s\"")
@@ -443,25 +420,19 @@
                           "-c" (expand-file-name file))))
         (auto-mode . emacsclient)
         (t . "setsid -w xdg-open \"%s\"")))
-
 (setq org-cycle-include-plain-lists 'integrate)
 (setq org-list-indent-offset 0)
-
 ;; https://emacs.stackexchange.com/questions/22210/auto-update-org-tables-before-each-export
 (add-hook 'before-save-hook 'org-table-recalculate-buffer-tables)
-
 (setq org-startup-align-all-tables t)
 (setq org-startup-shrink-all-tables t)
-
 (setq org-image-actual-width '(300))
-
 (defun shk-fix-inline-images ()
   (when org-inline-image-overlays
     (org-redisplay-inline-images)))
 
 (with-eval-after-load 'org
   (add-hook 'org-babel-after-execute-hook 'shk-fix-inline-images))
-
 (setq org-babel-default-header-args '(
 				      (:comments . "no")
 				      (:mkdirp . "yes")
@@ -473,7 +444,6 @@
                                       (:noweb . "yes")
                                       (:tangle . "no")
 				      ))
-
 (setq
  ;; Blocks inserted directly without additional formatting
  org-babel-inline-result-wrap "%s"
@@ -492,12 +462,10 @@
  ;;
  ;; Open src windows in current frames
  org-src-window-setup 'current-window)
-
 ;; disable confrmation for elisp execution of org src blocks
 (setq safe-local-variable-values '((org-confirm-elisp-link-function . nil)))
 
 (setq org-hide-block-startup t)
-
 (defvar org-blocks-hidden nil)
 
 (defun org-toggle-blocks ()
@@ -506,12 +474,9 @@
       (org-show-block-all)
     (org-hide-block-all))
   (setq-local org-blocks-hidden (not org-blocks-hidden)))
-
 (setq org-babel-min-lines-for-block-output 1000)
-
 (setq org-babel-noweb-wrap-start "<#"
       org-babel-noweb-wrap-end "#>")
-
 ;; (defun my/org-babel-tangle-no-drawers ()
 ;;   "Tangle with `:comments org`, removing property drawers entirely."
 ;;   (interactive)
@@ -530,12 +495,10 @@
 ;;         (while (re-search-forward "\n\\{2,\\}" nil t)
 ;;           (replace-match "\n"))
 ;;         (write-region (point-min) (point-max) f)))))
-
 (setq org-show-hierarchy-above t)
 
 (setq org-fold-show-context-detail
       '((default . tree)))
-
 (setq
  org-show-context-detail
  '((agenda . ancestors)
@@ -543,7 +506,6 @@
    (isearch . ancestors)
    (default . ancestors))
 )
-
 (defun org-hide-all-src-blocks ()
   "Hide all source blocks in the current Org buffer."
   (interactive)
@@ -568,10 +530,8 @@ When called with a prefix ARG (C-u), also cycle global visibility, hide all src 
 (global-set-key (kbd "C-c d") 'my-collapse-all-drawers)
 ;; You might want to remove the hook if you don't want this function to run every time you open an org file
 (add-hook 'org-mode-hook 'my-collapse-all-drawers)
-
 (setq org-cycle-separator-lines 0)
 (setq yas-indent-line 'fixed)
-
 ;; (defun my-remove-trailing-newlines-in-tangled-blocks ()
 ;;   "Remove trailing newlines from tangled block bodies."
 ;;   (save-excursion
@@ -580,9 +540,7 @@ When called with a prefix ARG (C-u), also cycle global visibility, hide all src 
 ;;       (delete-char -1))))
 
 ;; (add-hook 'org-babel-post-tangle-hook #'my-remove-trailing-newlines-in-tangled-blocks)
-
 (setq org-confirm-shell-link-function nil)
-
 (with-eval-after-load 'org
         (add-to-list 'org-modules 'org-habit))
 
@@ -608,15 +566,11 @@ When called with a prefix ARG (C-u), also cycle global visibility, hide all src 
 (setq org-support-shift-select t)
 (setq org-src-window-setup 'current-window)
 (setq org-export-async-debug nil)
-
 ;; ensures that any file with the .org extension will automatically open in org-mode
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
-
 ;; Make heading regex include tags
 (setq org-heading-regexp "^[[:space:]]*\\(\\*+\\)\\(?: +\\(.*?\\)\\)?[ \t]*\\(:[[:alnum:]_@#%:]+:\\)?[ \t]*$")
-
 (setq org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
-
 (defun my-org-tree-to-indirect-buffer (&optional arg)
   "Open current org tree in indirect buffer, using one prefix argument.
 When called with two prefix arguments, ARG, run the original function without prefix argument."
@@ -626,7 +580,6 @@ When called with two prefix arguments, ARG, run the original function without pr
     (org-tree-to-indirect-buffer t)) ; one prefix argument
   (my-collapse-all-drawers))
 (define-key org-mode-map (kbd "C-c C-x b") 'my-org-tree-to-indirect-buffer)
-
 ;; the below as nil fucks of export of inline code
 (setq org-export-babel-evaluate t)
 ;; https://emacs.stackexchange.com/questions/23982/cleanup-org-mode-export-intermediary-file/24000#24000
@@ -642,9 +595,7 @@ When called with two prefix arguments, ARG, run the original function without pr
       org-export-with-section-numbers nil
       org-export-with-tags nil
       org-export-with-todo-keywords nil)
-
 (setq org-odt-preferred-output-format "docx")
-
 (require 'ox-latex)
 
 (customize-set-value 'org-latex-with-hyperref nil)
@@ -665,7 +616,6 @@ When called with two prefix arguments, ARG, run the original function without pr
     "bibtex %b"
     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes '("empty"
                                     "\\documentclass{article}
@@ -677,7 +627,6 @@ When called with two prefix arguments, ARG, run the original function without pr
                                     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                                     ("\\paragraph{%s}" . "\\paragraph*{%s}")
                                     ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
-
 (defun my-org-open-in-brave-new-window (link)
   "Open the LINK in Brave browser in a new window."
   (start-process "brave-new-window" nil "brave-browser" "--new-window" link))
@@ -717,7 +666,6 @@ Open in a new Emacs frame if ARG is non-nil for ID or file links."
 
 ;; Rebind C-c C-o in org mode to our custom function
 (define-key org-mode-map (kbd "C-c C-o") 'my-org-open-at-point)
-
 ;; (defun org-toggle-checkbox-and-children ()
 ;;   "Toggle checkbox and all children checkboxes."
 ;;   (interactive)
@@ -747,7 +695,6 @@ Open in a new Emacs frame if ARG is non-nil for ID or file links."
 
 ;; ;; Bind it to a convenient key
 ;; (define-key org-mode-map (kbd "C-c x") 'org-toggle-checkbox-and-children)
-
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes
                '("documentation"
@@ -762,7 +709,6 @@ Open in a new Emacs frame if ARG is non-nil for ID or file links."
                  ("\\subsubsection{%s}" . "\\subsubsection{%s}")
                  ("\\paragraph{%s}" . "\\paragraph{%s}")
                  ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
-
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes
                '("documentation"
@@ -779,7 +725,6 @@ Open in a new Emacs frame if ARG is non-nil for ID or file links."
                  ("\\subsubsection{%s}" . "\\subsubsection{%s}")
                  ("\\paragraph{%s}" . "\\paragraph{%s}")
                  ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
-
 (setq org-icalendar-with-timestamps 'active)
 (setq org-icalendar-use-scheduled t)
 (setq org-icalendar-use-deadline nil)
@@ -791,9 +736,7 @@ Open in a new Emacs frame if ARG is non-nil for ID or file links."
 (setq org-icalendar-timezone "America/Chicago")
 (setq org-agenda-default-appointment-duration 30)
 (setq org-icalendar-combined-agenda-file "/tmp/org.ics")
-
 (setq org-use-property-inheritance t)
-
 (defun browse-org-table-urls-by-name (table-name)
   "Browse URLs listed in an Org-mode table identified by TABLE-NAME.
 TABLE-NAME is the name of the table identified as #+name."
@@ -825,7 +768,6 @@ TABLE-NAME is the name of the table identified as #+name."
                       (start-process "brave-browser" nil "brave-browser" (car url-row))
                       (sit-for 0.5)))  ;; Delay between each URL
                   (message "Opened URLs from table with name %s" table))))))))))
-
 (setq org-agenda-repeating-timestamp-show-all nil)
 (setq org-sort-agenda-notime-is-late nil)
 (setq org-agenda-start-on-weekday nil)
@@ -850,10 +792,8 @@ TABLE-NAME is the name of the table identified as #+name."
       (if (member tag entry-tags)
           (progn (outline-next-heading) (point))
         nil)))
-
 ;; Needed for no y/n prompt at linked agenda execution
 (setq org-confirm-elisp-link-function nil)
-
 ;; https://emacs.stackexchange.com/questions/19742/is-there-a-way-to-disable-the-buffer-is-read-only-warning
 (defun my-command-error-function (data context caller)
   "Ignore the buffer-read-only signal; pass the rest to the default handler."
@@ -861,7 +801,6 @@ TABLE-NAME is the name of the table identified as #+name."
     (command-error-default-function data context caller)))
 
 (setq command-error-function #'my-command-error-function)
-
 (defun org-plain-follow (id _)
   "Follow a plain link as if it were an ID link."
   (org-id-open id nil))
@@ -882,16 +821,13 @@ TABLE-NAME is the name of the table identified as #+name."
 
 (with-eval-after-load 'org
   (require 'ol-plain))
-
 (defun shk-fix-inline-images ()
   (when org-inline-image-overlays
     (org-redisplay-inline-images)))
 
 (with-eval-after-load 'org
   (add-hook 'org-babel-after-execute-hook 'shk-fix-inline-images))
-
 (setq org-image-actual-width '(300))
-
 ;; https://emacs.stackexchange.com/questions/19742/is-there-a-way-to-disable-the-buffer-is-read-only-warning
 (defun custom-command-error-function (data context caller)
   "Ignore the buffer-read-only signal; pass the rest to the default handler."
@@ -899,10 +835,8 @@ TABLE-NAME is the name of the table identified as #+name."
     (command-error-default-function data context caller)))
 
 (setq command-error-function #'my-command-error-function)
-
 ;;https://emacs.stackexchange.com/questions/12701/kill-a-line-deletes-the-line-but-leaves-a-blank-newline-character
 (setq kill-whole-line t)
-
 (setq reftex-default-bibliography '("~/repos/org/bib.bib"))
 
 ;; see org-ref for use of these variables
@@ -910,7 +844,6 @@ TABLE-NAME is the name of the table identified as #+name."
 (setq bibtex-completion-bibliography "~/repos/org/bib.bib"
       bibtex-completion-library-path "~/library"
       bibtex-completion-notes-path "~/repo/org/notes")
-
 ;; Amazing bibtex from doi fetcher
 ;; https://www.anghyflawn.net/blog/2014/emacs-give-a-doi-get-a-bibtex-entry/
 (defun get-bibtex-from-doi (doi)
@@ -930,24 +863,19 @@ TABLE-NAME is the name of the table identified as #+name."
      (kill-buffer (current-buffer))))
  (insert (decode-coding-string bibtex-entry 'utf-8))
  (bibtex-fill-entry))
-
 (setq python-shell-completion-native-enable nil)
 
 (add-hook 'python-mode-hook
   (lambda () (setq indent-tabs-mode nil)))
 
 (setq python-indent-guess-indent-offset-verbose nil)
-
 (set-buffer-file-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
 (set-language-environment "UTF-8")
-
 (global-set-key (kbd "C-x a") (lambda () (interactive) (insert "α")))
-
 (use-package blacken
   :after elpy
   :hook (elpy-mode . blacken-mode))
-
 ;; Citar configuration for org-cite integration
 (use-package citar
   :after org
@@ -990,22 +918,18 @@ TABLE-NAME is the name of the table identified as #+name."
       '(("html" . citar-file-open-external)
         ("pdf" . citar-file-open-external)  ;; Use system default for PDFs
         (t . find-file)))                   ;; Default to Emacs for others
-
 (use-package citar-embark
   :after citar embark
   :no-require
   :config (citar-embark-mode))
 
 (setq citar-at-point-function 'embark-act)
-
 ;; (use-package company
 ;;   :config
 ;;   (global-company-mode)
 ;;   (setq
 ;;    company-dabbrev-downcase nil)) ; Don't downcase by default
-
 (setenv "WORKON_HOME" "~/miniconda3/envs")
-
 ;; Corfu for completion UI
 (use-package corfu
   :ensure t
@@ -1021,14 +945,12 @@ TABLE-NAME is the name of the table identified as #+name."
     (define-key flyspell-mode-map (kbd "C-M-i") nil)
     (define-key flyspell-mode-map (kbd "M-TAB") nil))
   (global-set-key (kbd "M-TAB") #'completion-at-point)) ;; Bind `M-TAB` globally
-
 ;; Dynamic abbreviation completion
 (use-package dabbrev
   :ensure nil
   :config
   (setq dabbrev-case-fold-search t) ;; Case-insensitive search
   (setq dabbrev-upcase-means-case-search t)) ;; Respect case for uppercase words
-
 (use-package eglot
   :ensure t
   :init
@@ -1042,7 +964,6 @@ TABLE-NAME is the name of the table identified as #+name."
 
 (with-eval-after-load 'eglot
   (define-key eglot-mode-map (kbd "C-c <tab>") #'company-complete))
-
 (use-package elpy
   :init
   (advice-add 'python-mode :before 'elpy-enable)
@@ -1054,7 +975,6 @@ TABLE-NAME is the name of the table identified as #+name."
   (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
   (setq elpy-rpc-python-command "~/miniconda3/bin/python")
 )
-
 (defun my-elpy-shell-display-buffer-in-new-frame (buffer alist)
   "Display the Python shell buffer in a new frame."
   (let ((display-buffer-alist
@@ -1067,7 +987,6 @@ TABLE-NAME is the name of the table identified as #+name."
               (let ((display-buffer-alist
                      '(("*Python*" . (my-elpy-shell-display-buffer-in-new-frame)))))
                 (apply orig-fun args))))
-
 (use-package ess
   :init
   (require 'ess-site)
@@ -1089,7 +1008,6 @@ TABLE-NAME is the name of the table identified as #+name."
          ("\\.[Rr]out"         . R-transcript-mode)
          ("\\.Rd\\'"           . Rd-mode)
          ))
-
 (custom-set-variables
  '(ess-R-font-lock-keywords
    (quote
@@ -1105,16 +1023,13 @@ TABLE-NAME is the name of the table identified as #+name."
      (ess-fl-keyword:= . t)
      (ess-R-fl-keyword:F&T . t)
      (ess-R-fl-keyword:%op% . t)))))
-
 (use-package exec-path-from-shell
   :config
   (when (daemonp)
     (exec-path-from-shell-initialize)))
-
 (use-package expand-region)
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
-
 (use-package flycheck
   :hook
   (org-src-mode . my-org-mode-flycheck-hook)
@@ -1122,7 +1037,6 @@ TABLE-NAME is the name of the table identified as #+name."
   (defun my-org-mode-flycheck-hook ()
     (when (derived-mode-p 'prog-mode) ;; Check if it's a programming mode
       (flycheck-mode 1))))
-
 (use-package helm
   :config
   (global-set-key (kbd "C-x b") 'helm-mini)
@@ -1130,7 +1044,6 @@ TABLE-NAME is the name of the table identified as #+name."
   (setq
    helm-completion-style 'emacs
    helm-move-to-line-cycle-in-source nil)) ;; allow C-n through different sections
-
 (use-package helm-org
   :config
   (global-set-key (kbd "C-c j") 'helm-org-in-buffer-headings)
@@ -1145,24 +1058,19 @@ TABLE-NAME is the name of the table identified as #+name."
   (define-key global-map (kbd "C-$") 'org-mark-ring-goto)
   (global-set-key (kbd "C-c C-j") 'helm-org-agenda-files-headings)
   (setq helm-org-ignore-autosaves t)
-
 (global-set-key (kbd "C-c C-j") 'helm-org-agenda-files-headings)
 
 (with-eval-after-load 'org
   (define-key org-mode-map (kbd "C-c C-j") 'helm-org-agenda-files-headings))
-
 (use-package helm-org-rifle
     :config
     (setq helm-org-rifle-show-path nil
 	  helm-org-rifle-show-full-contents nil)
     (require 'helm)
     (global-set-key (kbd "C-c C-j") 'helm-org-agenda-files-headings))
-
 (use-package htmlize)
-
 (use-package ivy
   :diminish)
-
 (use-package marginalia
   ;; Either bind `marginalia-cycle' globally or only in the minibuffer
   :bind (("M-A" . marginalia-cycle)
@@ -1172,7 +1080,6 @@ TABLE-NAME is the name of the table identified as #+name."
   :init
   (marginalia-mode)
   :ensure t)
-
   ;; https://emacs.stackexchange.com/questions/35069/best-way-to-select-a-word
   (defun mark-whole-word (&optional arg allow-extend)
     "Like `mark-word', but selects whole words and skips over whitespace.
@@ -1203,9 +1110,7 @@ TABLE-NAME is the name of the table identified as #+name."
       (mark-word arg allow-extend)))
 
   (global-set-key (kbd "C-c C-SPC") 'mark-whole-word)
-
 (use-package native-complete)
-
 (defun open-chatgpt-query-in-new-browser-window (query &optional use-gpt-4)
   "Send a QUERY to ChatGPT and open the result in a new browser window.
 With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
@@ -1216,7 +1121,6 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
     (start-process "brave-browser" nil "brave-browser" "--new-window" url)))
 
 (global-set-key (kbd "C-c C-g") 'open-chatgpt-query-in-new-browser-window)
-
 (use-package orderless
   :init
   ;; Configure a custom style dispatcher (see the Consult wiki)
@@ -1225,31 +1129,23 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
-
 (use-package org-edna
   :ensure t
   :config
   (org-edna-mode 1))
-
 (use-package org-contrib
   :ensure t)
-
 (require 'org-checklist)
 (require 'ox-extra)
 (ox-extras-activate '(ignore-headlines))
-
 (use-package org-ql)
-
 (use-package ox-pandoc
   :after org
   :config
   (setq org-pandoc-options-for-docx '((standalone . nil)))
   )
-
 (use-package savehist)
-
 (use-package snakemake-mode)
-
 (defcustom snakemake-indent-field-offset nil
   "Offset for field indentation."
   :type 'integer)
@@ -1257,7 +1153,6 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 (defcustom snakemake-indent-value-offset nil
   "Offset for field values that the line below the field key."
   :type 'integer)
-
 ;; Install and configure tree-sitter
 (use-package tree-sitter
   :ensure t
@@ -1279,13 +1174,10 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
     (tree-sitter-mode -1)))
 
 (add-hook 'tree-sitter-mode-hook #'disable-tree-sitter-for-org-mode)
-
 (unless (package-installed-p 'vc-use-package)
   (package-vc-install "https://github.com/slotThe/vc-use-package"))
 (require 'vc-use-package)
-
 (use-package vertico)
-
 ;; Otherwise use the default `completion--in-region' function.
 (setq completion-in-region-function
       (lambda (&rest args)
@@ -1293,7 +1185,6 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
                    #'consult-completion-in-region
                  #'completion--in-region)
                args)))
-
 ;; A few more useful configurations...
 (use-package emacs
   :init
@@ -1324,7 +1215,6 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 (define-key vertico-map (kbd "TAB") #'minibuffer-complete)
 (define-key vertico-map (kbd "C-n") #'vertico-next)
 (define-key vertico-map (kbd "C-p") #'vertico-previous)
-
 ;; Ensure you have these packages installed
 (use-package vertico
   :ensure t
@@ -1384,7 +1274,6 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 (define-key vertico-map (kbd "TAB") #'minibuffer-complete)
 (define-key vertico-map (kbd "C-n") #'vertico-next)
 (define-key vertico-map (kbd "C-p") #'vertico-previous)
-
 (use-package vterm
   :bind* (:map vterm-mode-map
                ("C-z" . vterm-undo)
@@ -1395,9 +1284,6 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
   (setq vterm-max-scrollback 100000)
   (custom-set-faces
    '(vterm-color-blue ((t (:foreground "#477EFC" :background "#477EFC"))))))
-
-(use-package multi-vterm :ensure t)
-
 (use-package web-mode
   :mode ("\\.phtml\\'"
          "\\.tpl\\.php\\'"
@@ -1407,9 +1293,7 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
          "\\.mustache\\'"
          "\\.djhtml\\'"
          "\\.html?\\'"))
-
 (use-package yaml-mode)
-
 (use-package yasnippet
   :init
   ;; Ensure the snippets directory exists
@@ -1423,7 +1307,6 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
   :config
   (yas-global-mode 1) ; Enable yasnippet globally
   (define-key yas-minor-mode-map (kbd "<C-tab>") 'yas-expand))
-
 ;; (use-package yasnippet
 ;;   :init
 ;;   ;; Dynamically add subdirectories in ~/.emacs.d/snippets to yas-snippet-dirs
@@ -1432,15 +1315,12 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 ;;    :config
 ;;   (yas-global-mode 1) ; Enable yasnippet globally
 ;;   (define-key yas-minor-mode-map (kbd "<C-tab>") 'yas-expand))
-
 (defun my-org-mode-hook ()
   (setq-local yas-buffer-local-condition
               '(not (org-in-src-block-p t))))
 (add-hook 'org-mode-hook #'my-org-mode-hook)
-
 (add-hook 'yas-before-expand-snippet-hook (lambda () (setq-local company-backends nil)))
 (add-hook 'yas-after-exit-snippet-hook    (lambda () (kill-local-variable 'company-backends)))
-
 (setq require-final-newline nil)
 (defun yas-auto-expand ()
   "Function to allow automatic expansion of snippets which contain a condition, auto."
@@ -1455,3 +1335,4 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
       (yas-expand))))
 
 (add-hook 'post-command-hook #'my-yas-try-expanding-auto-snippets)
+(use-package magit)

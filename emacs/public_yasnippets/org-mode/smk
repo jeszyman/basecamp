@@ -26,7 +26,6 @@ rule all:
 :PROPERTIES:
 :header-args:snakemake: :tangle no
 :END:
-
 # -*- mode: snippet -*-
 # key: smk
 # expand-env: ((yas-indent-line 'none))

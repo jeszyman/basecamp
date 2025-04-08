@@ -1,5 +1,4 @@
 # Basecamp General Shell Functions
-
 # Function: connect_scrcpy
 # Usage: connect_scrcpy [-i DEVICE_IP] [-p DEVICE_PORT]
 
@@ -68,7 +67,6 @@ connect_scrcpy() {
     echo "Successfully connected and started scrcpy."
     return 0
 }
-
 launch() {
     (nohup "$@" >/dev/null 2>&1 &)
     exit
@@ -78,26 +76,21 @@ brave() { launch /usr/bin/brave-browser; }
 chrome() { launch /usr/bin/brave-browser; }
 inkscape() { launch /usr/bin/inkscape; }
 okular() { launch /usr/bin/okular; }
-
 emacs () {
     emacsclient -c --no-wait --socket-name ~/.emacs.d/server/server & disown
     exit
 }
 
-
-
 mute(){
     amixer set Master mute
     amixer set Capture nocap
 }
-
 unmute () {
     amixer set Master unmute
     amixer set Master 30% unmute
     amixer set Speaker 30% unmute  # If 'Master' doesn't work
     amixer set Capture cap
 }
-
 volume-up() {
     # Check if speakers are muted
     mute_status=$(amixer -D pulse get Master | grep -o '\[off\]')
@@ -108,7 +101,6 @@ volume-up() {
 	amixer -D pulse sset Master 5%+
     fi
 }
-
 volume-down() {
     # Check if speakers are muted
     mute_status=$(amixer -D pulse get Master | grep -o '\[off\]')
@@ -119,7 +111,6 @@ volume-down() {
 	amixer -D pulse sset Master 5%-
     fi
 }
-
 emacs-start() {
     print_usage(){
     cat <<- EOF
@@ -160,7 +151,6 @@ EOF
         fi
     fi
 }
-
 emacs-stop() {
     print_usage(){
     cat <<- EOF
@@ -195,7 +185,6 @@ EOF
         echo "Emacs daemon is not running. Nothing to do."
     fi
 }
-
 emacs-save () 
 { 
     [[ "$1" =~ (-h|--help) ]] && { 
@@ -217,11 +206,9 @@ EOF
         return 1
     fi
 }
-
 ubuntu-settings(){
     env XDG_CURRENT_DESKTOP=GNOME gnome-control-center sound & exit
 }
-
 check_mnt(){
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF
@@ -237,7 +224,6 @@ EOF
         echo "The directory $directory is not a mountpoint."
     fi
 }
-
 function pomo() {
     arg1=$1
     shift
@@ -251,7 +237,6 @@ function pomo() {
         date '+%H:%M' && sleep "${sec:?}" && notify-send -u critical -t 0 -a pomo "${msg:?}"
     done
 }
-
 convert_pdf_to_png() {
     print_usage() {
         cat <<- EOF
@@ -283,7 +268,6 @@ EOF
     echo "Conversion complete. Output saved to $output_file"
 
 }
-
 convert_pdf_to_svg() {
     print_usage() {
         cat <<- EOF
@@ -314,7 +298,6 @@ EOF
 
     echo "Conversion complete. Output saved to $output_file with a white background."
 }
-
 cpout() {
     if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
         cat <<EOF
@@ -328,7 +311,6 @@ EOF
     fi
     "$@" 2>&1 | tee >(xclip -selection clipboard)
 }
-
 docx_to_pdf() {
     local in_docx="$1"
 
@@ -348,7 +330,6 @@ EOF
 
     echo "Conversion complete"
 }
-
 emacs-latex() {
     print_usage() {
 	cat <<- EOF
@@ -385,7 +366,6 @@ EOF
                         (kill-emacs))"
 
 }
-
 find_last() {
     print_usage() {
         cat <<- EOF
@@ -438,7 +418,6 @@ EOF
 
     find $path -type f -printf '%T@ %P\n' 2>/dev/null | sort -n | tail -n "$n" | cut -d' ' -f2-
 }
-
 find_in_files(){
     print_usage(){
         cat <<- EOF
@@ -464,7 +443,6 @@ EOF
 
     grep -rnw "${dir}" -e "${term}"
 }
-
 screenshot(){
     print_usage(){
 	cat <<- EOF
@@ -489,7 +467,6 @@ EOF
     scrot -s -f --overwrite /tmp/screenshot.png && xclip -selection clipboard -t image/png -i /tmp/screenshot.png
 
 }
-
 debug(){
     print_usage(){
 	cat <<- EOF
@@ -531,7 +508,6 @@ EOF
         echo "Function '$fun_name' not found."
     fi
 }
-
 git_search_all(){
     print_usage(){
         cat <<- EOF
@@ -557,7 +533,6 @@ EOF
 
     git grep $regexp $(git rev-list --all)
 }
-
 git_deleted_search() {
     print_usage(){
     cat <<- EOF
@@ -604,7 +579,6 @@ EOF
     echo "To restore a deleted file:"
     echo "  git checkout <commit_hash>^ -- <path/to/file>"
 }
-
 pptx-to-pdf() {
     print_usage(){
     cat <<- EOF
@@ -641,7 +615,6 @@ EOF
   unoconv -f pdf $1
 
 }
-
 logout() {
     print_usage(){
         cat <<- EOF
@@ -671,7 +644,6 @@ EOF
     pgrep emacsclient && emacs-save && i3lock -c 000000 || i3lock -c 000000
 
 }
-
 ls-size(){
     print_usage(){
         cat <<- EOF
@@ -699,7 +671,6 @@ EOF
 
     ls -lrS1 --block-size=M
 }
-
 ls_recursive() {
     print_usage() {
         cat <<- EOF
@@ -737,7 +708,6 @@ EOF
 
     find . -maxdepth "$level" -name "*${regex}*"
 }
-
 git_wkflow_up(){
     print_usage(){
           cat <<- EOF
@@ -780,7 +750,6 @@ EOF
         git commit -m "$commit_msg" && git push
     fi
 }
-
 open(){
     print_usage(){
 	cat <<- EOF
@@ -806,7 +775,6 @@ EOF
     esac
 
 }
-
 run_with_nohup() {
 
     print_usage() {
@@ -841,7 +809,6 @@ EOF
 
     main "$@" & disown
 }
-
 dir_size() {
     if [[ "$1" == "-h" || "$1" == "--help" || $# -ne 1 ]]; then
         cat <<EOF
@@ -866,7 +833,6 @@ EOF
         du -sh --block-size=MB -L "$1"
     fi
 }
-
 ansible_local() {
     print_usage() {
         cat <<EOF
@@ -891,7 +857,6 @@ EOF
 
     main "$@"
 }
-
 file_sizes() {
 
     print_usage() {
@@ -921,7 +886,6 @@ EOF
 
     main "$@"
 }
-
 tangle() {
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF
@@ -933,7 +897,6 @@ EOF
     local org_file="$1"
     /usr/bin/emacs --batch -l ~/.emacs.d/tangle.el -l org -eval "(org-babel-tangle-file \"$org_file\")"
 }
-
 function conda_update() {
     if [[ "$1" =~ ^(-h|--help)$ ]] || [[ -z "$1" ]]; then
         cat <<EOF
@@ -975,7 +938,6 @@ EOF
     fi
     conda deactivate
 }
-
 smk_unlock() {
     [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
 	cat <<- EOF
@@ -1016,7 +978,6 @@ EOF
     echo "Error: Snakemake run failed."
   fi
 }
-
 smk_draw(){
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF
@@ -1037,7 +998,6 @@ EOF
               --quiet \
               --rulegraph | tee >(dot -Tpdf > "$out_pdf") | dot -Tpng > "$out_png"
 }
-
 smk_draw(){
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF
@@ -1058,7 +1018,6 @@ EOF
             --quiet \
             --rulegraph | tee >(dot -Tpdf -Gsize=11,8.5 > "$out_pdf") | dot -Tpng > "$out_png"
 }
-
 smk_dry(){
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF
@@ -1102,7 +1061,6 @@ EOF
       echo "Error: Snakemake run failed."
   fi
 }
-
 smk_forced(){
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF
@@ -1146,7 +1104,6 @@ EOF
       echo "Error: Snakemake run failed."
   fi
 }
-
 smk_nohup(){
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF
@@ -1181,7 +1138,6 @@ EOF
   disown
   echo "Snakemake running in background. Log: smk_run.nohup.log"
 }
-
 smk_run(){
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF

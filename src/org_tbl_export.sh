@@ -10,7 +10,6 @@ do
 done
 
 /usr/bin/emacs-snapshot --batch "${repo}/mpnst.org" -l "${repo}/src/org_master_input_tbl_export.el" --eval '(my-tbl-export "'"input"'")'
-
 org_tables=()
 org_tables=("experiments"
           "cohorts"
