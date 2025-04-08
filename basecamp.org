@@ -1407,6 +1407,16 @@ Explicit server-socket-dir to ~/.emacs.d/server, ensuring predictable, user-writ
 
 
 #+end_src
+**** Add socket to baschrc
+#+begin_src yaml
+    - name: Ensure EMACS_SOCKET_NAME is exported in .bashrc
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: 'export EMACS_SOCKET_NAME="$HOME/.emacs.d/server/server"'
+        state: present
+
+#+end_src
+
 **** Handlers
 #+begin_src yaml
   handlers:

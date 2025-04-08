@@ -49,3 +49,6 @@
 
 ;; Load late configuration
 (safe-load-file-if-exists "~/.emacs.d/load-last.el")
+(require 'server)
+(setq server-auth-dir (expand-file-name "server" user-emacs-directory))
+(unless (server-running-p) (server-start))
