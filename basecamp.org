@@ -1366,8 +1366,8 @@ Explicit server-socket-dir to ~/.emacs.d/server, ensuring predictable, user-writ
         insertafter: EOF
         line: "{{ item }}"
       loop:
-        - '(require ''server)'
-        - "(setq server-auth-dir (expand-file-name \"server\" user-emacs-directory))"
+        - "(setq server-socket-dir (expand-file-name \"server\" user-emacs-directory))"
+        - '(require ''server)'        
         - "(unless (server-running-p) (server-start))"
       notify: Restart emacs daemon
       

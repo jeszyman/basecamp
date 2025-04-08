@@ -44,7 +44,7 @@
       register: emacs_installed
 
     - name: Download Emacs 29.4 source archive
-      become: yes
+      become: yes      
       get_url:
         url: https://mirrors.ocf.berkeley.edu/gnu/emacs/emacs-29.4.tar.xz
         dest: /tmp/emacs-29.4.tar.xz
@@ -52,7 +52,7 @@
       when: not emacs_installed.stat.exists
 
     - name: Extract Emacs 29.4 source archive
-      become: yes
+      become: yes      
       ansible.builtin.unarchive:
         src: /tmp/emacs-29.4.tar.xz
         dest: /tmp
@@ -62,7 +62,7 @@
       when: not emacs_installed.stat.exists
 
     - name: Configure Emacs build
-      become: yes
+      become: yes      
       shell: ./configure --prefix=/usr/local --with-xwidgets --with-imagemagick
       args:
         chdir: /tmp/emacs-29.4
@@ -70,7 +70,7 @@
       when: not emacs_installed.stat.exists
 
     - name: Build Emacs
-      become: yes
+      become: yes      
       shell: make
       args:
         chdir: /tmp/emacs-29.4
@@ -78,7 +78,7 @@
       when: not emacs_installed.stat.exists
 
     - name: Install Emacs
-      become: yes
+      become: yes      
       shell: make install
       args:
         chdir: /tmp/emacs-29.4
@@ -188,16 +188,16 @@
         insertafter: EOF
         line: "{{ item }}"
       loop:
-        - '(require ''server)'
-        - "(setq server-auth-dir (expand-file-name \"server\" user-emacs-directory))"
+        - "(setq server-socket-dir (expand-file-name \"server\" user-emacs-directory))"
+        - '(require ''server)'        
         - "(unless (server-running-p) (server-start))"
       notify: Restart emacs daemon
-
+      
     - name: Ensure systemd user unit directory exists
       file:
         path: "{{ ansible_env.HOME }}/.config/systemd/user"
         state: directory
-        mode: '0755'
+        mode: '0755'      
 
     - name: Install systemd user unit for emacs
       copy:
@@ -226,13 +226,11 @@
         scope: user
         enabled: yes
         state: started
-
     - name: Ensure EMACS_SOCKET_NAME is exported in .bashrc
       lineinfile:
         path: "{{ ansible_env.HOME }}/.bashrc"
         line: 'export EMACS_SOCKET_NAME="$HOME/.emacs.d/server/server"'
         state: present
-
   handlers:
     - name: Restart emacs daemon
       systemd:
