@@ -2,6 +2,7 @@
 - name: Install Emacs 29.4
   hosts: localhost
   tasks:
+
     - name: Ensure required dependencies are installed
       become: yes
       apt:
@@ -38,6 +39,7 @@
           - libacl1-dev
         state: present
         update_cache: yes
+
     - name: Check if Emacs is already installed at /usr/local/bin/emacs
       stat:
         path: /usr/local/bin/emacs
@@ -93,6 +95,7 @@
     - name: Display installed Emacs version
       debug:
         msg: "Installed Emacs version: {{ emacs_version.stdout }}"
+
     - name: Configure emacsclient as default for text files
       block:
 
@@ -108,7 +111,7 @@
             mode: '0755'
             content: |
               #!/bin/bash
-              setsid /usr/local/bin/emacsclient --socket-name "$HOME/.emacs.d/server/server" -c "$@" & disown
+              EMACS_SOCKET_NAME="$HOME/.emacs.d/server/server" setsid /usr/local/bin/emacsclient -c "$@" & disown
 
         - name: Create local applications directory
           file:
@@ -175,6 +178,7 @@
           shell: update-mime-database ~/.local/share/mime
           args:
             executable: /bin/bash
+
     - name: Ensure ~/.emacs.d/server exists with correct permissions
       file:
         path: "{{ ansible_env.HOME }}/.emacs.d/server"
@@ -189,10 +193,10 @@
         line: "{{ item }}"
       loop:
         - '(require ''server)'
-        - "(setq server-socket-dir (expand-file-name \"~/.emacs.d/server\"))"
+        - "(setq server-auth-dir (expand-file-name \"server\" user-emacs-directory))"
         - "(unless (server-running-p) (server-start))"
       notify: Restart emacs daemon
-
+      
     - name: Ensure systemd user unit directory exists
       file:
         path: "{{ ansible_env.HOME }}/.config/systemd/user"
@@ -226,6 +230,7 @@
         scope: user
         enabled: yes
         state: started
+
   handlers:
     - name: Restart emacs daemon
       systemd:

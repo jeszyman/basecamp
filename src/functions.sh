@@ -50,6 +50,7 @@ docker_interactive() {
         esac
     fi
 }
+
 # Check for docker environment
 docker_check() {
 if [ -f /.dockerenv ]; then
@@ -57,6 +58,7 @@ if [ -f /.dockerenv ]; then
     exit 1
 fi
 }
+
 #########1#########2#########3#########4#########5#########6#########7#########8
 function check_dependencies {
     if [[ $# -eq 0 ]] || [[ $1 = -h ]] || [[ $1 = --help ]] ; then
@@ -77,6 +79,7 @@ function check_dependencies {
         done
     fi
 }
+
 docker_interactive() {
     if [ -f /.dockerenv ]; then
         echo "shell already in docker, exiting"
@@ -128,6 +131,7 @@ docker_interactive() {
         esac
     fi
 }
+
 check_local_software(){
     if [[ $# -eq 0 ]] ; then
         printf "\n check_local_software
@@ -151,6 +155,7 @@ check_local_software(){
 # unit test
 #softwarecheck=(bash git)
 #check_local_software $softwarecheck
+
 #
 ######################
 ### symlink-by-csv ###

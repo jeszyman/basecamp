@@ -1280,7 +1280,7 @@ wget_downloads:
             mode: '0755'
             content: |
               #!/bin/bash
-              setsid /usr/local/bin/emacsclient --socket-name "$HOME/.emacs.d/server/server" -c "$@" & disown
+              EMACS_SOCKET_NAME="$HOME/.emacs.d/server/server" setsid /usr/local/bin/emacsclient -c "$@" & disown
 
         - name: Create local applications directory
           file:
@@ -1367,10 +1367,10 @@ Explicit server-socket-dir to ~/.emacs.d/server, ensuring predictable, user-writ
         line: "{{ item }}"
       loop:
         - '(require ''server)'
-        - "(setq server-socket-dir (expand-file-name \"~/.emacs.d/server\"))"
+        - "(setq server-auth-dir (expand-file-name \"server\" user-emacs-directory))"
         - "(unless (server-running-p) (server-start))"
       notify: Restart emacs daemon
-
+      
     - name: Ensure systemd user unit directory exists
       file:
         path: "{{ ansible_env.HOME }}/.config/systemd/user"
