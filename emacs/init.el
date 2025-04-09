@@ -70,7 +70,7 @@
      (ess-R-fl-keyword:F&T . t)
      (ess-R-fl-keyword:%op% . t)))
  '(package-selected-packages
-   '(yaml-mode web-mode multi-vterm vterm consult vertico vc-use-package tree-sitter-langs tree-sitter snakemake-mode ox-pandoc org-ql org-contrib org-edna orderless native-complete marginalia ivy htmlize helm-org-rifle helm-org helm flycheck expand-region exec-path-from-shell ess elpy corfu citar-embark citar blacken rainbow-delimiters auctex))
+   '(magit yaml-mode web-mode multi-vterm vterm consult vertico vc-use-package tree-sitter-langs tree-sitter snakemake-mode ox-pandoc org-ql org-contrib org-edna orderless native-complete marginalia ivy htmlize helm-org-rifle helm-org helm flycheck expand-region exec-path-from-shell ess elpy corfu citar-embark citar blacken rainbow-delimiters auctex))
  '(package-vc-selected-packages
    '((vc-use-package :vc-backend Git :url "https://github.com/slotThe/vc-use-package"))))
 (custom-set-faces
