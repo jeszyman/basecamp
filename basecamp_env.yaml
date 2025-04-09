@@ -54,3 +54,4 @@ dependencies:
   - r-upsetr       # Visualizations of intersecting sets using a matrix design #
   - r-writexl                                    # Export data frames to Excel #
   - r-yaml                    # Impliments libyaml YAML 1.1 parser and emitter #
+  - r-argparse                            # Input argument parsing like python #

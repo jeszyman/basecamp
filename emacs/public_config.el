@@ -969,11 +969,11 @@ TABLE-NAME is the name of the table identified as #+name."
   (advice-add 'python-mode :before 'elpy-enable)
   :config
   (define-key elpy-mode-map (kbd "C-c C-n") 'elpy-shell-send-statement-and-step)
-  (setenv "PATH" (concat "~/miniconda3/bin:" (getenv "PATH")))
-  (setenv "WORKON_HOME" "~/miniconda3/envs")
-  (setq exec-path (append '("~/miniconda3/bin") exec-path))
+  (setenv "PATH" (concat "~/miniconda/bin:" (getenv "PATH")))
+  (setenv "WORKON_HOME" "~/miniconda/envs")
+  (setq exec-path (append '("~/miniconda/bin") exec-path))
   (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
-  (setq elpy-rpc-python-command "~/miniconda3/bin/python")
+  (setq elpy-rpc-python-command "~/miniconda/bin/python")
 )
 (defun my-elpy-shell-display-buffer-in-new-frame (buffer alist)
   "Display the Python shell buffer in a new frame."

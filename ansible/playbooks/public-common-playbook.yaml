@@ -103,6 +103,16 @@
     - name: Debug yq version
       ansible.builtin.debug:
         msg: "yq successfully installed: {{ yq_version.stdout }}"
+
+    # Create a separate alias 'yqgo' for the Go version of yq so it can still be used
+    # when the 'yq' command is shadowed by the Python version installed in a conda environment
+    - name: Copy yq to yqgo for unambiguous use of Go version
+      become: true
+      ansible.builtin.copy:
+        src: /usr/local/bin/yq
+        dest: /usr/local/bin/yqgo
+        remote_src: true
+        mode: '0755'
     - name: Ensure fonts directory exists
       file:
         path: "{{ ansible_env.HOME }}/.local/share/fonts"

@@ -1064,6 +1064,17 @@ wget_downloads:
     - name: Debug yq version
       ansible.builtin.debug:
         msg: "yq successfully installed: {{ yq_version.stdout }}"
+
+    # Create a separate alias 'yqgo' for the Go version of yq so it can still be used
+    # when the 'yq' command is shadowed by the Python version installed in a conda environment
+    - name: Copy yq to yqgo for unambiguous use of Go version
+      become: true
+      ansible.builtin.copy:
+        src: /usr/local/bin/yq
+        dest: /usr/local/bin/yqgo
+        remote_src: true
+        mode: '0755'
+        
 #+end_src
 
 ****** Python 
@@ -5284,6 +5295,11 @@ sudo chmod -R g+s /opt/miniconda3
 :PROPERTIES:
 :ID:       d9e04105-39ef-465c-9e91-fee12c86645b
 :END:
+******** See conflicts
+#conda activate base
+#mamba install -c conda-forge conda-lock
+#conda-lock lock --file ~/repos/breast/config/breast-conda-env.yaml
+
 ******** Startup without base
 ******** Update conda env from github location yaml
 :PROPERTIES:
@@ -5543,7 +5559,7 @@ dependencies:
   - r-upsetr       # Visualizations of intersecting sets using a matrix design #
   - r-writexl                                    # Export data frames to Excel #
   - r-yaml                    # Impliments libyaml YAML 1.1 parser and emitter #
-
+  - r-argparse                            # Input argument parsing like python #
 
 #+end_src
 
@@ -8283,7 +8299,7 @@ singularity version
 :END:
 - https://api.slack.com/tutorials/tracks/posting-messages-with-curl
 - https://github.com/hikalium/slack-tui
-***** snakemake                                              :biotool:career:
+***** Snakemake                                              :biotool:career:
 :PROPERTIES:
 :ID:       a8b27140-4b9e-40c5-86ab-ee5afeae723f
 :CREATED:  [2021-09-13 Mon 07:29]
@@ -8554,6 +8570,29 @@ snakemake --help
     - [[https://docs.anaconda.com/anaconda/install/multi-user/][install multi-user miniconda]]
   - add singularity
     -
+********* Snakemake install and setup
+:PROPERTIES:
+:ID:       9d8f60fa-7f81-4353-885d-0b4596374a09
+:END:
+
+- via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
+  #+begin_src bash
+conda init bash
+/bin/bash
+conda activate base
+conda install -n base -c conda-forge mamba
+y
+mamba create -c conda-forge -c bioconda -n snakemake snakemake
+y
+conda activate snakemake
+snakemake --help
+#+end_src
+- via miniconda
+  - [[https://docs.anaconda.com/anaconda/install/multi-user/][install multi-user miniconda]]
+- add singularity
+  -
+
+
 ******** Make rulegraph DAG
 :PROPERTIES:
 :ID:       03ca5168-79ed-472c-83cc-4a0f1521e15d
@@ -8687,29 +8726,6 @@ if __name__ == '__main__':
     main()
 
 #+end_src
-
-
-******** Snakemake install and setup
-:PROPERTIES:
-:ID:       9d8f60fa-7f81-4353-885d-0b4596374a09
-:END:
-
-- via mambaforge https://snakemake.readthedocs.io/en/stable/tutorial/setup.html
-  #+begin_src bash
-conda init bash
-/bin/bash
-conda activate base
-conda install -n base -c conda-forge mamba
-y
-mamba create -c conda-forge -c bioconda -n snakemake snakemake
-y
-conda activate snakemake
-snakemake --help
-#+end_src
-- via miniconda
-  - [[https://docs.anaconda.com/anaconda/install/multi-user/][install multi-user miniconda]]
-- add singularity
-  -
 
 
 ******** Symlink input fastqs
@@ -15962,11 +15978,11 @@ https://kristofferbalintona.me/posts/202206141852/
   (advice-add 'python-mode :before 'elpy-enable)
   :config
   (define-key elpy-mode-map (kbd "C-c C-n") 'elpy-shell-send-statement-and-step)
-  (setenv "PATH" (concat "~/miniconda3/bin:" (getenv "PATH")))
-  (setenv "WORKON_HOME" "~/miniconda3/envs")
-  (setq exec-path (append '("~/miniconda3/bin") exec-path))
+  (setenv "PATH" (concat "~/miniconda/bin:" (getenv "PATH")))
+  (setenv "WORKON_HOME" "~/miniconda/envs")
+  (setq exec-path (append '("~/miniconda/bin") exec-path))
   (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
-  (setq elpy-rpc-python-command "~/miniconda3/bin/python")
+  (setq elpy-rpc-python-command "~/miniconda/bin/python")
 )
 #+end_src
 
