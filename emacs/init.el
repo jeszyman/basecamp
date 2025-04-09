@@ -49,6 +49,34 @@
 
 ;; Load late configuration
 (safe-load-file-if-exists "~/.emacs.d/load-last.el")
-(setq server-socket-dir (expand-file-name "server" user-emacs-directory))
-(require 'server)
-(unless (server-running-p) (server-start))
+
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ess-R-font-lock-keywords
+   '((ess-R-fl-keyword:modifiers . t)
+     (ess-R-fl-keyword:fun-defs . t)
+     (ess-R-fl-keyword:keywords . t)
+     (ess-R-fl-keyword:assign-ops . t)
+     (ess-R-fl-keyword:constants . t)
+     (ess-fl-keyword:fun-calls . t)
+     (ess-fl-keyword:numbers . t)
+     (ess-fl-keyword:operators . t)
+     (ess-fl-keyword:delimiters . t)
+     (ess-fl-keyword:= . t)
+     (ess-R-fl-keyword:F&T . t)
+     (ess-R-fl-keyword:%op% . t)))
+ '(package-selected-packages
+   '(yaml-mode web-mode multi-vterm vterm consult vertico vc-use-package tree-sitter-langs tree-sitter snakemake-mode ox-pandoc org-ql org-contrib org-edna orderless native-complete marginalia ivy htmlize helm-org-rifle helm-org helm flycheck expand-region exec-path-from-shell ess elpy corfu citar-embark citar blacken rainbow-delimiters auctex))
+ '(package-vc-selected-packages
+   '((vc-use-package :vc-backend Git :url "https://github.com/slotThe/vc-use-package"))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Hack" :height 114 :weight light))))
+ '(vterm-color-blue ((t (:foreground "#477EFC" :background "#477EFC")))))
