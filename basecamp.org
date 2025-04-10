@@ -1103,7 +1103,7 @@ wget_downloads:
 ****** R
 **** Systemd services
 ***** Emacs
-#+begin_src yaml
+#+begin_src yaml :tangle no
     - name: Create systemd user dir
       file:
         path: ~/.config/systemd/user
@@ -2803,7 +2803,7 @@ EOF
 
   # Run
   snakemake \
-      --configfile ./config/${HOSTNAME}.yaml \
+      --configfile "$configfile" \
       --cores 4 \
       --dry-run \
       --rerun-incomplete \
@@ -2815,6 +2815,7 @@ EOF
       echo "Error: Snakemake run failed."
   fi
 }
+
 
 #+end_src
 

@@ -1049,7 +1049,7 @@ EOF
 
   # Run
   snakemake \
-      --configfile ./config/${HOSTNAME}.yaml \
+      --configfile "$configfile" \
       --cores 4 \
       --dry-run \
       --rerun-incomplete \

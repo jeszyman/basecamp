@@ -130,42 +130,6 @@
 
     - name: Refresh font cache
       command: fc-cache -fv
-    - name: Create systemd user dir
-      file:
-        path: ~/.config/systemd/user
-        state: directory
-        mode: '0755'
-
-    - name: Install Emacs user service
-      copy:
-        dest: ~/.config/systemd/user/emacs.service
-        mode: '0644'
-        content: |
-          [Unit]
-          Description=Emacs 29 text editor daemon
-          Documentation=man:emacs(1) info:Emacs
-          After=network.target
-
-          [Service]
-          Type=forking
-          ExecStart=/usr/local/bin/emacs --daemon
-          ExecStop=/usr/bin/emacsclient --eval "(kill-emacs)"
-          Restart=always
-          RestartSec=3
-
-          [Install]
-          WantedBy=default.target
-
-    - name: Reload user systemd daemon
-      shell: systemctl --user daemon-reexec && systemctl --user daemon-reload
-      environment:
-        XDG_RUNTIME_DIR: "/run/user/{{ ansible_user_uid }}"
-
-    - name: Enable and start Emacs user service
-      shell: |
-        systemctl --user enable --now emacs.service
-      environment:
-        XDG_RUNTIME_DIR: "/run/user/{{ ansible_user_uid }}"
     - name: Source custom shell scripts from ~/.local/lib/mylibs in .bashrc
       lineinfile:
         path: ~/.bashrc
