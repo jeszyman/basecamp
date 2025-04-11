@@ -5482,7 +5482,7 @@ dependencies:
 ****** Basecamp conda environment
 :PROPERTIES:
 :ID:       76a6e083-f569-42a9-b551-4b9ccc770834
-:header-args:yaml: :tangle ./basecamp_env.yaml :comments no
+:header-args:yaml: :tangle ./config/basecamp-conda-env.yaml :comments no
 :END:
 - [[file:basecamp_env.yaml][yaml]]
 ******* Preamble and channels
