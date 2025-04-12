@@ -2479,7 +2479,6 @@ EOF
         # Run the function with nohup
         nohup bash -c "$func $args" &> nohup.out &
         disown
-        tail -f nohup.out
     }
 
     main "$@" & disown
@@ -8398,7 +8397,7 @@ https://stackoverflow.com/questions/57530914/snakemake-forceall-dag-results-in-m
 :ID:       a70dbf9d-d404-4e9f-941f-7f6b0648e71c
 :END:
 
-********* - [[https://www.google.com/search?q=snakemake+load+multiple+configuration+yamls][google:snakemake load multiple configuration yamls]]
+********* Load multiple configuration files
 :PROPERTIES:
 :ID:       257cd70f-16af-4bfb-8397-ff018c7d1621
 :END:

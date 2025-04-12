@@ -804,7 +804,6 @@ EOF
         # Run the function with nohup
         nohup bash -c "$func $args" &> nohup.out &
         disown
-        tail -f nohup.out
     }
 
     main "$@" & disown
