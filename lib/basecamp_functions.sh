@@ -1018,24 +1018,24 @@ EOF
             --rulegraph | tee >(dot -Tpdf -Gsize=11,8.5 > "$out_pdf") | dot -Tpng > "$out_png"
 }
 smk_dry(){
-  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+  [[ "$1" == "-h" || "$1" == "--help" || $# -ne 2 ]] && {
     cat <<EOF
 
-Usage: smk_dry <SNAKEFILE> [CONFIGFILE]
+Usage: smk_dry <SNAKEFILE> <CONFIGFILE>
 
-Wrapper for snakemake --dry-run. --configfile defaults to ./config/${HOSTNAME}.yaml if no second argument is provided.
+Wrapper for snakemake dry run. CONFIGFILE is required. Runs on all available cores.
+Reads 'available_concurrency' from the YAML or defaults to 100.
 
-Example: smk_dry ./workflow/analysis1.smk
-         smk_dry ./workflow/analysis1.smk ./config/custom_config.yaml
+Example: smk_dry ./workflow/analysis1.smk ./config/jeff-beast.yaml
 
 EOF
-	return
-    }
+    return
+  }
 
-  local snakefile="${1}"
-  local configfile="${2:-./config/${HOSTNAME}.yaml}"
+  local snakefile="$1"
+  local configfile="$2"
+  local cores=$(nproc)
 
-  # Check if variables exist
   if [[ ! -f "$snakefile" ]]; then
       echo "Error: Snakefile '$snakefile' does not exist."
       return 1
@@ -1046,16 +1046,16 @@ EOF
       return 1
   fi
 
-  # Run
+  local concurrency=$(yqgo e '.available_concurrency // 100' "$configfile")
+
   snakemake \
       --configfile "$configfile" \
       --cores 4 \
       --dry-run \
       --rerun-incomplete \
-      --resources concurrency=$(nproc) \
-      --snakefile $snakefile
+      --resources concurrency="$concurrency" \
+      --snakefile "$snakefile"
 
-  # Check exit code and provide error message
   if [ $? -ne 0 ]; then
       echo "Error: Snakemake run failed."
   fi
@@ -1138,25 +1138,24 @@ EOF
   echo "Snakemake running in background. Log: smk_run.nohup.log"
 }
 smk_run(){
-  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+  [[ "$1" == "-h" || "$1" == "--help" || $# -ne 2 ]] && {
     cat <<EOF
 
-Usage: smk_dry <SNAKEFILE> [CONFIGFILE]
+Usage: smk_run <SNAKEFILE> <CONFIGFILE>
 
-Wrapper for normal snakemake. --configfile defaults to ./config/${HOSTNAME}.yaml if no second argument is provided. Runs all available cores.
+Wrapper for normal snakemake. CONFIGFILE is required. Runs on all available cores.
+Reads 'available_concurrency' from the YAML or defaults to 100.
 
-Example: smk_run ./workflow/analysis1.smk
-         smk_run ./workflow/analysis1.smk ./config/custom_config.yaml
+Example: smk_run ./workflow/analysis1.smk ./config/jeff-beast.yaml
 
 EOF
     return
   }
 
-  local snakefile="${1}"
-  local configfile="${2:-./config/${HOSTNAME}.yaml}"
+  local snakefile="$1"
+  local configfile="$2"
   local cores=$(nproc)
 
-  # Check if variables exist
   if [[ ! -f "$snakefile" ]]; then
       echo "Error: Snakefile '$snakefile' does not exist."
       return 1
@@ -1167,16 +1166,16 @@ EOF
       return 1
   fi
 
-  # Run
+  local concurrency=$(yqgo e '.available_concurrency // 100' "$configfile")
+
   snakemake \
       --configfile "$configfile" \
       --cores "$cores" \
       --keep-going \
       --rerun-incomplete \
-      --resources concurrency=100 \
+      --resources concurrency="$concurrency" \
       --snakefile "$snakefile"
 
-  # Check exit code and provide error message
   if [ $? -ne 0 ]; then
       echo "Error: Snakemake run failed."
   fi
