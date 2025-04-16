@@ -1017,6 +1017,44 @@ EOF
             --quiet \
             --rulegraph | tee >(dot -Tpdf -Gsize=11,8.5 > "$out_pdf") | dot -Tpng > "$out_png"
 }
+smk_touch(){
+  [[ "$1" == "-h" || "$1" == "--help" || $# -ne 2 ]] && {
+    cat <<EOF
+
+Usage: smk_touch <SNAKEFILE> <CONFIGFILE>
+
+Wrapper for snakemake touch flag to update DAG. CONFIGFILE is required. 
+
+Example: smk_touch ./workflow/analysis1.smk ./config/jeff-beast.yaml
+
+EOF
+    return
+  }
+
+  local snakefile="$1"
+  local configfile="$2"
+  local cores=$(nproc)
+
+  if [[ ! -f "$snakefile" ]]; then
+      echo "Error: Snakefile '$snakefile' does not exist."
+      return 1
+  fi
+
+  if [[ ! -f "$configfile" ]]; then
+      echo "Error: Config file '$configfile' does not exist."
+      return 1
+  fi
+
+  snakemake \
+      --configfile "$configfile" \
+      --cores "$cores" \
+      --snakefile "$snakefile" \
+      --touch
+
+  if [ $? -ne 0 ]; then
+      echo "Error: Snakemake run failed."
+  fi
+}
 smk_dry(){
   [[ "$1" == "-h" || "$1" == "--help" || $# -ne 2 ]] && {
     cat <<EOF
@@ -1075,11 +1113,11 @@ EOF
     return
   }
 
-  local snakefile="${1}"
-  local configfile="${2:-./config/${HOSTNAME}.yaml}"
+  
+  local snakefile="$1"
+  local configfile="$2"
   local cores=$(nproc)
 
-  # Check if variables exist
   if [[ ! -f "$snakefile" ]]; then
       echo "Error: Snakefile '$snakefile' does not exist."
       return 1
@@ -1090,12 +1128,15 @@ EOF
       return 1
   fi
 
+  local concurrency=$(yqgo e '.available_concurrency // 100' "$configfile")
+
   # Run
   snakemake \
       --configfile "$configfile" \
       --cores "$cores" \
       --forceall \
       --rerun-incomplete \
+      --resources concurrency="$concurrency" \      
       --snakefile "$snakefile"
 
   # Check exit code and provide error message
