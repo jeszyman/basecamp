@@ -1227,7 +1227,7 @@ EOF
       --resources concurrency="$concurrency" \
       --snakefile "$snakefile" \
       --use-singularity \
-      --singularity-args "--bind /mnt, /home" 
+      --singularity-args "--bind /mnt" 
 
   if [ $? -ne 0 ]; then
       echo "Error: Snakemake run failed."
