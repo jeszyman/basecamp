@@ -3,69 +3,6 @@
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :RESET_CHECK_BOXES: t
 :END:
-
-#+begin_src emacs-lisp
-(setq dired-listing-switches "-alh")
-
-#+end_src
-
-Maybe python and argparae the shell commands
-#+begin_src bash
-grep -R "debian.sur5r.net/i3" /etc/apt/sources.list /etc/apt/sources.list.d/
-sudo rm /etc/apt/sources.list.d/sur5r-i3.list
-sudo apt-get update
-
-#+end_src
-
-#+begin_src bash :results replace
-xdg-mime query default text/plain
-
-#+end_src
-
-#+RESULTS:
-: emacsclient.desktop
-
-#+begin_src emacs-lisp
-;;Anaconda support
-;(require 'conda)
-;(use-package conda)
-;; if you want interactive shell support, include:
-(conda-env-initialize-interactive-shells)
-;; if you want eshell support, include:
-(conda-env-initialize-eshell)
-;; if you want auto-activation (see below for details), include:
-(conda-env-autoactivate-mode t)
-
-(custom-set-variables
- '(conda-anaconda-home "/opt/conda/"))
-
-(setq conda-env-home-directory (expand-file-name "/opt/conda") ;
-      conda-env-subdirectory "envs")
-
-(setq conda-env-home-directory "/opt/conda")
-;;get current environment--from environment variable CONDA_DEFAULT_ENV
-;;(conda-env-activate 'getenv "CONDA_DEFAULT_ENV")
-;;(conda-env-autoactivate-mode t)
-(setq-default mode-line-format (cons mode-line-format '(:exec conda-env-current-name)))
-
-(setenv "WORKON_HOME" "/opt/conda/envs")
-(pyvenv-mode 1)
-#+end_src
-
-  #+begin_src emacs-lisp
-(use-package elpy
-  :init
-  (advice-add 'python-mode :before 'elpy-enable)
-  :config
-  (define-key elpy-mode-map (kbd "C-c C-n") 'elpy-shell-send-statement-and-step)
-  (setenv "PATH" (concat "/opt/conda/bin:" (getenv "PATH")))
-  (setenv "WORKON_HOME" "/opt/conda/envs")
-  (setq exec-path (append '("/opt/conda/bin") exec-path))
-  (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
-  (setq elpy-rpc-python-command "/opt/conda/bin/python")
-)
-#+end_src
-
 ** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
 ** [[id:89576FD2-F863-4220-BAD7-D4E179AEA644][Bash and shell]]
 ** [[id:b16d0202-8d35-472b-b538-87a7d6a6cef7][Conda]]
@@ -186,6 +123,7 @@ core components (incomplete)
 :PROPERTIES:
 :ID:       6d4098eb-b91f-46b5-84af-c39442c0c5c9
 :END:
+- See [[id:CA21AAC9-F147-4086-A24C-64451EE349F3][Python]] main header
 - [ ] convert python and R to argparse https://www.google.com/search?q=r+argparse+optparse&oq=r+argparse+optparse&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDg2MDFqMGo0qAIAsAIA&sourceid=chrome-mobile&ie=UTF-8
 
 ****** Emacs
@@ -884,8 +822,12 @@ See also Emacs and Org-mode use in my LaTeX repository ([[https://github.com/jes
 ** Configuration files
 #+begin_src yaml :tangle ./config/config.yaml
 #########1#########1#########1#########1#########1#########1#########1#########1
+apt_ppas:
+  - ppa:apptainer/ppa
+
 apt_packages:
   - ansible                   # Provisioning automation tool
+  - apptainer                 # Singularity replacement
   - aria2                     # wget improvement 
   - brave-browser             # Web browser
   - curl                      # Command-line tool for HTTP requests
@@ -1034,6 +976,13 @@ wget_downloads:
 **** Install software
 ***** ATP installs
 #+begin_src yaml
+    - name: Add required APT PPAs
+      apt_repository:
+        repo: "{{ item }}"
+        state: present
+      loop: "{{ apt_ppas }}"
+      become: true
+
     - name: Update apt cache
       apt:
         update_cache: yes
@@ -1443,7 +1392,8 @@ Explicit server-socket-dir to ~/.emacs.d/server, ensuring predictable, user-writ
         state: restarted
 
 #+end_src
-
+*** [[id:36efda17-d1ef-4632-bc33-732071455543][Ansible]]             :ansipb:
+*** [[id:e15a03de-c529-4229-b763-7df28213f1e0][Ansible install playbook]]
 ** Install and setup
 #+begin_src bash :results replace
 pip install 'python-lsp-server[all]'
@@ -2603,6 +2553,20 @@ EOF
     /usr/bin/emacs --batch -l ~/.emacs.d/tangle.el -l org -eval "(org-babel-tangle-file \"$org_file\")"
 }
 #+end_src
+***** open_tmp_last()
+#+begin_src bash
+open_tmp_last(){
+    local last_file
+    last_file=$(find /tmp/ -type f -printf "%T@ %p\n" 2>/dev/null | sort -n | tail -1 | cut -d' ' -f2-)
+    if [[ -n "$last_file" ]]; then
+        open "$last_file"
+    else
+        echo "No files in /tmp/"
+    fi
+}
+
+#+end_src
+
 ***** Ideas                                                           :ideas:
 :PROPERTIES:
 :header-args: :tangle no
@@ -2853,6 +2817,7 @@ EOF
       --configfile "$configfile" \
       --cores 4 \
       --dry-run \
+      --printshellcmds \
       --rerun-incomplete \
       --resources concurrency="$concurrency" \
       --snakefile "$snakefile"
@@ -5572,6 +5537,7 @@ dependencies:
 
 #+end_src
 
+
 ******* R
 :PROPERTIES:
 :ID:       4783cca8-92ea-4053-b3c8-7d79862e3939
@@ -5580,7 +5546,9 @@ dependencies:
 # ---   R   --- #
 # ------------- #
 
-  - bioconductor-complexheatmap
+  - bioconductor-complexheatmap        # Heatmap visualizations for omics data #
+  - r-argparse                   # Input argument parsing like Python argparse #
+  - r-cairo               # Replacement graphics device, better font rendering #
   - r-colorramps                                  # Builds gradient color maps #
   - r-devtools                                   # R package development tools #
   - r-eulerr                           # Best area-proportional Euler diagrams #
@@ -5592,23 +5560,21 @@ dependencies:
   - r-ggsci                   # Ggplot2 color palettes for scientific journals #
   - r-igraph                              # Network analysis and visualization #
   - r-kableextra       # Builds HTML or LaTeX tables knitr and magrittr piping #
-  - r-lintr                                                     # Linting tool #
+  - r-lintr                                          # Linting tool for R code #
   - r-magick                # Bindings to ImageMagick image processing library #
   - r-multcomp          # Tests and confidence intervals for parametric models #
   - r-optparse                              # For command line options parsing #
-  - r-patchwork                                      # Composes multiple plots #
+  - r-patchwork                    # Composes multiple ggplots into one layout #
   - r-pheatmap                                               # Simple heatmaps #
   - r-readxl                                         # Read Excel files into R #
   - r-rlang             # Toolbox for working with base types, core R features #
-  - r-rstatix            # pipe-friendly framework for basic statistical tests #
-  - r-svglite                                   # Provides svg graphics output #
-  - r-tidyverse
+  - r-rstatix            # Pipe-friendly framework for basic statistical tests #
   - r-rtsne  # t-distributed stochastic neighbor embedding dimension reduction #
+  - r-svglite                                   # Provides svg graphics output #
+  - r-tidyverse                    # Collection of R packages for data science #
   - r-upsetr       # Visualizations of intersecting sets using a matrix design #
   - r-writexl                                    # Export data frames to Excel #
-  - r-yaml                    # Impliments libyaml YAML 1.1 parser and emitter #
-  - r-argparse                            # Input argument parsing like python #
-
+  - r-yaml                    # Implements libyaml YAML 1.1 parser and emitter #
 #+end_src
 
 
@@ -5627,7 +5593,7 @@ https://www.freecodecamp.org/news/learn-data-visualization-in-this-free-17-hour-
 :ID:       D2FAA88D-70CC-4450-BBB3-8A446CB43AF3
 :CREATED:  [2019-07-07 Sun 09:05]
 :END:
-****** Ansible install playbook
+****** Ansible install playbook                                      :ansipb:
 :PROPERTIES:
 :ID:       e15a03de-c529-4229-b763-7df28213f1e0
 :header-args:yaml: :tangle ./ansible/playbooks/docker-playbook.yaml
@@ -8340,7 +8306,75 @@ singularity version
     which singularity
     #+end_src
 - [[id:D2FAA88D-70CC-4450-BBB3-8A446CB43AF3][Docker]]
-- https://www.google.com/search?q=singularity+check+which+docker+container
+****** Ansible
+#+begin_src yaml :tangle ./ansible/playbooks/singularity.yaml
+---
+- name: Install Singularity from source
+  hosts: all
+  become: yes
+  vars:
+    go_version: "1.13.15"
+    singularity_version: "v3.6.3"
+  tasks:
+
+    - name: Install build dependencies
+      apt:
+        name:
+          - build-essential
+          - libssl-dev
+          - uuid-dev
+          - libgpgme11-dev
+          - squashfs-tools
+          - libseccomp-dev
+          - pkg-config
+          - git
+          - curl
+        update_cache: yes
+        state: present
+
+    - name: Remove old Go install
+      file:
+        path: /usr/local/go
+        state: absent
+
+    - name: Download Go {{ go_version }}
+      get_url:
+        url: "https://dl.google.com/go/go{{ go_version }}.linux-amd64.tar.gz"
+        dest: "/tmp/go{{ go_version }}.tar.gz"
+        mode: '0644'
+
+    - name: Install Go
+      unarchive:
+        src: "/tmp/go{{ go_version }}.tar.gz"
+        dest: /usr/local
+        remote_src: yes
+
+    - name: Set Go environment
+      shell: |
+        echo 'export PATH=/usr/local/go/bin:$PATH' > /etc/profile.d/go_path.sh
+        echo 'export GOPATH=/root/go' >> /etc/profile.d/go_path.sh
+      args:
+        creates: /etc/profile.d/go_path.sh
+
+    - name: Clone Singularity source
+      git:
+        repo: https://github.com/sylabs/singularity.git
+        dest: /root/go/src/github.com/sylabs/singularity
+        version: "{{ singularity_version }}"
+
+    - name: Build and install Singularity
+      shell: |
+        export PATH=/usr/local/go/bin:$PATH
+        export GOPATH=/root/go
+        cd /root/go/src/github.com/sylabs/singularity
+        ./mconfig
+        make -C builddir
+        make -C builddir install
+      args:
+        creates: /usr/local/bin/singularity
+
+#+end_src
+
 ***** Slack
 :PROPERTIES:
 :ID:       ce2cfb2d-65d4-46da-8672-5ea7e3fa5354
@@ -10561,6 +10595,10 @@ https://abseil.io/resources/swe-book
 :PROPERTIES:
 :ID:       a49abc44-8e71-4a1a-bd35-a77849427c94
 :END:
+- org-ml
+  - https://github.com/ndwarshuis/org-ml
+  - https://chatgpt.com/c/68161d6a-d2ac-8005-a32a-d4534636db42
+https://www2.lib.uchicago.edu/keith/emacs/#org9f6793b
 https://joostkremers.github.io/ebib/
 https://github.com/jamescherti/minimal-emacs.d
 https://lambdaland.org/posts/2024-12-14_emacs_catchup/
@@ -11695,51 +11733,7 @@ https://www.reddit.com/r/emacs/comments/1au10ha/i_want_to_learn_what_emacs_offer
 :PROPERTIES:
 :ID:       94AE454A-9369-46E4-914E-E6DC95E8FD16
 :END:
-#+BEGIN_SRC emacs-lisp
-
-(setq ispell-program-name "aspell")
-
-(add-to-list 'exec-path "/usr/local/bin")
-
-(setq ispell-dictionary-alist
-      '((nil
-	 "[A-Za-z]" "[^A-Za-z]" "[']" nil
-	 ("-B" "-d" "english" "--dict-dir"
-	  "/Library/Application Support/cocoAspell/aspell6-en-6.0-0")
-	 nil iso-8859-1)))
-
-(setq ispell-personal-dictionary "~/.aspell.en.pws")
-
-(setq ispell-program-name "aspell"
-      ispell-dictionary "english"
-      ispell-dictionary-alist
-      (let ((default '("[A-Za-z]" "[^A-Za-z]" "[']" nil
-                       ("-B" "-d" "english" "--dict-dir"
-                        "/Library/Application Support/cocoAspell/aspell6-en-6.0-0")
-                       nil iso-8859-1)))
-        `((nil ,@default)
-          ("english" ,@default))))
-;; Flyspell
-;;  Require flyspell for org-mode:
-
-(add-hook 'org-mode-hook 'turn-on-flyspell)
-(add-hook 'markdown-mode-hook 'flyspell-mode)
-;; easy spell check
-(global-set-key (kbd "<f8>") 'ispell-word)
-(global-set-key (kbd "C-S-<f8>") 'flyspell-mode)
-(global-set-key (kbd "C-M-<f8>") 'flyspell-buffer)
-(global-set-key (kbd "C-<f8>") 'flyspell-check-previous-highlighted-word)
-(defun flyspell-check-next-highlighted-word ()
-  "Custom function to spell check next highlighted word"
-  (interactive)
-  (flyspell-goto-next-error)
-  (ispell-word)
-  )
-(global-set-key (kbd "M-s M-n") 'flyspell-check-next-highlighted-word)
-
-(add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
-(add-to-list 'ispell-skip-region-alist '("#\\+BEGIN_SRC" . "#\\+END_SRC"))
-#+END_SRC
+[[id:bbf0b067-83b3-4c06-ac40-9655b616180b][Spelling with flyspell and ispell]]
 ****** Image manipulation
 - http://yummymelon.com/devnull/announcing-casual-image.html
 ****** Integration with programming
@@ -14580,6 +14574,11 @@ $0
 (setq dired-kill-when-opening-new-dired-buffer t)
 
 #+end_src
+#+begin_src emacs-lisp
+(setq dired-listing-switches "-alh")
+
+#+end_src
+
 ******** Needed in --batch
 Code that needs to be tangled both here and into custom inits for batch export
 #+name need_in_batch
@@ -15414,6 +15413,7 @@ When called with two prefix arguments, ARG, run the original function without pr
     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
 
+(setq org-export-preserve-breaks t)
 #+end_src
 *********** Empty latex class
 #+name: org_latex_empty_class
@@ -15614,12 +15614,20 @@ TABLE-NAME is the name of the table identified as #+name."
 (setq org-agenda-start-on-weekday nil)
 (setq org-agenda-remove-tags t)
 (setq org-agenda-skip-scheduled-if-done t)
-(setq
- org-agenda-files
- (list "~/repos/org/"))
 
-(define-key global-map "\C-ca" 'org-agenda)
+(setq org-agenda-files
+      (append
+       (list "~/repos/org/") ;; keep your org directory
+       (cl-remove-if-not
+        #'file-regular-p
+        (mapcar (lambda (d)
+                  (expand-file-name
+                   (concat (file-name-nondirectory (directory-file-name d)) ".org")
+                   d))
+                (directory-files "~/repos/" t "^[^.]+" t)))))
+
 (setq org-agenda-skip-unavailable-files t)
+
 
 (setq org-agenda-use-tag-inheritance t)
 ;;  http://stackoverflow.com/questions/36873727/make-org-agenda-full-screen
@@ -16038,6 +16046,12 @@ https://kristofferbalintona.me/posts/202206141852/
 note, need to
 conda activate base
 pip install 'python-lsp-server[all]'
+- Consistent keybindings with ESS, essh
+  #+begin_src emacs-lisp
+(with-eval-after-load 'elpy
+  (define-key elpy-mode-map (kbd "C-c C-b") 'elpy-shell-send-buffer))
+
+#+end_src
 
 
 
@@ -18521,9 +18535,6 @@ https://fabienmaussion.info/scientific_programming/week_03/02-Strings-Paths.html
 ****** [[id:6d4098eb-b91f-46b5-84af-c39442c0c5c9][Basecamp python documentation]]
 ****** [[id:99c189db-c124-4f8e-923e-99dd2e67a4b8][Basecamp python conda environment]]
 ****** [[id:e7806712-9607-4b78-8662-80a2659c203d][Emacs - Python integration]]
-:PROPERTIES:
-:ID:       a650fe0b-5853-4984-8e16-fa5a7e7c8859
-:END:
 ****** Local YAS
 :PROPERTIES:
 :ID:       83ab8d81-d8b9-4430-b639-2cbe92ec49b4
@@ -21843,7 +21854,7 @@ adb connect 192.168.1.12:5555
 :PROPERTIES:
 :ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
 :END:
-**** Ansible
+**** Ansible                                                         :ansipb:
 :properties:
 :header-args:yaml: :tangle ./ansible/playbooks/r-install.yaml
 :ID:       36efda17-d1ef-4632-bc33-732071455543
@@ -23456,6 +23467,7 @@ CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
 :PROPERTIES:
 :ID:       2faf071d-912b-4003-a42a-d9f18144434b
 :END:
+- https://en.wikipedia.org/wiki/SOLID
 - https://software-carpentry.org/lessons/
 - https://www.mensurdurakovic.com/hard-to-swallow-truths-they-wont-tell-you-about-software-engineer-job/
 - miscellaneous

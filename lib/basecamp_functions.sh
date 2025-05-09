@@ -896,6 +896,15 @@ EOF
     local org_file="$1"
     /usr/bin/emacs --batch -l ~/.emacs.d/tangle.el -l org -eval "(org-babel-tangle-file \"$org_file\")"
 }
+open_tmp_last(){
+    local last_file
+    last_file=$(find /tmp/ -type f -printf "%T@ %p\n" 2>/dev/null | sort -n | tail -1 | cut -d' ' -f2-)
+    if [[ -n "$last_file" ]]; then
+        open "$last_file"
+    else
+        echo "No files in /tmp/"
+    fi
+}
 function conda_update() {
     if [[ "$1" =~ ^(-h|--help)$ ]] || [[ -z "$1" ]]; then
         cat <<EOF
@@ -1090,6 +1099,7 @@ EOF
       --configfile "$configfile" \
       --cores 4 \
       --dry-run \
+      --printshellcmds \
       --rerun-incomplete \
       --resources concurrency="$concurrency" \
       --snakefile "$snakefile"

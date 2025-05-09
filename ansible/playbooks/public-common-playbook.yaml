@@ -73,6 +73,13 @@
       loop: "{{ symlink_sources.results }}"
       when: item.stat.exists
       no_log: true
+    - name: Add required APT PPAs
+      apt_repository:
+        repo: "{{ item }}"
+        state: present
+      loop: "{{ apt_ppas }}"
+      become: true
+
     - name: Update apt cache
       apt:
         update_cache: yes

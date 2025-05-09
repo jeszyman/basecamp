@@ -1,8 +1,8 @@
 # -*- mode: snippet -*-
-# key: code.latex
+# key: export.latex
 # expand-env: ((yas-indent-line 'none))
 # condition: 'auto
 # --
-#+begin_src latex
+#+begin_export latex
 $0
-#+end_src
+#+end_export

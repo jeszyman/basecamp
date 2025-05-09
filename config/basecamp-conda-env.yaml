@@ -27,7 +27,9 @@ dependencies:
 # ---   R   --- #
 # ------------- #
 
-  - bioconductor-complexheatmap
+  - bioconductor-complexheatmap        # Heatmap visualizations for omics data #
+  - r-argparse                   # Input argument parsing like Python argparse #
+  - r-cairo               # Replacement graphics device, better font rendering #
   - r-colorramps                                  # Builds gradient color maps #
   - r-devtools                                   # R package development tools #
   - r-eulerr                           # Best area-proportional Euler diagrams #
@@ -39,19 +41,18 @@ dependencies:
   - r-ggsci                   # Ggplot2 color palettes for scientific journals #
   - r-igraph                              # Network analysis and visualization #
   - r-kableextra       # Builds HTML or LaTeX tables knitr and magrittr piping #
-  - r-lintr                                                     # Linting tool #
+  - r-lintr                                          # Linting tool for R code #
   - r-magick                # Bindings to ImageMagick image processing library #
   - r-multcomp          # Tests and confidence intervals for parametric models #
   - r-optparse                              # For command line options parsing #
-  - r-patchwork                                      # Composes multiple plots #
+  - r-patchwork                    # Composes multiple ggplots into one layout #
   - r-pheatmap                                               # Simple heatmaps #
   - r-readxl                                         # Read Excel files into R #
   - r-rlang             # Toolbox for working with base types, core R features #
-  - r-rstatix            # pipe-friendly framework for basic statistical tests #
-  - r-svglite                                   # Provides svg graphics output #
-  - r-tidyverse
+  - r-rstatix            # Pipe-friendly framework for basic statistical tests #
   - r-rtsne  # t-distributed stochastic neighbor embedding dimension reduction #
+  - r-svglite                                   # Provides svg graphics output #
+  - r-tidyverse                    # Collection of R packages for data science #
   - r-upsetr       # Visualizations of intersecting sets using a matrix design #
   - r-writexl                                    # Export data frames to Excel #
-  - r-yaml                    # Impliments libyaml YAML 1.1 parser and emitter #
-  - r-argparse                            # Input argument parsing like python #
+  - r-yaml                    # Implements libyaml YAML 1.1 parser and emitter #

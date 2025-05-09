@@ -20,6 +20,7 @@
       TeX-view-program-list
       '(("Okular" "okular %o")))
 (setq dired-kill-when-opening-new-dired-buffer t)
+(setq dired-listing-switches "-alh")
 (setq large-file-warning-threshold most-positive-fixnum) ; disable large file warning
 (setq-default cache-long-scans nil)
 (setq exec-path (append exec-path '("/opt/miniconda3/bin")))
@@ -616,6 +617,9 @@ When called with two prefix arguments, ARG, run the original function without pr
     "bibtex %b"
     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
+
+(setq org-export-preserve-breaks t)
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes '("empty"
                                     "\\documentclass{article}
@@ -773,12 +777,20 @@ TABLE-NAME is the name of the table identified as #+name."
 (setq org-agenda-start-on-weekday nil)
 (setq org-agenda-remove-tags t)
 (setq org-agenda-skip-scheduled-if-done t)
-(setq
- org-agenda-files
- (list "~/repos/org/"))
 
-(define-key global-map "\C-ca" 'org-agenda)
+(setq org-agenda-files
+      (append
+       (list "~/repos/org/") ;; keep your org directory
+       (cl-remove-if-not
+        #'file-regular-p
+        (mapcar (lambda (d)
+                  (expand-file-name
+                   (concat (file-name-nondirectory (directory-file-name d)) ".org")
+                   d))
+                (directory-files "~/repos/" t "^[^.]+" t)))))
+
 (setq org-agenda-skip-unavailable-files t)
+
 
 (setq org-agenda-use-tag-inheritance t)
 ;;  http://stackoverflow.com/questions/36873727/make-org-agenda-full-screen
@@ -975,6 +987,8 @@ TABLE-NAME is the name of the table identified as #+name."
   (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
   (setq elpy-rpc-python-command "~/miniconda/bin/python")
 )
+(with-eval-after-load 'elpy
+  (define-key elpy-mode-map (kbd "C-c C-b") 'elpy-shell-send-buffer))
 (defun my-elpy-shell-display-buffer-in-new-frame (buffer alist)
   "Display the Python shell buffer in a new frame."
   (let ((display-buffer-alist

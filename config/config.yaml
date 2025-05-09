@@ -1,6 +1,10 @@
 #########1#########1#########1#########1#########1#########1#########1#########1
+apt_ppas:
+  - ppa:apptainer/ppa
+
 apt_packages:
   - ansible                   # Provisioning automation tool
+  - apptainer                 # Singularity replacement
   - aria2                     # wget improvement 
   - brave-browser             # Web browser
   - curl                      # Command-line tool for HTTP requests

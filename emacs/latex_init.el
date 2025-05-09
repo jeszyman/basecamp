@@ -77,6 +77,7 @@
     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
 
+(setq org-export-preserve-breaks t)
 (defun org-plain-follow (id _)
   "Follow a plain link as if it were an ID link."
   (org-id-open id nil))

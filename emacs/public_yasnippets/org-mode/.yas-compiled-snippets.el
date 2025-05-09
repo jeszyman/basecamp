@@ -53,6 +53,9 @@
 		       ("google" "[[https://www.google.com/search?q=${1:$(replace-regexp-in-string \" \" \"+\" yas-text)}][google:$1]]$0\n" "google" nil nil
 			((yas-indent-line 'none))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/google" nil nil)
+		       ("export.latex" "#+begin_export latex\n$0\n#+end_export\n" "export.latex" 'auto nil
+			((yas-indent-line 'none))
+			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/export.latex" nil nil)
 		       ("demo.org.header" "`(make-string (org-current-level) ?*)` THE HEADER\n:PROPERTIES:\n:END:\n`(make-string (+ 1 (org-current-level)) ?*)` BELOW THE HEADER\n" "demo.org.header" nil nil
 			((yas-indent-line 'none))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/demo.org.header" nil nil)
@@ -80,7 +83,7 @@
 		       ("code.lisp" "#+begin_src emacs-lisp\n$1\n#+end_src$0\n" "code.lisp" 'auto nil
 			((yas-indent-line 'none))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/code.lisp" nil nil)
-		       ("code.latex" "#+begin_src latex\n$0\n#+end_src" "code.latex" 'auto nil
+		       ("code.latex" "#+begin_src latex\n$0\n#+end_src\n" "code.latex" 'auto nil
 			((yas-indent-line 'none))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/code.latex" nil nil)
 		       ("code.js" "#+begin_src javascript\n$0\n#+end_src\n" "code.js" 'auto nil
@@ -94,4 +97,4 @@
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/80" nil nil)))
 
 
-;;; Do not edit! File generated at Wed Apr  2 10:45:46 2025
+;;; Do not edit! File generated at Tue May  6 10:40:19 2025
