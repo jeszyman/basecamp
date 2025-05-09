@@ -975,6 +975,7 @@ wget_downloads:
 #+end_src
 **** Install software
 ***** ATP installs
+https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
 #+begin_src yaml
     - name: Add required APT PPAs
       apt_repository:
@@ -2962,7 +2963,9 @@ EOF
       --keep-going \
       --rerun-incomplete \
       --resources concurrency="$concurrency" \
-      --snakefile "$snakefile"
+      --snakefile "$snakefile" \
+      --use-singularity \
+      --singularity-args "--bind /mnt, /home" 
 
   if [ $? -ne 0 ]; then
       echo "Error: Snakemake run failed."

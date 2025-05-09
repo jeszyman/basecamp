@@ -1225,7 +1225,9 @@ EOF
       --keep-going \
       --rerun-incomplete \
       --resources concurrency="$concurrency" \
-      --snakefile "$snakefile"
+      --snakefile "$snakefile" \
+      --use-singularity \
+      --singularity-args "--bind /mnt, /home" 
 
   if [ $? -ne 0 ]; then
       echo "Error: Snakemake run failed."
