@@ -1,0 +1,72 @@
+---
+- name: Install Conda
+  hosts: localhost
+  vars:
+    miniconda_prefix: "{{ ansible_env.HOME }}/miniconda3"
+
+  tasks:
+
+    - name: Check if Miniconda is installed and working
+      shell: >
+        [ -x "{{ miniconda_prefix }}/bin/conda" ] &&
+        head -n1 "{{ miniconda_prefix }}/bin/conda" | grep -q '{{ miniconda_prefix }}/bin/python'
+      register: conda_valid
+      ignore_errors: true
+      changed_when: false
+      failed_when: false
+
+    - name: Remove broken Miniconda install
+      file:
+        path: "{{ miniconda_prefix }}"
+        state: absent
+      when: conda_valid.rc != 0
+
+    - name: Download Miniconda installer
+      get_url:
+        url: https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+        dest: /tmp/miniconda.sh
+        mode: '0755'
+
+    - name: Install Miniconda
+      command: "bash /tmp/miniconda.sh -b -p {{ miniconda_prefix }}"
+      args:
+        creates: "{{ miniconda_prefix }}/bin/conda"
+
+    - name: Ensure Miniconda is in .bashrc
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: 'export PATH="{{ miniconda_prefix }}/bin:$PATH"'
+        insertafter: EOF
+    - name: Initialize conda for bash shell
+      shell: "{{ miniconda_prefix }}/bin/conda init bash"
+      args:
+        executable: /bin/bash
+      environment:
+        PATH: "{{ miniconda_prefix }}/bin:{{ ansible_env.PATH }}"
+        
+    - name: Update conda
+      shell: "{{ miniconda_prefix }}/bin/conda update -y conda"
+      args:
+        executable: /bin/bash
+      environment:
+        PATH: "{{ miniconda_prefix }}/bin:{{ ansible_env.PATH }}"
+
+    - name: Install mamba
+      shell: "{{ miniconda_prefix }}/bin/conda install -y mamba -c conda-forge"
+      args:
+        executable: /bin/bash
+      environment:
+        PATH: "{{ miniconda_prefix }}/bin:{{ ansible_env.PATH }}"
+
+    - name: Write .condarc config cleanly
+      copy:
+        dest: "{{ ansible_env.HOME }}/.condarc"
+        content: |
+          always_yes: true
+          allow_channel_priority: true
+          channel_priority: strict
+          auto_activate_base: false
+          channels:
+            - conda-forge
+            - bioconda
+            - defaults

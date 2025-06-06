@@ -37,6 +37,7 @@ nohup.out
 **/.cache
 **/.config
 **/.java
+**/.conda
 ###   TeX   ###
 *.aux
 *.lof

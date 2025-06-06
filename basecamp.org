@@ -3,6 +3,9 @@
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :RESET_CHECK_BOXES: t
 :END:
+
+
+
 ** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
 ** [[id:89576FD2-F863-4220-BAD7-D4E179AEA644][Bash and shell]]
 ** [[id:b16d0202-8d35-472b-b538-87a7d6a6cef7][Conda]]
@@ -741,7 +744,7 @@ progn: special form to evaluate sequence of expressions
 #+RESULTS[016fa4d1113146028616d5a37fedf60a4275ed16]:
 : Second
 **** Org-mode
-
+https://alphapapa.github.io/org-almanac/
 If you place an asterisk at the beginning of your search, Org-mode will search only headlines (and not entry text). E.g., to find all entries with "emacs" in the headline, you could type:
 
 #+begin_src emacs-lisp
@@ -850,6 +853,8 @@ apt_packages:
   - tree                      # Directory structure viewer
   - ttf-mscorefonts-installer # Microsoft TrueType fonts
   - vim                       # Advanced text editor
+  - default-jre
+  - libreoffice-java-common
   
 directory_structure:
   - "${HOME}/repos"
@@ -889,9 +894,9 @@ wget_downloads:
 *** Public common playbook                                           :ansipb:
 :PROPERTIES:
 :ID:       42a1c7e4-9b67-41b6-8336-83e061da7154
-:header-args:yaml: :tangle ./ansible/playbooks/public-common-playbook.yaml :mkdirp yes
+:header-args:yaml: :tangle ./ansible/public-common-playbook.yaml :mkdirp yes
 :END:
-[[file:ansible/playbooks/public-common-playbook.yaml]]
+[[file:ansible/public-common-playbook.yaml]]
 **** Preamble
 #+begin_src yaml
 ---
@@ -1097,7 +1102,6 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
         XDG_RUNTIME_DIR: "/run/user/{{ ansible_user_uid }}"
 
 #+end_src
-
 **** Update bashrc
 #+begin_src yaml
     - name: Source custom shell scripts from ~/.local/lib/mylibs in .bashrc
@@ -1106,6 +1110,18 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
         insertafter: EOF
         line: 'for f in ~/.local/lib/mylibs/*.sh; do [ -f "$f" ] && source "$f"; done'
         state: present
+
+#+end_src
+
+**** Conda
+#+begin_src yaml
+    - name: Ensure conda uses strict channel priority
+      ansible.builtin.shell: |
+        source ~/miniconda3/etc/profile.d/conda.sh && conda config --set channel_priority strict
+      args:
+        executable: /bin/bash
+      environment:
+        PATH: "{{ ansible_env.HOME }}/miniconda3/condabin:{{ ansible_env.PATH }}"
 
 #+end_src
 
@@ -2820,6 +2836,7 @@ EOF
       --dry-run \
       --printshellcmds \
       --rerun-incomplete \
+      --conda-frontend conda \
       --resources concurrency="$concurrency" \
       --snakefile "$snakefile"
 
@@ -2964,7 +2981,10 @@ EOF
       --rerun-incomplete \
       --resources concurrency="$concurrency" \
       --snakefile "$snakefile" \
+      --use-conda \
+      --conda-frontend conda \
       --use-singularity \
+      --printshellcmds \
       --singularity-args "--bind /mnt" 
 
   if [ $? -ne 0 ]; then
@@ -4879,6 +4899,7 @@ flowchart TD
 #+end_src
 
 **** ChatGTP
+- https://www.reddit.com/r/ChatGPT/comments/1kh8blq/please_bring_back_the_witty_intelligent_sycophant/
 - https://www.reddit.com/r/ChatGPT/comments/1h1gx8k/how_many_custom_gpts_do_you_have/
 - https://www.reddit.com/r/ChatGPT/comments/1gzgtgn/what_cool_thing_you_can_do_with_ai_that_nobody/
 - https://www.reddit.com/r/vim/comments/13we2mq/vimium_chatgpt/
@@ -5039,97 +5060,84 @@ cmake -version
 ****** Ansible
 ******* Conda install and provisioning playbook                      :ansipb:
 :properties:
-:header-args:yaml: :tangle ./ansible/playbooks/conda-playbook.yaml :mkdirp yes
+:header-args:yaml: :tangle ./ansible/conda-playbook.yaml :mkdirp yes
 :ID:       7ab1917d-8962-4527-a4ac-5cdf7352f7a3
 :end:
-- [[file:ansible/playbooks/conda-playbook.yaml]]
-******** Preamble
+- [[file:ansible/conda-playbook.yaml]]
 #+begin_src yaml
 ---
-- name: Install Conda 
+- name: Install Conda
   hosts: localhost
   vars:
     miniconda_prefix: "{{ ansible_env.HOME }}/miniconda3"
-    
+
   tasks:
-#+end_src
-******** Install
-#+begin_src yaml
-    - name: Check if Miniconda is installed by searching for 'conda' in PATH
-      shell: "command -v conda"
-      register: conda_check
-      ignore_errors: yes
+
+    - name: Check if Miniconda is installed and working
+      shell: >
+        [ -x "{{ miniconda_prefix }}/bin/conda" ] &&
+        head -n1 "{{ miniconda_prefix }}/bin/conda" | grep -q '{{ miniconda_prefix }}/bin/python'
+      register: conda_valid
+      ignore_errors: true
       changed_when: false
       failed_when: false
-      
-    - name: Set Miniconda installation needed fact
-      set_fact:
-        miniconda_needed: "{{ conda_check.rc ==127 }}"
 
-    - name: Verify if Miniconda installation is needed
-      debug:
-        msg: "Miniconda installation needed: {{ miniconda_needed }}"        
-        
-    - name: Debug conda_check result
-      debug:
-        var: conda_check.rc
-  
-    - name: Download Miniconda installer if not installed
+    - name: Remove broken Miniconda install
+      file:
+        path: "{{ miniconda_prefix }}"
+        state: absent
+      when: conda_valid.rc != 0
+
+    - name: Download Miniconda installer
       get_url:
         url: https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
         dest: /tmp/miniconda.sh
         mode: '0755'
-      when: miniconda_needed
 
-    - name: Debug user's home directory
-      debug:
-        msg: "User's home directory is {{ ansible_user_dir }},Running as user: {{ ansible_env.USER }}, home: {{ ansible_env.HOME }}"
-      
-    - name: Install Miniconda if not installed
-      command: "bash /tmp/miniconda.sh -u -b -p {{ miniconda_prefix }}"
+    - name: Install Miniconda
+      command: "bash /tmp/miniconda.sh -b -p {{ miniconda_prefix }}"
       args:
-        creates: "{{ miniconda_prefix }}/bin/conda"        
-      when: miniconda_needed
-      
-#+end_src
-******** Settings
-#+begin_src yaml
-    - name: Check if Conda is already initialized
-      shell: "grep -q '>>> conda initialize >>>' {{ ansible_env.HOME }}/.bashrc"
-      register: miniconda_initialized
-      ignore_errors: yes
-      changed_when: false
+        creates: "{{ miniconda_prefix }}/bin/conda"
 
-    - name: Initialize Miniconda for bash
+    - name: Ensure Miniconda is in .bashrc
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: 'export PATH="{{ miniconda_prefix }}/bin:$PATH"'
+        insertafter: EOF
+    - name: Initialize conda for bash shell
       shell: "{{ miniconda_prefix }}/bin/conda init bash"
-      args:
-        executable: /bin/bash
-      when: miniconda_initialized.rc !=0
-
-    - name: Prevent automatic activation of the base environment in conda
-      shell: "{{ miniconda_prefix }}/bin/conda config --set auto_activate_base false"
-      args:
-        executable: /bin/bash
-
-    - name: Update conda
-      shell: "{{ miniconda_prefix }}/bin/conda update conda --yes"
       args:
         executable: /bin/bash
       environment:
         PATH: "{{ miniconda_prefix }}/bin:{{ ansible_env.PATH }}"
-      
-#+end_src
-******** Add mamba
-#+begin_src yaml
-    - name: Install Mamba using Conda
+        
+    - name: Update conda
+      shell: "{{ miniconda_prefix }}/bin/conda update -y conda"
+      args:
+        executable: /bin/bash
+      environment:
+        PATH: "{{ miniconda_prefix }}/bin:{{ ansible_env.PATH }}"
+
+    - name: Install mamba
       shell: "{{ miniconda_prefix }}/bin/conda install -y mamba -c conda-forge"
       args:
         executable: /bin/bash
       environment:
         PATH: "{{ miniconda_prefix }}/bin:{{ ansible_env.PATH }}"
 
-#+end_src
-
+    - name: Write .condarc config cleanly
+      copy:
+        dest: "{{ ansible_env.HOME }}/.condarc"
+        content: |
+          always_yes: true
+          allow_channel_priority: true
+          channel_priority: strict
+          auto_activate_base: false
+          channels:
+            - conda-forge
+            - bioconda
+            - defaults
+#+end_src        
 ******** Ideas
 :properties:
 :header-args:yaml: :tangle no
@@ -6294,6 +6302,8 @@ https://tomd.xyz/diagrams-as-code-drawio/
 :PROPERTIES:
 :ID:       E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6
 :END:
+https://www.reddit.com/r/git/comments/1kwijwn/the_last_gitignore_you_will_ever_need/
+https://www.reddit.com/r/git/comments/1kwo7bw/just_discovered_worktrees_what_are_some_other_git/
 ****** Processes                                                  :hierarchy:
 :PROPERTIES:
 :ID:       101a3601-5b02-4506-812c-2d705c51cbe2
@@ -6613,6 +6623,7 @@ git clone -b opencv-2.4 --single-branch https://github.com/Itseez/opencv.git
 :ID:       86366863-6e1f-450c-84c1-c773eea27287
 :END:
 - https://stackoverflow.com/questions/33360043/git-error-need-to-remove-large-file
+******** See repo size
 ****** Commands
 :PROPERTIES:
 :ID:       25448b0b-da84-4b7f-9265-fc64cda5c686
@@ -7132,6 +7143,7 @@ nohup.out
 ,**/.cache
 ,**/.config
 ,**/.java
+,**/.conda
 #+end_src
 ******** TeX
 :PROPERTIES:
@@ -7785,6 +7797,8 @@ specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]
 :PROPERTIES:
 :ID:       9b81018a-f437-4a56-b4c4-7ee370943b5d
 :END:
+- https://github.com/rjekker/i3-battery-popup/blob/master/i3-battery-popup
+
 - Setting windows to precise placement
   - https://chatgpt.com/c/670becdc-2a60-8005-bfe2-d6ba146443e3
 #+begin_src bash :tangle /tmp/test.sh
@@ -8467,6 +8481,8 @@ https://www.reddit.com/r/bioinformatics/comments/17pk9ut/good_ways_to_control_fi
 :PROPERTIES:
 :ID:       6cb6dc7d-29ad-4dda-8ede-1454bedc2dc7
 :END:
+******** Force snakemake to accept metadata
+https://chatgpt.com/c/682b2afe-1a40-8005-bc48-9d7b55cb22d2
 ******** 0 Flat                                                        :flat:
 :PROPERTIES:
 :ID:       cc92b9c0-23c0-4241-8b75-ec0b4ca3c66f
@@ -8905,6 +8921,7 @@ https://stackoverflow.com/questions/50413374/glob-wildcards-on-multiple-director
 :PROPERTIES:
 :ID:       3964a700-f2bb-4e35-9d4e-4b07603c4d95
 :END:
+- use raw strings for shell commands (r""" instead of just """), avoids escape issues from like \n
 - Configuration
   - tabular- declare per-unit identifiers and index in snakefile preamble. /E.g./ # units = pd.read_table("bin/units_test.tsv").set_index("sample", drop=False)
     - needs import pandas
@@ -10598,9 +10615,11 @@ https://abseil.io/resources/swe-book
 :PROPERTIES:
 :ID:       a49abc44-8e71-4a1a-bd35-a77849427c94
 :END:
+https://www.reddit.com/r/emacs/comments/1kvcze5/spartan_emacs_a_more_minimal_doom_or_spacemacs/
 - org-ml
   - https://github.com/ndwarshuis/org-ml
   - https://chatgpt.com/c/68161d6a-d2ac-8005-a32a-d4534636db42
+https://github.com/jamescherti/minimal-emacs.d
 https://www2.lib.uchicago.edu/keith/emacs/#org9f6793b
 https://joostkremers.github.io/ebib/
 https://github.com/jamescherti/minimal-emacs.d
@@ -10767,6 +10786,9 @@ https://wilkesley.org/~ian/xah/emacs/elisp_syntax_coloring.html
 :ID:       c70cfb48-b027-4b4f-8e0c-5fbc3d4222a0
 :END:
 [[https://www.google.com/search?q=emacs+systemd+server+start][google:emacs systemd server start]]
+******* Undo
+- https://github.com/casouri/vundo
+
 ******* Tangle on save
 :PROPERTIES:
 :ID:       9c204dc9-be19-4699-bbb6-af0ac05fd3fc
@@ -12714,7 +12736,7 @@ https://www.reddit.com/r/orgmode/comments/1j2b2gx/update_orgsupertag_25_a_new_wa
 :ID:       88337952-4c36-402e-882f-6ccd6c7ff6a1
 :export_file_name: /tmp/test
 :END:
-
+https://chatgpt.com/c/682603cf-2324-8005-a61c-bdf2e56c626d
 #+begin_src emacs-lisp :results replace
 org-version 
 #+end_src
@@ -14057,12 +14079,7 @@ https://github.com/alphapapa/org-ql
 - General Reference
   - [[http://kitchingroup.cheme.cmu.edu/blog/2014/05/15/Using-org-ref-to-keep-your-bibtex-files-in-order/#sec-1][Using org-ref to keep your bibtex files in order]]
 
-******* Org-ros
-:PROPERTIES:
-:ID:       d78feb55-685c-43f6-b962-84f103b90c2f
-:END:
-https://github.com/LionyxML/ros
-https://www.reddit.com/r/emacs/comments/t9wv4w/ros_my_orgmode_screenshot_tool_is_now_orgros_and/
+
 ******* Org-super-agenda
 :PROPERTIES:
 :ID:       ca9e0a7d-173e-465c-8193-85a7e4f894d0
@@ -14533,13 +14550,16 @@ $0
 ****** Public configuration
 :PROPERTIES:
 :ID:       28ed3017-eedb-4a6c-94e5-f477353170c8
-:header-args: :tangle ./emacs/public_config.el
+:header-args: :tangle ./emacs/public_config.el :comments org
 :END:
 [[file:emacs/public_config.el]]
+#+begin_src emacs-lisp
+;; Public Config
+
+#+end_src
 
 - for config rewrite https://chatgpt.com/c/e16840b5-355a-42e3-bd97-70693daa17c0
 ******* AUCTeX
-- [[id:eb4a0bb3-2e8a-4bf5-9186-11f972b2e06d][AUCTeX reference header]]
 #+begin_src emacs-lisp
 (use-package tex
   :ensure auctex
@@ -14548,26 +14568,13 @@ $0
 			 (getenv "PATH")))
   (add-to-list 'exec-path "/usr/local/texlive/2021/bin/x86_64-linux")
 
-  (setq
-   TeX-auto-save t
-   TeX-parse-self t
-   TeX-save-query nil
-   TeX-view-program-selection
-   '(((output-dvi has-no-display-manager) . ("dvi2tty"))
-     ((output-dvi style-pstricks) . ("dvips and gv"))
-     (output-pdf . ("Okular"))
-     (output-dvi . ("xdvi"))
-     (output-pdf . ("Evince"))
-     (output-html . ("xdg-open")))))
-
+  (setq TeX-auto-save t
+        TeX-parse-self t
+        TeX-save-query nil
+        TeX-view-program-selection '((output-pdf "Okular"))
+        TeX-view-program-list '(("Okular" "okular %o"))))
 #+end_src
-#+begin_src emacs-lisp
-(setq TeX-view-program-selection '((output-pdf "Okular"))
-      TeX-view-program-list
-      '(("Okular" "okular %o")))
-
-#+end_src
-
+- [[id:eb4a0bb3-2e8a-4bf5-9186-11f972b2e06d][AUCTeX reference header]]
 ******* Base Emacs
 ******** Dired
 :PROPERTIES:
@@ -15121,6 +15128,8 @@ When set as a list as below, 300 pixels will be the default, but another width c
 (setq org-image-actual-width '(300))
 #+end_src
 ********* shk-fix-inline-images, reload inline images after code eval
+If you have code blocks in Org mode that produce images (such as R or Python plots), this setup refreshes the images right after code execution without requiring manual intervention.
+
 #+begin_src emacs-lisp
 (defun shk-fix-inline-images ()
   (when org-inline-image-overlays
@@ -15316,7 +15325,6 @@ https://chatgpt.com/c/670d4cb7-5c08-8005-bec8-a2800e4bd0c4
 
 (setq org-catch-invisible-edits 'error)
 (global-set-key (kbd "C-c l") 'org-store-link)
-(setq org-refile-targets '((org-agenda-files :maxlevel . 14)))
 (setq org-indirect-buffer-display 'current-window)
 
 (setq org-id-link-to-org-use-id 'use-existing)
@@ -15612,6 +15620,8 @@ TABLE-NAME is the name of the table identified as #+name."
 
 ********* Agenda
 #+begin_src emacs-lisp
+(global-set-key "\C-ca" 'org-agenda)
+
 (setq org-agenda-repeating-timestamp-show-all nil)
 (setq org-sort-agenda-notime-is-late nil)
 (setq org-agenda-start-on-weekday nil)
@@ -15651,16 +15661,6 @@ TABLE-NAME is the name of the table identified as #+name."
 (setq org-confirm-elisp-link-function nil)
 
 #+end_src
-********* No read-only buffer warning
-#+begin_src emacs-lisp
-;; https://emacs.stackexchange.com/questions/19742/is-there-a-way-to-disable-the-buffer-is-read-only-warning
-(defun my-command-error-function (data context caller)
-  "Ignore the buffer-read-only signal; pass the rest to the default handler."
-  (when (not (eq (car data) 'buffer-read-only))
-    (command-error-default-function data context caller)))
-
-(setq command-error-function #'my-command-error-function)
-#+end_src
 ********* :plain link type
 :PROPERTIES:
 :ID:       0f1b7abb-233b-4e81-abcb-e424e9b860e4
@@ -15689,20 +15689,6 @@ https://claude.ai/chat/c775f0eb-fa91-45b4-82d6-e1a0df8b5526
 (with-eval-after-load 'org
   (require 'ol-plain))
 #+end_src
-********* Inline images refresh on code eval
-:PROPERTIES:
-:ID:       1b8e46c2-0fac-48c2-8b9e-58b1e903b222
-:END:
-If you have code blocks in Org mode that produce images (such as R or Python plots), this setup refreshes the images right after code execution without requiring manual intervention.
-#+begin_src emacs-lisp
-(defun shk-fix-inline-images ()
-  (when org-inline-image-overlays
-    (org-redisplay-inline-images)))
-
-(with-eval-after-load 'org
-  (add-hook 'org-babel-after-execute-hook 'shk-fix-inline-images))
-
-#+end_src
 ********** org-image-actual-width
 :PROPERTIES:
 :ID:       a760d06b-c2b2-4b54-a0b6-375a13a20538
@@ -15716,16 +15702,6 @@ When set as a list as below, 300 pixels will be the default, but another width c
 https://chatgpt.com/c/67069939-5e04-8005-80b3-7865981a8843
 - currently an edit at point for all properties- NO!
 
-******** custom-command-error-function
-#+begin_src emacs-lisp
-;; https://emacs.stackexchange.com/questions/19742/is-there-a-way-to-disable-the-buffer-is-read-only-warning
-(defun custom-command-error-function (data context caller)
-  "Ignore the buffer-read-only signal; pass the rest to the default handler."
-  (when (not (eq (car data) 'buffer-read-only))
-    (command-error-default-function data context caller)))
-
-(setq command-error-function #'my-command-error-function)
-#+end_src
 ******** Editing text
   #+begin_src emacs-lisp
 ;;https://emacs.stackexchange.com/questions/12701/kill-a-line-deletes-the-line-but-leaves-a-blank-newline-character
@@ -16037,11 +16013,11 @@ https://kristofferbalintona.me/posts/202206141852/
   (advice-add 'python-mode :before 'elpy-enable)
   :config
   (define-key elpy-mode-map (kbd "C-c C-n") 'elpy-shell-send-statement-and-step)
-  (setenv "PATH" (concat "~/miniconda/bin:" (getenv "PATH")))
-  (setenv "WORKON_HOME" "~/miniconda/envs")
-  (setq exec-path (append '("~/miniconda/bin") exec-path))
+  (setenv "PATH" (concat "~/miniconda3/bin:" (getenv "PATH")))
+  (setenv "WORKON_HOME" "~/miniconda3/envs")
+  (setq exec-path (append '("~/miniconda3/bin") exec-path))
   (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
-  (setq elpy-rpc-python-command "~/miniconda/bin/python")
+  (setq elpy-rpc-python-command "~/miniconda3/bin/python")
 )
 #+end_src
 
@@ -16176,7 +16152,6 @@ https://github.com/magnars/expand-region.el
   (setq org-outline-path-complete-in-steps nil
 	org-refile-allow-creating-parent-nodes 'confirm
 	org-refile-targets '((org-agenda-files :maxlevel . 20))
-	org-refile-targets '((org-agenda-files :maxlevel . 3))
 	org-refile-use-outline-path 'file))
   (define-key global-map (kbd "C-c C-j") nil)
   (global-set-key (kbd "C-c C-j") 'helm-org-agenda-files-headings)
@@ -16335,7 +16310,50 @@ With a prefix argument USE-GPT-4, use GPT-4 instead of GPT-4-turbo."
 #+begin_src emacs-lisp
 (use-package org-ql)
 #+end_src
+******* org-ros
+https://github.com/LionyxML/ros
+https://chatgpt.com/c/6841f0e8-c080-8005-a3ed-fc6d67a76e19
+#+begin_src emacs-lisp
+(with-eval-after-load 'org-ros
+  (defun org-ros ()
+    "Screenshots an image to an org-file, prompting for filename with path completion."
+    (interactive)
+    (if buffer-file-name
+        (progn
+          (message "Waiting for region selection with mouse...")
+          (let* ((default-filename (concat
+                                     (file-name-nondirectory buffer-file-name)
+                                     "_"
+                                     (format-time-string "%Y%m%d_%H%M%S")
+                                     ".png"))
+                 (filepath (read-file-name
+                            "Save screenshot as: "
+                            (file-name-directory buffer-file-name)
+                            nil nil
+                            default-filename)))
+            ;; ensure .png extension
+            (unless (string-suffix-p ".png" filepath)
+              (setq filepath (concat filepath ".png")))
+            ;; ensure parent directory exists
+            (make-directory (file-name-directory filepath) t)
+            ;; capture screenshot
+            (cond ((executable-find org-ros-primary-screencapture)
+                   (call-process org-ros-primary-screencapture nil nil nil org-ros-primary-screencapture-switch filepath))
+                  ((executable-find org-ros-secondary-screencapture)
+                   (call-process org-ros-secondary-screencapture nil nil nil org-ros-secondary-screencapture-switch filepath))
+                  ((executable-find org-ros-windows-screencapture)
+                   (start-process "powershell" "*PowerShell*" "powershell.exe"
+                                  "-File" (expand-file-name "./printsc.ps1" org-ros-dir) filepath)))
+            ;; insert Org link
+            (insert (format "[[file:%s][%s]]" filepath (file-name-nondirectory filepath)))
+            (org-display-inline-images t t))
+          (message "File created and linked..."))
+      (message "You're in a not saved buffer! Save it first!"))))
 
+#+end_src
+https://github.com/LionyxML/ros
+
+[[file:./resources/test3.png][test3.png]]
 ******* ox-pandoc
 #+begin_src emacs-lisp
 
@@ -18462,6 +18480,7 @@ https://www.reddit.com/r/statistics/comments/12slcf6/d_ive_just_ordered_drunkard
 :PROPERTIES:
 :ID:       fc047a77-0b3e-4b7b-b535-5941e604f5af
 :END:
+https://www-sciencedirect-com.mclibrary.idm.oclc.org/science/article/pii/S0016508520355463?via%3Dihub
 - "lead time" analysis
   - "landmark KM"/ [[https://mail.google.com/mail/u/0/#inbox/FMfcgxwHMPmTRLxnwTQpJxwLvtMpsfst][time-depend-cox]] on resist
     #+begin_src R
@@ -21012,6 +21031,7 @@ http://howardism.org/Technical/Emacs/literate-devops.html
 :PROPERTIES:
 :ID:       5186083B-28F0-47B1-9CED-E8F8C4181C1C
 :END:
+https://www.reddit.com/r/LifeProTips/comments/1krctt0/lpt_if_you_use_a_nas_or_leave_your_computer_on/
 - https://android.izzysoft.de/applists/category/named/sensors
 **** Computers
 :PROPERTIES:
@@ -21857,6 +21877,7 @@ adb connect 192.168.1.12:5555
 :PROPERTIES:
 :ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
 :END:
+https://www.reddit.com/r/Rlanguage/comments/1ksy3c4/the_8020_guide_to_r_you_wish_you_read_years_ago/
 **** Ansible                                                         :ansipb:
 :properties:
 :header-args:yaml: :tangle ./ansible/playbooks/r-install.yaml
@@ -21931,6 +21952,13 @@ https://chatgpt.com/c/67d18bbf-d1ec-8005-bbbb-836fd4d82dd4
       command: sudo R -e 'install.packages("tidyverse", repos="https://cloud.r-project.org")'
       args:
         creates: /usr/local/lib/R/site-library/tidyverse  # Skip installation if already exists
+
+#+end_src
+#+begin_src yaml
+    - name: Install R 'languageserver' package
+      shell: Rscript -e 'if (!requireNamespace("languageserver", quietly = TRUE)) install.packages("languageserver", repos="https://cloud.r-project.org")'
+      args:
+        executable: /bin/bash
 
 #+end_src
 
@@ -23785,6 +23813,7 @@ git_setup:
 :PROPERTIES:
 :ID:       3eb81250-e885-4941-a559-997381abc196
 :END:
+https://www.reddit.com/r/bioinformatics/comments/1krwcgp/how_does_your_lab_store_ngs_sequencing_data_in/
 - https://www.reddit.com/r/ChatGPT/comments/13r3v36/i_run_an_ai_tools_directory_here_are_some_top_ai/
 - https://dev.to/devdefinitive/33-github-projects-i-have-bookmarked-and-you-should-298o
 - https://www.reddit.com/r/datascience/comments/mlfy02/what_is_your_ds_stack_and_roast_mine/

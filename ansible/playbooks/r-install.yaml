@@ -61,3 +61,7 @@
       command: sudo R -e 'install.packages("tidyverse", repos="https://cloud.r-project.org")'
       args:
         creates: /usr/local/lib/R/site-library/tidyverse  # Skip installation if already exists
+    - name: Install R 'languageserver' package
+      shell: Rscript -e 'if (!requireNamespace("languageserver", quietly = TRUE)) install.packages("languageserver", repos="https://cloud.r-project.org")'
+      args:
+        executable: /bin/bash

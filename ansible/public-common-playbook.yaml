@@ -1,0 +1,152 @@
+---
+- name: Common Public Playbook
+  hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: Debug useful variable readouts
+      debug:
+        msg: "
+          \n=== System Information ===\n\n
+          Logged in as: {{ ansible_env.USER }}
+          \n\nHome directory: {{ ansible_user_dir }}
+          \n\nEnvironment HOME: {{ ansible_env.HOME }}
+          \n\nPATH:
+            {{ ansible_env.PATH }}
+          \n\nOS: {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_os_family }})
+          \n\nHostname: {{ ansible_hostname }}
+          \n\nFQDN: {{ ansible_fqdn }}
+          \n\nDefault IPv4: {{ ansible_default_ipv4.address }}
+          \n\nInventory Sources: {{ ansible_inventory_sources }}
+          \n\nPackage Manager: {{ ansible_pkg_mgr }}
+          \n========================="
+    - name: Include config yaml
+      include_vars:
+        file: "{{ ansible_env.HOME }}/repos/basecamp/config/config.yaml"
+    - name: Ensure directories are created without changing existing permissions
+      file:
+        path: "{{ item | expanduser }}"
+        state: directory
+      loop: "{{ directory_structure }}"
+      vars:
+        directory_structure: "{{ directory_structure | default([]) }}"
+    - name: Ensure destination directory exists
+      file:
+        path: "{{ item.dest | dirname }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ wget_downloads }}"
+
+    - name: Download file only if changed
+      get_url:
+        url: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        mode: '0644'
+        force: no  # Ensures re-download only if file is missing or modified
+      loop: "{{ wget_downloads }}"
+    - name: Check symlink sources
+      ansible.builtin.stat:
+        path: "{{ item.src }}"
+      register: symlink_sources
+      loop: "{{ public_symlinks }}"
+      no_log: true
+
+    - name: Output missing symlink sources
+      debug:
+        msg: "Missing source: {{ item.item.src }}"
+      loop: "{{ symlink_sources.results | selectattr('stat.exists', 'equalto', false) | list }}"
+
+    - name: Ensure parent directories of symlink destinations exist
+      ansible.builtin.file:
+        path: "{{ item.dest | dirname }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ public_symlinks }}"
+      
+    - name: Make public symlinks for existing sources
+      ansible.builtin.file:
+        src: "{{ item.item.src }}"
+        dest: "{{ item.item.dest }}"
+        state: link
+        force: yes
+        follow: false
+      loop: "{{ symlink_sources.results }}"
+      when: item.stat.exists
+      no_log: true
+    - name: Add required APT PPAs
+      apt_repository:
+        repo: "{{ item }}"
+        state: present
+      loop: "{{ apt_ppas }}"
+      become: true
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      become: true
+      
+    - name: Ensure APT packages are installed
+      apt:
+        name: "{{ item }}"
+        state: latest
+      become: true
+      loop: "{{ apt_packages }}"
+      register: apt_install_results
+      ignore_errors: true  # Ensures playbook continues even if a package is missing
+    - name: Download yq binary
+      become: true
+      ansible.builtin.get_url:
+        url: https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+        dest: /usr/local/bin/yq
+        mode: '0755'
+        force: no
+
+    - name: Verify yq installation
+      become: true
+      ansible.builtin.command: yq --version
+      register: yq_version
+      failed_when: "'version' not in yq_version.stdout.lower()"
+
+    - name: Debug yq version
+      ansible.builtin.debug:
+        msg: "yq successfully installed: {{ yq_version.stdout }}"
+
+    # Create a separate alias 'yqgo' for the Go version of yq so it can still be used
+    # when the 'yq' command is shadowed by the Python version installed in a conda environment
+    - name: Copy yq to yqgo for unambiguous use of Go version
+      become: true
+      ansible.builtin.copy:
+        src: /usr/local/bin/yq
+        dest: /usr/local/bin/yqgo
+        remote_src: true
+        mode: '0755'
+    - name: Ensure fonts directory exists
+      file:
+        path: "{{ ansible_env.HOME }}/.local/share/fonts"
+        state: directory
+        mode: '0755'
+
+    - name: Download and extract Nerd Fonts
+      shell: |
+        cd {{ ansible_env.HOME }}/.local/share/fonts
+        curl -LO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraCode.zip
+        unzip -o FiraCode.zip
+        rm FiraCode.zip
+      args:
+        creates: "{{ ansible_env.HOME }}/.local/share/fonts/FiraCode-Regular.ttf"
+
+    - name: Refresh font cache
+      command: fc-cache -fv
+    - name: Source custom shell scripts from ~/.local/lib/mylibs in .bashrc
+      lineinfile:
+        path: ~/.bashrc
+        insertafter: EOF
+        line: 'for f in ~/.local/lib/mylibs/*.sh; do [ -f "$f" ] && source "$f"; done'
+        state: present
+    - name: Ensure conda uses strict channel priority
+      ansible.builtin.shell: |
+        source ~/miniconda3/etc/profile.d/conda.sh && conda config --set channel_priority strict
+      args:
+        executable: /bin/bash
+      environment:
+        PATH: "{{ ansible_env.HOME }}/miniconda3/condabin:{{ ansible_env.PATH }}"

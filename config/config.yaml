@@ -27,6 +27,8 @@ apt_packages:
   - tree                      # Directory structure viewer
   - ttf-mscorefonts-installer # Microsoft TrueType fonts
   - vim                       # Advanced text editor
+  - default-jre
+  - libreoffice-java-common
   
 directory_structure:
   - "${HOME}/repos"

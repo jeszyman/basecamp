@@ -1101,6 +1101,7 @@ EOF
       --dry-run \
       --printshellcmds \
       --rerun-incomplete \
+      --conda-frontend conda \
       --resources concurrency="$concurrency" \
       --snakefile "$snakefile"
 
@@ -1226,7 +1227,10 @@ EOF
       --rerun-incomplete \
       --resources concurrency="$concurrency" \
       --snakefile "$snakefile" \
+      --use-conda \
+      --conda-frontend conda \
       --use-singularity \
+      --printshellcmds \
       --singularity-args "--bind /mnt" 
 
   if [ $? -ne 0 ]; then
