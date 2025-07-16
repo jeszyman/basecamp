@@ -3,10 +3,12 @@
 :ID:       22fe951d-84ef-4031-a4a0-1833237bf4bf
 :RESET_CHECK_BOXES: t
 :END:
+#+begin_src emacs-lisp
+(add-to-list 'org-babel-tangle-lang-exts '("snakemake" . "smk"))
 
-
-
+#+end_src
 ** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
+** [[id:a8b27140-4b9e-40c5-86ab-ee5afeae723f][Snakemake]]
 ** [[id:89576FD2-F863-4220-BAD7-D4E179AEA644][Bash and shell]]
 ** [[id:b16d0202-8d35-472b-b538-87a7d6a6cef7][Conda]]
 ** [[id:a49abc44-8e71-4a1a-bd35-a77849427c94][Emacs]]
@@ -855,6 +857,8 @@ apt_packages:
   - vim                       # Advanced text editor
   - default-jre
   - libreoffice-java-common
+  - poppler-utils # PDF manipulation
+  - bibtool
   
 directory_structure:
   - "${HOME}/repos"
@@ -982,11 +986,32 @@ wget_downloads:
 ***** ATP installs
 https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
 #+begin_src yaml
-    - name: Add required APT PPAs
-      apt_repository:
-        repo: "{{ item }}"
+    # - name: Add Apptainer GPG key and repo
+    #   become: true
+    #   shell: |
+    #     curl -fsSL https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xFC6218AE | gpg --dearmor -o /usr/share/keyrings/apptainer-archive-keyring.gpg
+    #     echo "deb [signed-by=/usr/share/keyrings/apptainer-archive-keyring.gpg] http://ppa.launchpad.net/apptainer/ppa/ubuntu jammy main" > /etc/apt/sources.list.d/apptainer.list
+    #   args:
+    #     executable: /bin/bash
+
+    # - name: Add required APT PPAs
+    #   apt_repository:
+    #     repo: "{{ item }}"
+    #     state: present
+    #   loop: "{{ apt_ppas }}"
+    #   become: true
+
+    - name: Add Apptainer PPA
+      command: add-apt-repository -y ppa:apptainer/ppa
+      become: true
+      register: add_ppa_result
+      changed_when: "'already exists' not in add_ppa_result.stderr"
+
+    - name: Install Apptainer
+      apt:
+        name: apptainer
         state: present
-      loop: "{{ apt_ppas }}"
+        update_cache: yes
       become: true
 
     - name: Update apt cache
@@ -1060,7 +1085,7 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
       
 #+end_src
 
-****** R
+****** [[id:36efda17-d1ef-4632-bc33-732071455543][R]]
 **** Systemd services
 ***** Emacs
 #+begin_src yaml :tangle no
@@ -2704,7 +2729,7 @@ EOF
 :PROPERTIES:
 :ID:       04b1ca54-c0d8-4bf6-bc58-ea066b8f5216
 :END:
-#+begin_src bash
+#+begin_src bash :tangle no
 smk_draw(){
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF
@@ -2737,17 +2762,44 @@ Implements snakemake's rulegraph to make a DAG. DAG is saved in ./resources/<SNA
 EOF
     return
   }
-  local snakefile="${1}"
-  local snakefile_basename="$(basename "$snakefile")"
+
+  local snakefile="$1"
+  local configfile="$2"
+  local cores=$(nproc)
   local out_pdf="./resources/${snakefile_basename%.*}_smk.pdf"
   local out_png="${out_pdf%.*}.png"
-  snakemake --configfile ./config/${HOSTNAME}.yaml \
-            --snakefile "$snakefile" \
-            --cores 1 \
-            --rerun-incomplete \
-            --dry-run \
-            --quiet \
-            --rulegraph | tee >(dot -Tpdf -Gsize=11,8.5 > "$out_pdf") | dot -Tpng > "$out_png"
+
+  if [[ ! -f "$snakefile" ]]; then
+      echo "Error: Snakefile '$snakefile' does not exist."
+      return 1
+  fi
+
+  if [[ ! -f "$configfile" ]]; then
+      echo "Error: Config file '$configfile' does not exist."
+      return 1
+  fi
+
+  local concurrency=$(yqgo e '.available_concurrency // 100' "$configfile")
+
+  snakemake \
+      --configfile "$configfile" \
+      --cores "$cores" \
+      --keep-going \
+      --rerun-incomplete \
+      --resources concurrency="$concurrency" \
+      --snakefile "$snakefile" \
+      --use-conda \
+      --conda-frontend conda \
+      --use-singularity \
+      --printshellcmds \
+      --singularity-args "--bind /mnt" \
+      --dry-run \
+      --quiet \
+      --rulegraph | tee >(dot -Tpdf -Gsize=11,8.5 > "$out_pdf") | dot -Tpng > "$out_png"
+
+  if [ $? -ne 0 ]; then
+      echo "Error: Snakemake run failed."
+  fi
 }
 
 #+end_src
@@ -3112,6 +3164,8 @@ hard to get the touch to work here
 https://chat.openai.com/c/22b1d5c5-5d9b-4ced-98cf-860f7eb493c8
 ** Processes
 *** Flat
+**** PDF to text
+
 **** Free drawing
 - https://excalidraw.com/
 
@@ -4072,9 +4126,7 @@ algorithm properties
 :ID:       c013714a-c4f5-4c3b-9eac-94bfc3ded1ab
 :END:
 :career:informatics:study:
-:PROPERTIES:
-:ID:       CFACF7AD-30FC-4200-92FE-3710B5DC5E9E
-:END:
+validation loss curve
 https://www.reddit.com/r/MachineLearning/comments/17p42te/r_very_detailed_mathematical_introduction_to_deep/
 https://www.reddit.com/r/datascience/comments/150dyrf/xgboost_to_learn_insights_in_data/
 https://distill.pub/
@@ -5545,7 +5597,6 @@ dependencies:
   - scikit-learn=1.3                         # Python machine learning modules #
   - snakemake                              # Python workflow management system #
   - statsmodels                        # A stats package with causal inference #
-
 #+end_src
 
 
@@ -8403,6 +8454,13 @@ singularity version
 :ID:       a8b27140-4b9e-40c5-86ab-ee5afeae723f
 :CREATED:  [2021-09-13 Mon 07:29]
 :END:
+
+no comma after conda calls:
+
+    conda:
+        "../config/cfdna-wgs-conda-env.yaml"
+
+	
 https://www.reddit.com/r/bioinformatics/comments/17pk9ut/good_ways_to_control_file_structure_and_output/
 # logger.info("Mouse heart RNA-seq library count: " + str(len(raw_ms_hrt_rna_df['library'].tolist())))
 # logger.info(f"\nRAW mouse heart RNA-seq libraries: {RAW_MS_HRT_RNA_LIBS}")
@@ -8476,6 +8534,96 @@ https://www.reddit.com/r/bioinformatics/comments/17pk9ut/good_ways_to_control_fi
 
 # logger.info(f"\nRAW PE RNA-seq libraries: {RAW_PE_RNA_LIBS}")
 # logger.info(f"\nRAW PE RNA-seq libraries: {raw_pe_rna_paths}")
+******* Comment blocks
+******** Modularization with include
+#+name: smk_comment_modular
+#+begin_src yaml
+#########1#########2#########3#########4#########5#########6#########7#########8
+# This is a modular snakefile, intended to be incorporated into a larger
+# workflow using the "include:" directive. (See
+# https://snakemake.readthedocs.io/en/stable/snakefiles/modularization.html)
+
+#+end_src
+
+******** Common data directory structure
+#+name: smk_comment_datadir
+#+begin_src yaml
+
+#########1#########2#########3#########4#########5#########6#########7#########8 
+# This snakefile uses a common data directory structure:
+#
+# |-- <MAIN PROJECT DATA DIRECTORY>, e.g. lung_cancer, variable {data_dir}>
+#     |-- inputs
+#     |-- ref
+#     |-- logs
+#     |-- <ANALYSIS LABEL>, e.g. emseq, example subdirectories: 
+#         |-- qc
+#         |-- fastqs
+#         |-- bams
+#+end_src
+
+******** Conda
+#+name: smk_comment_conda 
+#+begin_src yaml :noweb yes
+
+#########1#########2#########3#########4#########5#########6#########7#########8 
+# This snakefile uses conda to manage software install and versions. To work as
+# intended, a --use-conda flag must used at run time. The conda environment
+# file is referenced relative to its specific snakefile and not any wrapper
+# using "include:". i.e. for a directory structure below where subworkflow.smk
+# rules call a conda environment yaml:
+#
+# --main
+#   |-- config
+#       |-- main.yaml
+#   |-- workflows
+#       |-- workflow.smk
+#   |-- submodule
+#       |-- config
+#           |-- sub.yaml
+#       |-- workflows
+#           |-- subworkflow.smk
+#
+# the rule in subworkflow.smk would begin:
+#
+# rule example:
+#     conda:
+#         "../config/sub.yaml"
+#     input:...    
+#
+#+end_src
+******** Concurrency
+#+name: smk_comment_concurrency
+#+begin_src yaml
+#########1#########2#########3#########4#########5#########6#########7#########8
+# This workflow use Snakemake's resources feature to control how many jobs of a
+# given rule can run simultaneously. Each rule may specify a concurrency value,
+# and a global limit is set at run time. For example:
+
+# resources:
+#     concurrency=100
+
+# Run the workflow with a system-wide concurrency cap, e.g.:
+
+# snakemake --resources concurrency=100
+
+# This setup allows Snakemake to schedule only one job requiring
+# concurrency=100 in parallel (100 / 100 = 1). (Jobs from other rules would
+# still run based on available overall cores). This mechanism helps manage
+# disk I/O, memory pressure, and other shared system resources.
+
+# The system is calibrated around a ~96-core machine such that rules requiring
+# concurrency=100 are designed to run one at a time. On larger systems
+# (e.g., 300 cores), multiple such jobs can run concurrently
+# (3 if concurrency=300). Lighter-weight rules (e.g., fastp) may specify lower
+# concurrency values allowing many to run in parallel on large or small
+# machines (e.g. at concurrency=10, 100/10 = 10 separate jobs could run when
+# overall run concurrency is set at 100. 
+
+# Other jobs are better managed by a set CPU number, e.g. samtools sorting is
+# I/O constrained so each job is limited to a set 8 cores. Threads are
+# rule-specific and declared at the rule for such instances.
+#+end_src
 
 ******* Processes                                                 :hierarchy:
 :PROPERTIES:
@@ -10615,6 +10763,7 @@ https://abseil.io/resources/swe-book
 :PROPERTIES:
 :ID:       a49abc44-8e71-4a1a-bd35-a77849427c94
 :END:
+- terminal emulator https://www.reddit.com/r/emacs/comments/1l1d2wh/vterm_and_terminal_emulator_performance_in_emacs/
 https://www.reddit.com/r/emacs/comments/1kvcze5/spartan_emacs_a_more_minimal_doom_or_spacemacs/
 - org-ml
   - https://github.com/ndwarshuis/org-ml
@@ -11722,6 +11871,7 @@ https://daryl.wakatara.com/emacs-gtd-flow-evolved/#structure---para
 :PROPERTIES:
 :ID:       4dd5f63a-dc89-4d57-a3cc-90389dbd3528
 :END:
+- https://www.reddit.com/r/emacs/comments/1lhi8g6/discovered_an_open_source_alternative_to/
 - Spell check
   - https://github.com/minad/jinx
 - https://chrismaiorana.com/my-freewrite-mode/
@@ -11778,6 +11928,7 @@ https://www.reddit.com/r/emacs/comments/1fw7jbb/karthink_emacs_latex/
 :PROPERTIES:
 :ID:       907b0796-a3c5-4851-8cf7-272d6c9750d1
 :END:
+- https://github.com/jwiegley/ob-gptel
 - https://github.com/chep/copilot-chat.el
 - https://www.reddit.com/r/emacs/comments/17hvcsi/ellama_moved_to_llm_library_and_now_supports/
 - https://melpa.org/#/chatgpt-shell
@@ -12736,6 +12887,20 @@ https://www.reddit.com/r/orgmode/comments/1j2b2gx/update_orgsupertag_25_a_new_wa
 :ID:       88337952-4c36-402e-882f-6ccd6c7ff6a1
 :export_file_name: /tmp/test
 :END:
+
+results replace raw will not replace but will append
+#+name: test-replace
+#+begin_src bash :results replace example
+echo "This is a test output: $(date)"
+#+end_src
+
+#+RESULTS: test-replace
+: This is a test output: Wed Jul  2 08:18:11 AM CDT 2025
+This is a test output: Wed Jul  2 08:14:04 AM CDT 2025
+This is a test output: Wed Jul  2 08:14:03 AM CDT 2025
+This is a test output: Wed Jul  2 08:14:03 AM CDT 2025
+
+
 https://chatgpt.com/c/682603cf-2324-8005-a61c-bdf2e56c626d
 #+begin_src emacs-lisp :results replace
 org-version 
@@ -12786,8 +12951,26 @@ org-version
 : :cache: yes
 : :tangle: no
 : :eval: no-export
+********* Return setq variable values
+#+name: watch-vars
+- fill-column
+- org-agenda-span
+- org-ellipsis
 
+#+BEGIN_SRC emacs-lisp :var vars=watch-vars :results replace value table :exports both
+(append '(("Variable" "Value") hline)
+        (mapcar (lambda (s)
+                  (let ((sym (intern s)))
+                    (list s (format "%S" (symbol-value sym)))))
+                vars))
+#+END_SRC
 
+#+RESULTS[b250f5d51f5aa93e099dfb17f8914957e22e0b49]:
+| Variable        | Value |
+|-----------------+-------|
+| fill-column     | 70    |
+| org-agenda-span | week  |
+| org-ellipsis    | nil   |
 
 
 ********* Org-mode guide
@@ -20804,6 +20987,20 @@ nested_list:
 :END:
 - https://www.educative.io/blog/advanced-yaml-syntax-cheatsheet
 ******* Local YAS
+******** 80
+:PROPERTIES:
+:ID:       1afd02e0-8fdf-4899-adb6-106d83152829
+:END:
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/yaml-mode/80
+# -*- mode: snippet -*-
+# key: 80
+# expand-env: ((yas-indent-line 'none))
+# --
+#########1#########2#########3#########4#########5#########6#########7#########8
+$0
+#+end_src
+
+
 ******** comment.block
 [[file:emacs/public_yasnippets/yaml-mode/comment.block]]
 #+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/yaml-mode/comment.block

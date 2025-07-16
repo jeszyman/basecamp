@@ -29,6 +29,8 @@ apt_packages:
   - vim                       # Advanced text editor
   - default-jre
   - libreoffice-java-common
+  - poppler-utils # PDF manipulation
+  - bibtool
   
 directory_structure:
   - "${HOME}/repos"
