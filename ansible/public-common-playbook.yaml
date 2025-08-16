@@ -4,22 +4,7 @@
   gather_facts: true
 
   tasks:
-    - name: Debug useful variable readouts
-      debug:
-        msg: "
-          \n=== System Information ===\n\n
-          Logged in as: {{ ansible_env.USER }}
-          \n\nHome directory: {{ ansible_user_dir }}
-          \n\nEnvironment HOME: {{ ansible_env.HOME }}
-          \n\nPATH:
-            {{ ansible_env.PATH }}
-          \n\nOS: {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_os_family }})
-          \n\nHostname: {{ ansible_hostname }}
-          \n\nFQDN: {{ ansible_fqdn }}
-          \n\nDefault IPv4: {{ ansible_default_ipv4.address }}
-          \n\nInventory Sources: {{ ansible_inventory_sources }}
-          \n\nPackage Manager: {{ ansible_pkg_mgr }}
-          \n========================="
+nil
     - name: Include config yaml
       include_vars:
         file: "{{ ansible_env.HOME }}/repos/basecamp/config/config.yaml"
@@ -103,18 +88,18 @@
     #   loop: "{{ apt_ppas }}"
     #   become: true
 
-    - name: Add Apptainer PPA
-      command: add-apt-repository -y ppa:apptainer/ppa
-      become: true
-      register: add_ppa_result
-      changed_when: "'already exists' not in add_ppa_result.stderr"
+    # - name: Add Apptainer PPA
+    #   command: add-apt-repository -y ppa:apptainer/ppa
+    #   become: true
+    #   register: add_ppa_result
+    #   changed_when: "'already exists' not in add_ppa_result.stderr"
 
-    - name: Install Apptainer
-      apt:
-        name: apptainer
-        state: present
-        update_cache: yes
-      become: true
+    # - name: Install Apptainer
+    #   apt:
+    #     name: apptainer
+    #     state: present
+    #     update_cache: yes
+    #   become: true
 
     - name: Update apt cache
       apt:

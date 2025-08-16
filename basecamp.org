@@ -1026,18 +1026,18 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
     #   loop: "{{ apt_ppas }}"
     #   become: true
 
-    - name: Add Apptainer PPA
-      command: add-apt-repository -y ppa:apptainer/ppa
-      become: true
-      register: add_ppa_result
-      changed_when: "'already exists' not in add_ppa_result.stderr"
+    # - name: Add Apptainer PPA
+    #   command: add-apt-repository -y ppa:apptainer/ppa
+    #   become: true
+    #   register: add_ppa_result
+    #   changed_when: "'already exists' not in add_ppa_result.stderr"
 
-    - name: Install Apptainer
-      apt:
-        name: apptainer
-        state: present
-        update_cache: yes
-      become: true
+    # - name: Install Apptainer
+    #   apt:
+    #     name: apptainer
+    #     state: present
+    #     update_cache: yes
+    #   become: true
 
     - name: Update apt cache
       apt:
