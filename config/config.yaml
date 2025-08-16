@@ -60,6 +60,8 @@ public_symlinks:
     dest: "${HOME}/.local/lib/mylibs/basecamp_functions.sh"
   - src: "${HOME}/repos/chaudhuri-lab/lib/chaudhuri_lab_bash_functions.sh"
     dest: "${HOME}/.bashrc.d/chaudhuri_lab_bash_functions.sh"
+  - src: "${HOME}/repos/basecamp/lib/basecamp_functions.sh"
+    dest: "${HOME}/.bashrc.d/basecamp_functions.sh"
     
 wget_downloads:
   - src: https://www.emacswiki.org/emacs/download/essh.el

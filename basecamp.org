@@ -1010,7 +1010,6 @@ fn fn
 **** Install software
 ***** ATP installs
 https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
-#+begin_src yaml
     # - name: Add Apptainer GPG key and repo
     #   become: true
     #   shell: |
@@ -1039,6 +1038,7 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
     #     update_cache: yes
     #   become: true
 
+#+begin_src yaml
     - name: Update apt cache
       apt:
         update_cache: yes
