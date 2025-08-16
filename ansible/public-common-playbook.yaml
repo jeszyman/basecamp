@@ -42,8 +42,23 @@
         url: "{{ item.src }}"
         dest: "{{ item.dest }}"
         mode: '0644'
-        force: no  # Ensures re-download only if file is missing or modified
+        force: no
+        timeout: 30
+        backup: yes  # Create backup if file changes
       loop: "{{ wget_downloads }}"
+      retries: 3
+      delay: 10
+      register: download_results
+      until: download_results is succeeded
+      ignore_errors: yes
+      tags: downloads
+
+    - name: Report any download failures
+      debug:
+        msg: "WARNING: Failed to download {{ item.item.src }} - {{ item.msg }}"
+      loop: "{{ download_results.results }}"
+      when: item.failed
+      tags: downloads
     - name: Check symlink sources
       ansible.builtin.stat:
         path: "{{ item.src }}"
@@ -163,6 +178,15 @@
         path: ~/.bashrc
         insertafter: EOF
         line: 'for f in ~/.local/lib/mylibs/*.sh; do [ -f "$f" ] && source "$f"; done'
+        state: present
+    - name: Source all ~/.bashrc.d/*.sh files from .bashrc
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        insertafter: EOF
+        line: |
+          if [ -d ~/.bashrc.d ]; then
+            for f in ~/.bashrc.d/*.sh; do [ -r "$f" ] && . "$f"; done
+          fi
         state: present
     - name: Ensure conda uses strict channel priority
       ansible.builtin.shell: |

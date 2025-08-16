@@ -40,25 +40,27 @@ directory_structure:
 
   
 public_symlinks:
-  - src: "${HOME}/repos/basecamp/emacs/init.el"
+  - src: "${HOME}/repos/emacs/emacs/init.el"
     dest: "${HOME}/.emacs.d/init.el"
-  - src: "${HOME}/repos/basecamp/emacs/load-first.el"
+  - src: "${HOME}/repos/emacs/emacs/load-first.el"
     dest: "${HOME}/.emacs.d/load-first.el"
-  - src: "${HOME}/repos/basecamp/emacs/load-last.el"
+  - src: "${HOME}/repos/emacs/emacs/load-last.el"
     dest: "${HOME}/.emacs.d/load-last.el"
   - src: "${HOME}/repos/basecamp/emacs/public_yasnippets"
     dest: "${HOME}/.emacs.d/snippets/public_yasnippets"
   - src: "${HOME}/repos/basecamp/lib/lisp_functions.el"
     dest: "${HOME}/.emacs.d/lisp/lisp_functions.el"
-  - src: "${HOME}/repos/basecamp/emacs/public_config.el"
+  - src: "${HOME}/repos/emacs/emacs/public_config.el"
     dest: "${HOME}/.emacs.d/config/public_config.el"
-  - src: "${HOME}/repos/basecamp/emacs/essh.el"
+  - src: "${HOME}/repos/emacs/emacs/essh.el"
     dest: "${HOME}/.emacs.d/lisp/essh.el"
-  - src: "${HOME}/repos/basecamp/emacs/ob-mermaid.el"
+  - src: "${HOME}/repos/emacs/emacs/ob-mermaid.el"
     dest: "${HOME}/.emacs.d/lisp/ob-mermaid.el"
   - src: "${HOME}/repos/basecamp/lib/basecamp_functions.sh"
     dest: "${HOME}/.local/lib/mylibs/basecamp_functions.sh"
-
+  - src: "${HOME}/repos/chaudhuri-lab/lib/chaudhuri_lab_bash_functions.sh"
+    dest: "${HOME}/.bashrc.d/chaudhuri_lab_bash_functions.sh"
+    
 wget_downloads:
   - src: https://www.emacswiki.org/emacs/download/essh.el
     dest: "${HOME}/repos/basecamp/emacs/essh.el"

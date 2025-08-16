@@ -710,7 +710,7 @@ EOF
 }
 git_wkflow_up(){
     print_usage(){
-          cat <<- EOF
+        cat <<- EOF
 
  Usage: git_wkflow_up ["COMMIT MESSAGE"]
 
@@ -730,22 +730,22 @@ EOF
 
     if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
         echo "Error: Not inside a Git repository."
-        return 1  # Exit the function with a non-zero status
+        return 1
     fi
 
-    commit_msg="$1"
- # Add all changes
+    export GIT_TERMINAL_PROMPT=0
+
+    commit_msg="${1:-}"
+
     git add -A
 
-    # Check if there are changes to commit
     if git diff-index --quiet HEAD --; then
         echo "No changes to commit."
         return 0
     fi
 
-    # Commit and push
     if [ -z "$commit_msg" ]; then
-        git commit -m. && git push
+        git commit -m "." && git push
     else
         git commit -m "$commit_msg" && git push
     fi
@@ -889,12 +889,19 @@ tangle() {
   [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
     cat <<EOF
 Usage: tangle <ORG FILE>
-Tangle's org-mode file code using a non-interactive emacs batch instance
+Tangle an org-mode file non‑interactively, saving any unsaved buffer first.
 EOF
     return
   }
-    local org_file="$1"
-    /usr/bin/emacs --batch -l ~/.emacs.d/tangle.el -l org -eval "(org-babel-tangle-file \"$org_file\")"
+  local org_file="$1"
+
+  # save current buffer in the server if it’s visiting this file
+  emacsclient -n -e "(with-current-buffer (find-file-noselect \"$org_file\") (save-buffer))"
+
+  # now run batch tangle
+  /usr/local/bin/emacs --batch \
+    -l ~/.emacs.d/tangle.el -l org \
+    --eval "(org-babel-tangle-file \"$org_file\")"
 }
 open_tmp_last(){
     local last_file

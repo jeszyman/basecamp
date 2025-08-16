@@ -27,7 +27,7 @@
 (require 'ox-latex)
 
 
- 
+
 (setq org-babel-default-header-args '(
 				      (:comments . "no")
 				      (:mkdirp . "yes")
@@ -78,21 +78,36 @@
 
 
 (setq org-export-preserve-breaks t)
+
 (defun org-plain-follow (id _)
   "Follow a plain link as if it were an ID link."
+  (interactive "sOrg ID: ")
   (org-id-open id nil))
+
+(defun org-plain-export (link description format info)
+  "Exports a plain link.
+   - For 'org' format (internal Org buffer display), show full link.
+   - For final external exports (HTML, LaTeX, ASCII), show only the description."
+  ;; 'link' is the path part (e.g., "5827ecc7-04d7-4af4-8844-4e68d1b38aca")
+  ;; 'description' is the label (e.g., "No social media")
+  (pcase format
+    ;; If the format is 'org' (for internal Org conversion/display,
+    ;; typically what org-babel uses for :results table)
+    ('org
+     (format "[[plain:%s][%s]]" link description)) ; Reconstruct the full Org link
+
+    ;; For standard export backends (HTML, LaTeX, ASCII)
+    ((or 'html 'latex 'ascii)
+     (or description link)) ; Return only the description (label), or link if no description
+
+    ;; For any other format (fallback), just return the description or link
+    (_ (or description link))))
 
 (org-link-set-parameters "plain"
                          :follow #'org-plain-follow
-                         :export #'org-plain-export)
-
-(defun org-plain-export (link description format _)
-  "Export a plain link. Always export as plain text."
-  (cond
-   ((eq format 'html) (or description link))
-   ((eq format 'latex) (or description link))
-   ((eq format 'ascii) (or description link))
-   (t link)))
+                         :complete #'org-id-complete ; Optional, but good for consistency
+                         :export #'org-plain-export  ; Point to this refined export function
+                         :face 'org-link) ; Optional: Style the link like other Org links
 
 (provide 'ol-plain)
 
@@ -112,14 +127,13 @@
 ; ---   Org-ref   --- ;
 ; ------------------- ;
 
-(use-package org-ref
-  :ensure t)
 
 ;(setq org-ref-default-bibliography (variable 'my-bibtex-bibliography))
 
 ; ---   Ox-extra   --- ;
 ; -------------------- ;
 
+(add-to-list 'load-path "~/.emacs.d/elpa/org-contrib-0.4.2/")
 (require 'ox-extra)
 (ox-extras-activate '(ignore-headlines))
 (ox-extras-activate '(latex-header-blocks ignore-headlines))
@@ -137,3 +151,5 @@
 
 (use-package pdf-tools
   :ensure t)
+
+(setq org-cite-export-processors '((latex biblatex) (t csl)))
