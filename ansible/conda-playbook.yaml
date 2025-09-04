@@ -43,7 +43,7 @@
         executable: /bin/bash
       environment:
         PATH: "{{ miniconda_prefix }}/bin:{{ ansible_env.PATH }}"
-        
+
     - name: Update conda
       shell: "{{ miniconda_prefix }}/bin/conda update -y conda"
       args:

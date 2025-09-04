@@ -8,8 +8,8 @@
   # --connection=local bypasses ssh
   #
   # This setup allows hosts: all in the playbook but local runs via command line without
-  # an inventory. 
-  
+  # an inventory.
+
   hosts: all
   tasks:
     - name: Debug useful variable readouts
@@ -28,7 +28,7 @@
           \n\nInventory Sources: {{ ansible_inventory_sources }}
           \n\nPackage Manager: {{ ansible_pkg_mgr }}
           \n========================="
-# Note this is relative to the playbook location 
+# Note this is relative to the playbook location
     - name: Include yaml explicitly
       include_vars:
         file: ../group_vars/cookbook-apts.yaml

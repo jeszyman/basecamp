@@ -11,23 +11,23 @@
       debug:
         msg: |
           Logged in as: {{ ansible_env.USER }}
-          
+
           Home directory: {{ ansible_user_dir }}
-          
+
           Environment HOME: {{ ansible_env.HOME }}
-          
+
           PATH: {{ ansible_env.PATH }}
-          
+
           OS: {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_os_family }})
-          
+
           Hostname: {{ ansible_hostname }}
-          
+
           FQDN: {{ ansible_fqdn }}
-          
+
           Default IPv4: {{ ansible_default_ipv4.address }}
-          
+
           Inventory Sources: {{ ansible_inventory_sources }}
-          
+
           Package Manager: {{ ansible_pkg_mgr }}
     - name: Ensure APT packages are installed
       apt:

@@ -1,0 +1,9 @@
+$schema: https://frictionlessdata.io/schemas/table-schema.json
+fields:
+  - name: id
+    type: integer
+    constraints:
+      minimum: "zero"    # ❌ wrong type for minimum
+  - name: id            # ❌ duplicate field name
+    type: string
+primaryKey: ["missing"] # ❌ not present in fields

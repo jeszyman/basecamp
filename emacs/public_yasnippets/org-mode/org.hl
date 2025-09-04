@@ -1,5 +1,3 @@
-# org.hl                                                          :yas:
-
 # -*- mode: snippet -*-
 # key: org.hl
 # expand-env: ((yas-indent-line 'none))

@@ -1,7 +1,4 @@
 ;; defun org-execute-named-block-anywhere
-;; :PROPERTIES:
-;; :ID:       5ace2dd4-9dfb-41b9-a7ec-5ca32aaf94ae
-;; :END:
 ;; https://claude.ai/chat/c12f61f1-0d93-4658-8d52-be64f45a12e0
 
 (defun org-execute-named-block-anywhere (file block-name)
@@ -16,7 +13,7 @@ BLOCK-NAME is the name of the block to execute."
     (with-current-buffer target-buffer
       (save-excursion
         (goto-char (point-min))
-        (if (re-search-forward (concat "^[ \t]*#\\+name:[ \t]*" 
+        (if (re-search-forward (concat "^[ \t]*#\\+name:[ \t]*"
                                       (regexp-quote block-name) "[ \t]*$") nil t)
             (progn
               (setq info (org-babel-get-src-block-info t))
@@ -52,9 +49,6 @@ BLOCK-NAME is the name of the block to execute."
           (message "Duplicate lines found and listed in *Duplicate Lines* buffer."))
       (message "No duplicate lines found."))))
 ;; run-latex-at-point
-;; :PROPERTIES:
-;; :ID:       3975a173-ac71-4c02-b032-ef215329ca59
-;; :END:
 ;; - https://chatgpt.com/c/66f5c68c-8c4c-8005-b7c6-14665eadb848
 ;; - https://chatgpt.com/c/66f95df4-0dfc-8005-9e7b-c3f15c1ca924
 ;; - [[id:9fa465f4-68f7-45c5-966e-80084e2c8a05][emacs_export_header_to_latex.py]]

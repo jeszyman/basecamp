@@ -5,7 +5,7 @@ apt_ppas:
 apt_packages:
   - ansible                   # Provisioning automation tool
   - apptainer                 # Singularity replacement
-  - aria2                     # wget improvement 
+  - aria2                     # wget improvement
   - brave-browser             # Web browser
   - curl                      # Command-line tool for HTTP requests
   - ncdu                      # Disk usage TUI
@@ -31,14 +31,14 @@ apt_packages:
   - libreoffice-java-common
   - poppler-utils # PDF manipulation
   - bibtool
-  
+
 directory_structure:
   - "${HOME}/repos"
   - "${HOME}/.emacs.d/snippets"
   - "${HOME}/.emacs.d/lisp"
   - "${HOME}/.emacs.d/config"
 
-  
+
 public_symlinks:
   - src: "${HOME}/repos/emacs/emacs/init.el"
     dest: "${HOME}/.emacs.d/init.el"
@@ -57,12 +57,8 @@ public_symlinks:
   - src: "${HOME}/repos/emacs/emacs/ob-mermaid.el"
     dest: "${HOME}/.emacs.d/lisp/ob-mermaid.el"
   - src: "${HOME}/repos/basecamp/lib/basecamp_functions.sh"
-    dest: "${HOME}/.local/lib/mylibs/basecamp_functions.sh"
-  - src: "${HOME}/repos/chaudhuri-lab/lib/chaudhuri_lab_bash_functions.sh"
-    dest: "${HOME}/.bashrc.d/chaudhuri_lab_bash_functions.sh"
-  - src: "${HOME}/repos/basecamp/lib/basecamp_functions.sh"
     dest: "${HOME}/.bashrc.d/basecamp_functions.sh"
-    
+
 wget_downloads:
   - src: https://www.emacswiki.org/emacs/download/essh.el
     dest: "${HOME}/repos/basecamp/emacs/essh.el"

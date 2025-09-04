@@ -8,7 +8,7 @@
         (temp-buf (generate-new-buffer "*yas-fill*")))
    ;; Fill text and split into lines
    (prog1
-       (mapconcat (lambda (line) (concat "# " line)) 
+       (mapconcat (lambda (line) (concat "# " line))
                   (with-temp-buffer
                     (insert input)
                     (fill-region (point-min) (point-max))

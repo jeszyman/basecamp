@@ -4,7 +4,141 @@
 :RESET_CHECK_BOXES: t
 :header-args:yaml: :eval never
 :END:
+https://missing.csail.mit.edu/
+** Frictionless
+
 https://framework.frictionlessdata.io/docs/getting-started.html
+#+begin_src bash
+
+#+end_src
+#+begin_src emacs-lisp
+;; Force spaces only in yaml-mode
+(add-hook 'yaml-mode-hook
+          (lambda ()
+            (setq indent-tabs-mode nil)
+            (setq tab-width 2)
+            (setq yaml-indent-offset 2)))
+
+#+end_src
+
+
+#+begin_src yaml :tangle /tmp/fricdemo/schema.yaml
+$schema: https://frictionlessdata.io/schemas/table-schema.json
+fields:
+  - name: id
+    type: integer
+    constraints: {required: true}
+  - name: name
+    type: string
+    constraints: {required: true}
+  - name: age
+    type: integer
+    constraints: {required: true, minimum: 0}
+
+#+end_src
+
+#+begin_src fundamental :tangle /tmp/fricdemo/data.csv
+id,name,age
+1,Jeff,43
+2,Alice,30
+3,Bob,-5
+#+end_src
+
+#+begin_src python
+import os
+from frictionless import Resource
+
+# --- Set working directory ---
+os.chdir("/tmp/fricdemo")   # adjust if your files live elsewhere
+
+# --- Validate CSV against schema ---
+res = Resource(path="data.csv", schema="schema.yaml")
+report = res.validate()
+
+print("valid:", report.valid)
+
+# Pretty, readable errors
+for row, field, code, msg in report.flatten(
+    ["rowNumber", "fieldName", "code", "message"]
+):
+    print(f"row={row} field={field} code={code} msg={msg}")
+#+end_src
+
+#########1#########2#########3#########4#########5#########6#########7#########8
+
+#+begin_src R
+# Minimal R script to create /tmp/people.xlsx (sheet "Sheet1")
+# install.packages("writexl")  # if needed
+
+library(writexl)
+
+dir.create("/tmp", showWarnings = FALSE)
+people <- data.frame(
+  id   = c(1L, 2L, 3L),
+  name = c("Jeff", "Alice", "Bob"),
+  age  = c(43L, 30L, -5L)   # deliberately invalid for the schema (age >= 0)
+)
+
+write_xlsx(list(Sheet1 = people), path = "/tmp/people.xlsx")
+
+#+end_src
+
+#+begin_src yaml :tangle /tmp/schema.yaml
+$schema: https://frictionlessdata.io/schemas/table-schema.json
+fields:
+  - name: id
+    type: integer
+    constraints: {required: true}
+  - name: name
+    type: string
+    constraints: {required: true}
+  - name: age
+    type: integer
+    constraints: {required: true, minimum: 0}
+
+#+end_src
+
+#+begin_src python
+import os
+from frictionless import Resource, formats
+
+os.chdir("/tmp")  # your files: people.xlsx, schema.yaml
+
+control = formats.ExcelControl(sheet="Sheet1")
+res = Resource(path="people.xlsx", schema="schema.yaml", control=control)
+report = res.validate()
+
+print("valid:", report.valid)
+for row, field, code, msg in report.flatten(
+    ["rowNumber", "fieldName", "code", "message"]
+):
+    print(f"row={row} field={field} code={code} msg={msg}")
+#+end_src
+
+#+begin_src yaml :tangle /tmp/bad_schema.yaml
+$schema: https://frictionlessdata.io/schemas/table-schema.json
+fields:
+  - name: id
+    type: integer
+    constraints:
+      minimum: "zero"    # ❌ wrong type for minimum
+  - name: id            # ❌ duplicate field name
+    type: string
+primaryKey: ["missing"] # ❌ not present in fields
+
+#+end_src
+
+
+#+begin_src python
+from frictionless import Schema
+try:
+    Schema("/tmp/bad_schema.yaml", strict=True)
+except Exception as e:
+    print("Schema error:", e)
+
+#+end_src
+
+
 ** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
 ** [[id:89576FD2-F863-4220-BAD7-D4E179AEA644][Bash and shell]]
 ** [[id:b16d0202-8d35-472b-b538-87a7d6a6cef7][Conda]]
@@ -58,7 +192,7 @@ Code files in this repository are managed through [[ https://orgmode.org/manual/
 ***** Bash Configuration
 [[file:~/.bashrc][.bashrc]] is used for interactive shell customizations and [[file:~/.profile][.profile]] is used for setting up environment variables and system-wide settings needed during the login process.
 ****** Bashrc
-- The default bashrc lives at /etc/skel/.bashrc.
+- The default bashrc lives at [[file:/etc/skel/.bashrc]].
 - Other programs such as singularity or conda may write directly to bashrc.
 - Otherwise, bashrc is not altered automatically, as through Org-mode tangling. Instead, additional code is sourced though a simple if else statement. I source my basecamp shell libraries as follows:
 
@@ -884,10 +1018,6 @@ public_symlinks:
   - src: "${HOME}/repos/emacs/emacs/ob-mermaid.el"
     dest: "${HOME}/.emacs.d/lisp/ob-mermaid.el"
   - src: "${HOME}/repos/basecamp/lib/basecamp_functions.sh"
-    dest: "${HOME}/.local/lib/mylibs/basecamp_functions.sh"
-  - src: "${HOME}/repos/chaudhuri-lab/lib/chaudhuri_lab_bash_functions.sh"
-    dest: "${HOME}/.bashrc.d/chaudhuri_lab_bash_functions.sh"
-  - src: "${HOME}/repos/basecamp/lib/basecamp_functions.sh"
     dest: "${HOME}/.bashrc.d/basecamp_functions.sh"
     
 wget_downloads:
@@ -1054,6 +1184,76 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
       ignore_errors: true  # Ensures playbook continues even if a package is missing
        
 #+end_src
+****** Node with custom gpg
+#+begin_src yaml
+# Reset any stale NodeSource files (safe if absent)
+    - name: Remove old NodeSource list and key
+      become: true
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/apt/sources.list.d/nodesource.list
+        - /usr/share/keyrings/nodesource.gpg
+        - /usr/share/keyrings/nodesource.gpg.asc
+
+    # Properly install the key: download, dearmor, permissions
+    - name: Ensure keyring dir exists
+      become: true
+      ansible.builtin.file:
+        path: /usr/share/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Download NodeSource ASCII key
+      become: true
+      ansible.builtin.get_url:
+        url: https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
+        dest: /usr/share/keyrings/nodesource.gpg.asc
+        mode: '0644'
+        force: yes
+
+    - name: Dearmor NodeSource key to .gpg
+      become: true
+      ansible.builtin.command:
+        cmd: gpg --dearmor -o /usr/share/keyrings/nodesource.gpg /usr/share/keyrings/nodesource.gpg.asc
+      args:
+        creates: /usr/share/keyrings/nodesource.gpg
+
+    - name: Set key permissions
+      become: true
+      ansible.builtin.file:
+        path: /usr/share/keyrings/nodesource.gpg
+        mode: '0644'
+
+    # Write the repo file explicitly (avoid apt_repository auto-update failures)
+    - name: Add NodeSource repo (Node 20, using signed-by)
+      become: true
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/nodesource.list
+        mode: '0644'
+        content: |
+          deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main
+
+    - name: apt update
+      become: true
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Ensure Node.js 20 is installed
+      become: true
+      ansible.builtin.apt:
+        name: nodejs
+        state: present
+
+    - name: Ensure bash-language-server is installed globally
+      become: true
+      community.general.npm:
+        name: bash-language-server
+        global: true
+        state: present
+#+end_src
+
 ***** Non-ATP Installs
 ****** yq
 #+begin_src yaml
@@ -1161,6 +1361,25 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
         line: 'for f in ~/.local/lib/mylibs/*.sh; do [ -f "$f" ] && source "$f"; done'
         state: present
 
+    - name: Ensure ~/.bashrc.d exists
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.bashrc.d"
+        state: directory
+        mode: "0700"
+        
+    - name: Source ~/.bashrc.d/*.sh in .bashrc
+      ansible.builtin.blockinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        create: yes
+        marker: "# {mark} BASHRC.D INCLUDE"
+        block: |
+          # Source all readable *.sh files from ~/.bashrc.d
+          if [ -d "$HOME/.bashrc.d" ]; then
+            for f in "$HOME/.bashrc.d"/*.sh; do
+              [ -e "$f" ] || continue   # handles "no matches" without nullglob
+              [ -r "$f" ] && [ -f "$f" ] && . "$f"
+            done
+          fi
 #+end_src
 **** Ensure bashrc accesses symlinked libraries
 #+begin_src yaml
@@ -1710,6 +1929,46 @@ EOF
             echo "Failed to start Emacs daemon or socket not found: $SOCKET"
             return 1
         fi
+    fi
+}
+
+#+end_src
+***** cliptee()
+#+begin_src bash
+cliptee() {
+    print_usage() {
+        cat <<- EOF
+
+ Usage: cliptee [MAX_LINES]
+
+ Duplicates command output to both the terminal and the clipboard.
+ By default, only the first 500 lines are sent to the clipboard
+ to avoid copying huge files accidentally.
+
+ Options:
+   -h, --help    Show this help message and exit
+
+ Arguments:
+   MAX_LINES     Maximum number of lines to send to the clipboard (default: 500)
+
+ Examples:
+   echo -e "a\nb\nc" | cliptee
+   seq 1000 | cliptee 100   # copy only first 100 lines to clipboard
+
+EOF
+    }
+
+    if [[ $# -gt 1 || ( $# -eq 1 && ( $1 == "-h" || $1 == "--help" )) ]]; then
+        print_usage
+        return 0
+    fi
+
+    local max_lines="${1:-500}"
+
+    if command -v wl-copy >/dev/null 2>&1; then
+        tee >(head -n "$max_lines" | wl-copy)
+    else
+        tee >(head -n "$max_lines" | xclip -selection clipboard)
     fi
 }
 
@@ -3271,6 +3530,8 @@ hard to get the touch to work here
 https://chat.openai.com/c/22b1d5c5-5d9b-4ced-98cf-860f7eb493c8
 ** Processes
 *** Flat
+**** Writing documentation
+https://www.thegooddocsproject.dev/template
 **** PDF to text
 
 **** Free drawing
@@ -5216,6 +5477,29 @@ cmake -version
 :PROPERTIES:
 :ID:       b16d0202-8d35-472b-b538-87a7d6a6cef7
 :END:
+
+#+begin_src bash :results replace
+conda info --envs
+
+conda config --show envs_dirs
+#+end_src
+
+#+RESULTS:
+|            |                                        |                           |
+| #          | conda                                  | environments:             |
+| #          |                                        |                           |
+| R          | /home/jeszyman/.conda/envs/R           |                           |
+| basecamp   | /home/jeszyman/.conda/envs/basecamp    |                           |
+| snakemake  | /home/jeszyman/.conda/envs/snakemake   |                           |
+| base       | *                                      | /home/jeszyman/miniconda3 |
+| breast     | /home/jeszyman/miniconda3/envs/breast  |                           |
+| bwa_mem    | /home/jeszyman/miniconda3/envs/bwa_mem |                           |
+| emseq      | /home/jeszyman/miniconda3/envs/emseq   |                           |
+|            |                                        |                           |
+| envs_dirs: |                                        |                           |
+| -          | /home/jeszyman/miniconda3/envs         |                           |
+| -          | /home/jeszyman/.conda/envs             |                           |
+
 ****** Ansible
 ******* Conda install and provisioning playbook                      :ansipb:
 :properties:
@@ -5666,7 +5950,7 @@ dependencies:
 :ID:       76a6e083-f569-42a9-b551-4b9ccc770834
 :header-args:yaml: :tangle ./config/basecamp-conda-env.yaml :comments no
 :END:
-- [[file:basecamp_env.yaml][yaml]]
+- [[file:config/basecamp-conda-env.yaml]]
 ******* Preamble and channels
 :PROPERTIES:
 :ID:       abb2816b-257f-4af7-803d-33ae295919c1
@@ -6460,6 +6744,7 @@ https://tomd.xyz/diagrams-as-code-drawio/
 :PROPERTIES:
 :ID:       E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6
 :END:
+https://learngitbranching.js.org/
 https://micahkepe.com/blog/gitconfig/#verbose-commit-context
 ****** Processes                                                  :hierarchy:
 :PROPERTIES:
@@ -8573,22 +8858,89 @@ singularity version
 :ID:       a8b27140-4b9e-40c5-86ab-ee5afeae723f
 :CREATED:  [2021-09-13 Mon 07:29]
 :END:
+
+keep in-rule variable references as simple as possible
+
+- good practice
+  - project level construction 
+    - repository
+      - snakefile path <REPO>/workflows/<WORKFLOW-ID>.<VERSION>.smk where version is either symantic versioning or tagged identifier such as current or working or test...
+    - workflow construction 
+      - config
+	- use nested mapping where appropriate, e.g.
+	  #+begin_src yaml
+  envs:
+    cfdna-cna: "~/repos/cfdna/config/cfdna-cna-conda-env.yaml"
+
+  #+end_src
+      - snakefile
+	- rule structure
+	  - for modular workflows, rule name begins with workflow identifier, e.g. emseq_fastp, not just fastp
+
+- Style guide
+  
+******* Snakemake                                                  :cookbook:
+******** Snakefile preamble tools and functions
+********* Normalize configuration yaml paths
+:PROPERTIES:
+:ID:       3d555402-d898-437f-bdd8-c6a5bae55f17
+:END:
+#+name: smk-norm-config-paths-wrapper
+#+begin_src org
+<#smk-norm-config-paths#>
+#+end_src
+
+#+name: smk-norm-config-paths
+#+begin_src snakemake 
+
+from pathlib import Path
+
+def resolve_config_paths(config_dict):
+    for k, v in config_dict.items():
+        if isinstance(v, str):
+            # Expand ~ and env vars
+            config_dict[k] = os.path.expandvars(os.path.expanduser(v))
+        elif isinstance(v, dict):
+            resolve_config_paths(v)  # Recurse into nested dicts
+        elif isinstance(v, list):
+            config_dict[k] = [os.path.expandvars(os.path.expanduser(i)) if isinstance(i, str) else i for i in v]
+
+resolve_config_paths(config)
+
+#+end_src
+
 ******* Comment blocks
 ******** Modularization with include
+
+#+name: smk_comment_modular_wrapper
+#+begin_src org
+<#smk_comment_modular#>
+#+end_src
+
 #+name: smk_comment_modular
 #+begin_src yaml
 #########1#########2#########3#########4#########5#########6#########7#########8
+#
 # This is a modular snakefile, intended to be incorporated into a larger
 # workflow using the "include:" directive. (See
 # https://snakemake.readthedocs.io/en/stable/snakefiles/modularization.html)
+#
+#########1#########2#########3#########4#########5#########6#########7#########8
+
 
 #+end_src
 
 ******** Common data directory structure
+#+name: smk_comment_datadir_wrapper
+#+begin_src org
+<#smk_comment_datadir#>
+#+end_src
+
 #+name: smk_comment_datadir
 #+begin_src yaml
 
 #########1#########2#########3#########4#########5#########6#########7#########8 
+#
 # This snakefile uses a common data directory structure:
 #
 # |-- <MAIN PROJECT DATA DIRECTORY>, e.g. lung_cancer, variable {data_dir}>
@@ -8599,9 +8951,16 @@ singularity version
 #         |-- qc
 #         |-- fastqs
 #         |-- bams
+#
 #+end_src
 
 ******** Conda
+#+name: smk_comment_conda_wrapper
+#+begin_src org
+<#smk_comment_conda_wrapper#>
+#+end_src
+
+
 #+name: smk_comment_conda 
 #+begin_src yaml :noweb yes
 
@@ -9634,10 +9993,6 @@ https://carpentries-incubator.github.io/workflows-snakemake/
 :END:
 https://www.google.com/search?q=emacs+waiting+for+prompts+from+shell&oq=emacs+waiting+for+prompts+from+shell+&aqs=chrome..69i57.47179j0j1&sourceid=chrome&ie=UTF-8
   - [currently not working] to goodle drive- - https://www.gnu.org/software/tramp/#Using-Google-Drive
-***** trash http://hasseg.org/trash/
-:PROPERTIES:
-:ID:       22519779-0606-4e0f-bf31-b90be55342c5
-:END:
 ***** Vim
 :PROPERTIES:
 :ID:       2a61d815-adf5-4405-a868-18fca52d0a8e
@@ -9689,17 +10044,23 @@ sudo apt update
 :PROPERTIES:
 :ID:       05e700d9-77cc-4aef-b310-164c267274d0
 :END:
-- Don't do e.g. alias libreoffice='libreoffice & exit' as this prevents xdg-open from working
-- "desktop" entries
-  - ~/.local/share/applications
-  - /usr/share/applications
-  - https://wiki.archlinux.org/title/Desktop_entries
-- https://wiki.archlinux.org/title/XDG_MIME_Applications#:~:text=The%20XDG%20Shared%20MIME%2Dinfo,from%20shared%2Dmime%2Dinfo.
-- https://unix.stackexchange.com/questions/36380/how-to-properly-and-easily-configure-xdg-open-without-any-environment
-- local defaults list at ~/.config/mimeapps.list
-- $ xdg-mime default Thunar.desktop inode/directory
-- application interactions, xdg
-  - https://wiki.archlinux.org/title/Xdg-utils
+- .desktop files
+  - in [[file:/usr/share/applications/]] or [[file:~/.local/share/applications/]]
+  - Declare how to launch an app.
+    - Key fields:
+      - Exec=... %F → command to run.
+      - MimeType=... → which file types this app supports.
+- xdg-utils commands
+  - xdg-open <file>
+    - Uses the desktop environment’s MIME database.
+    - Looks up the file’s MIME type → checks defaults in mimeapps.list → launches the chosen .desktop file.
+  - xdg-mime query default <MIME>
+    - Shows which .desktop file is currently the default handler for that MIME type.
+  - xdg-mime default <desktop-file> <MIME>
+    - Sets the default handler for that MIME type.
+    - (Just writes to [[file:~/.config/mimeapps.list]]
+- used for file opening in
+  - [[id:b3bd2685-ea78-4097-ae4c-e4a5e7a422ea][Dired]]
 ***** youtube-dl
 :PROPERTIES:
 :ID:       e3686637-787c-47f2-b358-cf8c938ad606
@@ -10080,21 +10441,6 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
   - https://www.biostars.org/p/63816/
   - https://www.biostars.org/p/216905/
   - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
-******** trash-cli
-:PROPERTIES:
-:ID:       fe8ca086-cd69-4f40-a96d-3e99678c400e
-:END:
-- https://www.google.com/search?q=trash-cli+linux
-#+begin_src bash
-#
-# Install
-cd /opt
-sudo git clone https://github.com/andreafrancia/trash-cli.git
-cd trash-cli
-sudo python setup.py install
-#
-#
-#+end_src
 ******* ideas
 :PROPERTIES:
 :ID:       51710d48-bcbb-4709-bd5e-9774546bbbda
@@ -10270,7 +10616,7 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :ID:       cd560390-aa1e-4c9e-8317-08610e5de42a
 :END:
 https://download.oldlinux.org/ECLK-5.0-WithCover.pdf
-
+https://www.reddit.com/r/linux4noobs/comments/1mjwxk8/whats_a_piece_of_opensource_software_that/
 default applications defined in - [[file:~/.config/mimeapps.list]]
 https://www.reddit.com/r/commandline/comments/1epjppl/10_cli_tools_that_made_the_biggest_impact_on/
 ******** Linux cookbook
@@ -12458,6 +12804,14 @@ ${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
 ${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
 #+end_src
 
+#+begin_src python
+
+####################
+###   Header 1   ###
+####################
+
+#+end_src
+
 ******* head2
 :PROPERTIES:
 :ID:       840a0b67-22c0-4937-a97e-8714cb935ad8
@@ -12472,6 +12826,14 @@ ${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
 # ${1:$(make-string (+ (string-width yas-text) 12) ?\-)} #
 $0
 #+end_src
+
+#+begin_src python
+# ---   Header 2   --- #
+# -------------------- #
+
+
+#+end_src
+
 ******* 80
 :PROPERTIES:
 :ID:       1afd02e0-8fdf-4899-adb6-106d83152829
@@ -12801,6 +13163,8 @@ https://www.reddit.com/r/emacs/comments/1hop56b/elisp_best_practices/
 :PROPERTIES:
 :ID:       64bf8adc-4e02-4c0a-b407-2fa458a07f33
 :END:
+******* Linting and error checking
+https://chatgpt.com/c/68b84c54-4d80-8331-9277-0347bd3ce460
 ******* 0 Flat
 :PROPERTIES:
 :ID:       f61ca67d-403a-4eda-8de0-12a414a8bba3
@@ -12896,7 +13260,6 @@ Example usage:
 
 $0
 #+end_src
-******* head3
 ******* head2                                                           :yas:
 #+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/emacs-lisp-mode/head2
 # -*- mode: snippet -*-
@@ -13365,6 +13728,23 @@ done < <(find ${2:FIND DIR} -name ${3:FIND TERM} -print0)
 printf '%s\n' "\${$1[@]}"
 $0
 #+end_src
+******* code.bash
+:PROPERTIES:
+:ID:       78960912-ee7a-4e71-b8d5-c5ec9649ecac
+:END:
+#+name: code.bash
+#+begin_src bash :comment no
+# -*- mode: snippet -*-
+# key: code.bash
+# expand-env: ((yas-indent-line 'none))
+# --
+#+begin_src bash :comment no
+$0
+,#+end_src
+#+end_src
+
+
+
 ******* code.sh
 :PROPERTIES:
 :ID:       5c2e54cf-797e-4ccb-b12e-2167d06ce7a4
@@ -13532,9 +13912,6 @@ ${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
 $0
 #+end_src
 
-******* [[id:fcd48576-a658-44c4-8a98-9d9404366c1b][head2]]
-******* [[id:2870f5de-4af4-4d76-a8bc-89823e4e09a0][head3]]
-******* [[id:1b86754e-15fd-4b7b-8b4d-675208aa8d89][head4]]
 ******* must.src
 :PROPERTIES:
 :ID:       7bce1c80-34ca-4419-826c-99ac5af2bf6a
@@ -17650,6 +18027,8 @@ https://www.reddit.com/r/bioinformatics/comments/1krwcgp/how_does_your_lab_store
 :PROPERTIES:
 :ID:       b3c4c653-9584-4084-9e0e-abf16f95ac52
 :END:
+- https://github.com/sxyazi/yazi
+- https://www.benq.com/en-us/monitor/programming/rd280u.html  
 - make org tangles run asyncronous
 - cast boox screen to linux or http
 2. [X] safe rm through [[http://pages.stern.nyu.edu/~marriaga/software/libtrash/][libtrash]]
@@ -17717,6 +18096,9 @@ Basecamp snakefile md5s, aymlinks,
 - http://nengo.ca/build-a-brain/spaunvideos
 - [[https://aws.amazon.com/websites/?sc_channel=PS&sc_campaign=acquisition_US&sc_publisher=google&sc_medium=websites_webapps_nb&sc_content=web_hosting_e&sc_detail=free%20web%20hosting&sc_category=websites_webapps&sc_segment=96578640642&sc_matchtype=e&sc_country=US&s_kwcid=AL!4422!3!96578640642!e!!g!!free%20web%20hosting&ef_id=WENUqgAAAV2Dp9Ql:20170209002051:s][Amazon web hosting]]
 - https://aws.amazon.com/getting-started/tutorials/launch-a-virtual-machine/
+*** Build linters
+- linting like https://github.com/loeffel-io/ls-lint
+
 *** clear windows with compton
 #+begin_src bash :tangle ~/.config/compton.conf
 shadow = true;

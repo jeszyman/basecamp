@@ -151,6 +151,42 @@ EOF
         fi
     fi
 }
+cliptee() {
+    print_usage() {
+        cat <<- EOF
+
+ Usage: cliptee [MAX_LINES]
+
+ Duplicates command output to both the terminal and the clipboard.
+ By default, only the first 500 lines are sent to the clipboard
+ to avoid copying huge files accidentally.
+
+ Options:
+   -h, --help    Show this help message and exit
+
+ Arguments:
+   MAX_LINES     Maximum number of lines to send to the clipboard (default: 500)
+
+ Examples:
+   echo -e "a\nb\nc" | cliptee
+   seq 1000 | cliptee 100   # copy only first 100 lines to clipboard
+
+EOF
+    }
+
+    if [[ $# -gt 1 || ( $# -eq 1 && ( $1 == "-h" || $1 == "--help" )) ]]; then
+        print_usage
+        return 0
+    fi
+
+    local max_lines="${1:-500}"
+
+    if command -v wl-copy >/dev/null 2>&1; then
+        tee >(head -n "$max_lines" | wl-copy)
+    else
+        tee >(head -n "$max_lines" | xclip -selection clipboard)
+    fi
+}
 emacs-stop() {
     print_usage(){
     cat <<- EOF
@@ -185,9 +221,9 @@ EOF
         echo "Emacs daemon is not running. Nothing to do."
     fi
 }
-emacs-save () 
-{ 
-    [[ "$1" =~ (-h|--help) ]] && { 
+emacs-save ()
+{
+    [[ "$1" =~ (-h|--help) ]] && {
         cat <<EOF
 Usage: emacs-save
 
@@ -1046,7 +1082,7 @@ smk_touch(){
 
 Usage: smk_touch <SNAKEFILE> <CONFIGFILE>
 
-Wrapper for snakemake touch flag to update DAG. CONFIGFILE is required. 
+Wrapper for snakemake touch flag to update DAG. CONFIGFILE is required.
 
 Example: smk_touch ./workflow/analysis1.smk ./config/jeff-beast.yaml
 
@@ -1138,7 +1174,7 @@ EOF
     return
   }
 
-  
+
   local snakefile="$1"
   local configfile="$2"
   local cores=$(nproc)
@@ -1161,7 +1197,7 @@ EOF
       --cores "$cores" \
       --forceall \
       --rerun-incomplete \
-      --resources concurrency="$concurrency" \      
+      --resources concurrency="$concurrency" \
       --snakefile "$snakefile"
 
   # Check exit code and provide error message
@@ -1245,7 +1281,7 @@ EOF
       --conda-frontend conda \
       --use-singularity \
       --printshellcmds \
-      --singularity-args "--bind /mnt" 
+      --singularity-args "--bind /mnt"
 
   if [ $? -ne 0 ]; then
       echo "Error: Snakemake run failed."
