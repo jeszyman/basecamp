@@ -1354,12 +1354,6 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
 #+end_src
 **** Update bashrc
 #+begin_src yaml
-    - name: Source custom shell scripts from ~/.local/lib/mylibs in .bashrc
-      lineinfile:
-        path: ~/.bashrc
-        insertafter: EOF
-        line: 'for f in ~/.local/lib/mylibs/*.sh; do [ -f "$f" ] && source "$f"; done'
-        state: present
 
     - name: Ensure ~/.bashrc.d exists
       ansible.builtin.file:

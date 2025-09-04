@@ -211,13 +211,6 @@
 
     - name: Refresh font cache
       command: fc-cache -fv
-    - name: Source custom shell scripts from ~/.local/lib/mylibs in .bashrc
-      lineinfile:
-        path: ~/.bashrc
-        insertafter: EOF
-        line: 'for f in ~/.local/lib/mylibs/*.sh; do [ -f "$f" ] && source "$f"; done'
-        state: present
-
     - name: Ensure ~/.bashrc.d exists
       ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/.bashrc.d"
