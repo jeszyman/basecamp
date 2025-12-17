@@ -31,6 +31,11 @@ apt_packages:
   - libreoffice-java-common
   - poppler-utils # PDF manipulation
   - bibtool
+  - libenchant-2-dev
+  - pkgconf
+  - libxcb-xinerama0 # Anki prereq
+  - libxcb-cursor0 # Anki prereq
+  - libnss3 # Anki prereq
 
 directory_structure:
   - "${HOME}/repos"

@@ -957,11 +957,11 @@ TABLE-NAME is the name of the table identified as #+name."
     ;; typically what org-babel uses for :results table)
     ('org
      (format "[[plain:%s][%s]]" link description)) ; Reconstruct the full Org link
-    
+
     ;; For standard export backends (HTML, LaTeX, ASCII)
     ((or 'html 'latex 'ascii)
      (or description link)) ; Return only the description (label), or link if no description
-    
+
     ;; For any other format (fallback), just return the description or link
     (_ (or description link))))
 

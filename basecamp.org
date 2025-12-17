@@ -4,140 +4,76 @@
 :RESET_CHECK_BOXES: t
 :header-args:yaml: :eval never
 :END:
-https://missing.csail.mit.edu/
-** Frictionless
 
-https://framework.frictionlessdata.io/docs/getting-started.html
-#+begin_src bash
-
-#+end_src
 #+begin_src emacs-lisp
-;; Force spaces only in yaml-mode
-(add-hook 'yaml-mode-hook
-          (lambda ()
-            (setq indent-tabs-mode nil)
-            (setq tab-width 2)
-            (setq yaml-indent-offset 2)))
+;; FIRST: Remove any existing problematic advice
+(when (fboundp 'ad-remove-advice)
+  (ad-remove-advice 'org-babel-tangle 'before 'make-files-writable)
+  (ad-remove-advice 'org-babel-tangle-single-block 'around 'force-writable)
+  (ad-activate 'org-babel-tangle)
+  (ad-activate 'org-babel-tangle-single-block))
 
+;; Disable all confirmation prompts
+(setq org-confirm-babel-evaluate nil)
+
+;; Clean approach: Override the tangle function completely
+(defun my-org-babel-tangle-force (&optional arg target-file lang)
+  "Tangle code blocks, making files writable without prompts."
+  (interactive "P")
+  (run-hooks 'org-babel-pre-tangle-hook)
+  ;; Get list of files that will be tangled to
+  (let ((tangle-files '()))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward org-babel-src-block-regexp nil t)
+        (let* ((info (org-babel-get-src-block-info 'light))
+               (params (nth 2 info))
+               (file (cdr (assq :tangle params))))
+          (when (and file
+                     (not (string= file "no"))
+                     (not (string= file "yes")))
+            (add-to-list 'tangle-files (expand-file-name file))))))
+
+    ;; Make all target files writable
+    (dolist (file tangle-files)
+      (when (file-exists-p file)
+        (set-file-modes file #o644)))
+
+    ;; Now do the actual tangling with original function
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle arg target-file lang))))
+
+;; Replace the default tangle command
+(define-key org-mode-map (kbd "C-c C-v t") 'my-org-babel-tangle-force)
+
+;; Alternative: Just override file permissions globally during tangle
+(defun my-simple-force-tangle ()
+  "Simple force tangle - make files writable then tangle."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "^[ \t]*#\\+begin_src" nil t)
+      (when-let* ((element (org-element-at-point))
+                  (params (org-element-property :parameters element))
+                  (tangle-param (when (string-match ":tangle \\([^[:space:]]+\\)" (or params ""))
+                                 (match-string 1 params)))
+                  (file (when (and tangle-param
+                                   (not (string= tangle-param "no"))
+                                   (not (string= tangle-param "yes")))
+                         (expand-file-name tangle-param))))
+        (when (and file (file-exists-p file))
+          (set-file-modes file #o644)))))
+  (let ((org-confirm-babel-evaluate nil))
+    (org-babel-tangle)))
+
+;; Bind simple version as backup
+(define-key org-mode-map (kbd "C-c C-v f") 'my-simple-force-tangle)
 #+end_src
 
-
-#+begin_src yaml :tangle /tmp/fricdemo/schema.yaml
-$schema: https://frictionlessdata.io/schemas/table-schema.json
-fields:
-  - name: id
-    type: integer
-    constraints: {required: true}
-  - name: name
-    type: string
-    constraints: {required: true}
-  - name: age
-    type: integer
-    constraints: {required: true, minimum: 0}
+#+begin_src emacs-lisp
+(remove-hook 'before-save-hook #'org-table-recalculate-buffer-tables)
 
 #+end_src
-
-#+begin_src fundamental :tangle /tmp/fricdemo/data.csv
-id,name,age
-1,Jeff,43
-2,Alice,30
-3,Bob,-5
-#+end_src
-
-#+begin_src python
-import os
-from frictionless import Resource
-
-# --- Set working directory ---
-os.chdir("/tmp/fricdemo")   # adjust if your files live elsewhere
-
-# --- Validate CSV against schema ---
-res = Resource(path="data.csv", schema="schema.yaml")
-report = res.validate()
-
-print("valid:", report.valid)
-
-# Pretty, readable errors
-for row, field, code, msg in report.flatten(
-    ["rowNumber", "fieldName", "code", "message"]
-):
-    print(f"row={row} field={field} code={code} msg={msg}")
-#+end_src
-
-#########1#########2#########3#########4#########5#########6#########7#########8
-
-#+begin_src R
-# Minimal R script to create /tmp/people.xlsx (sheet "Sheet1")
-# install.packages("writexl")  # if needed
-
-library(writexl)
-
-dir.create("/tmp", showWarnings = FALSE)
-people <- data.frame(
-  id   = c(1L, 2L, 3L),
-  name = c("Jeff", "Alice", "Bob"),
-  age  = c(43L, 30L, -5L)   # deliberately invalid for the schema (age >= 0)
-)
-
-write_xlsx(list(Sheet1 = people), path = "/tmp/people.xlsx")
-
-#+end_src
-
-#+begin_src yaml :tangle /tmp/schema.yaml
-$schema: https://frictionlessdata.io/schemas/table-schema.json
-fields:
-  - name: id
-    type: integer
-    constraints: {required: true}
-  - name: name
-    type: string
-    constraints: {required: true}
-  - name: age
-    type: integer
-    constraints: {required: true, minimum: 0}
-
-#+end_src
-
-#+begin_src python
-import os
-from frictionless import Resource, formats
-
-os.chdir("/tmp")  # your files: people.xlsx, schema.yaml
-
-control = formats.ExcelControl(sheet="Sheet1")
-res = Resource(path="people.xlsx", schema="schema.yaml", control=control)
-report = res.validate()
-
-print("valid:", report.valid)
-for row, field, code, msg in report.flatten(
-    ["rowNumber", "fieldName", "code", "message"]
-):
-    print(f"row={row} field={field} code={code} msg={msg}")
-#+end_src
-
-#+begin_src yaml :tangle /tmp/bad_schema.yaml
-$schema: https://frictionlessdata.io/schemas/table-schema.json
-fields:
-  - name: id
-    type: integer
-    constraints:
-      minimum: "zero"    # ❌ wrong type for minimum
-  - name: id            # ❌ duplicate field name
-    type: string
-primaryKey: ["missing"] # ❌ not present in fields
-
-#+end_src
-
-
-#+begin_src python
-from frictionless import Schema
-try:
-    Schema("/tmp/bad_schema.yaml", strict=True)
-except Exception as e:
-    print("Schema error:", e)
-
-#+end_src
-
 
 ** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
 ** [[id:89576FD2-F863-4220-BAD7-D4E179AEA644][Bash and shell]]
@@ -212,7 +148,6 @@ done
 
 My base operating system is linux Ubuntu using a long-term support (LTS) version.
 
-***** Bash
 ***** Git repositories
 Git repos live in ${HOME}/repos.
 
@@ -422,7 +357,7 @@ EOF
   Because Bash lacks robust and simple argument parsing, I prefer a set order of:
     Required arguments first.
     Optional arguments second.
-  For common scripts for simplicity, I do not use getopts. 
+  For common scripts for simplicity, I do not use getopts.
   I prefer using a here-document (cat <<EOF) structure for the usage statement because it improves readability.
 - Main Function
   #+begin_src bash
@@ -433,7 +368,7 @@ main() {
 }
 #+end_src
   main defines the overall script logic and execution order.
-  It always starts by calling parse_args "$@" to process command-line arguments. Main will be executed below the main guard. 
+  It always starts by calling parse_args "$@" to process command-line arguments. Main will be executed below the main guard.
 - Argument Parsing
   #+begin_src bash
 parse_args() {
@@ -452,8 +387,8 @@ parse_args() {
     declare -g optional_arg="${2:-$default_dir}"
 }
 #+end_src
-  arg_parse handles input argument parsing, triggers usage, performs any argument checks, and 
-  
+  arg_parse handles input argument parsing, triggers usage, performs any argument checks, and
+
 Handles -h / --help first to ensure help is displayed before checking for missing arguments.
 Ensures at least one required argument (required_arg1).
 Uses default values (optional_arg="${2:-$default_dir}") for optional parameters.
@@ -478,7 +413,7 @@ Keeps execution explicit and structured.
 
 Scripts
 
-My common bash script style follows a main-first structure with several common modular components as functions. A generalized format is: 
+My common bash script style follows a main-first structure with several common modular components as functions. A generalized format is:
 
 ,#+begin_src bash
 #!/usr/bin/env bash
@@ -579,7 +514,7 @@ EOF
 }
 #+end_src
 Usage
-for input arguements and usage statements, 
+for input arguements and usage statements,
 bash lacks robust input arguement parsing, so I prefer a set order of required followed by optional arguements. (no getopts).  I prefer heredoc structure for the usage staetmetn.
 
 #+begin_src bash
@@ -631,7 +566,7 @@ some_helper_function() {
 }
 
 #+end_src
-Additional functions 
+Additional functions
 
 #+begin_src bash
 
@@ -639,7 +574,7 @@ Additional functions
 main "$@"
 
 #+end_src
-Main guard calls main. 
+Main guard calls main.
 
 #+begin_src bash
 print_usage() {
@@ -691,7 +626,7 @@ parse_args() {
 main() {
     parse_args "$@"
     echo "Processing with: $required_arg1, $optional_arg"
-    
+
     # Example command using the parsed arguments
     grep -r --color=auto "$required_arg1" "$optional_arg"
 }
@@ -956,6 +891,140 @@ See also Emacs and Org-mode use in my LaTeX repository ([[https://github.com/jes
 #+begin_export latex
 \inputminted{emacs-lisp}{../emacs/load-last.el}
 #+end_export
+** Frictionless
+
+https://framework.frictionlessdata.io/docs/getting-started.html
+#+begin_src bash
+
+#+end_src
+#+begin_src emacs-lisp
+;; Force spaces only in yaml-mode
+(add-hook 'yaml-mode-hook
+          (lambda ()
+            (setq indent-tabs-mode nil)
+            (setq tab-width 2)
+            (setq yaml-indent-offset 2)))
+
+#+end_src
+
+
+#+begin_src yaml :tangle /tmp/fricdemo/schema.yaml
+$schema: https://frictionlessdata.io/schemas/table-schema.json
+fields:
+  - name: id
+    type: integer
+    constraints: {required: true}
+  - name: name
+    type: string
+    constraints: {required: true}
+  - name: age
+    type: integer
+    constraints: {required: true, minimum: 0}
+
+#+end_src
+
+#+begin_src fundamental :tangle /tmp/fricdemo/data.csv
+id,name,age
+1,Jeff,43
+2,Alice,30
+3,Bob,-5
+#+end_src
+
+#+begin_src python
+import os
+from frictionless import Resource
+
+# --- Set working directory ---
+os.chdir("/tmp/fricdemo")   # adjust if your files live elsewhere
+
+# --- Validate CSV against schema ---
+res = Resource(path="data.csv", schema="schema.yaml")
+report = res.validate()
+
+print("valid:", report.valid)
+
+# Pretty, readable errors
+for row, field, code, msg in report.flatten(
+    ["rowNumber", "fieldName", "code", "message"]
+):
+    print(f"row={row} field={field} code={code} msg={msg}")
+#+end_src
+
+#########1#########2#########3#########4#########5#########6#########7#########8
+
+#+begin_src R
+# Minimal R script to create /tmp/people.xlsx (sheet "Sheet1")
+# install.packages("writexl")  # if needed
+
+library(writexl)
+
+dir.create("/tmp", showWarnings = FALSE)
+people <- data.frame(
+  id   = c(1L, 2L, 3L),
+  name = c("Jeff", "Alice", "Bob"),
+  age  = c(43L, 30L, -5L)   # deliberately invalid for the schema (age >= 0)
+)
+
+write_xlsx(list(Sheet1 = people), path = "/tmp/people.xlsx")
+
+#+end_src
+
+#+begin_src yaml :tangle /tmp/schema.yaml
+$schema: https://frictionlessdata.io/schemas/table-schema.json
+fields:
+  - name: id
+    type: integer
+    constraints: {required: true}
+  - name: name
+    type: string
+    constraints: {required: true}
+  - name: age
+    type: integer
+    constraints: {required: true, minimum: 0}
+
+#+end_src
+
+#+begin_src python
+import os
+from frictionless import Resource, formats
+
+os.chdir("/tmp")  # your files: people.xlsx, schema.yaml
+
+control = formats.ExcelControl(sheet="Sheet1")
+res = Resource(path="people.xlsx", schema="schema.yaml", control=control)
+report = res.validate()
+
+print("valid:", report.valid)
+for row, field, code, msg in report.flatten(
+    ["rowNumber", "fieldName", "code", "message"]
+):
+    print(f"row={row} field={field} code={code} msg={msg}")
+#+end_src
+
+#+begin_src yaml :tangle /tmp/bad_schema.yaml
+$schema: https://frictionlessdata.io/schemas/table-schema.json
+fields:
+  - name: id
+    type: integer
+    constraints:
+      minimum: "zero"    # ❌ wrong type for minimum
+  - name: id            # ❌ duplicate field name
+    type: string
+primaryKey: ["missing"] # ❌ not present in fields
+
+#+end_src
+
+
+#+begin_src python
+from frictionless import Schema
+try:
+    Schema("/tmp/bad_schema.yaml", strict=True)
+except Exception as e:
+    print("Schema error:", e)
+
+#+end_src
+
+
 ** Configuration files
 [[file:config/config.yaml]]
 #+begin_src yaml :tangle ./config/config.yaml
@@ -966,7 +1035,7 @@ apt_ppas:
 apt_packages:
   - ansible                   # Provisioning automation tool
   - apptainer                 # Singularity replacement
-  - aria2                     # wget improvement 
+  - aria2                     # wget improvement
   - brave-browser             # Web browser
   - curl                      # Command-line tool for HTTP requests
   - ncdu                      # Disk usage TUI
@@ -992,14 +1061,16 @@ apt_packages:
   - libreoffice-java-common
   - poppler-utils # PDF manipulation
   - bibtool
-  
+  - libenchant-2-dev
+  - pkgconf
+
 directory_structure:
   - "${HOME}/repos"
   - "${HOME}/.emacs.d/snippets"
   - "${HOME}/.emacs.d/lisp"
   - "${HOME}/.emacs.d/config"
 
-  
+
 public_symlinks:
   - src: "${HOME}/repos/emacs/emacs/init.el"
     dest: "${HOME}/.emacs.d/init.el"
@@ -1019,7 +1090,7 @@ public_symlinks:
     dest: "${HOME}/.emacs.d/lisp/ob-mermaid.el"
   - src: "${HOME}/repos/basecamp/lib/basecamp_functions.sh"
     dest: "${HOME}/.bashrc.d/basecamp_functions.sh"
-    
+
 wget_downloads:
   - src: https://www.emacswiki.org/emacs/download/essh.el
     dest: "${HOME}/repos/basecamp/emacs/essh.el"
@@ -1067,7 +1138,7 @@ fn fn
       loop: "{{ directory_structure }}"
       vars:
         directory_structure: "{{ directory_structure | default([]) }}"
-    
+
 #+end_src
 **** Download from urls
 #+begin_src yaml
@@ -1101,7 +1172,7 @@ fn fn
       when: item.failed
       tags: downloads
 
-      
+
 #+end_src
 
 **** Make symlinks
@@ -1124,7 +1195,7 @@ fn fn
         state: directory
         mode: '0755'
       loop: "{{ public_symlinks }}"
-      
+
     - name: Make public symlinks for existing sources
       ansible.builtin.file:
         src: "{{ item.item.src }}"
@@ -1135,7 +1206,7 @@ fn fn
       loop: "{{ symlink_sources.results }}"
       when: item.stat.exists
       no_log: true
-      
+
 #+end_src
 **** Install software
 ***** ATP installs
@@ -1173,7 +1244,7 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
       apt:
         update_cache: yes
       become: true
-      
+
     - name: Ensure APT packages are installed
       apt:
         name: "{{ item }}"
@@ -1182,7 +1253,7 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
       loop: "{{ apt_packages }}"
       register: apt_install_results
       ignore_errors: true  # Ensures playbook continues even if a package is missing
-       
+
 #+end_src
 ***** Non-ATP Installs
 ****** yq
@@ -1214,10 +1285,10 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
         dest: /usr/local/bin/yqgo
         remote_src: true
         mode: '0755'
-        
+
 #+end_src
 
-****** Python 
+****** Python
 ****** Nerd fonts
 #+begin_src yaml
     - name: Ensure fonts directory exists
@@ -1237,7 +1308,7 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
 
     - name: Refresh font cache
       command: fc-cache -fv
-      
+
 #+end_src
 
 ****** [[id:36efda17-d1ef-4632-bc33-732071455543][R]]
@@ -1290,7 +1361,7 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
         path: "{{ ansible_env.HOME }}/.bashrc.d"
         state: directory
         mode: "0700"
-        
+
     - name: Source ~/.bashrc.d/*.sh in .bashrc
       ansible.builtin.blockinfile:
         path: "{{ ansible_env.HOME }}/.bashrc"
@@ -1316,7 +1387,7 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
             for f in ~/.bashrc.d/*.sh; do [ -r "$f" ] && . "$f"; done
           fi
         state: present
- 
+
 #+end_src
 
 **** Conda
@@ -1339,7 +1410,7 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
 [[file:ansible/playbooks/emacs29-playbook.yaml]]
 - See
   - [[id:7bad42e4-2b92-4d08-8bd5-f340103ec58a][My i3 configuration]]
-  - lib shell functions to work with this daemon: 
+  - lib shell functions to work with this daemon:
     - [[id:61072582-fc7d-4a89-a513-d6319dd55c97][emacs-start()]]
     - [[id:6963f124-8e97-4d9c-a3e2-aae62cdc4837][emacs-stop()]]
     - [[id:eb42ff61-b8db-45b6-ac8d-1cb0f8b83458][emacs-save()]]
@@ -1352,8 +1423,8 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
   tasks:
 #+end_src
 
-**** Install prerequisites 
-#+begin_src yaml 
+**** Install prerequisites
+#+begin_src yaml
     - name: Ensure required dependencies are installed
       become: yes
       apt:
@@ -1400,7 +1471,7 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
       register: emacs_installed
 
     - name: Download Emacs 29.4 source archive
-      become: yes      
+      become: yes
       get_url:
         url: https://mirrors.ocf.berkeley.edu/gnu/emacs/emacs-29.4.tar.xz
         dest: /tmp/emacs-29.4.tar.xz
@@ -1408,7 +1479,7 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
       when: not emacs_installed.stat.exists
 
     - name: Extract Emacs 29.4 source archive
-      become: yes      
+      become: yes
       ansible.builtin.unarchive:
         src: /tmp/emacs-29.4.tar.xz
         dest: /tmp
@@ -1418,7 +1489,7 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
       when: not emacs_installed.stat.exists
 
     - name: Configure Emacs build
-      become: yes      
+      become: yes
       shell: ./configure --prefix=/usr/local --with-xwidgets --with-imagemagick
       args:
         chdir: /tmp/emacs-29.4
@@ -1426,7 +1497,7 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
       when: not emacs_installed.stat.exists
 
     - name: Build Emacs
-      become: yes      
+      become: yes
       shell: make
       args:
         chdir: /tmp/emacs-29.4
@@ -1434,7 +1505,7 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
       when: not emacs_installed.stat.exists
 
     - name: Install Emacs
-      become: yes      
+      become: yes
       shell: make install
       args:
         chdir: /tmp/emacs-29.4
@@ -1555,15 +1626,15 @@ Explicit server-socket-dir to ~/.emacs.d/server, ensuring predictable, user-writ
         line: "{{ item }}"
       loop:
         - "(setq server-socket-dir (expand-file-name \"server\" user-emacs-directory))"
-        - '(require ''server)'        
+        - '(require ''server)'
         - "(unless (server-running-p) (server-start))"
       notify: Restart emacs daemon
-      
+
     - name: Ensure systemd user unit directory exists
       file:
         path: "{{ ansible_env.HOME }}/.config/systemd/user"
         state: directory
-        mode: '0755'      
+        mode: '0755'
 
     - name: Install systemd user unit for emacs
       copy:
@@ -1642,7 +1713,7 @@ apt-get install xauth
 :END:
 *** Shell
 :properties:
-:header-args: :tangle ./lib/basecamp_functions.sh 
+:header-args: :tangle ./lib/basecamp_functions.sh
 :end:
 
 https://chatgpt.com/c/66f5b550-66f0-8005-b5a1-733d20a01aed
@@ -1944,9 +2015,9 @@ EOF
 :ID:       eb42ff61-b8db-45b6-ac8d-1cb0f8b83458
 :END:
 #+begin_src bash
-emacs-save () 
-{ 
-    [[ "$1" =~ (-h|--help) ]] && { 
+emacs-save ()
+{
+    [[ "$1" =~ (-h|--help) ]] && {
         cat <<EOF
 Usage: emacs-save
 
@@ -2277,7 +2348,7 @@ EOF
 :PROPERTIES:
 :ID:       f829815e-41cc-4180-b91e-07e00395f473
 :END:
-#+begin_src bash
+#+begin_src bash :tangle no
 screenshot(){
     print_usage(){
 	cat <<- EOF
@@ -2302,6 +2373,75 @@ EOF
     scrot -s -f --overwrite /tmp/screenshot.png && xclip -selection clipboard -t image/png -i /tmp/screenshot.png
 
 }
+#+end_src
+#+begin_src bash
+screenshot () {
+    function print_usage () {
+        cat <<-EOF
+
+ Usage: screenshot [-w|--window]
+
+      Takes a screenshot with scrot and copies it to the clipboard with xclip.
+      The screenshot is also saved as /tmp/screenshot.png (overwritten each use).
+
+      No options       Interactive selection (draw rectangle)
+      -w, --window     Click a window to capture it
+      -h, --help       Show this help
+
+EOF
+    }
+
+    local mode="select"
+
+    # Simple option parsing: only -w/--window and -h/--help
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -h|--help)
+                print_usage
+                return
+                ;;
+            -w|--window)
+                mode="click"
+                ;;
+            *)
+                echo "Unknown option: $1" >&2
+                print_usage
+                return 1
+                ;;
+        esac
+        shift
+    done
+
+    local outfile="/tmp/screenshot.png"
+
+    if [[ "$mode" == "select" ]]; then
+        # Interactive region (your original behavior)
+        scrot -s -f --overwrite "$outfile" || return 1
+    else
+        # Click a window, then capture its frame geometry
+        # Requires xwininfo (package: x11-utils)
+        local X Y W H
+        read -r X Y W H < <(
+            xwininfo -frame | awk '
+                /Absolute upper-left X:/ {x=$4}
+                /Absolute upper-left Y:/ {y=$4}
+                /Width:/ {w=$2}
+                /Height:/ {h=$2}
+                END {print x, y, w, h}
+            '
+        )
+
+        if [[ -z "$X" || -z "$Y" || -z "$W" || -z "$H" ]]; then
+            echo "Could not get window geometry" >&2
+            return 1
+        fi
+
+        scrot -a "$X,$Y,$W,$H" -f --overwrite "$outfile" || return 1
+    fi
+
+    xclip -selection clipboard -t image/png -i "$outfile"
+}
+
 #+end_src
 
 ***** debug()
@@ -3044,54 +3184,53 @@ EOF
 
 #+end_src
 #+begin_src bash
-smk_draw(){
-  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+smk_draw () {
+  [[ "$1" =~ (-h|--help) || -z "$1" || -z "$2" ]] && {
     cat <<EOF
-Usage: smk_draw <CONFIG FILE> <SNAKEFILE>
-Implements snakemake's rulegraph to make a DAG. DAG is saved in ./resources/<SNAKEFILE BASENAME>.pdf and .png
+Usage: smk_draw <SNAKEFILE> <CONFIG FILE>
+Generates a rulegraph DAG → ./resources/<snakefile>_smk.pdf and .png
 EOF
     return
   }
 
   local snakefile="$1"
   local configfile="$2"
-  local cores=$(nproc)
+
+  [[ ! -f "$snakefile" ]]  && { echo "Error: Snakefile '$snakefile' does not exist."; return 1; }
+  [[ ! -f "$configfile" ]] && { echo "Error: Config file '$configfile' does not exist."; return 1; }
+
+  local snakefile_basename; snakefile_basename="$(basename "$snakefile")"
+  mkdir -p ./resources
+
+  local concurrency
+  concurrency="$(yqgo e '.["available-concurrency"] // .available_concurrency // 100' "$configfile" 2>/dev/null)"
+
+  local cores; cores="$(nproc)"
   local out_pdf="./resources/${snakefile_basename%.*}_smk.pdf"
   local out_png="${out_pdf%.*}.png"
 
-  if [[ ! -f "$snakefile" ]]; then
-      echo "Error: Snakefile '$snakefile' does not exist."
-      return 1
-  fi
-
-  if [[ ! -f "$configfile" ]]; then
-      echo "Error: Config file '$configfile' does not exist."
-      return 1
-  fi
-
-  local concurrency=$(yqgo e '.available_concurrency // 100' "$configfile")
-
-  snakemake \
+  # Get pure DOT into a variable (avoids broken pipes when sourcing in shells)
+  local graph
+  if ! graph="$(
+    snakemake \
       --configfile "$configfile" \
       --cores "$cores" \
-      --keep-going \
-      --rerun-incomplete \
       --resources concurrency="$concurrency" \
       --snakefile "$snakefile" \
-      --use-conda \
-      --conda-frontend conda \
-      --use-singularity \
-      --printshellcmds \
-      --singularity-args "--bind /mnt" \
-      --dry-run \
-      --quiet \
-      --rulegraph | tee >(dot -Tpdf -Gsize=11,8.5 > "$out_pdf") | dot -Tpng > "$out_png"
-
-  if [ $? -ne 0 ]; then
-      echo "Error: Snakemake run failed."
+      --rulegraph \
+      --quiet 2>/dev/null
+  )"; then
+    echo "Error: Snakemake rulegraph generation failed."
+    return 1
   fi
-}
 
+  # Render both formats from the same DOT
+  printf '%s\n' "$graph" | dot -Tpdf -Gsize=11,8.5 -o "$out_pdf" || { echo "dot(pdf) failed"; return 1; }
+  printf '%s\n' "$graph" | dot -Tpng -o "$out_png"                  || { echo "dot(png) failed"; return 1; }
+
+  [[ -s "$out_pdf" && -s "$out_png" ]] || { echo "Outputs empty"; return 1; }
+  echo "Wrote: $out_pdf and $out_png"
+}
 #+end_src
 ***** smk_touch
 #+begin_src bash
@@ -3101,7 +3240,7 @@ smk_touch(){
 
 Usage: smk_touch <SNAKEFILE> <CONFIGFILE>
 
-Wrapper for snakemake touch flag to update DAG. CONFIGFILE is required. 
+Wrapper for snakemake touch flag to update DAG. CONFIGFILE is required.
 
 Example: smk_touch ./workflow/analysis1.smk ./config/jeff-beast.yaml
 
@@ -3193,23 +3332,24 @@ EOF
 :PROPERTIES:
 :ID:       6b970126-99f6-426b-bcf9-f76d5fea5149
 :END:
+
+
 #+begin_src bash
 smk_forced(){
-  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+  [[ "$1" == "-h" || "$1" == "--help" || $# -ne 2 ]] && {
     cat <<EOF
 
-Usage: smk_forced <SNAKEFILE> [CONFIGFILE]
+Usage: smk_run <SNAKEFILE> <CONFIGFILE>
 
-Wrapper for a forced snakemake run. --configfile defaults to ./config/${HOSTNAME}.yaml if no second argument is provided. Runs all available cores.
+Wrapper for normal snakemake. CONFIGFILE is required. Runs on all available cores.
+Reads 'available_concurrency' from the YAML or defaults to 100.
 
-Example: smk_forced ./workflow/analysis1.smk
-         smk_forced ./workflow/analysis1.smk ./config/custom_config.yaml
+Example: smk_run ./workflow/analysis1.smk ./config/jeff-beast.yaml
 
 EOF
     return
   }
 
-  
   local snakefile="$1"
   local configfile="$2"
   local cores=$(nproc)
@@ -3226,21 +3366,27 @@ EOF
 
   local concurrency=$(yqgo e '.available_concurrency // 100' "$configfile")
 
-  # Run
   snakemake \
       --configfile "$configfile" \
       --cores "$cores" \
       --forceall \
+      --keep-going \
       --rerun-incomplete \
-      --resources concurrency="$concurrency" \      
-      --snakefile "$snakefile"
+      --resources concurrency="$concurrency" \
+      --snakefile "$snakefile" \
+      --use-conda \
+      --conda-frontend conda \
+      --use-singularity \
+      --printshellcmds \
+      --singularity-args "--bind /mnt"
 
-  # Check exit code and provide error message
   if [ $? -ne 0 ]; then
       echo "Error: Snakemake run failed."
   fi
 }
+
 #+end_src
+
 ***** smk_nohup
 #+begin_src bash
 smk_nohup(){
@@ -3327,7 +3473,7 @@ EOF
       --conda-frontend conda \
       --use-singularity \
       --printshellcmds \
-      --singularity-args "--bind /mnt" 
+      --singularity-args "--bind /mnt"
 
   if [ $? -ne 0 ]; then
       echo "Error: Snakemake run failed."
@@ -3365,7 +3511,7 @@ BLOCK-NAME is the name of the block to execute."
     (with-current-buffer target-buffer
       (save-excursion
         (goto-char (point-min))
-        (if (re-search-forward (concat "^[ \t]*#\\+name:[ \t]*" 
+        (if (re-search-forward (concat "^[ \t]*#\\+name:[ \t]*"
                                       (regexp-quote block-name) "[ \t]*$") nil t)
             (progn
               (setq info (org-babel-get-src-block-info t))
@@ -3457,7 +3603,7 @@ https://chat.openai.com/c/22b1d5c5-5d9b-4ced-98cf-860f7eb493c8
 **** Writing documentation
 https://www.thegooddocsproject.dev/template
 **** PDF to text
-
+pdftotext input.pdf output.txt
 **** Free drawing
 - https://excalidraw.com/
 
@@ -3988,6 +4134,8 @@ CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
 :PROPERTIES:
 :ID:       1DA3ABC0-79B0-4CED-B926-22B37840379D
 :END:
+https://www.reddit.com/r/dataisbeautiful/comments/1ouwadc/the_disappearance_of_the_midrange_jumper_nba_shot/
+https://www.reddit.com/r/dataisbeautiful/comments/1nk73o1/oc_the_feds_eternal_struggle_jobs_vs_prices_chair/
 https://clauswilke.com/dataviz/index.html
 http://www.sthda.com/english/wiki/the-elements-of-choosing-colors-for-great-data-visualization-in-r#complementary-color-scheme
 https://rstudio-pubs-static.s3.amazonaws.com/1691_3c8dee811cf2497385cde81bd97f8e15.html
@@ -5477,7 +5625,7 @@ conda config --show envs_dirs
         executable: /bin/bash
       environment:
         PATH: "{{ miniconda_prefix }}/bin:{{ ansible_env.PATH }}"
-        
+
     - name: Update conda
       shell: "{{ miniconda_prefix }}/bin/conda update -y conda"
       args:
@@ -5504,7 +5652,7 @@ conda config --show envs_dirs
             - conda-forge
             - bioconda
             - defaults
-#+end_src        
+#+end_src
 ******** Ideas
 :properties:
 :header-args:yaml: :tangle no
@@ -5610,7 +5758,7 @@ conda config --show envs_dirs
 :PROPERTIES:
 :ID:       9ea589de-3ba6-4ddc-a5e4-6ffbddd70e15
 :END:
-******* [[id:7ab1917d-8962-4527-a4ac-5cdf7352f7a3][Install]] 
+******* [[id:7ab1917d-8962-4527-a4ac-5cdf7352f7a3][Install]]
 :PROPERTIES:
 :ID:       be60258f-2023-42c4-bc3e-86d2095c4199
 :END:
@@ -5783,7 +5931,7 @@ conda search yq
 #+end_src
 - Remove a package from an environment
   #+begin_src bash
-mamba install -c conda-forge -n breast -y yq 
+mamba install -c conda-forge -n breast -y yq
 conda activate breast
 conda remove -y yq
 #+end_src
@@ -6022,7 +6170,7 @@ https://www.freecodecamp.org/news/learn-data-visualization-in-this-free-17-hour-
           apt:
             name: docker-ce
             state: latest
-        
+
 #+end_src
 ******** Ensure systemctl service
 #+begin_src yaml
@@ -6040,7 +6188,7 @@ https://www.freecodecamp.org/news/learn-data-visualization-in-this-free-17-hour-
             groups: docker
             append: yes
 #+end_src
-******** Footer to allow sudo throughout the block 
+******** Footer to allow sudo throughout the block
 #+begin_src yaml
       become: true
 #+end_src
@@ -6174,7 +6322,7 @@ singularity
 :END:
 - https://stackoverflow.com/questions/39433480/dockerfile-versioning-best-practice
 - https://stackoverflow.com/questions/35594987/how-to-force-docker-for-a-clean-build-of-an-image
-- per-env runs  
+- per-env runs
   #+begin_src bash
 #########1#########2#########3#########4#########5#########6#########7#########8
 # Interactive docker initialization
@@ -6668,8 +6816,13 @@ https://tomd.xyz/diagrams-as-code-drawio/
 :PROPERTIES:
 :ID:       E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6
 :END:
-https://learngitbranching.js.org/
-https://micahkepe.com/blog/gitconfig/#verbose-commit-context
+****** Git and GitHub Version Control                              :cookbook:
+- GitHub CLI
+  - List your repositories
+    #+begin_src bash
+gh repo list --limit 100
+#+end_src
+
 ****** Processes                                                  :hierarchy:
 :PROPERTIES:
 :ID:       101a3601-5b02-4506-812c-2d705c51cbe2
@@ -6920,7 +7073,7 @@ gh repo archive jeszyman/basecamp-private
 :PROPERTIES:
 :ID:       f10536f7-729b-4c47-aa91-3f5e890fb5e7
 :END:
-******** Find a deleted file 
+******** Find a deleted file
 ******** git file names beginning w/ hyphen
 :PROPERTIES:
 :ID:       4e995ab8-4060-43b7-89da-87a10feb74b2
@@ -7406,6 +7559,8 @@ git_init(){
 main "$@"
 #+end_src
 ****** Reference
+- https://micahkepe.com/blog/gitconfig/#verbose-commit-context
+- https://learngitbranching.js.org/
 - https://www.reddit.com/r/git/comments/1kwo7bw/just_discovered_worktrees_what_are_some_other_git/
 ****** Templates
 :PROPERTIES:
@@ -7837,9 +7992,6 @@ TSWLatexianTemp*
 :PROPERTIES:
 :ID:       e1bbc57a-0660-4ccf-a7e7-9870b3afbff7
 :END:
-
-https://mail.google.com/mail/u/0/#inbox/FMfcgzQXKDVNGVpdWZndFfQJHPDlQnvc
-https://github.nih.gov/learn
 ****** Processes                                                       :flat:
 :PROPERTIES:
 :ID:       a21144ea-1793-466e-87da-a88f3a540c25
@@ -7852,7 +8004,6 @@ https://github.nih.gov/learn
 - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
 - https://www.google.com/search?q=github+leave+a+repo+closed+notice
 - https://www.google.com/search?q=github+new+repository
-
 ******** Create a remote
 - e.g.
   #+begin_src bash
@@ -7867,7 +8018,7 @@ gh repo create mouse-cfdna --private --source=/home/jeszyman/repos/mouse-cfdna -
 # Load the GitHub token from the YAML file
 GITHUB_TOKEN=$(grep 'github_token:' /tmp/test.yaml | awk '{print $2}')
 
-curl -k -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user/repos?per_page=100 | jq '.[].full_name' | grep jeszyman 
+curl -k -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user/repos?per_page=100 | jq '.[].full_name' | grep jeszyman
 
 #+end_src
 
@@ -7878,7 +8029,7 @@ GITHUB_TOKEN=$(grep 'github_token:' /tmp/test.yaml | awk '{print $2}')
 
 curl -u jeszyman:$GITHUB_TOKEN -s https://api.github.com/repos/jeszyman/sci | grep "private"
 
-curl -u jeszyman:$GITHUB_TOKEN -s https://api.github.com/repos/jeszyman/sci 
+curl -u jeszyman:$GITHUB_TOKEN -s https://api.github.com/repos/jeszyman/sci
 #+end_src
 
 ****** [[id:E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6][Git]]
@@ -7886,6 +8037,10 @@ curl -u jeszyman:$GITHUB_TOKEN -s https://api.github.com/repos/jeszyman/sci
 :PROPERTIES:
 :ID:       d393ce6b-fd67-44e7-8543-221fa38d7634
 :END:
+- Recovery codes
+  - [[https://mail.google.com/mail/u/0/#inbox/FMfcgzQXKDVNGVpdWZndFfQJHPDlQnvc
+][Gmail]] with link to access
+- https://github.nih.gov/learn
 - [[https://docs.github.com/en][Documentation]]
 - github for phi https://mail.google.com/mail/u/0/#inbox/FMfcgzGmtrSFVZLwRBfnJQJMVGLgzhJG
 - https://help.github.com/en/articles/about-project-boards
@@ -8176,6 +8331,7 @@ specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]
 :PROPERTIES:
 :ID:       9b81018a-f437-4a56-b4c4-7ee370943b5d
 :END:
+https://chatgpt.com/c/68e56de7-d944-8331-8ec6-a35b5e4a675a
 - https://github.com/rjekker/i3-battery-popup/blob/master/i3-battery-popup
 
 - Setting windows to precise placement
@@ -8783,29 +8939,138 @@ singularity version
 :CREATED:  [2021-09-13 Mon 07:29]
 :END:
 
-keep in-rule variable references as simple as possible
+# Fallbacks for lint-only execution
+try:
+    ENV_EMSEQ
+except NameError:
+    ENV_EMSEQ   = "envs/emseq.yml"
+    D_EMSEQ     = "emseq"
+    D_REF       = "ref"
+    D_LOGS      = "logs"
+    D_BENCHMARK = "benchmark"
 
-- good practice
-  - project level construction 
-    - repository
-      - snakefile path <REPO>/workflows/<WORKFLOW-ID>.<VERSION>.smk where version is either symantic versioning or tagged identifier such as current or working or test...
-    - workflow construction 
-      - config
-	- use nested mapping where appropriate, e.g.
-	  #+begin_src yaml
-  envs:
-    cfdna-cna: "~/repos/cfdna/config/cfdna-cna-conda-env.yaml"
+emseq_mincov = 2
+emseq_build = "hg38"
 
-  #+end_src
-      - snakefile
-	- rule structure
-	  - for modular workflows, rule name begins with workflow identifier, e.g. emseq_fastp, not just fastp
+linter https://chatgpt.com/c/68c74758-9a4c-8333-a734-079b2eb58a98
 
-- Style guide
-  
-******* Snakemake                                                  :cookbook:
-******** Snakefile preamble tools and functions
-********* Normalize configuration yaml paths
+# Only need to create dirs for non-output targets (log/benchmark). Parents of outputs are handled by Snakemake.
+
+- Good practice
+  - General principles
+    - Keep in-rule variable references as simple as possible
+  - Project-level construction
+    - Snakemake configuration files
+      - Use nested mapping where appropriate, e.g.
+	#+begin_src yaml
+envs:
+  cfdna-cna: "~/repos/cfdna/config/cfdna-cna-conda-env.yaml"
+
+#+end_src
+  - Obscure but useful data structures
+    When aggregating library-level outputs into experiment-level analyses, workflows use nested Python dictionaries (dict of dicts) to define experiment metadata. For example:
+
+    #+begin_src python
+    meth_map = {
+    "test": {
+    "build": "hg38",
+    "mincov": "5",
+    "libs": library_ids,
+    "tx": "0,1"
+    }
+    }
+    #+end_src
+
+    Each top-level key in meth_map (e.g. "test") represents a single experiment — a defined set of libraries run under shared conditions. The associated value is a dictionary containing metadata and parameters for that experiment.
+
+    These maps are accessed dynamically in Snakemake rules using the wildcards.experiment variable. For example:
+
+    meth_caller = meth_map[wildcards.experiment]["meth_caller"]
+
+    This design enables flexible reuse of libraries across multiple experimental contexts, making it easy to reprocess the same samples under different parameter settings or analytical strategies.
+  - Rules
+    - Rule paths are built using f-strings (formatted string literals in Python) wrapping expressions.
+      - These path f-strings should be declarative.
+      - Snakemake wildcards must pass through Python formatting. Escape with double braces:
+	bam = f"{D_CFDNA_CNA}/bams/input/{{lib}}.bam"
+	log = f"{D_LOGS}/fragment_filter/{{lib}}.log"
+	- Wildcards inline in rule paths avoid hidden lambda path logic.
+      - Paths are absolute, resolved once from config at top of snakefile
+      - Variable Conventions
+	- When expressions are variables referencing a path location or environment, variables employ consistent prefixes to make their meaning explicit:
+	  - D_ → Data directory constants
+	    e.g. D_LOGS, D_CFDNA_CNA, D_LOCAL_TMP
+	    Always absolute paths, typically pulled from config.yaml.
+	  - R_ → Repository constants
+	    e.g. R_CFDNA, R_EMSEQ
+	    Point to the location of local code or settings in repos.
+	  - ENV_ → Conda environment files
+	    e.g. ENV_EMSEQ, ENV_CFDNA_CNA
+	    These are YAML files that define the conda environment for each rule.
+    - Directives
+      - Directives for every rule
+	- benchmark:
+	- message:
+	  Short human-readable status on run
+      - Useful directive tricks
+	- extra = config.get("fastp", {}).get("extra", "")
+    - Shell block
+      - Include useful console output
+	echo "[fastp] $(date) lib={wildcards.library_id}" &>> "{log.cmd}"
+      - &>> "{log.cmd}"
+    - Modular workflow rules are prefixed with workflow ID (/e.g./ rule align: in workflow emseq.smk would be called rule emseq_align:
+  - Workflows
+    - Workflow versioning
+      - Managed with Git tags where tags contain semantic versioning per workflow
+	- wf/<workflow>/vX.Y.Z
+	- Examples: wf/cfdna-cna/v2.1.0, wf/emseq/v1.7.1
+      - Document workflow versions in the README changelog
+      - Minimum git workflow:
+	1. Create updated workflow
+	2. When workflow is ready for version update, document in README changelog
+	3. Commit workflow and README updates
+	   git add -A
+	4. Tag repository with workflow version
+	   git tag -a wf/<WORKFLOW>/v<VERSION> -m "<MESSAGE>"
+	5. Push tag
+	   git push origin master --follow-tags
+    - Modular workflows
+      - for modular workflows, rule name begins with workflow identifier, e.g. emseq_fastp, not just fastp
+  - Emacs Org-mode integration
+  - README.md
+    - changelog
+******* Good practice and Style
+:PROPERTIES:
+:ID:       3964a700-f2bb-4e35-9d4e-4b07603c4d95
+:END:
+https://www.reddit.com/r/bioinformatics/comments/17pk9ut/good_ways_to_control_file_structure_and_output/
+- double config - common plus override @ command
+- good practice- conda env per rule
+
+- Threads always parameterized, not hard coded in script- "If you bake “12” into the shell call, Snakemake has no idea you’re actually using 12 cores and may launch too many jobs at once."
+- Idea to make config references directly in rules https://chatgpt.com/c/68799b2d-9a1c-8005-8e71-12f07b26d421
+- use raw strings for shell commands (r""" instead of just """), avoids escape issues from like \n
+- Configuration
+  - tabular- declare per-unit identifiers and index in snakefile preamble. /E.g./ # units = pd.read_table("bin/units_test.tsv").set_index("sample", drop=False)
+    - needs import pandas
+  - YAML files
+    - subdivide labels. /E.g./
+      ref:
+        index:
+      rather than ref_index:
+      (use as ref = config["ref"]["index"])
+    - Favor parameterizing only a main data directory and then writing subpaths directly in rules. /E.g/ config["data_dir"] + "/qc" rather than config["qc_dir"].
+    - Use boolean setters in the config.
+      - /E.g./
+        - in config: call_variants: false
+        - and in rule all:         lambda wildcards: "analysis/09a_variant_annot/all.merged.filt.PASS.snpeff.vcf.gz.tbi" if config["call_variants"] else [],
+- Externalize all scripts from workflow and allow independent script execution
+- Each rule has logfile defined in workflow directed to log_dir
+- Software generated log files are redirected to log_dir
+- Repos have MWE for each snakefile
+
+******* Preamble tools and functions
+******** Normalize configuration yaml paths
 :PROPERTIES:
 :ID:       3d555402-d898-437f-bdd8-c6a5bae55f17
 :END:
@@ -8815,7 +9080,7 @@ keep in-rule variable references as simple as possible
 #+end_src
 
 #+name: smk-norm-config-paths
-#+begin_src snakemake 
+#+begin_src snakemake
 
 from pathlib import Path
 
@@ -8863,7 +9128,7 @@ resolve_config_paths(config)
 #+name: smk_comment_datadir
 #+begin_src yaml
 
-#########1#########2#########3#########4#########5#########6#########7#########8 
+#########1#########2#########3#########4#########5#########6#########7#########8
 #
 # This snakefile uses a common data directory structure:
 #
@@ -8871,7 +9136,7 @@ resolve_config_paths(config)
 #     |-- inputs
 #     |-- ref
 #     |-- logs
-#     |-- <ANALYSIS LABEL>, e.g. emseq, example subdirectories: 
+#     |-- <ANALYSIS LABEL>, e.g. emseq, example subdirectories:
 #         |-- qc
 #         |-- fastqs
 #         |-- bams
@@ -8885,10 +9150,10 @@ resolve_config_paths(config)
 #+end_src
 
 
-#+name: smk_comment_conda 
+#+name: smk_comment_conda
 #+begin_src yaml :noweb yes
 
-#########1#########2#########3#########4#########5#########6#########7#########8 
+#########1#########2#########3#########4#########5#########6#########7#########8
 # This snakefile uses conda to manage software install and versions. To work as
 # intended, a --use-conda flag must used at run time. The conda environment
 # file is referenced relative to its specific snakefile and not any wrapper
@@ -8911,7 +9176,7 @@ resolve_config_paths(config)
 # rule example:
 #     conda:
 #         "../config/sub.yaml"
-#     input:...    
+#     input:...
 #
 #+end_src
 ******** Concurrency
@@ -8940,7 +9205,7 @@ resolve_config_paths(config)
 # (3 if concurrency=300). Lighter-weight rules (e.g., fastp) may specify lower
 # concurrency values allowing many to run in parallel on large or small
 # machines (e.g. at concurrency=10, 100/10 = 10 separate jobs could run when
-# overall run concurrency is set at 100. 
+# overall run concurrency is set at 100.
 
 # Other jobs are better managed by a set CPU number, e.g. samtools sorting is
 # I/O constrained so each job is limited to a set 8 cores. Threads are
@@ -9371,52 +9636,7 @@ https://stackoverflow.com/questions/50413374/glob-wildcards-on-multiple-director
     - https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
   - can do multiple config files- see https://stackoverflow.com/questions/62696099/snakemake-multiple-config-files
 
-******* Demo :demo
-:PROPERTIES:
-:ID:       06145f3c-c177-472d-9bac-11ff715c8024
-:END:
-
-******** Development
-:PROPERTIES:
-:ID:       b16b1ad1-19a4-44e9-814a-a6e9416f5320
-:END:
-- if not config["heavy_compute"]:
-    - ATAC_LIBS = ['lib121']
-
 ******* [[id:271b4d5f-727e-496e-b835-8fe9f8655655][Bioinformatics project module]]
-:PROPERTIES:
-:ID:       aaeb1e92-7ee5-40bf-babd-c2a19c20492d
-:END:
-******* Good practice and Style
-:PROPERTIES:
-:ID:       3964a700-f2bb-4e35-9d4e-4b07603c4d95
-:END:
-https://www.reddit.com/r/bioinformatics/comments/17pk9ut/good_ways_to_control_file_structure_and_output/
-- double config - common plus override @ command 
-- good practice- conda env per rule
-
-- Threads always parameterized, not hard coded in script- "If you bake “12” into the shell call, Snakemake has no idea you’re actually using 12 cores and may launch too many jobs at once."
-- Idea to make config references directly in rules https://chatgpt.com/c/68799b2d-9a1c-8005-8e71-12f07b26d421
-- use raw strings for shell commands (r""" instead of just """), avoids escape issues from like \n
-- Configuration
-  - tabular- declare per-unit identifiers and index in snakefile preamble. /E.g./ # units = pd.read_table("bin/units_test.tsv").set_index("sample", drop=False)
-    - needs import pandas
-  - YAML files
-    - subdivide labels. /E.g./
-      ref:
-        index:
-      rather than ref_index:
-      (use as ref = config["ref"]["index"])
-    - Favor parameterizing only a main data directory and then writing subpaths directly in rules. /E.g/ config["data_dir"] + "/qc" rather than config["qc_dir"].
-    - Use boolean setters in the config.
-      - /E.g./
-        - in config: call_variants: false
-        - and in rule all:         lambda wildcards: "analysis/09a_variant_annot/all.merged.filt.PASS.snpeff.vcf.gz.tbi" if config["call_variants"] else [],
-- Externalize all scripts from workflow and allow independent script execution
-- Each rule has logfile defined in workflow directed to log_dir
-- Software generated log files are redirected to log_dir
-- Repos have MWE for each snakefile
-
 ******* Local YAS (prefix smk.)
 :PROPERTIES:
 :ID:       44d21b98-0a61-43db-937f-65ff5a5d27d3
@@ -9758,6 +9978,52 @@ $0
 :END:
 - https://snakemake-wrappers.readthedocs.io/en/stable/wrappers.html
 - [[Snakemake Tutorial][Snakemake Tutorial]]
+******* General reference
+:PROPERTIES:
+:ID:       7bebcaa9-bf1f-48fe-af02-e58c80def8da
+:END:
+- https://snakepipes.readthedocs.io/en/latest/content/workflows/mRNA-seq.html#mrna-seq
+
+- https://github.com/aomlomics/tourmaline
+- https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
+- https://swcarpentry.github.io/r-novice-inflammation/05-cmdline/index.html
+- https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
+- #+PROPERTY: header-args:bash :tangle-mode (identity #o777)
+- ideas
+  `(make-string (+ 2 (org-current-level)) ?*)` Run commands
+  ,#+begin_src bash
+  conda activate snakemake
+
+  snakemake \
+    --cores $threads \
+    --printshellcmds \
+    --snakefile workflow/$1
+  ,#+end_src
+- Standards and best practice
+  - https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html#snakefiles-best-practices
+- https://endrebak.gitbooks.io/the-snakemake-book/content/
+- https://academic.oup.com/bioinformatics/article/28/19/2520/290322
+- https://www.biostars.org/p/9469533/
+- https://stackoverflow.com/questions/64949149/is-it-possible-to-add-a-conditional-statement-in-snakemakes-rule-all
+- https://stackoverflow.com/questions/54400171/how-to-use-list-in-snakemake-tabular-configuration-for-describing-of-sequencing
+- https://github.com/ngs-docs/2020-ggg-201b-rnaseq/blob/latest/rnaseq-workflow.Rmd
+- https://angus.readthedocs.io/en/2019/snakemake_for_automation.html
+- https://pages.charlesreid1.com/how-do-i-snakemake/converting/
+- http://ivory.idyll.org/blog/2020-snakemake-hacks-collections-files.html
+- http://origin.research.jetbrains.org/files/material/5ec245b4e907c.pdf
+- https://f1000research.com/articles/10-33/v2
+- [ ] https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
+- https://github.com/snakemake-workflows/rna-seq-star-deseq2/blob/master/workflow/rules/diffexp.smk
+- https://github.com/csoneson/ARMOR
+- https://github.com/slowkow/snakefiles/blob/master/kallisto/Snakefile
+- https://lachlandeer.github.io/snakemake-econ-r-tutorial/initial-steps-with-snakemake.html
+- for repos, git ignore the singularity build
+- https://github.com/EnvGen/snakemake-workflows
+******** Tutorials and guides
+:PROPERTIES:
+:ID:       a9d1e5dd-f707-4ab8-ae32-934f9d647fd7
+:END:
+- https://reproducibility.sschmeier.com/index.html
 ******* Ideas
 :PROPERTIES:
 :ID:       1854dffb-e8db-4c8d-8138-99a92aff98bd
@@ -9765,6 +10031,195 @@ $0
 
 - for each step, log the per-inputs time to run
 set emacs buffers of smk windows to a smaller text size default
+******** pull versions from yaml and auto-insert in org file
+
+#+BEGIN_SRC elisp :results silent :exports none
+(defun get-conda-version (package-name)
+  "Get version from conda environment YAML file"
+  (let ((yaml-file "~/repos/emseq/config/emseq-conda-env.yaml")) ; adjust path as needed
+    (with-temp-buffer
+      (insert-file-contents yaml-file)
+      (goto-char (point-min))
+      ;; Look for package with version specification
+      (if (re-search-forward (format "^\\s-*-\\s-*%s=\\([^=\n]+\\)" (regexp-quote package-name)) nil t)
+          (format "(v%s)" (match-string 1))
+        ;; If no version specified, try to indicate it's latest/unspecified
+        (if (re-search-forward (format "^\\s-*-\\s-*%s\\s-*$" (regexp-quote package-name)) nil t)
+            "(latest)"
+          "(not found)")))))
+
+;; Shorter alias for inline use
+(defalias 'cv 'get-conda-version)
+#+end_src
+
+- Preprocessing and quality control.
+  Raw sequencing reads were processed with fastp call_cv("fastp") using default parameters, with adapter detection enabled and quality filtering disabled to preserve methylation signal, as recommended for EM-seq libraries. FastQC call_cv("fastqc") was used to assess read quality before and after trimming.
+
+  src_elisp[:results value :exports results]{(cv "fastp")} {{{results((latest))}}}
+
+#+NAME: setup-versions
+#+BEGIN_SRC elisp :results silent :exports none
+(defun get-conda-version (package-name)
+  "Get version from conda environment YAML file"
+  (let ((yaml-file "~/repos/emseq/config/emseq-conda-env.yaml"))
+    (with-temp-buffer
+      (insert-file-contents yaml-file)
+      (goto-char (point-min))
+      (if (re-search-forward (format "^\\s-*-\\s-*%s=\\([^=\n]+\\)" (regexp-quote package-name)) nil t)
+          (format "%s (v%s)" package-name (match-string 1))
+        (if (re-search-forward (format "^\\s-*-\\s-*%s\\s-*$" (regexp-quote package-name)) nil t)
+            (format "%s (latest)" package-name)
+          (format "%s (not found)" package-name))))))
+
+(defalias 'cv 'get-conda-version)
+#+END_SRC
+
+#+begin_src emacs-lisp
+;;; --- Config
+(defvar my/conda-env-yaml (expand-file-name "config/emseq-conda-env.yml" default-directory))
+(defvar my/conda-cache nil)
+
+;; Optional: pretty labels for some package names
+(defvar my/conda-name-map
+  '((fastqc . "FastQC") (fastp . "fastp") (samtools . "samtools")
+    (bismark . "Bismark") (bwa . "BWA") (bwameth . "bwa-meth")
+    (methyldackel . "MethylDackel") (mosdepth . "mosdepth"))
+  "Map from package symbol to display label.")
+
+(defun my/conda--display-name (sym)
+  (or (cdr (assoc sym my/conda-name-map))
+      ;; Strip common prefixes like r-
+      (let* ((s (symbol-name sym))
+             (s (if (string-prefix-p "r-" s) (substring s 2) s)))
+        (capitalize s))))
+
+;;; --- Parse environment.yml
+(defun my/conda--parse-env-yaml ()
+  "Return (ENVNAME . ALIST) where ALIST is ((pkg . version|nil) ...)."
+  (unless (file-readable-p my/conda-env-yaml)
+    (error "Cannot read %s" my/conda-env-yaml))
+  (unless (fboundp 'yaml-parse-string)
+    (error "Install yaml.el (GNU ELPA) or adapt to yq/json"))
+  (with-temp-buffer
+    (insert-file-contents my/conda-env-yaml)
+    (let* ((tree (yaml-parse-string (buffer-string) :object-type 'plist))
+           (env  (plist-get tree :name))
+           (deps (plist-get tree :dependencies))
+           alist)
+      ;; dependencies entries can be strings or dicts (e.g., :pip (...)).
+      (dolist (d deps)
+        (cond
+         ;; string like "fastqc" or "biscuit=1.6.0.20241216=*_1"
+         ((stringp d)
+          (let* ((parts (split-string d "="))
+                 (pkg   (intern (downcase (car parts))))
+                 (ver   (when (> (length parts) 1) (nth 1 parts))))
+            (push (cons pkg ver) alist)))
+         ;; ignore nested maps (e.g., pip:) here
+         (t nil)))
+      (cons env (nreverse alist)))))
+
+;;; --- Fallback to installed env when version not pinned
+(defun my/conda--installed-versions (envname)
+  "Return ALIST ((pkg . version) ...) from `conda list -n ENV --json`."
+  (let ((json-output
+         (with-temp-buffer
+           (if (zerop (call-process "conda" nil t nil "list" "-n" envname "--json"))
+               (buffer-string)
+             ;; Try mamba as fallback
+             (with-temp-buffer
+               (unless (zerop (call-process "mamba" nil t nil "list" "-n" envname "--json"))
+                 (cl-return-from my/conda--installed-versions nil))
+               (buffer-string))))))
+    (when (and json-output (not (string-empty-p json-output)))
+      (let* ((arr (json-parse-string json-output :object-type 'alist))
+             (alist nil))
+        (dolist (obj arr)
+          (let* ((name (cdr (assoc 'name obj)))
+                 (ver  (cdr (assoc 'version obj))))
+            (when name
+              (push (cons (intern (downcase name)) ver) alist))))
+        alist))))
+
+(defun my/conda-refresh ()
+  "Reload versions from YAML, with fallback to installed env for unpinned deps."
+  (interactive)
+  (pcase-let* ((`(,env . ,alist) (my/conda--parse-env-yaml))
+               (installed (my/conda--installed-versions env))
+               (merged
+                (mapcar
+                 (lambda (kv)
+                   (let* ((pkg (car kv))
+                          (ver (cdr kv)))
+                     (cons pkg (or ver (cdr (assoc pkg installed))))))
+                 alist)))
+    (setq my/conda-cache (list :env env :versions merged))
+    (font-lock-flush)
+    (message "Loaded %s (%d packages)" env (length merged))))
+
+(defun my/conda-version (pkg-sym)
+  "Get version string for PKG-SYM or \"UNSPECIFIED\"."
+  (unless my/conda-cache (my/conda-refresh))
+  (or (cdr (assoc pkg-sym (plist-get my/conda-cache :versions)))
+      "UNSPECIFIED"))
+
+;;; --- Org link: [[conda:fastqc][FastQC]] → “FastQC (v0.11.9)”
+(defun my/conda-link-export (path desc _backend _com)
+  (let* ((sym (intern (downcase path)))
+         (ver (my/conda-version sym))
+         (label (or desc (my/conda--display-name sym))))
+    (format "%s (v%s)" label ver)))
+
+(defun my/conda-link-activate (start end path _br _buf)
+  (let* ((sym (intern (downcase path)))
+         (ver (my/conda-version sym))
+         (desc (or (get-text-property start 'org-link-description)
+                   (my/conda--display-name sym)))
+         (display (format "%s (v%s)" desc ver)))
+    (put-text-property start end 'display display)))
+
+(org-link-set-parameters
+ "conda"
+ :export #'my/conda-link-export
+ :activate-func #'my/conda-link-activate
+ :face 'org-code)
+
+;; Always refresh before export so versions are up to date
+(add-hook 'org-export-before-processing-functions
+          (lambda (_backend) (my/conda-refresh)))
+
+;;; Convenience: M-x my/conda-show to inspect current map
+(defun my/conda-show ()
+  (interactive)
+  (unless my/conda-cache (my/conda-refresh))
+  (let* ((env (plist-get my/conda-cache :env))
+         (v   (plist-get my/conda-cache :versions)))
+    (with-help-window "*Conda Versions*"
+      (princ (format "Environment: %s\n\n" env))
+      (dolist (kv v) (princ (format "%-24s %s\n" (car kv) (cdr kv)))))))
+
+#+end_src
+
+#+begin_src emacs-lisp
+;; point to your real env file
+(setq my/conda-env-yaml
+      (expand-file-name "config/emseq-conda-env.yaml" default-directory))
+
+;; reload + re-fontify
+(my/conda-refresh)
+
+#+end_src
+
+- Preprocessing and quality control.
+  Raw reads were processed with [[conda:fastp][fastp]] using default parameters…
+  [[conda:fastqc][FastQC]] was used to assess read quality…
+
+- Sample preparation and sequencing.
+  Cell-free DNA was extracted and prepared using the NEBNext® Enzymatic Methyl-seq (EM-seq) Kit following the manufacturer's protocol. Libraries were sequenced on an Illumina platform using paired-end 150 bp reads.
+
+- Preprocessing and quality control.
+  Raw sequencing reads were processed with src_elisp[:results replace :exports results]{(cv "fastp")} {{{results(fastp (latest))}}} using default parameters, with adapter detection enabled and quality filtering disabled to preserve methylation signal, as recommended for EM-seq libraries. src_elisp[:results replace :exports results]{(cv "fastqc")} {{{results(fastqc (latest))}}} was used to assess read quality before and after trimming.
+https://claude.ai/chat/fb7d7520-d73e-481e-b803-0e332df8186c
 ******** logger info
 # logger.info("Mouse heart RNA-seq library count: " + str(len(raw_ms_hrt_rna_df['library'].tolist())))
 # logger.info(f"\nRAW mouse heart RNA-seq libraries: {RAW_MS_HRT_RNA_LIBS}")
@@ -9839,52 +10294,6 @@ set emacs buffers of smk windows to a smaller text size default
 # logger.info(f"\nRAW PE RNA-seq libraries: {RAW_PE_RNA_LIBS}")
 # logger.info(f"\nRAW PE RNA-seq libraries: {raw_pe_rna_paths}")
 
-******* General reference
-:PROPERTIES:
-:ID:       7bebcaa9-bf1f-48fe-af02-e58c80def8da
-:END:
-- https://snakepipes.readthedocs.io/en/latest/content/workflows/mRNA-seq.html#mrna-seq
-
-- https://github.com/aomlomics/tourmaline
-- https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
-- https://swcarpentry.github.io/r-novice-inflammation/05-cmdline/index.html
-- https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
-- #+PROPERTY: header-args:bash :tangle-mode (identity #o777)
-- ideas
-  `(make-string (+ 2 (org-current-level)) ?*)` Run commands
-  ,#+begin_src bash
-  conda activate snakemake
-
-  snakemake \
-    --cores $threads \
-    --printshellcmds \
-    --snakefile workflow/$1
-  ,#+end_src
-- Standards and best practice
-  - https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html#snakefiles-best-practices
-- https://endrebak.gitbooks.io/the-snakemake-book/content/
-- https://academic.oup.com/bioinformatics/article/28/19/2520/290322
-- https://www.biostars.org/p/9469533/
-- https://stackoverflow.com/questions/64949149/is-it-possible-to-add-a-conditional-statement-in-snakemakes-rule-all
-- https://stackoverflow.com/questions/54400171/how-to-use-list-in-snakemake-tabular-configuration-for-describing-of-sequencing
-- https://github.com/ngs-docs/2020-ggg-201b-rnaseq/blob/latest/rnaseq-workflow.Rmd
-- https://angus.readthedocs.io/en/2019/snakemake_for_automation.html
-- https://pages.charlesreid1.com/how-do-i-snakemake/converting/
-- http://ivory.idyll.org/blog/2020-snakemake-hacks-collections-files.html
-- http://origin.research.jetbrains.org/files/material/5ec245b4e907c.pdf
-- https://f1000research.com/articles/10-33/v2
-- [ ] https://lachlandeer.github.io/snakemake-econ-r-tutorial/config-files.html
-- https://github.com/snakemake-workflows/rna-seq-star-deseq2/blob/master/workflow/rules/diffexp.smk
-- https://github.com/csoneson/ARMOR
-- https://github.com/slowkow/snakefiles/blob/master/kallisto/Snakefile
-- https://lachlandeer.github.io/snakemake-econ-r-tutorial/initial-steps-with-snakemake.html
-- for repos, git ignore the singularity build
-- https://github.com/EnvGen/snakemake-workflows
-******** Tutorials and guides
-:PROPERTIES:
-:ID:       a9d1e5dd-f707-4ab8-ae32-934f9d647fd7
-:END:
-- https://reproducibility.sschmeier.com/index.html
 
 ***** SSH file transfer protocol (SFTP)
 :PROPERTIES:
@@ -9905,6 +10314,8 @@ https://carpentries-incubator.github.io/workflows-snakemake/
 :ID:       813113ec-e094-4557-9bad-5bacc8d9df84
 :END:
 - ip is http://127.0.0.1:8384
+****** Processes
+- Ignore lists https://chatgpt.com/c/68b9e47d-4278-832e-91ac-09289456ffb9
 ***** Timeshift
 :PROPERTIES:
 :ID:       4bf6dcdd-bf0b-4269-9e07-2bebbd0af694
@@ -10543,8 +10954,6 @@ https://download.oldlinux.org/ECLK-5.0-WithCover.pdf
 https://www.reddit.com/r/linux4noobs/comments/1mjwxk8/whats_a_piece_of_opensource_software_that/
 default applications defined in - [[file:~/.config/mimeapps.list]]
 https://www.reddit.com/r/commandline/comments/1epjppl/10_cli_tools_that_made_the_biggest_impact_on/
-******** Linux cookbook
-********* APT
 ******** Processes- see [[id:b33a7727-70b2-4743-a8cf-025a0803c3cc][Ubuntu Processes]]
 :PROPERTIES:
 :ID:       523b0a71-a7b3-48af-be83-35f64616f844
@@ -12551,6 +12960,9 @@ print(most_common_word_pairs(text))
 :PROPERTIES:
 :ID:       bb7d034f-fa52-4032-bcb4-1aab08b3121d
 :END:
+https://statcheck.io/
+https://www.itl.nist.gov/div898/handbook/
+https://www.ps4ds.net/
 https://allendowney.blogspot.com/2016/06/there-is-still-only-one-test.html?m=1
 https://www.reddit.com/r/statistics/comments/12slcf6/d_ive_just_ordered_drunkards_walk_can_you/
 - https://stackoverflow.blog/2021/02/23/level-up-mastering-statistics-with-python-part-2/?cb=1&_ga=2.59352485.940265309.1614263567-766544545.1565628865
@@ -13082,6 +13494,13 @@ rx_dict = {
 :PROPERTIES:
 :ID:       BF9D824A-02EF-4580-97A1-B887299AD461
 :END:
+- [cite:@monnier2020]
+- elisp
+  - https://www.gnu.org/software/emacs/manual/html_mono/elisp.html
+  - https://www.gnu.org/software/emacs/manual/html_node/eintr/index.html
+  - https://exercism.org/tracks/emacs-lisp
+  - https://old.reddit.com/r/emacs/comments/qcr432/elispemacs_tutorialbook_with_real_world_projects/
+
 https://www.reddit.com/r/emacs/comments/1hop56b/elisp_best_practices/
 ****** Processes
 :PROPERTIES:
@@ -13347,764 +13766,76 @@ done
 :ID:       89576FD2-F863-4220-BAD7-D4E179AEA644
 :END:
 ****** [[id:f2557e40-0d81-438a-93e9-6917a40c1d8e][Emacs as a bash IDE]]
-****** General reference
-:PROPERTIES:
-:ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
-:END:
-- https://www.reddit.com/r/bioinformatics/comments/1mexvem/command_history_to_notebook_entries/
-- https://www.reddit.com/r/bash/comments/yp8afm/some_scripts_that_might_be_useful/
-- https://www.reddit.com/r/commandline/comments/zigu22/in_dept_guide_how_to_create_a_shell_script_to/
-- https://www.reddit.com/r/bash/comments/12bptfj/are_there_any_quality_of_life_improvements_that/
-- https://getaido.app/
-- https://github.com/awesome-lists/awesome-bash
-- https://github.com/TheR1D/shell_gpt
-- https://www.programming-helper.com/linux
-- https://www.reddit.com/r/bash/comments/z09oiu/bashlib_a_helpful_source_file_for_any_script/
-- https://github.com/jlevy/the-art-of-command-line
-- https://www.reddit.com/r/bash/comments/yp8afm/some_scripts_that_might_be_useful/
-- https://www.reddit.com/r/bash/comments/xt40e2/bgit_the_beginners_git_script/
-- [[id:c7d8dd07-098e-4bc4-b008-5da0abcabb0d][The Missing Semester of Your CS Education]]
-- https://www.reddit.com/r/emacs/comments/x2mmfc/from_vanilla_emacs_to_bash_ide_in_17_minutes/
-- 
-- https://explainshell.com/explain?cmd=set+-euxo+pipefail
-- http://redsymbol.net/articles/unofficial-bash-strict-mode/
-- [[id:BDC42DA2-A632-4FB7-A586-E100B2A045DC][LINK TO UNIX-based operating systems]]
-- [[id:76c4836c-fe3f-4948-86dd-25d8df38d1af][LINK TO GNU tools]]
-- https://pastebin.com/9itu8v0w
-- https://www.linuxtopia.org/online_books/advanced_bash_scripting_guide/
-- [[https://google.github.io/styleguide/shellguide.html][Google shell style guide]]
-- [[https://www.gnu.org/software/bash/manual/bash.html][documentation]]
-- [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Advanced Bash-Scripting Guide]]
-- [[http://mywiki.wooledge.org/FullBashGuide][wooledge bash guide]]
-- [[https://bash.cyberciti.biz/guide/Main_Page][nixCraft linux tutorial]]
-- http://bash3boilerplate.sh/
-- a -c flag essentially adds an extra shell around multi-part command, see https://superuser.com/questions/1214597/calling-a-script-with-bash-c-option
-- [[id:07b8634c-70a6-4a99-90b5-0f5083ccaf04][Emacs shell IDE]]
-- Guides, tutorials, cheatsheets, books
-  - http://ryanstutorials.net/bash-scripting-tutorial/
-  - http://linuxcommand.org/lc3_writing_shell_scripts.php
-  - https://www.youtube.com/watch?v=3ME7gayYeUQ
-  - https://www.youtube.com/results?search_query=shell+scripts+bioinformatics&page=&utm_source=opensearch
-  - https://google.github.io/styleguide/shell.xml
-  - http://mywiki.wooledge.org/BashGuide
-  - http://www.davidpashley.com/articles/writing-robust-shell-scripts/
-  - https://emb.carnegiescience.edu/sites/default/files/140602-sedawkbash.key_.pdf
-  - https://github.com/dylanaraps/pure-bash-bible
-  - https://devhints.io/bash
-  - https://www.ibm.com/developerworks/aix/library/au-satbash.html
-  - [[http://tldp.org/LDP/LG/issue18/bash.html][string manipulations]]
-  - cite:veeraraghavan2002
-  - http://tldp.org/LDP/abs/html/
-  - https://github.com/onceupon/Bash-Oneliner
-  - https://devhints.io/bash?source=post_page---------------------------
-  - [[https://www.ostechnix.com/test-your-bash-skills-by-playing-command-line-games/][bash games]]
-  - [[https://www.reddit.com/r/commandline/comments/kbeoe/you_can_make_readline_and_bash_much_more_user/?st=j6k0lbfa&sh=6d214d1f][reddit: You can make readline (and bash) much more user friendly by adding a few options to ~/.inputrc]]
-  - best practices
-    - include error calling, but avoid -e http://mywiki.wooledge.org/BashFAQ/105
-    - https://www.google.com/search?q=shell+script+formatting+best+practices
-    - include usage example
-    - a -c flag essentially adds an extra shell around multi-part command, see https://superuser.com/questions/1214597/calling-a-script-with-bash-c-option
-    - ideas
-    - [[file:~/.basecamp/emacs/public_yasnippets/sh-mode/write.bash]]
-    - https://stackoverflow.com/questions/33297857/how-to-check-dependency-in-bash-script
-  - https://unix.stackexchange.com/questions/42728/what-does-31-12-23-do-in-a-script
-  - http://tldp.org/LDP/abs/html/index.html
-  - https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
-  - https://github.com/dylanaraps/pure-bash-bible
-  - https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md
-- https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
-- https://github.com/hopeseekr/BashScripts
-- https://www.reddit.com/r/programming/comments/aw0zko/bash_creating_tabcompletion_for_your_programs/
-- reference
-  - https://github.com/shellspec/shellspec
-- examples
-  - https://github.com/hopeseekr/BashScripts
-- [[https://www.gnu.org/software/bash/manual/bash.html][documentation]] and general reference
-  - guides, tutorials, cheatsheets, books
-    - [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Linux documentation project: Advanced Bash-Scripting Guide]]
-    - http://bash3boilerplate.sh/
-    - [[https://bash.cyberciti.biz/guide/Main_Page][Linux Shell Scripting Tutorial]]
-    - http://ryanstutorials.net/bash-scripting-tutorial/
-    - http://linuxcommand.org/lc3_writing_shell_scripts.php
-    - https://www.youtube.com/watch?v=3ME7gayYeUQ
-    - https://www.youtube.com/results?search_query=shell+scripts+bioinformatics&page=&utm_source=opensearch
-    - https://google.github.io/styleguide/shell.xml
-    - http://mywiki.wooledge.org/BashGuide
-    - http://www.davidpashley.com/articles/writing-robust-shell-scripts/
-    - https://emb.carnegiescience.edu/sites/default/files/140602-sedawkbash.key_.pdf
-    - https://github.com/dylanaraps/pure-bash-bible
-    - https://devhints.io/bash
-    - https://www.ibm.com/developerworks/aix/library/au-satbash.html
-    - [[http://tldp.org/LDP/LG/issue18/bash.html][string manipulations]]
-    - cite:veeraraghavan2002
-    - http://tldp.org/LDP/abs/html/
-    - https://github.com/onceupon/Bash-Oneliner
-    - https://devhints.io/bash?source=post_page---------------------------
-    - [[https://www.ostechnix.com/test-your-bash-skills-by-playing-command-line-games/][bash games]]
-    - [[https://www.reddit.com/r/commandline/comments/kbeoe/you_can_make_readline_and_bash_much_more_user/?st=j6k0lbfa&sh=6d214d1f][reddit: You can make readline (and bash) much more user friendly by adding a few options to ~/.inputrc]]
-    - https://unix.stackexchange.com/questions/42728/what-does-31-12-23-do-in-a-script
-    - http://tldp.org/LDP/abs/html/index.html
-    - https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
-    - https://github.com/dylanaraps/pure-bash-bible
-    - https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md
-  - [[http://mywiki.wooledge.org/FullBashGuide][Full bash guide]]
-- https://mywiki.wooledge.org/BashPitfalls
-- [[https://tldp.org/LDP/abs/html/][Advanced bash scripting guide]]
-- cite:greenberg2021
-- Style and best practices
-  - https://google.github.io/styleguide/shellguide.html
-  - https://stackoverflow.com/questions/64786/error-handling-in-bash/13099228#13099228
-  - function and variable names
-    - https://www.google.com/search?q=bash+best+practice+function+name
-      - https://google.github.io/styleguide/shellguide.html#s7.1-function-names
-****** Ideas
-:PROPERTIES:
-:ID:       0ab13eb3-64dc-4696-888a-0caf1e7997dc
-:END:
-- https://www.reddit.com/r/emacs/comments/x2mmfc/from_vanilla_emacs_to_bash_ide_in_17_minutes/
-- check and set file permissions as best practice
-- ideas for function development protocol-
-  - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
-- size filter
-  - #find $localdata/frag-filt-bams -name "*.bam" -type 'f' -size -4M -delete
-     # small bam check
-     ##
-     #if [ -f /drive3/users/jszymanski/repos/mpnst/data/small_bams ]; then rm /drive3/users/jszymanski/repos/mpnst/data/small_bams; fi
-     ##
-     #minimum_bam_size=200000000
-- ideas
-  - check and set file permissions as best practice
-  - ideas for function development protocol-
-    - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
-****** Local scripts
-:PROPERTIES:
-:ID:       50fa6877-2a58-43b7-a412-565822746257
-:END:
-#+begin_src bash
-#!/bin/bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-
-####################################
-###   Choose and Run Snakefile   ###
-####################################
-
-# Setup
-#set -euxov pipefail
-
-source config/${HOSTNAME}.sh
-echo "The following `*.smk` archives were found; select one:"
-
-# set the prompt used by select, replacing "#?"
-PS3="Use number to select an option"
-
-select filename in ./workflow/*.smk
-
-do
-    if [[ "$filename" == "" ]]
-    then
-        echo "'$REPLY' is not a valid number"
-        continue
-    fi
-    echo $filename
-    select run_option in dry_run normal force_final force_all
-    do
-        echo selected $run_option
-        case $run_option in
-            dry_run)
-                source activate snakemake
-                snakemake \
-                    --configfile config/${HOSTNAME}.yaml \
-                    --cores $threads \
-                    --directory ${repo} \
-                    --dry-run \
-                    --rerun-incomplete \
-                    --singularity-args "--bind $mntpt:$mntpt" \
-                    --use-singularity \
-                    --snakefile $filename
-                ;;
-            normal)
-                source activate snakemake
-                select nohup_option in no yes
-                do
-                    case $nohup_option in
-                        no)
-                            snakemake \
-                                --configfile config/${HOSTNAME}.yaml \
-                                --cores $threads \
-                                --directory ${repo} \
-                                --singularity-args "--bind $mntpt:$mntpt" \
-                                --use-singularity \
-                                --snakefile $filename
-                            ;;
-                        yes)
-                            nohup snakemake \
-                                  --configfile config/${HOSTNAME}.yaml \
-                                  --cores $threads \
-                                  --directory ${repo} \
-                                  --singularity-args "--bind $mntpt:$mntpt" \
-                                  --use-singularity \
-                                  --snakefile $filename
-                            ;;
-                    esac
-                done
-                ;;
-            force_final)
-                source activate snakemake
-                select nohup_option in no yes
-                do
-                    case $nohup_option in
-                        no)
-                            snakemake \
-                                --configfile config/${HOSTNAME}.yaml \
-                                --cores $threads \
-                                --directory ${repo} \
-                                --force \
-                                --singularity-args "--bind $mntpt:$mntpt" \
-                                --use-singularity \
-                                --snakefile $filename
-                            ;;
-                        yes)
-                            nohup snakemake \
-                                  --configfile config/${HOSTNAME}.yaml \
-                                  --cores $threads \
-                                  --directory ${repo} \
-                                  --force \
-                                  --singularity-args "--bind $mntpt:$mntpt" \
-                                  --use-singularity \
-                                  --snakefile $filename
-                            ;;
-                    esac
-                done
-                ;;
-            force_all)
-                source activate snakemake
-                select nohup_option in no yes
-                do
-                    case $nohup_option in
-                        no)
-
-                snakemake \
-                    --configfile config/${HOSTNAME}.yaml \
-                    --cores $threads \
-                    --directory ${repo} \
-                    -F \
-                    --singularity-args "--bind $mntpt:$mntpt" \
-                    --use-singularity \
-                    --snakefile $filename
-                                            ;;
-                        yes)
-                nohup snakemake \
-                    --configfile config/${HOSTNAME}.yaml \
-                    --cores $threads \
-                    --directory ${repo} \
-                    -F \
-                    --singularity-args "--bind $mntpt:$mntpt" \
-                    --use-singularity \
-                    --snakefile $filename
-                            ;;
-                    esac
-                done
-                ;;
-        esac
-        break
-    done
-    break
-done
-#+end_src
-- Command line script
-  #+name: bash_cmdline_script_preamble
-  #+begin_src bash :noweb yes
-#!/usr/bin/env bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-# Notes:
-#  This script is tangled from source code in the mpnst-frag.org file
-#  Therefore any changes to this compiled file in place will likely be reverted
-#  by a subsequent tangle operation.
-#
-#  This script assumes you are running from the repository main directory in
-#  order to source the appriopriate configuation file.
-
-# Load bash configuation
-if [ -f ./config/${HOSTNAME}.sh ]; then
-    source ./config/${HOSTNAME}.sh
-else
-    echo "No bash config found. Are you running from repo main dir?"
-fi
-#+end_src
-****** Local YAS                                                       :flat:
-:PROPERTIES:
-:ID:       42e37db5-29e7-418f-a74d-e91ffc81167f
-:END:
-- Uses sh-mode
-******* array.from.find
-:PROPERTIES:
-:ID:       68960305-58e3-43a8-8d63-ec7ea71720c4
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/array.from.find
-# -*- mode: snippet -*-
-# name: array.from.find
-# key: array.from.find
-# --
-${1:ARRAY NAME}=()
-while IFS=  read -r -d $'\0'; do
-    $1+=("$REPLY")
-done < <(find ${2:FIND DIR} -name ${3:FIND TERM} -print0)
-printf '%s\n' "\${$1[@]}"
-$0
-#+end_src
-******* code.bash
-:PROPERTIES:
-:ID:       78960912-ee7a-4e71-b8d5-c5ec9649ecac
-:END:
-#+name: code.bash
-#+begin_src bash :comment no
-# -*- mode: snippet -*-
-# key: code.bash
-# expand-env: ((yas-indent-line 'none))
-# --
-#+begin_src bash :comment no
-$0
-,#+end_src
-#+end_src
-
-
-
-******* code.sh
-:PROPERTIES:
-:ID:       5c2e54cf-797e-4ccb-b12e-2167d06ce7a4
-:END:
-#+name: code.sh
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/org-mode/code.sh
-# -*- mode: snippet -*-
-# key: code.sh
-# expand-env: ((yas-indent-line 'none))
-# condition: 'auto
-# --
-,#+begin_src bash
-$0
-,#+end_src
-#+end_src
-[[file:emacs/public_yasnippets/org-mode/code.sh]]
-******* comment.block
-******* comment.block                                                   :yas:
-#+name: sh-mode_comment.block
-#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/comment.block
-# -*- mode: snippet -*-
-# key: comment.block
-# expand-env: ((yas-indent-line 'none))
-# --
-`(let* ((input (read-string "Comment block text: "))
-        ;; wrap to 80 chars using fill-region
-        (fill-column 80)
-        (temp-buf (generate-new-buffer "*yas-fill*")))
-   ;; Fill text and split into lines
-   (prog1
-       (mapconcat (lambda (line) (concat "# " line)) 
-                  (with-temp-buffer
-                    (insert input)
-                    (fill-region (point-min) (point-max))
-                    (split-string (buffer-string) "\n"))
-                  "\n")
-     (kill-buffer temp-buf)))`
-#+end_src
-#+begin_src bash
-thes is
-a multi comment
-vlock 
-# ${1:your text here}
-# thet is 
-
-
-# orem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-
-# # orem Ipsum is simply dummy text of the printing and typesetting industry.
-#   Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-#   when an unknown printer took a galley of type and scrambled it to make a type
-#   specimen book. It has survived not only five centuries, but also the leap into
-#   electronic typesetting, remaining essentially unchanged. It was popularised in
-#   the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
-#   and more recently with desktop publishing software like Aldus PageMaker
-#   including versions of Lorem Ipsum.
-
-#+end_src
-
-******* Development                                                     :dev:
-:PROPERTIES:
-:header-args: :tangle no
-:ID:       57eeb820-d0b7-4387-b426-758c5cce2ba8
-:END:
-
-******** getops
-:PROPERTIES:
-:ID:       e0cc5fbf-f903-4b68-a84a-b8e64a4fae18
-:END:
-# Getops
-while getopts "${7:OPTIONS}" options;
-do
-    case "${options}" in
-        -h | --help) print_usage ;;
-        \?)
-            echoerr "Invalid option -$OPTARG"
-            print_usage
-            exit 1
-            ;;
-    esac
-done
-shift $((OPTIND -1))
-
-
-******** block.comment                                                  :yas:
-#+begin_src bash :tangle no
-# -*- mode: snippet -*-
-# key: block.comment
-# expand-env: ((yas-indent-line 'none))
-# --
-$(let* ((text (yas-text))
-        (lines (split-string text "\n"))
-        (commented-lines (mapcar (lambda (line)
-                                   (with-temp-buffer
-                                     (insert line)
-                                     (goto-char (point-min))
-                                     (while (not (eobp))
-                                       (move-to-column 78 t)
-                                       (if (not (eobp))
-                                           (progn
-                                             (backward-word)
-                                             (insert "\n")))
-                                       (forward-line 1))
-                                     (goto-char (point-min))
-                                     (while (not (eobp))
-                                       (insert "# ")
-                                       (forward-line 1))
-                                     (buffer-string)))
-                                 lines)))
-   (mapconcat 'identity commented-lines "\n"))
-
-#+end_src
-#+begin_src bash
-block.${2:$(let ((input (s-trim yas-text)))
-           (s-wrap input 80 "\n"))}
-
-block.${2:$(let ((input (s-trim yas-text)))
-           (s-wrap input 80 "\n"))}
-#+end_src
-
-******* doc.fun                                                         :yas:
-:PROPERTIES:
-:ID:       56dffa5f-ae66-47d0-abc1-a7a1076c12b5
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/doc.fun
-# -*- mode: snippet --*
-# key: doc.fun
-# expand-env: ((yas-indent-line 'none))
-# --
-  [[ "\$1" =~ (-h|--help) || -z "\$1" ]] && {
-    cat <<EOF
-Usage: ${1: <FUNCTION NAME>} ${2: <USAGE>}
-${3: <DESCRIPTION>}
-EOF
-    return
-  }
-
-#+end_src
-
-******* function
-:PROPERTIES:
-:ID:       1a349f9b-02cd-483a-aa15-2f81df598fef
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/function
-# -*- mode: snippet -*-
-# key: function
-# expand-env: ((yas-indent-line 'fixed))
-# --
-${1:$$(replace-regexp-in-string " " "_" yas-text)}(){
-    local ${2: <VARIABLE NAME> }="\${1}"
-    $0
-}
-
-#+end_src
-******* head1                                                           :yas:
-
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/head1 :comments no
-# -*- mode: snippet -*-
-# key: head1
-# expand-env: ((yas-indent-line 'none))
-# --
-${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
-###   ${1:$$(capitalize yas-text)}   ###
-${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
-$0
-#+end_src
-
-******* must.src
-:PROPERTIES:
-:ID:       7bce1c80-34ca-4419-826c-99ac5af2bf6a
-:END:
-******* must.src                                                        :yas:
-:PROPERTIES:
-:ID:       af579d0a-ea85-4538-a120-e06c0c19cc8a
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/must.src
-# -*- mode: snippet -*-
-# key: must.src
-# expand-env: ((yas-indent-line 'none))
-# --
-if [[ "\${BASH_SOURCE[0]}" == "\${0}" ]]; then
-  echo "You must source this script"
-  exit 1
-fi
-
-#+end_src
-******* print_array
-:PROPERTIES:
-:ID:       8d263d03-7b0c-4695-9a8a-2ee6e4d4650d
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/shell-mode/print_array
-# -*- mode: snippet -*-
-# name: print_array
-# key: print_array
-# --
-printf '%s\n' "${${1:ARRAY_NAME}[@]}"
-$0
-#+end_src
-
-******* script
-:PROPERTIES:
-:ID:       72a9b2a8-3215-4472-be95-410a7d242508
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/script
-# -*- mode: snippet -*-
-# key: script
-# --
+****** Style guide
+- Use 4 spaces, no tabs.
+- Scripts
+  - Overall structure: functions first, `main "$@"` last. `main()` is the entry point and is analogous to a Python main guard in how it organizes the script (Bash `main "$@"` does not distinguish execute vs source without extra logic.)
+  - Template:
+    #+begin_src bash
 #!/usr/bin/env bash
 
-head1
+# -----------------------------------------------------------------------------
+# Script name
+# Purpose, inputs, outputs, assumptions
+# -----------------------------------------------------------------------------
 
-# Block comment here
+print_usage() {}
 
-set -o errexit   # abort on nonzero exitstatus
-set -o nounset   # abort on unbound variable
-set -o pipefail  # don't hide errors within pipes
+parse_args() {
+    # 1) Check help first, exit 0 to stdout
+    # 2) Arity and required args, exit 1 to stderr
+    # 3) Input arguement declarations
+    # 4) Compute derived variables as needed
+    # 5) Perform variable-specific validations as needed
+    }
 
-usage
+function_1() {}
+function_2() {}
 
-variables
-
-main(){
-    variables /$1
+main() {
+    parse_args "$@"
+    function_1
+    function_2
 }
 
 main "$@"
-
-
 #+end_src
-******* 80                                                              :yas:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/80
-# -*- mode: snippet -*-
-# key: 80
-# expand-env: ((yas-indent-line 'fixed))
-# --
-##########1##########2##########3##########4##########5##########6##########7##########8
-$0
-#+end_src
-******* return_usage_any
-Returns usage if any arguements are provided
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/return_usage_any
-# -*- mode: snippet -*-
-# key: return_usage_any
-# expand-env: ((yas-indent-line 'fixed))
-# --
-# Return usage if any arguments are provided
-if [[ $# -gt 0 ]]; then
-    print_usage
-    return 0
-fi
-$0
-#+end_src
-******* usage
-:PROPERTIES:
-:ID:       e383d5cd-7ad8-4761-89ed-7d028acb79f8
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/usage
-# -*- mode: snippet -*-
-# key: usage
-# expand-env: ((yas-indent-line 'fixed))
-# --
-
-print_usage(){
-    cat <<- EOF
-
- Usage: ${1:${1:SCRIPT NAME}$$(replace-regexp-in-string " " "_" yas-text)} [OPTIONS] ${2:${2:REQUIRED OPERAND}$$(upcase yas-text)}  ${3:${3:[OPTIONAL OPERAND]}$$(upcase yas-text)}
-
- ${4:<DESCRIPTION>}
-
- Options:
-   -h, --help    Show this help message and exit
-
- Arguements:
-   ${2:$(ignore-errors (format (yas-field-value 2)))} ${5: <OPERAND DESCRIPTION>}
-
- Example:
-   ${1:$(ignore-errors (format (yas-field-value 1)))} ${6: <EXAMPLE>}
-
-EOF
-}
-
-# See print usage caller yas
-# return_usage_any
-#+end_src
-
-******* variables                                                       :yas:
-
-A variables function template for shell scripts
-
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/variables
-# -*- mode: snippet -*-
-# key: variables
-# expand-env: ((yas-indent-line 'none))
-# --
-variables(){
-    ${1:$$(replace-regexp-in-string " " "_" yas-text)}="\${1${2:$$(when (and yas-moving-away-p (not (string= "" yas-text)))(concat ":-" yas-text))}}"
-    ${3:$$(replace-regexp-in-string " " "_" yas-text)}="\${2${4:$$(when (and yas-moving-away-p (not (string= "" yas-text)))(concat ":-" yas-text))}}"
-}
-$0
-
-#+end_src
-
-******* var                                                             :yas:
-:PROPERTIES:
-:ID:       67ca3ccc-7bca-4b12-b513-05b246a217b8
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/var
-# -*- mode: snippet -*-
-# key: var
-# expand-env: ((yas-indent-line 'none))
-# --
-$1="$\{$2}"$0
-#+end_src
+  - Elements
+    - Shebang: use ~#!/usr/bin/env bash~ to resolve `bash` via PATH rather than assuming a fixed location.
+    - Documentation: top block comment describing script.
+    - print_usage()
+      - Emits usage text via `cat <<EOF` to stderr.
+    - parse_args()
+      - Begins with overall usage validation. `-h|--help` prints usage and exits 0; misuse failures print usage and exit nonzero.
+      - The only function that may read positional args (`$1`, `$2`, `$@`, `$#`).
+      - Validates inputs, applies defaults, computes derived values. Targeted error messages based on variable-specific validation.
+      - Sets script configuration variables (globals) for downstream functions to consume.
+    - main()
+      - Always the entry point.
+      - Short, linear orchestration.
+      - Starts with `parse_args "$@"`, then calls work functions in order.
+    - Work functions
+      - Consume named variables only.
+      - Do not parse or validate CLI args.
+      - Work functions should not introduce new globals; any temporaries must be local.
+      - Assume preconditions are satisfied (invariants established by `parse_args()`).
+    - Main guard
+      - Final line: `main "$@"`.
+- Functions
+  - Use `lower_snake_case` names.
+  - Opening brace on the same line: `name(){`.
+  - In-script functions (parse-once model)
+    - `parse_args()` populates global configuration variables.
+    - Other functions must not read positional args.
+  - Standalone reusable functions (intended to be sourced or reused)
+    - Accept inputs as positional parameters.
+    - Immediately assign parameters to `local` variables at the top.
+    - Declare all temporaries `local` to avoid leaking state.
 
 ****** Processes
 :PROPERTIES:
 :ID:       c3e424cd-7191-423e-815b-7e7fcb770100
 :END:
-******* 0 Flat list of bash and shell processes
-:PROPERTIES:
-:ID:       eb57ddca-919e-4167-9112-8fc378d00486
-:END:
-#!/bin/echo ### For documentation, not intended to be executable
-- # see https://stackoverflow.com/questions/7131670/make-a-bash-alias-that-takes-a-parameter
-- bash error output to log
-  -
-- https://www.google.com/search?q=bash+prevent+script+execution
-- https://www.google.com/search?q=bash+rm+use+regex
-- https://www.google.com/search?q=bash+test+before+rm
-- https://stackoverflow.com/questions/169511/how-do-i-iterate-over-a-range-of-numbers-defined-by-variables-in-bash
-- [[https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script][Meaning of exit 0, exit 1 and exit 2 in a bash script]]
-- [[https://www.cyberciti.biz/faq/linux-unix-formatting-dates-for-display/][formatting dates for display]]
-- https://stackoverflow.com/questions/22962591/how-to-prevent-direct-bash-script-execution-and-allow-only-usage-from-other-scri
-- https://unix.stackexchange.com/questions/10646/repeat-a-unix-command-every-x-seconds-forever
-******** Check dependencies with which
-#+begin_src sh
-dependencies=("docker" "wget" "bash")
-for i in ${dependencies[@]}; do
-    if [ "$(which $i)" = "" ] ; then
-        echo "EARLY EXIT- $i needs to be installed and on PATH"
-        exit 0
-    else
-        echo "$i installed"
-    fi;
-done
-#
-source ~/repos/mpnst/bin/global-setup.sh
-#
-if [ $HOSTNAME == "aclm350" ]; then
-    basedir=/mnt/xt3/mpnst
-else
-    echo "No on Chaudhuri-roche server, exiting"
-    exit 1
-fi
-echo "Local setup complete for Chaudhuri-Roche server"
-#+end_src
-******** case esac
-:PROPERTIES:
-:ID:       8356ea0b-2249-4e60-8bda-47889e120ac3
-:END:
-- eg
-  #+begin_src bash :tangle no
-readonly project=cbergom-congenic
-# Host-local variables
-case $HOSTNAME in
- (jeff-server) \
-     readonly all_repo=/home/jeszyman/repos \
-             readonly data_dir=/mnt/ris/cbergom \
-             readonly mntpt=/mnt/ris/cbergom \
-             readonly repo=/home/jeszyman/repos/"${project}";;
- (jeszyman-work) \
-     readonly all_repo=/home/jeszyman/repos \
-             readonly data_dir=/mnt/ris/cbergom \
-             readonly mntpt=/mnt/ris/cbergom \
-             readonly repo=/home/jeszyman/repos/"${project}";;
- (jeff-mac-book) \
-     readonly all_repo=/home/jeszyman/repos \
-             readonly data_dir=/mnt/ris/cbergom \
-             readonly mntpt=/mnt/ris/cbergom \
-             readonly repo=/home/jeszyman/repos/"${project}";;
- (radonc-cancerbio) \
-     readonly all_repo=/home/jeszyman/repos \
-             readonly data_dir=/mnt/ris/cbergom \
-             readonly mntpt=/mnt/ris/cbergom \
-             readonly ref_dir=/mnt/users/jeszyman/data/ref \
-             readonly repo=/home/jeszyman/repos/"${project}";;
- (*) echo "Host not recognized" && exit 1;;
-esac
-
-# Check mount active
-if grep -qs $mntpt /proc/mounts; then
- echo "RIS storage mounted."
-else
- echo "RIS storage NOT mounted, exiting." && exit 1
-fi
-
-# Source functions
-cd $repo
-## submodule or symlinked repos functions
-source ./basecamp/src/functions.sh
-source ./biotools/src/functions.sh
-## repo-local functions
-source ./src/functions.sh
-
-#
-#source ./src/functions.sh
-
-#
-# Ensure repo structure
-mkdir -p $repo/config
-mkdir -p $repo/data
-mkdir -p $repo/imgs
-mkdir -p $repo/pubs
-mkdir -p $repo/reports
-mkdir -p $repo/src
-mkdir -p $repo/test/fastq
-mkdir -p $repo/test/qc
-chmod 444 $repo/data/chr3_congenic.bed
-chmod 444 $repo/data/samples.csv
-chmod 444 $repo/data/strains.csv
-
-#
-echo "Bergom RNA setup complete for $HOSTNAME"
-#+end_src
-******** Provide per-function documentation
-:PROPERTIES:
-:ID:       6576448a-6833-4f37-88be-515572406f43
-:END:
-https://unix.stackexchange.com/questions/295022/displaying-usage-comments-in-functions-intended-to-be-used-interactively
-
-******** terminal colors
-:PROPERTIES:
-:ID:       b7fef3cb-c4d5-417e-8c28-fc54edabfa1f
-:END:
-[[id:61cef427-947e-4d91-9dfe-8758ccbe3512][convert_pdf_to_png()]]
-https://chat.openai.com/c/29bd45d7-ee7e-4711-954f-26cf8cabff44
 ******* Checkers
 :PROPERTIES:
 :ID:       5efce201-5375-42a8-a8d0-827a0325a7bf
@@ -14831,9 +14562,763 @@ pandoc -S $test | xclip -selection clipboard
 
 #+end_src
 
-******* Configuration and setup 
+******* Configuration and setup
 - https://www.reddit.com/r/bash/comments/1hshm3u/how_many_lines_is_your_bashrc_file_mine_is/
 
+******* 0 Flat list of bash and shell processes
+:PROPERTIES:
+:ID:       eb57ddca-919e-4167-9112-8fc378d00486
+:END:
+#!/bin/echo ### For documentation, not intended to be executable
+- # see https://stackoverflow.com/questions/7131670/make-a-bash-alias-that-takes-a-parameter
+- bash error output to log
+  -
+- https://www.google.com/search?q=bash+prevent+script+execution
+- https://www.google.com/search?q=bash+rm+use+regex
+- https://www.google.com/search?q=bash+test+before+rm
+- https://stackoverflow.com/questions/169511/how-do-i-iterate-over-a-range-of-numbers-defined-by-variables-in-bash
+- [[https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script][Meaning of exit 0, exit 1 and exit 2 in a bash script]]
+- [[https://www.cyberciti.biz/faq/linux-unix-formatting-dates-for-display/][formatting dates for display]]
+- https://stackoverflow.com/questions/22962591/how-to-prevent-direct-bash-script-execution-and-allow-only-usage-from-other-scri
+- https://unix.stackexchange.com/questions/10646/repeat-a-unix-command-every-x-seconds-forever
+******** Check dependencies with which
+#+begin_src sh
+dependencies=("docker" "wget" "bash")
+for i in ${dependencies[@]}; do
+    if [ "$(which $i)" = "" ] ; then
+        echo "EARLY EXIT- $i needs to be installed and on PATH"
+        exit 0
+    else
+        echo "$i installed"
+    fi;
+done
+#
+source ~/repos/mpnst/bin/global-setup.sh
+#
+if [ $HOSTNAME == "aclm350" ]; then
+    basedir=/mnt/xt3/mpnst
+else
+    echo "No on Chaudhuri-roche server, exiting"
+    exit 1
+fi
+echo "Local setup complete for Chaudhuri-Roche server"
+#+end_src
+******** case esac
+:PROPERTIES:
+:ID:       8356ea0b-2249-4e60-8bda-47889e120ac3
+:END:
+- eg
+  #+begin_src bash :tangle no
+readonly project=cbergom-congenic
+# Host-local variables
+case $HOSTNAME in
+ (jeff-server) \
+     readonly all_repo=/home/jeszyman/repos \
+             readonly data_dir=/mnt/ris/cbergom \
+             readonly mntpt=/mnt/ris/cbergom \
+             readonly repo=/home/jeszyman/repos/"${project}";;
+ (jeszyman-work) \
+     readonly all_repo=/home/jeszyman/repos \
+             readonly data_dir=/mnt/ris/cbergom \
+             readonly mntpt=/mnt/ris/cbergom \
+             readonly repo=/home/jeszyman/repos/"${project}";;
+ (jeff-mac-book) \
+     readonly all_repo=/home/jeszyman/repos \
+             readonly data_dir=/mnt/ris/cbergom \
+             readonly mntpt=/mnt/ris/cbergom \
+             readonly repo=/home/jeszyman/repos/"${project}";;
+ (radonc-cancerbio) \
+     readonly all_repo=/home/jeszyman/repos \
+             readonly data_dir=/mnt/ris/cbergom \
+             readonly mntpt=/mnt/ris/cbergom \
+             readonly ref_dir=/mnt/users/jeszyman/data/ref \
+             readonly repo=/home/jeszyman/repos/"${project}";;
+ (*) echo "Host not recognized" && exit 1;;
+esac
+
+# Check mount active
+if grep -qs $mntpt /proc/mounts; then
+ echo "RIS storage mounted."
+else
+ echo "RIS storage NOT mounted, exiting." && exit 1
+fi
+
+# Source functions
+cd $repo
+## submodule or symlinked repos functions
+source ./basecamp/src/functions.sh
+source ./biotools/src/functions.sh
+## repo-local functions
+source ./src/functions.sh
+
+#
+#source ./src/functions.sh
+
+#
+# Ensure repo structure
+mkdir -p $repo/config
+mkdir -p $repo/data
+mkdir -p $repo/imgs
+mkdir -p $repo/pubs
+mkdir -p $repo/reports
+mkdir -p $repo/src
+mkdir -p $repo/test/fastq
+mkdir -p $repo/test/qc
+chmod 444 $repo/data/chr3_congenic.bed
+chmod 444 $repo/data/samples.csv
+chmod 444 $repo/data/strains.csv
+
+#
+echo "Bergom RNA setup complete for $HOSTNAME"
+#+end_src
+******** Provide per-function documentation
+:PROPERTIES:
+:ID:       6576448a-6833-4f37-88be-515572406f43
+:END:
+https://unix.stackexchange.com/questions/295022/displaying-usage-comments-in-functions-intended-to-be-used-interactively
+
+******** terminal colors
+:PROPERTIES:
+:ID:       b7fef3cb-c4d5-417e-8c28-fc54edabfa1f
+:END:
+[[id:61cef427-947e-4d91-9dfe-8758ccbe3512][convert_pdf_to_png()]]
+https://chat.openai.com/c/29bd45d7-ee7e-4711-954f-26cf8cabff44
+****** Local scripts
+:PROPERTIES:
+:ID:       50fa6877-2a58-43b7-a412-565822746257
+:END:
+#+begin_src bash
+#!/bin/bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+
+####################################
+###   Choose and Run Snakefile   ###
+####################################
+
+# Setup
+#set -euxov pipefail
+
+source config/${HOSTNAME}.sh
+echo "The following `*.smk` archives were found; select one:"
+
+# set the prompt used by select, replacing "#?"
+PS3="Use number to select an option"
+
+select filename in ./workflow/*.smk
+
+do
+    if [[ "$filename" == "" ]]
+    then
+        echo "'$REPLY' is not a valid number"
+        continue
+    fi
+    echo $filename
+    select run_option in dry_run normal force_final force_all
+    do
+        echo selected $run_option
+        case $run_option in
+            dry_run)
+                source activate snakemake
+                snakemake \
+                    --configfile config/${HOSTNAME}.yaml \
+                    --cores $threads \
+                    --directory ${repo} \
+                    --dry-run \
+                    --rerun-incomplete \
+                    --singularity-args "--bind $mntpt:$mntpt" \
+                    --use-singularity \
+                    --snakefile $filename
+                ;;
+            normal)
+                source activate snakemake
+                select nohup_option in no yes
+                do
+                    case $nohup_option in
+                        no)
+                            snakemake \
+                                --configfile config/${HOSTNAME}.yaml \
+                                --cores $threads \
+                                --directory ${repo} \
+                                --singularity-args "--bind $mntpt:$mntpt" \
+                                --use-singularity \
+                                --snakefile $filename
+                            ;;
+                        yes)
+                            nohup snakemake \
+                                  --configfile config/${HOSTNAME}.yaml \
+                                  --cores $threads \
+                                  --directory ${repo} \
+                                  --singularity-args "--bind $mntpt:$mntpt" \
+                                  --use-singularity \
+                                  --snakefile $filename
+                            ;;
+                    esac
+                done
+                ;;
+            force_final)
+                source activate snakemake
+                select nohup_option in no yes
+                do
+                    case $nohup_option in
+                        no)
+                            snakemake \
+                                --configfile config/${HOSTNAME}.yaml \
+                                --cores $threads \
+                                --directory ${repo} \
+                                --force \
+                                --singularity-args "--bind $mntpt:$mntpt" \
+                                --use-singularity \
+                                --snakefile $filename
+                            ;;
+                        yes)
+                            nohup snakemake \
+                                  --configfile config/${HOSTNAME}.yaml \
+                                  --cores $threads \
+                                  --directory ${repo} \
+                                  --force \
+                                  --singularity-args "--bind $mntpt:$mntpt" \
+                                  --use-singularity \
+                                  --snakefile $filename
+                            ;;
+                    esac
+                done
+                ;;
+            force_all)
+                source activate snakemake
+                select nohup_option in no yes
+                do
+                    case $nohup_option in
+                        no)
+
+                snakemake \
+                    --configfile config/${HOSTNAME}.yaml \
+                    --cores $threads \
+                    --directory ${repo} \
+                    -F \
+                    --singularity-args "--bind $mntpt:$mntpt" \
+                    --use-singularity \
+                    --snakefile $filename
+                                            ;;
+                        yes)
+                nohup snakemake \
+                    --configfile config/${HOSTNAME}.yaml \
+                    --cores $threads \
+                    --directory ${repo} \
+                    -F \
+                    --singularity-args "--bind $mntpt:$mntpt" \
+                    --use-singularity \
+                    --snakefile $filename
+                            ;;
+                    esac
+                done
+                ;;
+        esac
+        break
+    done
+    break
+done
+#+end_src
+- Command line script
+  #+name: bash_cmdline_script_preamble
+  #+begin_src bash :noweb yes
+#!/usr/bin/env bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+# Notes:
+#  This script is tangled from source code in the mpnst-frag.org file
+#  Therefore any changes to this compiled file in place will likely be reverted
+#  by a subsequent tangle operation.
+#
+#  This script assumes you are running from the repository main directory in
+#  order to source the appriopriate configuation file.
+
+# Load bash configuation
+if [ -f ./config/${HOSTNAME}.sh ]; then
+    source ./config/${HOSTNAME}.sh
+else
+    echo "No bash config found. Are you running from repo main dir?"
+fi
+#+end_src
+****** Local YAS                                                       :flat:
+:PROPERTIES:
+:ID:       42e37db5-29e7-418f-a74d-e91ffc81167f
+:END:
+- Uses sh-mode
+******* array.from.find
+:PROPERTIES:
+:ID:       68960305-58e3-43a8-8d63-ec7ea71720c4
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/array.from.find
+# -*- mode: snippet -*-
+# name: array.from.find
+# key: array.from.find
+# --
+${1:ARRAY NAME}=()
+while IFS=  read -r -d $'\0'; do
+    $1+=("$REPLY")
+done < <(find ${2:FIND DIR} -name ${3:FIND TERM} -print0)
+printf '%s\n' "\${$1[@]}"
+$0
+#+end_src
+******* code.bash
+:PROPERTIES:
+:ID:       78960912-ee7a-4e71-b8d5-c5ec9649ecac
+:END:
+#+name: code.bash
+#+begin_src bash :comment no
+# -*- mode: snippet -*-
+# key: code.bash
+# expand-env: ((yas-indent-line 'none))
+# --
+#+begin_src bash :comment no
+$0
+,#+end_src
+#+end_src
+
+
+
+******* code.sh
+:PROPERTIES:
+:ID:       5c2e54cf-797e-4ccb-b12e-2167d06ce7a4
+:END:
+#+name: code.sh
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/org-mode/code.sh
+# -*- mode: snippet -*-
+# key: code.sh
+# expand-env: ((yas-indent-line 'none))
+# condition: 'auto
+# --
+,#+begin_src bash
+$0
+,#+end_src
+#+end_src
+[[file:emacs/public_yasnippets/org-mode/code.sh]]
+******* comment.block
+******* comment.block                                                   :yas:
+#+name: sh-mode_comment.block
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/comment.block
+# -*- mode: snippet -*-
+# key: comment.block
+# expand-env: ((yas-indent-line 'none))
+# --
+`(let* ((input (read-string "Comment block text: "))
+        ;; wrap to 80 chars using fill-region
+        (fill-column 80)
+        (temp-buf (generate-new-buffer "*yas-fill*")))
+   ;; Fill text and split into lines
+   (prog1
+       (mapconcat (lambda (line) (concat "# " line))
+                  (with-temp-buffer
+                    (insert input)
+                    (fill-region (point-min) (point-max))
+                    (split-string (buffer-string) "\n"))
+                  "\n")
+     (kill-buffer temp-buf)))`
+#+end_src
+#+begin_src bash
+thes is
+a multi comment
+vlock
+# ${1:your text here}
+# thet is
+
+
+# orem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
+# # orem Ipsum is simply dummy text of the printing and typesetting industry.
+#   Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
+#   when an unknown printer took a galley of type and scrambled it to make a type
+#   specimen book. It has survived not only five centuries, but also the leap into
+#   electronic typesetting, remaining essentially unchanged. It was popularised in
+#   the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
+#   and more recently with desktop publishing software like Aldus PageMaker
+#   including versions of Lorem Ipsum.
+
+#+end_src
+
+******* Development                                                     :dev:
+:PROPERTIES:
+:header-args: :tangle no
+:ID:       57eeb820-d0b7-4387-b426-758c5cce2ba8
+:END:
+
+******** getops
+:PROPERTIES:
+:ID:       e0cc5fbf-f903-4b68-a84a-b8e64a4fae18
+:END:
+# Getops
+while getopts "${7:OPTIONS}" options;
+do
+    case "${options}" in
+        -h | --help) print_usage ;;
+        \?)
+            echoerr "Invalid option -$OPTARG"
+            print_usage
+            exit 1
+            ;;
+    esac
+done
+shift $((OPTIND -1))
+
+
+******** block.comment                                                  :yas:
+#+begin_src bash :tangle no
+# -*- mode: snippet -*-
+# key: block.comment
+# expand-env: ((yas-indent-line 'none))
+# --
+$(let* ((text (yas-text))
+        (lines (split-string text "\n"))
+        (commented-lines (mapcar (lambda (line)
+                                   (with-temp-buffer
+                                     (insert line)
+                                     (goto-char (point-min))
+                                     (while (not (eobp))
+                                       (move-to-column 78 t)
+                                       (if (not (eobp))
+                                           (progn
+                                             (backward-word)
+                                             (insert "\n")))
+                                       (forward-line 1))
+                                     (goto-char (point-min))
+                                     (while (not (eobp))
+                                       (insert "# ")
+                                       (forward-line 1))
+                                     (buffer-string)))
+                                 lines)))
+   (mapconcat 'identity commented-lines "\n"))
+
+#+end_src
+#+begin_src bash
+block.${2:$(let ((input (s-trim yas-text)))
+           (s-wrap input 80 "\n"))}
+
+block.${2:$(let ((input (s-trim yas-text)))
+           (s-wrap input 80 "\n"))}
+#+end_src
+
+******* doc.fun                                                         :yas:
+:PROPERTIES:
+:ID:       56dffa5f-ae66-47d0-abc1-a7a1076c12b5
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/doc.fun
+# -*- mode: snippet --*
+# key: doc.fun
+# expand-env: ((yas-indent-line 'none))
+# --
+  [[ "\$1" =~ (-h|--help) || -z "\$1" ]] && {
+    cat <<EOF
+Usage: ${1: <FUNCTION NAME>} ${2: <USAGE>}
+${3: <DESCRIPTION>}
+EOF
+    return
+  }
+
+#+end_src
+
+******* function
+:PROPERTIES:
+:ID:       1a349f9b-02cd-483a-aa15-2f81df598fef
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/function
+# -*- mode: snippet -*-
+# key: function
+# expand-env: ((yas-indent-line 'fixed))
+# --
+${1:$$(replace-regexp-in-string " " "_" yas-text)}(){
+    local ${2: <VARIABLE NAME> }="\${1}"
+    $0
+}
+
+#+end_src
+******* head1                                                           :yas:
+
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/head1 :comments no
+# -*- mode: snippet -*-
+# key: head1
+# expand-env: ((yas-indent-line 'none))
+# --
+${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
+###   ${1:$$(capitalize yas-text)}   ###
+${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
+$0
+#+end_src
+
+******* must.src
+:PROPERTIES:
+:ID:       7bce1c80-34ca-4419-826c-99ac5af2bf6a
+:END:
+******* must.src                                                        :yas:
+:PROPERTIES:
+:ID:       af579d0a-ea85-4538-a120-e06c0c19cc8a
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/must.src
+# -*- mode: snippet -*-
+# key: must.src
+# expand-env: ((yas-indent-line 'none))
+# --
+if [[ "\${BASH_SOURCE[0]}" == "\${0}" ]]; then
+  echo "You must source this script"
+  exit 1
+fi
+
+#+end_src
+******* print_array
+:PROPERTIES:
+:ID:       8d263d03-7b0c-4695-9a8a-2ee6e4d4650d
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/shell-mode/print_array
+# -*- mode: snippet -*-
+# name: print_array
+# key: print_array
+# --
+printf '%s\n' "${${1:ARRAY_NAME}[@]}"
+$0
+#+end_src
+
+******* script
+:PROPERTIES:
+:ID:       72a9b2a8-3215-4472-be95-410a7d242508
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/script
+# -*- mode: snippet -*-
+# key: script
+# --
+#!/usr/bin/env bash
+
+head1
+
+# Block comment here
+
+set -o errexit   # abort on nonzero exitstatus
+set -o nounset   # abort on unbound variable
+set -o pipefail  # don't hide errors within pipes
+
+usage
+
+variables
+
+main(){
+    variables /$1
+}
+
+main "$@"
+
+
+#+end_src
+******* 80                                                              :yas:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/80
+# -*- mode: snippet -*-
+# key: 80
+# expand-env: ((yas-indent-line 'fixed))
+# --
+##########1##########2##########3##########4##########5##########6##########7##########8
+$0
+#+end_src
+******* return_usage_any
+Returns usage if any arguements are provided
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/return_usage_any
+# -*- mode: snippet -*-
+# key: return_usage_any
+# expand-env: ((yas-indent-line 'fixed))
+# --
+# Return usage if any arguments are provided
+if [[ $# -gt 0 ]]; then
+    print_usage
+    return 0
+fi
+$0
+#+end_src
+******* usage
+:PROPERTIES:
+:ID:       e383d5cd-7ad8-4761-89ed-7d028acb79f8
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/usage
+# -*- mode: snippet -*-
+# key: usage
+# expand-env: ((yas-indent-line 'fixed))
+# --
+
+print_usage(){
+    cat <<- EOF
+
+ Usage: ${1:${1:SCRIPT NAME}$$(replace-regexp-in-string " " "_" yas-text)} [OPTIONS] ${2:${2:REQUIRED OPERAND}$$(upcase yas-text)}  ${3:${3:[OPTIONAL OPERAND]}$$(upcase yas-text)}
+
+ ${4:<DESCRIPTION>}
+
+ Options:
+   -h, --help    Show this help message and exit
+
+ Arguements:
+   ${2:$(ignore-errors (format (yas-field-value 2)))} ${5: <OPERAND DESCRIPTION>}
+
+ Example:
+   ${1:$(ignore-errors (format (yas-field-value 1)))} ${6: <EXAMPLE>}
+
+EOF
+}
+
+# See print usage caller yas
+# return_usage_any
+#+end_src
+
+******* variables                                                       :yas:
+
+A variables function template for shell scripts
+
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/variables
+# -*- mode: snippet -*-
+# key: variables
+# expand-env: ((yas-indent-line 'none))
+# --
+variables(){
+    ${1:$$(replace-regexp-in-string " " "_" yas-text)}="\${1${2:$$(when (and yas-moving-away-p (not (string= "" yas-text)))(concat ":-" yas-text))}}"
+    ${3:$$(replace-regexp-in-string " " "_" yas-text)}="\${2${4:$$(when (and yas-moving-away-p (not (string= "" yas-text)))(concat ":-" yas-text))}}"
+}
+$0
+
+#+end_src
+
+******* var                                                             :yas:
+:PROPERTIES:
+:ID:       67ca3ccc-7bca-4b12-b513-05b246a217b8
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/var
+# -*- mode: snippet -*-
+# key: var
+# expand-env: ((yas-indent-line 'none))
+# --
+$1="$\{$2}"$0
+#+end_src
+
+****** General reference
+:PROPERTIES:
+:ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
+:END:
+- https://www.reddit.com/r/bioinformatics/comments/1mexvem/command_history_to_notebook_entries/
+- https://www.reddit.com/r/bash/comments/yp8afm/some_scripts_that_might_be_useful/
+- https://www.reddit.com/r/commandline/comments/zigu22/in_dept_guide_how_to_create_a_shell_script_to/
+- https://www.reddit.com/r/bash/comments/12bptfj/are_there_any_quality_of_life_improvements_that/
+- https://getaido.app/
+- https://github.com/awesome-lists/awesome-bash
+- https://github.com/TheR1D/shell_gpt
+- https://www.programming-helper.com/linux
+- https://www.reddit.com/r/bash/comments/z09oiu/bashlib_a_helpful_source_file_for_any_script/
+- https://github.com/jlevy/the-art-of-command-line
+- https://www.reddit.com/r/bash/comments/yp8afm/some_scripts_that_might_be_useful/
+- https://www.reddit.com/r/bash/comments/xt40e2/bgit_the_beginners_git_script/
+- [[id:c7d8dd07-098e-4bc4-b008-5da0abcabb0d][The Missing Semester of Your CS Education]]
+- https://www.reddit.com/r/emacs/comments/x2mmfc/from_vanilla_emacs_to_bash_ide_in_17_minutes/
+-
+- https://explainshell.com/explain?cmd=set+-euxo+pipefail
+- http://redsymbol.net/articles/unofficial-bash-strict-mode/
+- [[id:BDC42DA2-A632-4FB7-A586-E100B2A045DC][LINK TO UNIX-based operating systems]]
+- [[id:76c4836c-fe3f-4948-86dd-25d8df38d1af][LINK TO GNU tools]]
+- https://pastebin.com/9itu8v0w
+- https://www.linuxtopia.org/online_books/advanced_bash_scripting_guide/
+- [[https://google.github.io/styleguide/shellguide.html][Google shell style guide]]
+- [[https://www.gnu.org/software/bash/manual/bash.html][documentation]]
+- [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Advanced Bash-Scripting Guide]]
+- [[http://mywiki.wooledge.org/FullBashGuide][wooledge bash guide]]
+- [[https://bash.cyberciti.biz/guide/Main_Page][nixCraft linux tutorial]]
+- http://bash3boilerplate.sh/
+- a -c flag essentially adds an extra shell around multi-part command, see https://superuser.com/questions/1214597/calling-a-script-with-bash-c-option
+- [[id:07b8634c-70a6-4a99-90b5-0f5083ccaf04][Emacs shell IDE]]
+- Guides, tutorials, cheatsheets, books
+  - http://ryanstutorials.net/bash-scripting-tutorial/
+  - http://linuxcommand.org/lc3_writing_shell_scripts.php
+  - https://www.youtube.com/watch?v=3ME7gayYeUQ
+  - https://www.youtube.com/results?search_query=shell+scripts+bioinformatics&page=&utm_source=opensearch
+  - https://google.github.io/styleguide/shell.xml
+  - http://mywiki.wooledge.org/BashGuide
+  - http://www.davidpashley.com/articles/writing-robust-shell-scripts/
+  - https://emb.carnegiescience.edu/sites/default/files/140602-sedawkbash.key_.pdf
+  - https://github.com/dylanaraps/pure-bash-bible
+  - https://devhints.io/bash
+  - https://www.ibm.com/developerworks/aix/library/au-satbash.html
+  - [[http://tldp.org/LDP/LG/issue18/bash.html][string manipulations]]
+  - cite:veeraraghavan2002
+  - http://tldp.org/LDP/abs/html/
+  - https://github.com/onceupon/Bash-Oneliner
+  - https://devhints.io/bash?source=post_page---------------------------
+  - [[https://www.ostechnix.com/test-your-bash-skills-by-playing-command-line-games/][bash games]]
+  - [[https://www.reddit.com/r/commandline/comments/kbeoe/you_can_make_readline_and_bash_much_more_user/?st=j6k0lbfa&sh=6d214d1f][reddit: You can make readline (and bash) much more user friendly by adding a few options to ~/.inputrc]]
+  - best practices
+    - include error calling, but avoid -e http://mywiki.wooledge.org/BashFAQ/105
+    - https://www.google.com/search?q=shell+script+formatting+best+practices
+    - include usage example
+    - a -c flag essentially adds an extra shell around multi-part command, see https://superuser.com/questions/1214597/calling-a-script-with-bash-c-option
+    - ideas
+    - [[file:~/.basecamp/emacs/public_yasnippets/sh-mode/write.bash]]
+    - https://stackoverflow.com/questions/33297857/how-to-check-dependency-in-bash-script
+  - https://unix.stackexchange.com/questions/42728/what-does-31-12-23-do-in-a-script
+  - http://tldp.org/LDP/abs/html/index.html
+  - https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
+  - https://github.com/dylanaraps/pure-bash-bible
+  - https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md
+- https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
+- https://github.com/hopeseekr/BashScripts
+- https://www.reddit.com/r/programming/comments/aw0zko/bash_creating_tabcompletion_for_your_programs/
+- reference
+  - https://github.com/shellspec/shellspec
+- examples
+  - https://github.com/hopeseekr/BashScripts
+- [[https://www.gnu.org/software/bash/manual/bash.html][documentation]] and general reference
+  - guides, tutorials, cheatsheets, books
+    - [[http://www.tldp.org/LDP/abs/html/abs-guide.html][Linux documentation project: Advanced Bash-Scripting Guide]]
+    - http://bash3boilerplate.sh/
+    - [[https://bash.cyberciti.biz/guide/Main_Page][Linux Shell Scripting Tutorial]]
+    - http://ryanstutorials.net/bash-scripting-tutorial/
+    - http://linuxcommand.org/lc3_writing_shell_scripts.php
+    - https://www.youtube.com/watch?v=3ME7gayYeUQ
+    - https://www.youtube.com/results?search_query=shell+scripts+bioinformatics&page=&utm_source=opensearch
+    - https://google.github.io/styleguide/shell.xml
+    - http://mywiki.wooledge.org/BashGuide
+    - http://www.davidpashley.com/articles/writing-robust-shell-scripts/
+    - https://emb.carnegiescience.edu/sites/default/files/140602-sedawkbash.key_.pdf
+    - https://github.com/dylanaraps/pure-bash-bible
+    - https://devhints.io/bash
+    - https://www.ibm.com/developerworks/aix/library/au-satbash.html
+    - [[http://tldp.org/LDP/LG/issue18/bash.html][string manipulations]]
+    - cite:veeraraghavan2002
+    - http://tldp.org/LDP/abs/html/
+    - https://github.com/onceupon/Bash-Oneliner
+    - https://devhints.io/bash?source=post_page---------------------------
+    - [[https://www.ostechnix.com/test-your-bash-skills-by-playing-command-line-games/][bash games]]
+    - [[https://www.reddit.com/r/commandline/comments/kbeoe/you_can_make_readline_and_bash_much_more_user/?st=j6k0lbfa&sh=6d214d1f][reddit: You can make readline (and bash) much more user friendly by adding a few options to ~/.inputrc]]
+    - https://unix.stackexchange.com/questions/42728/what-does-31-12-23-do-in-a-script
+    - http://tldp.org/LDP/abs/html/index.html
+    - https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
+    - https://github.com/dylanaraps/pure-bash-bible
+    - https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md
+  - [[http://mywiki.wooledge.org/FullBashGuide][Full bash guide]]
+- https://mywiki.wooledge.org/BashPitfalls
+- [[https://tldp.org/LDP/abs/html/][Advanced bash scripting guide]]
+- cite:greenberg2021
+- Style and best practices
+  - https://google.github.io/styleguide/shellguide.html
+  - https://stackoverflow.com/questions/64786/error-handling-in-bash/13099228#13099228
+  - function and variable names
+    - https://www.google.com/search?q=bash+best+practice+function+name
+      - https://google.github.io/styleguide/shellguide.html#s7.1-function-names
+****** Ideas
+:PROPERTIES:
+:ID:       0ab13eb3-64dc-4696-888a-0caf1e7997dc
+:END:
+- https://www.reddit.com/r/emacs/comments/x2mmfc/from_vanilla_emacs_to_bash_ide_in_17_minutes/
+- check and set file permissions as best practice
+- ideas for function development protocol-
+  - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
+- size filter
+  - #find $localdata/frag-filt-bams -name "*.bam" -type 'f' -size -4M -delete
+     # small bam check
+     ##
+     #if [ -f /drive3/users/jszymanski/repos/mpnst/data/small_bams ]; then rm /drive3/users/jszymanski/repos/mpnst/data/small_bams; fi
+     ##
+     #minimum_bam_size=200000000
+- ideas
+  - check and set file permissions as best practice
+  - ideas for function development protocol-
+    - first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
 ***** Document markup langugaes
 :PROPERTIES:
 :ID:       d0814f52-3b46-4d3a-b46c-20e2864e43d7
@@ -16003,11 +16488,10 @@ adb connect 192.168.1.12:5555
 
 #+end_src
 
-*** R Statistical Computing                           
+*** R Statistical Computing
 :PROPERTIES:
 :ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
 :END:
-https://www.reddit.com/r/Rlanguage/comments/1ksy3c4/the_8020_guide_to_r_you_wish_you_read_years_ago/
 **** Ansible                                                         :ansipb:
 :properties:
 :header-args:yaml: :tangle ./ansible/playbooks/r-install.yaml
@@ -16094,12 +16578,14 @@ https://chatgpt.com/c/67d18bbf-d1ec-8005-bbbb-836fd4d82dd4
 
 **** [[id:4783cca8-92ea-4053-b3c8-7d79862e3939][R package installs in basecamp conda environment]]
 **** R Cookbook                                                    :cookbook:
-**** Tutorial
+- Modern good practice
+  - Scripts
+    - Use argparse (over optparse)
+- Style guide
 - Get $HOSTNAME
   #+begin_src R
 Sys.info()["nodename"]
 #+end_src
-
 **** Processes                                                    :hierarchy:
 :PROPERTIES:
 :ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
@@ -17507,6 +17993,7 @@ https://stat.ethz.ch/pipermail/ess-help/2015-July/010628.html
 :CREATED:  [2021-06-04 Fri 10:12]
 :ID:       707e5032-ae3d-4f3e-86eb-46917bec88f8
 :END:
+- https://www.reddit.com/r/Rlanguage/comments/1ksy3c4/the_8020_guide_to_r_you_wish_you_read_years_ago/
 - [[cite:&venables2018]]
 - https://www.reddit.com/r/Rlanguage/comments/17yg8hx/what_are_some_aspects_you_dislike_about_r/
 - https://rdrr.io/cran/styler/man/tidyverse_style.html
@@ -17721,9 +18208,9 @@ echo $PATH
 gcloud compute ssh jeszyman@instance-20240601-125838 --zone us-central1-a
 #+end_src
 - gsutil is python app to access cloud storage
-  - gsutil cp - use for single files. it will always overwrite 
-  - gsutil rsync - use for dirs  
-    
+  - gsutil cp - use for single files. it will always overwrite
+  - gsutil rsync - use for dirs
+
 
 
 gsutil -m cp -n -c -L /mnt/data/projects/pnst/logs/gcloud-transfer-2025-02-03.txt gs://chaudhuri-lab-bucket1/ris/mpnst/inputs/seq/10_10NC60M_R1.fastq.gz   /mnt/data/projects/pnst/inputs/10_10NC60M_R1.fastq.gz
@@ -17732,6 +18219,7 @@ gsutil -m cp -n -c -L /mnt/data/projects/pnst/logs/gcloud-transfer-2025-02-03.tx
 :PROPERTIES:
 :ID:       1169cb65-4a18-43d3-9643-67ac3e85f0d1
 :END:
+https://ansible-ee-builder.lovable.app/
 **** Playbooks
 **** Ansible Cookbook                                              :cookbook:
 :properties:
@@ -17750,8 +18238,8 @@ gsutil -m cp -n -c -L /mnt/data/projects/pnst/logs/gcloud-transfer-2025-02-03.tx
   # --connection=local bypasses ssh
   #
   # This setup allows hosts: all in the playbook but local runs via command line without
-  # an inventory. 
-  
+  # an inventory.
+
   hosts: all
   tasks:
 #+end_src
@@ -17791,7 +18279,7 @@ apt_packages:
 
 #+name: ansible-include-vars-yaml
 #+begin_src yaml
-# Note this is relative to the playbook location 
+# Note this is relative to the playbook location
     - name: Include yaml explicitly
       include_vars:
         file: ../group_vars/cookbook-apts.yaml
@@ -17808,7 +18296,7 @@ apt_packages:
 **** Processes
 - Avoid cryptography deprecation warnings
   #+begin_src bash
-# Avoid cryptography deprecation warnings: 
+# Avoid cryptography deprecation warnings:
 pip install --upgrade paramiko cryptography
 #+end_src
 - Install ansible language server
@@ -17823,7 +18311,7 @@ ansible --version
 #+end_src
 
 #+RESULTS[87d82b76e65498498f92fb10a274e734b3bddd69]:
-: ansible [core 2.11.12] 
+: ansible [core 2.11.12]
 :   config file = /home/jeszyman/.ansible.cfg
 :   configured module search path = ['/home/jeszyman/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
 :   ansible python module location = /home/jeszyman/.local/lib/python3.10/site-packages/ansible
@@ -17855,7 +18343,7 @@ $0
 :header-args:yaml: :tangle ./ansible/playbooks/linux-playbook.yaml :mkdirp yes
 :end:
 **** group_vars
-#+begin_src yaml :tangle ./ansible/group_vars/all.yaml 
+#+begin_src yaml :tangle ./ansible/group_vars/all.yaml
 apt_packages:
   - ansible
   - tree
@@ -17886,23 +18374,23 @@ apt_packages:
       debug:
         msg: |
           Logged in as: {{ ansible_env.USER }}
-          
+
           Home directory: {{ ansible_user_dir }}
-          
+
           Environment HOME: {{ ansible_env.HOME }}
-          
+
           PATH: {{ ansible_env.PATH }}
-          
+
           OS: {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_os_family }})
-          
+
           Hostname: {{ ansible_hostname }}
-          
+
           FQDN: {{ ansible_fqdn }}
-          
+
           Default IPv4: {{ ansible_default_ipv4.address }}
-          
+
           Inventory Sources: {{ ansible_inventory_sources }}
-          
+
           Package Manager: {{ ansible_pkg_mgr }}
 #+end_src
 **** Install APT package list as an external file
@@ -17943,7 +18431,8 @@ git_setup:
 :PROPERTIES:
 :ID:       3eb81250-e885-4941-a559-997381abc196
 :END:
-https://www.reddit.com/r/bioinformatics/comments/1krwcgp/how_does_your_lab_store_ngs_sequencing_data_in/
+- https://missing.csail.mit.edu/
+- https://www.reddit.com/r/bioinformatics/comments/1krwcgp/how_does_your_lab_store_ngs_sequencing_data_in/
 - https://www.reddit.com/r/ChatGPT/comments/13r3v36/i_run_an_ai_tools_directory_here_are_some_top_ai/
 - https://dev.to/devdefinitive/33-github-projects-i-have-bookmarked-and-you-should-298o
 - https://www.reddit.com/r/datascience/comments/mlfy02/what_is_your_ds_stack_and_roast_mine/
@@ -17951,11 +18440,12 @@ https://www.reddit.com/r/bioinformatics/comments/1krwcgp/how_does_your_lab_store
 :PROPERTIES:
 :ID:       b3c4c653-9584-4084-9e0e-abf16f95ac52
 :END:
+- https://github.com/ONLYOFFICE
 - https://github.com/sxyazi/yazi
-- https://www.benq.com/en-us/monitor/programming/rd280u.html  
+- https://www.benq.com/en-us/monitor/programming/rd280u.html
 - make org tangles run asyncronous
 - cast boox screen to linux or http
-2. [X] safe rm through [[http://pages.stern.nyu.edu/~marriaga/software/libtrash/][libtrash]]
+- [X] safe rm through [[http://pages.stern.nyu.edu/~marriaga/software/libtrash/][libtrash]]
 https://gitlab.com/Chocimier/tuir
 
 let's draw the dir trees w/ tikz / forest

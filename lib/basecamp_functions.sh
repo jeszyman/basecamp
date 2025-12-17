@@ -479,29 +479,71 @@ EOF
 
     grep -rnw "${dir}" -e "${term}"
 }
-screenshot(){
-    print_usage(){
-	cat <<- EOF
+screenshot () {
+    function print_usage () {
+        cat <<-EOF
 
- Usage: screenshot
+ Usage: screenshot [-w|--window]
 
-      Takes interactive screenshot with the scrot program and saves it to
-      clipboard with xclip. The screenshot is also saved as a png file at
-      /tmp/screenshot.png. NOTE the /tmp/screenshot.png file is overwritten for
-      each use.
+      Takes a screenshot with scrot and copies it to the clipboard with xclip.
+      The screenshot is also saved as /tmp/screenshot.png (overwritten each use).
 
-      Example: screenshot
+      No options       Interactive selection (draw rectangle)
+      -w, --window     Click a window to capture it
+      -h, --help       Show this help
 
 EOF
     }
 
-    if [[ "$*" =~ (-h|--help)  ]]; then
-	print_usage
-	return
+    local mode="select"
+
+    # Simple option parsing: only -w/--window and -h/--help
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -h|--help)
+                print_usage
+                return
+                ;;
+            -w|--window)
+                mode="click"
+                ;;
+            *)
+                echo "Unknown option: $1" >&2
+                print_usage
+                return 1
+                ;;
+        esac
+        shift
+    done
+
+    local outfile="/tmp/screenshot.png"
+
+    if [[ "$mode" == "select" ]]; then
+        # Interactive region (your original behavior)
+        scrot -s -f --overwrite "$outfile" || return 1
+    else
+        # Click a window, then capture its frame geometry
+        # Requires xwininfo (package: x11-utils)
+        local X Y W H
+        read -r X Y W H < <(
+            xwininfo -frame | awk '
+                /Absolute upper-left X:/ {x=$4}
+                /Absolute upper-left Y:/ {y=$4}
+                /Width:/ {w=$2}
+                /Height:/ {h=$2}
+                END {print x, y, w, h}
+            '
+        )
+
+        if [[ -z "$X" || -z "$Y" || -z "$W" || -z "$H" ]]; then
+            echo "Could not get window geometry" >&2
+            return 1
+        fi
+
+        scrot -a "$X,$Y,$W,$H" -f --overwrite "$outfile" || return 1
     fi
 
-    scrot -s -f --overwrite /tmp/screenshot.png && xclip -selection clipboard -t image/png -i /tmp/screenshot.png
-
+    xclip -selection clipboard -t image/png -i "$outfile"
 }
 debug(){
     print_usage(){
@@ -1029,52 +1071,52 @@ EOF
     echo "Error: Snakemake run failed."
   fi
 }
-smk_draw(){
-  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+smk_draw () {
+  [[ "$1" =~ (-h|--help) || -z "$1" || -z "$2" ]] && {
     cat <<EOF
-Usage: smk_draw <CONFIG FILE> <SNAKEFILE>
-Implements snakemake's rulegraph to make a DAG. DAG is saved in ./resources/<SNAKEFILE BASENAME>.pdf and .png
+Usage: smk_draw <SNAKEFILE> <CONFIG FILE>
+Generates a rulegraph DAG → ./resources/<snakefile>_smk.pdf and .png
 EOF
     return
   }
 
   local snakefile="$1"
   local configfile="$2"
-  local cores=$(nproc)
+
+  [[ ! -f "$snakefile" ]]  && { echo "Error: Snakefile '$snakefile' does not exist."; return 1; }
+  [[ ! -f "$configfile" ]] && { echo "Error: Config file '$configfile' does not exist."; return 1; }
+
+  local snakefile_basename; snakefile_basename="$(basename "$snakefile")"
+  mkdir -p ./resources
+
+  local concurrency
+  concurrency="$(yqgo e '.["available-concurrency"] // .available_concurrency // 100' "$configfile" 2>/dev/null)"
+
+  local cores; cores="$(nproc)"
   local out_pdf="./resources/${snakefile_basename%.*}_smk.pdf"
   local out_png="${out_pdf%.*}.png"
 
-  if [[ ! -f "$snakefile" ]]; then
-      echo "Error: Snakefile '$snakefile' does not exist."
-      return 1
-  fi
-
-  if [[ ! -f "$configfile" ]]; then
-      echo "Error: Config file '$configfile' does not exist."
-      return 1
-  fi
-
-  local concurrency=$(yqgo e '.available_concurrency // 100' "$configfile")
-
-  snakemake \
+  # Get pure DOT into a variable (avoids broken pipes when sourcing in shells)
+  local graph
+  if ! graph="$(
+    snakemake \
       --configfile "$configfile" \
       --cores "$cores" \
-      --keep-going \
-      --rerun-incomplete \
       --resources concurrency="$concurrency" \
       --snakefile "$snakefile" \
-      --use-conda \
-      --conda-frontend conda \
-      --use-singularity \
-      --printshellcmds \
-      --singularity-args "--bind /mnt" \
-      --dry-run \
-      --quiet \
-      --rulegraph | tee >(dot -Tpdf -Gsize=11,8.5 > "$out_pdf") | dot -Tpng > "$out_png"
-
-  if [ $? -ne 0 ]; then
-      echo "Error: Snakemake run failed."
+      --rulegraph \
+      --quiet 2>/dev/null
+  )"; then
+    echo "Error: Snakemake rulegraph generation failed."
+    return 1
   fi
+
+  # Render both formats from the same DOT
+  printf '%s\n' "$graph" | dot -Tpdf -Gsize=11,8.5 -o "$out_pdf" || { echo "dot(pdf) failed"; return 1; }
+  printf '%s\n' "$graph" | dot -Tpng -o "$out_png"                  || { echo "dot(png) failed"; return 1; }
+
+  [[ -s "$out_pdf" && -s "$out_png" ]] || { echo "Outputs empty"; return 1; }
+  echo "Wrote: $out_pdf and $out_png"
 }
 smk_touch(){
   [[ "$1" == "-h" || "$1" == "--help" || $# -ne 2 ]] && {
@@ -1160,20 +1202,19 @@ EOF
   fi
 }
 smk_forced(){
-  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+  [[ "$1" == "-h" || "$1" == "--help" || $# -ne 2 ]] && {
     cat <<EOF
 
-Usage: smk_forced <SNAKEFILE> [CONFIGFILE]
+Usage: smk_run <SNAKEFILE> <CONFIGFILE>
 
-Wrapper for a forced snakemake run. --configfile defaults to ./config/${HOSTNAME}.yaml if no second argument is provided. Runs all available cores.
+Wrapper for normal snakemake. CONFIGFILE is required. Runs on all available cores.
+Reads 'available_concurrency' from the YAML or defaults to 100.
 
-Example: smk_forced ./workflow/analysis1.smk
-         smk_forced ./workflow/analysis1.smk ./config/custom_config.yaml
+Example: smk_run ./workflow/analysis1.smk ./config/jeff-beast.yaml
 
 EOF
     return
   }
-
 
   local snakefile="$1"
   local configfile="$2"
@@ -1191,16 +1232,20 @@ EOF
 
   local concurrency=$(yqgo e '.available_concurrency // 100' "$configfile")
 
-  # Run
   snakemake \
       --configfile "$configfile" \
       --cores "$cores" \
       --forceall \
+      --keep-going \
       --rerun-incomplete \
       --resources concurrency="$concurrency" \
-      --snakefile "$snakefile"
+      --snakefile "$snakefile" \
+      --use-conda \
+      --conda-frontend conda \
+      --use-singularity \
+      --printshellcmds \
+      --singularity-args "--bind /mnt"
 
-  # Check exit code and provide error message
   if [ $? -ne 0 ]; then
       echo "Error: Snakemake run failed."
   fi
