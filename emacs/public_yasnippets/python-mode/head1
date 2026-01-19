@@ -2,6 +2,7 @@
 # key: head1
 # expand-env: ((yas-indent-line 'none))
 # --
-${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
-###   ${1:$$(capitalize yas-text)}   ###
-${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
+# ==========================================================
+# ${1:$$(upcase yas-text)}
+# ==========================================================
+$0

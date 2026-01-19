@@ -1090,6 +1090,8 @@ public_symlinks:
     dest: "${HOME}/.emacs.d/lisp/ob-mermaid.el"
   - src: "${HOME}/repos/basecamp/lib/basecamp_functions.sh"
     dest: "${HOME}/.bashrc.d/basecamp_functions.sh"
+  - src: "${HOME}/repos/latex/emacs/latex_setup.el"
+    dest: "${HOME}/.emacs.d/lisp/latex_setup.el"
 
 wget_downloads:
   - src: https://www.emacswiki.org/emacs/download/essh.el
@@ -1241,8 +1243,12 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
 
 #+begin_src yaml
     - name: Update apt cache
-      apt:
-        update_cache: yes
+      ansible.builtin.command: apt-get update --allow-releaseinfo-change
+      register: apt_update
+      retries: 5
+      delay: 5
+      until: apt_update.rc == 0
+      changed_when: false
       become: true
 
     - name: Ensure APT packages are installed
@@ -1841,17 +1847,51 @@ emacs () {
 :ID:       318be8d0-cfce-495f-90cd-93942c04f3b6
 :END:
 #+begin_src bash
-mute(){
+mute() {
+    print_usage() {
+        cat <<- EOF
+Usage: mute
+Mutes system audio and microphone, saving current volume levels for later restoration.
+Options:
+  -h, --help    Show this help message and exit
+Arguments: This function takes no arguments.
+Example:
+  mute
+EOF
+    }
+    if [[ $# -gt 0 ]]; then
+        print_usage
+        return 0
+    fi
+    mkdir -p ~/.local/state/volume
+    amixer get Master | grep -oP '\d+%' | head -1 > ~/.local/state/volume/master
+    amixer get Speaker | grep -oP '\d+%' | head -1 > ~/.local/state/volume/speaker
     amixer set Master mute
     amixer set Capture nocap
 }
 #+end_src
 ****** unmute()
 #+begin_src bash
-unmute () {
-    amixer set Master unmute
-    amixer set Master 30% unmute
-    amixer set Speaker 30% unmute  # If 'Master' doesn't work
+unmute() {
+    print_usage() {
+        cat <<- EOF
+Usage: unmute
+Unmutes system audio and microphone, restoring previously saved volume levels.
+Options:
+  -h, --help    Show this help message and exit
+Arguments: This function takes no arguments.
+Example:
+  unmute
+EOF
+    }
+    if [[ $# -gt 0 ]]; then
+        print_usage
+        return 0
+    fi
+    local master_vol=$(cat ~/.local/state/volume/master 2>/dev/null || echo "30%")
+    local speaker_vol=$(cat ~/.local/state/volume/speaker 2>/dev/null || echo "30%")
+    amixer set Master "$master_vol" unmute
+    amixer set Speaker "$speaker_vol" unmute
     amixer set Capture cap
 }
 #+end_src
@@ -3486,7 +3526,7 @@ EOF
 **** [[id:a9f97cde-27bc-4777-bb12-164ac4cb421d][Shell functions in basecamp-private]] more_bashrc
 *** Lisp functions
 :PROPERTIES:
-:header-args: :tangle ./lib/lisp_functions.el :tangle-mode (identity #o555) :mkdirp yes :noweb yes :comments org
+:header-args: :tangle ./lib/lisp_functions.el :tangle-mode (identity #o644) :mkdirp yes :noweb yes :comments org
 :ID:       2fc1a6f1-093c-4250-a905-1bf42b7b9eee
 :END:
 [[file:lib/lisp_functions.el]]
@@ -8938,136 +8978,226 @@ singularity version
 :ID:       a8b27140-4b9e-40c5-86ab-ee5afeae723f
 :CREATED:  [2021-09-13 Mon 07:29]
 :END:
+******* Snakemake Style Guide and Good Practice
+Use f-strings for declarative path building: f"{D_EMSEQ}/alignments/{{sample}}.bam".
 
-# Fallbacks for lint-only execution
-try:
-    ENV_EMSEQ
-except NameError:
-    ENV_EMSEQ   = "envs/emseq.yml"
-    D_EMSEQ     = "emseq"
-    D_REF       = "ref"
-    D_LOGS      = "logs"
-    D_BENCHMARK = "benchmark"
+Use Hungarian Notation for directory variables (e.g., D_LOGS, D_REF) to distinguish them from local variables.
 
-emseq_mincov = 2
-emseq_build = "hg38"
+Avoid os.path.join unless necessary for complex cross-platform compatibility; f-strings are more readable for this specific structure.
 
-linter https://chatgpt.com/c/68c74758-9a4c-8333-a734-079b2eb58a98
 
-# Only need to create dirs for non-output targets (log/benchmark). Parents of outputs are handled by Snakemake.
+- Scope and philosophy
+  - Intent
+  - Overall architecture
+- Repository
+  - Repository types
+    - Modular repositories: Collections of cohesive rules, typically around a distinct data class and objective (RNA-seq, EM-seq, etc.)
+    - Project repositories: Wrapper snakefiles orchestrating multiple modular workflows. Structured around a specific experimental project
+  - Documentation
+    - README
+      - Changlog
+      - DAGs
+    - Repository-internal minimum working example
+  - Version control
+    - Semantic versioning
+    - Release workflow
+- Workflow architecture
+  - Project / wrapper snakefile
+    - Defines global constants to be used in modules
+    - The rule all is a human-readable manifest of the project's exact deliverables., Do not hide outputs in helper functions
+  - Module snakefile
+    - module snakefiles enforce file organization below an abstracted data dir.
+    - use older include directive, not modules
+    - rules are prefixed by module identifier
+    - no all rule or global constant definitions
+  - Path and variable conventions
+    - Hungarian notation prefixes for defined classes: Use prefixes (D_ for data, R_ for repo, CONDA_ for envs).
+    - for paths, declarative f-strings with explicit structure (e.g., f"{D_EMSEQ}/align/{{sample}}.bam").
+- Configurations and experimental designs
+- Rule construction and implementation
 
-- Good practice
-  - General principles
-    - Keep in-rule variable references as simple as possible
-  - Project-level construction
-    - Snakemake configuration files
-      - Use nested mapping where appropriate, e.g.
-	#+begin_src yaml
-envs:
-  cfdna-cna: "~/repos/cfdna/config/cfdna-cna-conda-env.yaml"
 
-#+end_src
-  - Obscure but useful data structures
-    When aggregating library-level outputs into experiment-level analyses, workflows use nested Python dictionaries (dict of dicts) to define experiment metadata. For example:
+- Scope and intent
+  This guide defines conventions for Snakemake workflows, repositories, configuration, and rule structure. Goals are readability, reproducibility, portability, and correct resource accounting.
+  - Design principles
+    - Single source of truth
+    - Encapsulation
+    -
+- Repository level structure
+  - Repositories are of one of two classes.
+    - Modular repositories focused on one or more related workflows.
+    - Project repositories focused on experimental outcomes and referencing potentially multiple modular workflows.
+  - A README.md is required and includes:
+    - A concise description of the workflow(s).
+    - Image of current workflow(s) directed acyclic graph.
+    - A changelog documenting workflow-level changes.
+  - Should have an internal minimum working example which functions in continuous integration testing.
+  - Workflow versions are managed with Git tags using semantic versioning:
+    - Managed with Git tags where tags contain semantic versioning per workflow
+      - wf/<workflow>/vX.Y.Z
+      - Examples: wf/cfdna-cna/v2.1.0, wf/emseq/v1.7.1
+    - Document workflow versions in the README changelog
+    - Minimum git workflow:
+      1. Create updated workflow
+      2. When workflow is ready for version update, document in README changelog
+      3. Commit workflow and README updates
+	 git add -A
+      4. Tag repository with workflow version
+	 git tag -a wf/<WORKFLOW>/v<VERSION> -m "<MESSAGE>"
+      5. Push tag
+	 git push origin master --follow-tags
+- General design principles
+  - Favor explicitness over cleverness, tolerating verbosity or repetition.
+  - Rules should read top-to-bottom
+  - If understanding a rule requires mentally executing Python code, the logic is likely misplaced.
+  - Avoid hiding workflow decisions inside helper functions when a rule pattern or explicit expansion would suffice.
+  - Ideally in mature workflows, snakefiles and scripts fulfill separate concerns:
+    - Workflow logic lives in Snakefiles; implementation logic lives in external scripts.
+    - Snakefiles express dependencies, data flow, and resources.
+    - Scripts perform computation and transformation.
+  - Make resource usage visible to Snakemake.
+- Configuration
+  - Experiment-level configuration
+    - When aggregating library-level outputs into experiment-level analyses:
+      - Define experiment maps in YAML as nested dictionaries.
+      - Each top-level key represents an experiment.
+      - Values define shared parameters and the list of libraries.
+      - The Snakefile loads the nested dict from `config` and treats it as the canonical experiment map.
+    - The Snakefile binds the YAML subtree once and treats it as canonical.
+    - Each top-level key is an experiment identifier; its value is a dict of parameters shared across that experiment, including the list of libraries.
 
-    #+begin_src python
-    meth_map = {
-    "test": {
-    "build": "hg38",
-    "mincov": "5",
-    "libs": library_ids,
-    "tx": "0,1"
-    }
-    }
+    #+begin_src yaml
+    experiments:
+      test:
+	build: hg38
+	mincov: 5
+	libs:
+          - lib001
+          - lib002
+          - lib003
+	tx: "0,1"
     #+end_src
 
-    Each top-level key in meth_map (e.g. "test") represents a single experiment — a defined set of libraries run under shared conditions. The associated value is a dictionary containing metadata and parameters for that experiment.
+    - In the Snakefile, bind the YAML subtree once and consume it consistently.
 
-    These maps are accessed dynamically in Snakemake rules using the wildcards.experiment variable. For example:
+    #+begin_src python
+    EXPERIMENTS = config["experiments"]
 
-    meth_caller = meth_map[wildcards.experiment]["meth_caller"]
+    build = EXPERIMENTS[wildcards.experiment]["build"]
+    #+end_src
 
-    This design enables flexible reuse of libraries across multiple experimental contexts, making it easy to reprocess the same samples under different parameter settings or analytical strategies.
-  - Rules
-    - Rule paths are built using f-strings (formatted string literals in Python) wrapping expressions.
-      - These path f-strings should be declarative.
-      - Snakemake wildcards must pass through Python formatting. Escape with double braces:
-	bam = f"{D_CFDNA_CNA}/bams/input/{{lib}}.bam"
-	log = f"{D_LOGS}/fragment_filter/{{lib}}.log"
-	- Wildcards inline in rule paths avoid hidden lambda path logic.
-      - Paths are absolute, resolved once from config at top of snakefile
-      - Variable Conventions
-	- When expressions are variables referencing a path location or environment, variables employ consistent prefixes to make their meaning explicit:
-	  - D_ → Data directory constants
-	    e.g. D_LOGS, D_CFDNA_CNA, D_LOCAL_TMP
-	    Always absolute paths, typically pulled from config.yaml.
-	  - R_ → Repository constants
-	    e.g. R_CFDNA, R_EMSEQ
-	    Point to the location of local code or settings in repos.
-	  - ENV_ → Conda environment files
-	    e.g. ENV_EMSEQ, ENV_CFDNA_CNA
-	    These are YAML files that define the conda environment for each rule.
-    - Directives
-      - Directives for every rule
-	- benchmark:
-	- message:
-	  Short human-readable status on run
-      - Useful directive tricks
-	- extra = config.get("fastp", {}).get("extra", "")
-    - Shell block
-      - Include useful console output
-	echo "[fastp] $(date) lib={wildcards.library_id}" &>> "{log.cmd}"
-      - &>> "{log.cmd}"
-    - Modular workflow rules are prefixed with workflow ID (/e.g./ rule align: in workflow emseq.smk would be called rule emseq_align:
-  - Workflows
-    - Workflow versioning
-      - Managed with Git tags where tags contain semantic versioning per workflow
-	- wf/<workflow>/vX.Y.Z
-	- Examples: wf/cfdna-cna/v2.1.0, wf/emseq/v1.7.1
-      - Document workflow versions in the README changelog
-      - Minimum git workflow:
-	1. Create updated workflow
-	2. When workflow is ready for version update, document in README changelog
-	3. Commit workflow and README updates
-	   git add -A
-	4. Tag repository with workflow version
-	   git tag -a wf/<WORKFLOW>/v<VERSION> -m "<MESSAGE>"
-	5. Push tag
-	   git push origin master --follow-tags
-    - Modular workflows
-      - for modular workflows, rule name begins with workflow identifier, e.g. emseq_fastp, not just fastp
-  - Emacs Org-mode integration
-  - README.md
-    - changelog
-******* Good practice and Style
-:PROPERTIES:
-:ID:       3964a700-f2bb-4e35-9d4e-4b07603c4d95
-:END:
-https://www.reddit.com/r/bioinformatics/comments/17pk9ut/good_ways_to_control_file_structure_and_output/
-- double config - common plus override @ command
-- good practice- conda env per rule
+    - Expand library-level inputs for a given experiment using the YAML-provided library list.
 
-- Threads always parameterized, not hard coded in script- "If you bake “12” into the shell call, Snakemake has no idea you’re actually using 12 cores and may launch too many jobs at once."
-- Idea to make config references directly in rules https://chatgpt.com/c/68799b2d-9a1c-8005-8e71-12f07b26d421
-- use raw strings for shell commands (r""" instead of just """), avoids escape issues from like \n
-- Configuration
-  - tabular- declare per-unit identifiers and index in snakefile preamble. /E.g./ # units = pd.read_table("bin/units_test.tsv").set_index("sample", drop=False)
-    - needs import pandas
-  - YAML files
-    - subdivide labels. /E.g./
-      ref:
-        index:
-      rather than ref_index:
-      (use as ref = config["ref"]["index"])
-    - Favor parameterizing only a main data directory and then writing subpaths directly in rules. /E.g/ config["data_dir"] + "/qc" rather than config["qc_dir"].
-    - Use boolean setters in the config.
+    #+begin_src python
+    input:
+      lambda wc: expand(
+	f"{D_EMSEQ}/dmr/tabix/{{library_id}}.txt.bgz",
+	library_id=EXPERIMENTS[wc.experiment]["libs"],
+      )
+    #+end_src
+
+    - Treat experiments as first-class workflow units by expanding experiment outputs in `rule all`.
+
+    #+begin_src python
+    expand(
+      f"{D_EMSEQ}/dmr/diff/methylBase_{{experiment}}.txt.bgz",
+      experiment=EXPERIMENTS.keys(),
+    )
+    #+end_src
+
+    - This keeps experiment definitions human-auditable and version-controlled as data, while preserving the same rule-level usability as a Python dict-of-dicts.
+  - YAML
+    - Prefer structured (nested) YAML over flat keys:
+      - Use nested mappings, e.g. config["ref"]["index"] not config["ref_index"].
+    - Use booleans for conditional execution.
+      - Conditional branches are expressed in rule all or wrapper logic.
       - /E.g./
         - in config: call_variants: false
         - and in rule all:         lambda wildcards: "analysis/09a_variant_annot/all.merged.filt.PASS.snpeff.vcf.gz.tbi" if config["call_variants"] else [],
-- Externalize all scripts from workflow and allow independent script execution
-- Each rule has logfile defined in workflow directed to log_dir
-- Software generated log files are redirected to log_dir
-- Repos have MWE for each snakefile
+  - Tabular configuration
+    - For sample- or unit-level metadata:
+    - Use tabular configuration (TSV/CSV).
+    - Load once in the Snakefile preamble and index by identifier.
+  - Project (wrapper) workflows use a two-layer config pattern:
+    - A common/base config (checked into the repo).
+    - An override config passed at runtime via `--configfile` or `--config`.
+    - Base config defines defaults; overrides change behavior without editing code.
+  - Use booleans for conditional execution.
+    rule all:
+      input:
+	f"{qc_dir}/emseq_multiqc/emseq_multiqc.html",
+	expand(
+	  f"{emseq_dir}/dmr/diff/methylBase_{{experiment}}.txt.bgz",
+	  experiment=meth_map.keys(),
+	) if config["call_variants"] else [],
+- Variable and path conventions
+  - Use consistent descriptive prefixes for path- and environment-related variables:
+    - D_ for data directories (absolute paths from config).
+    - R_ for repository locations.
+    - CONDA_ for conda environment YAML files.
+  - Normalize directory constants without trailing slashes.
+  - Build paths using Python f-strings.
+    - Paths should be declarative and reflect intended output organization.
+    - Avoid encoding workflow logic or conditionals inside path expressions.
+  - Wildcards in f-strings must be escaped with double braces.
+  - When variables are fully predictable from wildcards, avoid lambda functions and reference simply like f"{config['data_dir']}/bams/{{sample}}.sorted.bam"
+  - Paths should be built or abstracted at the level of intended output organization. If an output directory structure is intended as a meaningful stable construct, it must be encoded at the level of each relevant rule. E.g. f"{D_EMSEQ}/fastqs//trimmed/{{library_id}}.trimmed_R1.fastq.gz". Avoid abstraction that would allow outputs outside of intended organization like f"{D_TRIMMED}/{{library_id}}.trimmed_R1.fastq.gz". Only perform this abstraction intentionally, for example if outputs write to some variable location for use in another workflow.
+- Workflow structure
+  - Distinguish between wrapper Snakefiles and modular Snakefiles.
+  - Modular Snakefiles:
+    - Encapsulate work rules for a cohesive data class (e.g. EM-seq, bulk RNA-seq, etc.).
+    - Do not define rule all.
+    - Do not contain constant definitions (e.g. D_LOGS)
+    - Do not own global workflow logic.
+    - Reference variables provided by the wrapper.
+    - Intended to be included by the wrapper; not typically executed standalone.
+    - Template
+      #+begin_src snakemake :tangle no
+
+#+end_src
+  - Project / Wrapper Snakefiles:
+    - Are the user-facing entry point.
+    - Load configuration and overrides.
+    - Define global directory constants derived from config.
+    - Load unit tables and perform schema checks.
+    - Define rule all as the single declaration of workflow outputs.
+    - Include modular Snakefiles.
+    - Wrapper snakefiles use a two-layer configuration model:
+      - Base (common) config committed to the repository.
+      - Optional override config provided at runtime via --configfile or --config.
+    - Template
+- Rules
+  - As possible, abstract values and paths to descriptive common variables.
+  - Modular workflow rules are always prefixed with workflow ID (/e.g./ rule align: in workflow emseq.smk would be called rule emseq_align:
+  - Modular workflow rules do not directly reference config, e.g.     r1=f"{D_EMSEQ}/fastqs/{config['raw_subdir']}/{library_id}_R1.fastq.gz",
+  - Rules describe what is produced, not how it is computed.
+  - Standard directives per rule, in order, unless contraindicated:
+    - message
+    - conda
+    - input
+    - log
+    - params
+    - threads
+    - output
+  - Threads are always parameterized. Never hard-code thread counts inside shell or scripts.
+  - Each rule specifies its conda environment.
+- Logging and run output
+  - Include useful console output, e.g.:
+    echo "[fastp] $(date) lib={wildcards.library_id}"
+  - A common D_LOG convention exists.
+  - Every rule defines a log file.
+  - Tool stdout and stderr are explicitly redirected so logs land in D_LOG.
+  - Useful execution messages are emitted for traceability.
+- Shell blocks and scripts
+  - echo a execution-specific message, e.g. echo "[mosdepth] $(date) lib={wildcards.library_id} ref={wildcards.emseq_ref_name} aln={wildcards.align_method} threads={threads}"
+  - Prefer external scripts over inline shell, runnable outside Snakemake with explicit arguments. Keep log and workflow logic in snakefile, external to script.
+  - Redirect stdout and stderr explicitly (e.g. via exec > "{log}" 2>&1).
+  - Avoid embedding complex logic in run or shell blocks.
+- Resource awareness and portability
+  - Threads, memory, and other resources are declared in rules, not hidden in scripts.
+  - Prefer repository-relative paths.
+  - Avoid hard-coded absolute paths.
+- Use [[id:dd9c7b11-7bb1-4a3d-8a40-b74ed0e2b55e][Python style guide]]
 
 ******* Preamble tools and functions
 ******** Normalize configuration yaml paths
@@ -9982,6 +10112,9 @@ $0
 :PROPERTIES:
 :ID:       7bebcaa9-bf1f-48fe-af02-e58c80def8da
 :END:
+- Reference
+  - Paths
+    - https://www.reddit.com/r/bioinformatics/comments/17pk9ut/good_ways_to_control_file_structure_and_output/
 - https://snakepipes.readthedocs.io/en/latest/content/workflows/mRNA-seq.html#mrna-seq
 
 - https://github.com/aomlomics/tourmaline
@@ -10028,6 +10161,16 @@ $0
 :PROPERTIES:
 :ID:       1854dffb-e8db-4c8d-8138-99a92aff98bd
 :END:
+# Fallbacks for lint-only execution
+try:
+    ENV_EMSEQ
+except NameError:
+    ENV_EMSEQ   = "envs/emseq.yml"
+    D_EMSEQ     = "emseq"
+    D_REF       = "ref"
+    D_LOGS      = "logs"
+    D_BENCHMARK = "benchmark"
+- linter https://chatgpt.com/c/68c74758-9a4c-8333-a734-079b2eb58a98
 
 - for each step, log the per-inputs time to run
 set emacs buffers of smk windows to a smaller text size default
@@ -12895,11 +13038,159 @@ https://www.freecodecamp.org/news/rust-in-replit/
 :PROPERTIES:
 :ID:       CA21AAC9-F147-4086-A24C-64451EE349F3
 :END:
-- https://github.com/rougier
 #+begin_src bash :results replace
 pip list
 #+end_src
+****** Python style guide
+:PROPERTIES:
+:ID:       dd9c7b11-7bb1-4a3d-8a40-b74ed0e2b55e
+:END:
+- Use 4 spaces, no tabs.
+- Comments
+  - Wrap comments at 80 columns when practical (Black default is 88); allow exceptions for unbreakable tokens (paths, commands, URLs) and for usage synopsis lines.
+  - Comment types
+    - Sectioning comments
+      - Major section headers use a separator banner with an uppercase title.
+      - Minor section subheaders use a separator banner with a mixed-case title.
+    - Docstrings (first statement string literals documenting an object) use python convention """..."""
+    - Non-docstring block comments
+      - Multi-line comments used for longer explanations.
+      - Block comments are sectioned off with a banner (same width/style as other separators).
+      - Block comments are not indented and are not subheaders; subheaders are always single-line.
+    - Standalone comments
+      - Single-line comments that precede the code they describe.
+      - Used for short context or rationale.
+    - Inline comments
+      - Comments on the same line as code.
+      - Placed after two spaces to clearly separate code from commentary.
+      - Kept short; explain rationale rather than restating the code.
+  - Template
+    #+begin_src python
+# =============================================================================
+# SECTION: CONFIGURATION
+# =============================================================================
 
+
+DEFAULT_THREADS = 8  # keep low for interactive nodes
+
+# -----------------------------------------------------------------------------
+# Subsection: Input parsing
+# -----------------------------------------------------------------------------
+
+def parse_args(argv: list[str]) -> "Args":
+
+# -----------------------------------------------------------------------------
+# Block comment
+#
+# Parse arguments once, validate inputs, and compute derived values here.
+# Downstream functions should consume named attributes only.
+# -----------------------------------------------------------------------------
+#+end_src
+- Scripts
+  - Overall structure: definitions first, `main()` last, with a `if __name__ == "__main__":` entry point.
+  - Elements
+    - Shebang: use ~#!/usr/bin/env python3~ only when the file is intended to be executed directly; otherwise omit and rely on `python -m ...` or packaging.
+    - Documentation: top module docstring describing purpose, inputs, outputs, assumptions.
+    - Usage and argument parsing: use `argparse` (preferred) and keep parsing and validation in `parse_args()`.
+    - parse_args()
+      - The only function that should read raw CLI args (`sys.argv` or `argv` list).
+      - `-h/--help` prints help and exits 0 (argparse default).
+      - CLI misuse exits 2 (argparse default).
+      - Runtime or domain validation failures exit 1 with targeted error to stderr.
+      - Returns a structured object (dataclass or argparse Namespace) for downstream functions.
+      - See https://docs.python.org/3/library/argparse.html
+    - main()
+      - Always the entry point.
+      - Short, linear orchestration.
+      - Calls `parse_args(argv)`, then calls work functions in order.
+    - Work functions
+      - Consume named variables only (for example `args.input_bam`, `args.out_dir`).
+      - Do not parse or validate CLI args.
+      - Prefer returning values over mutating globals.
+      - Assume preconditions are satisfied (invariants established by `parse_args()`).
+    - Entry point
+      - Final lines:
+        - `if __name__ == "__main__":`
+        - `raise SystemExit(main())`
+  - Error policy
+    - Stdout is reserved for primary, machine-consumable outputs (the “result” of the script).
+    - Stderr is reserved for all diagnostics: errors, warnings, progress, and informational logging.
+      - CLI misuse exits 2 (argparse default).
+      - Runtime or domain validation failures exit 1.
+  - Template
+    #+begin_src python
+#!/usr/bin/env python3
+"""
+Docstring
+"""
+
+import argparse
+from pathlib import Path
+
+# Centralize defaults as named constants so:
+# - help text stays consistent
+# - you do not repeat long strings
+# - defaults are easy to change later
+DEFAULT_INPUTS_DIR = "chaudhuri-lab-bucket1/jeszyman/projects/breast/inputs"
+DEFAULT_OUTPUT_TSV = Path("./data/emseq-fastq-inputs.tsv")
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        prog=Path(sys.argv[0]).name,
+        description="Extract R1 FASTQ metadata from a GCS bucket.",
+    )
+    parser.add_argument(
+        "--inputs-dir",
+        default=DEFAULT_INPUTS_DIR,
+        metavar="GCS_PATH",
+        help=f"GCS path after gs:// (default: {DEFAULT_INPUTS_DIR})",
+    )
+    parser.add_argument(
+        "--output-tsv",
+        type=Path,
+        default=DEFAULT_OUTPUT_TSV,
+        metavar="TSV",
+        help=f"Output TSV path (default: {DEFAULT_OUTPUT_TSV})",
+    )
+    args = parser.parse_args()
+    return args
+
+def main(argv: list[str] | None = None) -> int:
+    """
+    Orchestrate the script.
+
+    Good practice:
+    - parse args once
+    - call work functions with named values
+    - return an exit code (0 success; nonzero failure)
+    """
+    args = parse_args(argv)
+
+    # Placeholder for the real work. Keep heavy logic out of parse_args.
+    # Example:
+    # run_work(inputs_dir=args.inputs_dir, output_tsv=args.output_tsv)
+    return 0
+
+
+if __name__ == "__main__":
+    # Entry point:
+    # - ensures the script does not run when imported as a module
+    # - propagates main()'s integer return value as the process exit code
+    raise SystemExit(main())
+
+#+end_src
+- Functions
+  - Use `lower_snake_case` names.
+  - Prefer type hints for public functions and non-trivial internals.
+  - Prefer small, single-purpose functions.
+  - Prefer explicit parameters over hidden globals.
+  - For reusable functions (library-style)
+    - Parameterize inputs, return outputs.
+    - Do not print from library functions; return data or raise exceptions.
+    - Raise specific exceptions; convert to exit codes only in `main()` (or immediately around the entry point).
+- See
+  - [[https://google.github.io/styleguide/pyguide.html][Google Python Style Guide]]
+  - [[id:593672e1-82b2-44e0-aa00-d28825860706][My general programming style guide]]
 ****** Processes                                                  :hierarchy:
 :PROPERTIES:
 :ID:       2d89162b-ce67-4846-9e58-5f6143f2fe05
@@ -13129,22 +13420,109 @@ def ${1:FUNCTIONNAME$$(replace-regexp-in-string " " "_" yas-text)}(${2:PARAM$$(r
 $0
 ,#+end_src
 #+end_src
+******* block
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/python-mode/block
+# -*- mode: snippet -*-
+# name: python block comment banner (60 cols)
+# key: block
+# expand-env: ((yas-indent-line 'none))
+# --
+# `(make-string 59 ?-)`
+#
+# ${1:Comment}
+#
+# `(make-string 59 ?-)`
+$0
+#+end_src
+
+#+begin_src python
+
+# -----------------------------------------------------------
+#
+# Iasdf
+#
+# -----------------------------------------------------------
+
+
+
+# -----------------------------------------------------------
+# sadf
+#
+# asdfsdfsadfdsf asdfsdklj asdfsdlkj asdfsdfsd asdfsdf asdfsdafs asdf
+# -----------------------------------------------------------
+aslkdf
+
+
+# ${1:$(make-string 58 ?\-)}
+# sdf
+#
+# ${3:$(let* ((text yas-text)
+#            (prefix "# ")
+#            (width 60)
+#            (available-width (- width (length prefix))))
+#       (with-temp-buffer
+#         (insert text)
+#         (let ((fill-column available-width)
+#               (fill-prefix ""))
+#           (fill-region (point-min) (point-max)))
+#         ;; Now prefix each line with "# "
+#         (goto-char (point-min))
+#         (while (not (eobp))
+#           (unless (looking-at "^$")  ; skip empty lines at end
+#             (insert prefix))
+#           (forward-line 1))
+#         ;; Remove trailing empty "# " line if present
+#         (goto-char (point-max))
+#         (when (bolp) (backward-char 1))
+#         (when (looking-back "^# $" (line-beginning-position))
+#           (delete-region (line-beginning-position) (point-max)))
+#         (buffer-string)))}
+# ${1:$(make-string 58 ?\-)}
+sdf
+
+
+# ${1:$(concat "# " (make-string 58 ?\-))}
+# thsd
+# #
+# ${3:$(let* ((fill-column 60)
+#            (body yas-text))
+#       (with-temp-buffer
+#         (insert body)
+#         (goto-char (point-min))
+#         ;; Wrap to 60, then prefix each non-empty line with "# "
+#         (fill-region (point-min) (point-max))
+#         (goto-char (point-min))
+#         (while (not (eobp))
+#           (insert "# ")
+#           (forward-line 1))
+#         ;; If body ended with a newline, you may get an extra "# " line; trim it.
+#         (goto-char (point-max))
+#         (when (and (>= (point) 3)
+#                    (string= (buffer-substring (- (point) 3) (point)) "# \n"))
+#           (delete-region (- (point) 3) (point)))
+#         (buffer-string)))}
+# ${1:$(concat "# " (make-string 58 ?\-))}
+sdkfdjs
+
+#+end_src
+
 ******* head1                                                           :yas:
 #+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/python-mode/head1
 # -*- mode: snippet -*-
 # key: head1
 # expand-env: ((yas-indent-line 'none))
 # --
-${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
-###   ${1:$$(capitalize yas-text)}   ###
-${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
+# ==========================================================
+# ${1:$$(upcase yas-text)}
+# ==========================================================
+$0
 #+end_src
+#########1#########2#########3#########4#########5#########6
 
 #+begin_src python
-
-####################
-###   Header 1   ###
-####################
+# ================================================================
+# ASDFSDFSDF
+# ================================================================
 
 #+end_src
 
@@ -13158,9 +13536,11 @@ ${1:$(make-string (+ (string-width yas-text) 12) ?\#)}
 # key: head2
 # expand-env: ((yas-indent-line 'none))
 # --
-# ---   ${1:$$(capitalize yas-text)}   --- #
-# ${1:$(make-string (+ (string-width yas-text) 12) ?\-)} #
+# --------------------------------------------------------------------------------------
+# ${1:$$(capitalize yas-text)}
+# --------------------------------------------------------------------------------------
 $0
+
 #+end_src
 
 #+begin_src python
@@ -13295,15 +13675,11 @@ CLOCK: [2019-02-19 Tue 11:04]--[2019-02-19 Tue 11:25] =>  0:21
 12. Analyzing the Meaning of Sentences (minor fixes still required)
 13. Managing Linguistic Data (minor fixes still required)
 14. Afterword: Facing the Language Challenge
-****** Best practices and style
-:PROPERTIES:
-:ID:       dd9c7b11-7bb1-4a3d-8a40-b74ed0e2b55e
-:END:
-- See [[id:593672e1-82b2-44e0-aa00-d28825860706][My general programming style guide]]
 ****** General reference
 :PROPERTIES:
 :ID:       27cebc08-c8fd-4384-9fd4-6399d31a0652
 :END:
+- Lots of python tutorials https://github.com/rougier
 - https://www.google.com/search?q=python+commenting+best+practices
 - https://python-charts.com/
 - https://www.reddit.com/r/bioinformatics/comments/y9vy90/good_resources_to_use_for_learning_bioinformatics/
@@ -13767,46 +14143,100 @@ done
 :END:
 ****** [[id:f2557e40-0d81-438a-93e9-6917a40c1d8e][Emacs as a bash IDE]]
 ****** Style guide
-- Use 4 spaces, no tabs.
-- Scripts
-  - Overall structure: functions first, `main "$@"` last. `main()` is the entry point and is analogous to a Python main guard in how it organizes the script (Bash `main "$@"` does not distinguish execute vs source without extra logic.)
-  - Template:
+https://chatgpt.com/c/6942da4b-b31c-8331-bcf4-ea6485e9675b
+- Use 2 spaces, no tabs.
+- Comments
+  - Wrap comments at 80 columns when practical; allow exceptions for unbreakable tokens (paths, commands, URLs) and for usage synopsis lines.
+  - Comment types
+    - Sectioning comments
+      - Major section headers use a separator banner with an uppercase title.
+      - Minor section subheaders use a separator banner with a mixed-case title.
+    - Block comments
+      - Multi-line comments used for longer explanations.
+      - Block comments are sectioned off with a banner (same width/style as other separators).
+      - Block comments are not indented and are not subheaders; subheaders are always single-line.
+    - Standalone comments
+      - Single-line comments that precede the code they describe.
+      - Used for short context or rationale.
+    - Inline comments
+      - Comments on the same line as code.
+      - Placed after two spaces to clearly separate code from commentary.
+      - Kept short; explain rationale rather than restating the code.
+      - Do not place inline comments after a line-continuation backslash (`\`) or after a here-doc delimiter (`<<EOF`), as this breaks parsing.
+  - Template
     #+begin_src bash
-#!/usr/bin/env bash
+# =============================================================================
+# SECTION: CONFIGURATION
+# =============================================================================
+
+# Default threads. Keep low for interactive nodes.
+DEFAULT_THREADS=8
 
 # -----------------------------------------------------------------------------
-# Script name
-# Purpose, inputs, outputs, assumptions
+# Subsection: Input parsing
 # -----------------------------------------------------------------------------
 
-print_usage() {}
-
+# parse_args parses CLI arguments and sets global config variables.
 parse_args() {
-    # 1) Check help first, exit 0 to stdout
-    # 2) Arity and required args, exit 1 to stderr
-    # 3) Input arguement declarations
-    # 4) Compute derived variables as needed
-    # 5) Perform variable-specific validations as needed
-    }
+  out_dir="${2%/}"  # normalize output directory (avoid trailing slash)
 
-function_1() {}
-function_2() {}
+# -----------------------------------------------------------------------------
+# Block comment: input validation rationale
+#
+# Validate inputs early so downstream functions can assume invariants.
+# This keeps work functions simple and avoids duplicated checks.
+# Fail fast with a targeted message if a required input is missing.
+# -----------------------------------------------------------------------------
 
-main() {
-    parse_args "$@"
-    function_1
-    function_2
+  if [[ ! -f "$1" ]]; then
+    echo "Error: Input file not found: $1" >&2
+    exit 1
+  fi
 }
 
-main "$@"
+# =============================================================================
+# SECTION: WORK FUNCTIONS
+# =============================================================================
+
+run_tool() {
+  echo "[INFO] Running tool" >&2  # log to stderr to keep stdout clean
+}
+
+# -----------------------------------------------------------------------------
+# Subsection: Inline comment parse hazards
+# -----------------------------------------------------------------------------
+
+# BAD: inline comment after a continuation backslash breaks line continuation
+echo "a" \  # breaks parsing because '\' is no longer the last character on the line
+  "b"
+
+# GOOD: comment above; backslash is the last character on the line
+# Split command across lines for readability.
+echo "a" \
+  "b"
+
+# BAD: inline comment after here-doc delimiter breaks the delimiter
+cat <<EOF  # delimiter must be the last token on the line
+hello
+EOF
+
+# GOOD: comment above; delimiter line contains only the delimiter token
+# Print a small block of text.
+cat <<EOF
+hello
+EOF
 #+end_src
+- Scripts
+  - Overall structure: functions first, `main "$@"` last. `main()` is the entry point and is analogous to a Python main guard in how it organizes the script (Bash `main "$@"` does not distinguish execute vs source without extra logic.)
   - Elements
     - Shebang: use ~#!/usr/bin/env bash~ to resolve `bash` via PATH rather than assuming a fixed location.
     - Documentation: top block comment describing script.
-    - print_usage()
-      - Emits usage text via `cat <<EOF` to stderr.
+    - print_usage(): Usage statements follow Unix man-page conventions: a Usage: line with command name and argument synopsis, followed by a brief description, Options, Arguments, and Examples sections. Required arguments use <UPPERCASE> notation; optional elements are enclosed in brackets.
     - parse_args()
-      - Begins with overall usage validation. `-h|--help` prints usage and exits 0; misuse failures print usage and exit nonzero.
+      - Begins with overall usage validation.
+        - `-h|--help` prints usage and exits 0
+        - Misuse failures print usage and exit 2.
+        - Runtime errors print usage and exit 1
       - The only function that may read positional args (`$1`, `$2`, `$@`, `$#`).
       - Validates inputs, applies defaults, computes derived values. Targeted error messages based on variable-specific validation.
       - Sets script configuration variables (globals) for downstream functions to consume.
@@ -13821,9 +14251,65 @@ main "$@"
       - Assume preconditions are satisfied (invariants established by `parse_args()`).
     - Main guard
       - Final line: `main "$@"`.
+  - Error policy
+    - Stdout is reserved for primary, machine-consumable outputs (the “result” of the script) and for successful --help output.
+    - Stderr is reserved for all diagnostics: errors, warnings, progress, and informational logging.
+      - CLI misuse exits 2
+      - Runtime or domain validation failures (file not found, invalid value constraints) exits 1
+  - Template:
+    #+begin_src bash
+#!/usr/bin/env bash
+
+# -----------------------------------------------------------------------------
+# Script name
+# Purpose, inputs, outputs, assumptions, etc.
+# -----------------------------------------------------------------------------
+
+print_usage() {
+  cat <<EOF
+Usage: ${0##*/} [OPTIONS] <REQUIRED_ARG> [OPTIONAL_ARG]
+
+Short description of what the command does.
+
+Options:
+  -h, --help        Show this help message and exit
+  -o, --output DIR  Write output to DIR
+
+Arguments:
+  REQUIRED_ARG      Description
+  OPTIONAL_ARG      Description
+
+Examples:
+  ${0##*/} input.txt
+  ${0##*/} -o out input.txt
+EOF
+}
+
+parse_args() {
+  # 1) Check help first,
+  #    exit 0 to stdout
+  # 2) Check command line misuse (command invoked incorrectly),
+  #    exit 2 to stderr
+  # 3) Make input argument declarations
+  # 4) Perform variable-specific runtime validations as needed,
+  #    These exit 1 to stderr with variable-specific message
+  # 5) Compute derived variables as needed
+}
+
+function_1() {}
+function_2() {}
+
+main() {
+  parse_args "$@"
+  function_1
+  function_2
+}
+
+main "$@"
+#+end_src
 - Functions
   - Use `lower_snake_case` names.
-  - Opening brace on the same line: `name(){`.
+  - Opening brace on the same line: `name() {`.
   - In-script functions (parse-once model)
     - `parse_args()` populates global configuration variables.
     - Other functions must not read positional args.
@@ -13831,7 +14317,8 @@ main "$@"
     - Accept inputs as positional parameters.
     - Immediately assign parameters to `local` variables at the top.
     - Declare all temporaries `local` to avoid leaking state.
-
+- See
+  - [[https://google.github.io/styleguide/shellguide.html][Google Shell Style Guide]]
 ****** Processes
 :PROPERTIES:
 :ID:       c3e424cd-7191-423e-815b-7e7fcb770100
@@ -14843,6 +15330,15 @@ fi
 :ID:       42e37db5-29e7-418f-a74d-e91ffc81167f
 :END:
 - Uses sh-mode
+******* 80                                                              :yas:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/80
+# -*- mode: snippet -*-
+# key: 80
+# expand-env: ((yas-indent-line 'fixed))
+# --
+##########1##########2##########3##########4##########5##########6##########7##########8
+$0
+#+end_src
 ******* array.from.find
 :PROPERTIES:
 :ID:       68960305-58e3-43a8-8d63-ec7ea71720c4
@@ -14859,6 +15355,48 @@ done < <(find ${2:FIND DIR} -name ${3:FIND TERM} -print0)
 printf '%s\n' "\${$1[@]}"
 $0
 #+end_src
+******* block
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/block
+# -*- mode: snippet -*-
+# key: block
+# --
+# -----------------------------------------------------------------------------
+# ${1:description}
+# -----------------------------------------------------------------------------
+$0
+#+end_src
+#+begin_src bash
+
+# -----------------------------------------------------------------------------
+# oh here we go with a block code!
+# -----------------------------------------------------------------------------
+
+
+
+# -----------------------------------------------------------------------------
+# ohnntoa
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# oh
+# -----------------------------------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
+# hereiamtypingspacesbuttheydon'tregister
+# -----------------------------------------------------------------------------
+
+
+change to # -----------------------------------------------------------------------------
+# askdfsjdf
+	  # -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# heseresomebl
+# -----------------------------------------------------------------------------
+
+#+end_src
+
+
 ******* code.bash
 :PROPERTIES:
 :ID:       78960912-ee7a-4e71-b8d5-c5ec9649ecac
@@ -15062,6 +15600,102 @@ if [[ "\${BASH_SOURCE[0]}" == "\${0}" ]]; then
 fi
 
 #+end_src
+******* parse_args()
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/parse_args
+# -*- mode: snippet -*-
+# key: parse_args
+# expand-env: ((yas-indent-line 'fixed))
+# --
+parse_args() {
+  # It parses once, then populates named variables for downstream functions to consume.
+
+  # 1) Help is a successful control path:
+  if [[ "\${1:-}" == "-h" || "\${1:-}" == "--help" ]]; then
+    print_usage
+    exit 0
+  fi
+
+  # 2) CLI misuse (invoked incorrectly):
+  if [[ \$# -lt "\$${1:MIN_REQUIRED_ARGS}" ]]; then
+    echo "Error: Missing required arguments." >&2
+    print_usage >&2
+    exit 2
+  fi
+
+  # 3) Input argument declarations:
+  declare -g ${2:required_arg 1}="\$1"
+
+  # 4) Runtime/domain validation (invocation OK but inputs invalid, >&2; exit 1):
+
+  # 5) Compute derived variables as needed. .
+}
+#+end_src
+
+#+begin_src bash
+parse_args() {
+  # parse_args is the only function permitted to read positional args (3, bam_file, $@, $#).
+  # It parses once, then populates named variables for downstream functions to consume.
+
+  # 1) Help is a successful control path:
+  if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    print_usage
+    exit 0
+  fi
+
+  # 2) CLI misuse (invoked incorrectly):
+  if [[ $# -lt "$3" ]]; then
+    echo "Error: Missing required arguments." >&2
+    print_usage >&2
+    exit 2
+  fi
+
+  # 3) Input argument declarations:
+  declare -g bam_file="$1"
+
+  # 4) Runtime/domain validation (invocation OK but inputs invalid, >&2; exit 1):
+
+  # 5) Compute derived variables as needed (no further reading of 3/bam_file/$@ beyond declarations).
+}
+
+
+parse_args() {
+  # parse_args is the only function permitted to read positional args (2, , $@, $#).
+  # It parses once, then populates named variables for downstream functions to consume.
+
+  # 1) Help is a successful control path:
+  #    - print usage to stdout
+  #    - exit 0
+  if [[ "d" == "-h" || "2" == "--help" ]]; then
+    print_usage
+    exit 0
+  fi
+
+  # 2) CLI misuse (invoked incorrectly):
+  #    - emit a single short error to stderr
+  #    - print usage to stderr
+  #    - exit 2
+  if [[ $# -lt 2 ]]; then
+    echo "Error: Missing required arguments." >&2
+    print_usage >&2
+    exit 2
+  fi
+
+  # 3) Input argument declarations (named variables only beyond this point).
+  declare -g required_arg="2"
+  dfdsf
+
+  # 4) Runtime/domain validation (invocation OK but inputs invalid):
+  #    - emit targeted error message(s) to stderr
+  #    - exit 1
+  [[ -n "$required_arg" ]] || { echo "Error: required_arg must be non-empty." >&2; exit 1; }
+
+  # 5) Compute derived variables as needed (no further reading of 2//$@ beyond declarations).
+  declare -g derived_value="$required_arg"
+}
+
+#+end_src
+
+
 ******* print_array
 :PROPERTIES:
 :ID:       8d263d03-7b0c-4695-9a8a-2ee6e4d4650d
@@ -15075,45 +15709,6 @@ printf '%s\n' "${${1:ARRAY_NAME}[@]}"
 $0
 #+end_src
 
-******* script
-:PROPERTIES:
-:ID:       72a9b2a8-3215-4472-be95-410a7d242508
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/script
-# -*- mode: snippet -*-
-# key: script
-# --
-#!/usr/bin/env bash
-
-head1
-
-# Block comment here
-
-set -o errexit   # abort on nonzero exitstatus
-set -o nounset   # abort on unbound variable
-set -o pipefail  # don't hide errors within pipes
-
-usage
-
-variables
-
-main(){
-    variables /$1
-}
-
-main "$@"
-
-
-#+end_src
-******* 80                                                              :yas:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/80
-# -*- mode: snippet -*-
-# key: 80
-# expand-env: ((yas-indent-line 'fixed))
-# --
-##########1##########2##########3##########4##########5##########6##########7##########8
-$0
-#+end_src
 ******* return_usage_any
 Returns usage if any arguements are provided
 #+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/return_usage_any
@@ -15127,6 +15722,31 @@ if [[ $# -gt 0 ]]; then
     return 0
 fi
 $0
+#+end_src
+******* script
+:PROPERTIES:
+:ID:       72a9b2a8-3215-4472-be95-410a7d242508
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/script
+# -*- mode: snippet -*-
+# key: script
+# --
+#!/usr/bin/env bash
+
+block
+
+usage
+
+parse_args
+
+main(){
+    parse_args "$@"
+    # REMAINING FUNCTION LOGIC
+}
+
+# OTHER FUNCTIONS
+
+main "$@"
 #+end_src
 ******* usage
 :PROPERTIES:
@@ -15161,6 +15781,18 @@ EOF
 # return_usage_any
 #+end_src
 
+******* var                                                             :yas:
+:PROPERTIES:
+:ID:       67ca3ccc-7bca-4b12-b513-05b246a217b8
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/var
+# -*- mode: snippet -*-
+# key: var
+# expand-env: ((yas-indent-line 'none))
+# --
+$1="$\{$2}"$0
+#+end_src
+
 ******* variables                                                       :yas:
 
 A variables function template for shell scripts
@@ -15178,22 +15810,12 @@ $0
 
 #+end_src
 
-******* var                                                             :yas:
-:PROPERTIES:
-:ID:       67ca3ccc-7bca-4b12-b513-05b246a217b8
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/var
-# -*- mode: snippet -*-
-# key: var
-# expand-env: ((yas-indent-line 'none))
-# --
-$1="$\{$2}"$0
-#+end_src
-
 ****** General reference
 :PROPERTIES:
 :ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
 :END:
+- https://www.youtube.com/watch?v=Sx9zG7wa4FA
+- https://docs.gitlab.com/development/shell_scripting_guide/
 - https://www.reddit.com/r/bioinformatics/comments/1mexvem/command_history_to_notebook_entries/
 - https://www.reddit.com/r/bash/comments/yp8afm/some_scripts_that_might_be_useful/
 - https://www.reddit.com/r/commandline/comments/zigu22/in_dept_guide_how_to_create_a_shell_script_to/

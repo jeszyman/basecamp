@@ -81,14 +81,48 @@ emacs () {
     exit
 }
 
-mute(){
+mute() {
+    print_usage() {
+        cat <<- EOF
+Usage: mute
+Mutes system audio and microphone, saving current volume levels for later restoration.
+Options:
+  -h, --help    Show this help message and exit
+Arguments: This function takes no arguments.
+Example:
+  mute
+EOF
+    }
+    if [[ $# -gt 0 ]]; then
+        print_usage
+        return 0
+    fi
+    mkdir -p ~/.local/state/volume
+    amixer get Master | grep -oP '\d+%' | head -1 > ~/.local/state/volume/master
+    amixer get Speaker | grep -oP '\d+%' | head -1 > ~/.local/state/volume/speaker
     amixer set Master mute
     amixer set Capture nocap
 }
-unmute () {
-    amixer set Master unmute
-    amixer set Master 30% unmute
-    amixer set Speaker 30% unmute  # If 'Master' doesn't work
+unmute() {
+    print_usage() {
+        cat <<- EOF
+Usage: unmute
+Unmutes system audio and microphone, restoring previously saved volume levels.
+Options:
+  -h, --help    Show this help message and exit
+Arguments: This function takes no arguments.
+Example:
+  unmute
+EOF
+    }
+    if [[ $# -gt 0 ]]; then
+        print_usage
+        return 0
+    fi
+    local master_vol=$(cat ~/.local/state/volume/master 2>/dev/null || echo "30%")
+    local speaker_vol=$(cat ~/.local/state/volume/speaker 2>/dev/null || echo "30%")
+    amixer set Master "$master_vol" unmute
+    amixer set Speaker "$speaker_vol" unmute
     amixer set Capture cap
 }
 volume-up() {

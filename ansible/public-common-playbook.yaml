@@ -89,8 +89,12 @@
       when: item.stat.exists
       no_log: true
     - name: Update apt cache
-      apt:
-        update_cache: yes
+      ansible.builtin.command: apt-get update --allow-releaseinfo-change
+      register: apt_update
+      retries: 5
+      delay: 5
+      until: apt_update.rc == 0
+      changed_when: false
       become: true
 
     - name: Ensure APT packages are installed

@@ -3,20 +3,17 @@
 # --
 #!/usr/bin/env bash
 
-head1
-
-# Block comment here
-
-set -o errexit   # abort on nonzero exitstatus
-set -o nounset   # abort on unbound variable
-set -o pipefail  # don't hide errors within pipes
+block
 
 usage
 
-variables
+parse_args
 
 main(){
-    variables /$1
+    parse_args "$@"
+    # REMAINING FUNCTION LOGIC
 }
+
+# OTHER FUNCTIONS
 
 main "$@"
