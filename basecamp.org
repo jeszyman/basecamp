@@ -87,6 +87,60 @@
 ** [[id:00656e3d-e62c-4ace-a27c-252b56010fe0][Scientific Project Template]]
 ** [[id:a8b27140-4b9e-40c5-86ab-ee5afeae723f][Snakemake]]
 ** [[id:9E19E626-9D6C-4296-BEDB-80033A846CF4][Software]]
+** Repository setup and administration
+*** Git and github
+**** Tests
+#+begin_src yaml :tangle ./.github/workflows/test-sync-gitignore.yml
+name: test-sync-gitignore
+
+on:
+  push:
+    paths:
+      - scripts/sync-gitignore.sh
+      - .github/workflows/test-sync-gitignore.yml
+  pull_request:
+    paths:
+      - scripts/sync-gitignore.sh
+      - .github/workflows/test-sync-gitignore.yml
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test --help exits 0
+        run: bash scripts/sync-gitignore.sh --help
+
+      - name: Test missing args exits 1
+        run: |
+          bash scripts/sync-gitignore.sh && exit 1 || true
+
+      - name: Test successful sync
+        run: |
+          tmpdir=$(mktemp -d)
+          bash scripts/sync-gitignore.sh "$tmpdir" \
+            "https://raw.githubusercontent.com/jeszyman/basecamp/v1.1.0/git/jeszyman_gitignore"
+          [[ -s "$tmpdir/.gitignore" ]] || { echo "FAIL: .gitignore is empty"; exit 1; }
+          echo "PASS: .gitignore has content"
+          cat "$tmpdir/.gitignore"
+
+      - name: Test deduplication (run twice, no duplicate lines)
+        run: |
+          tmpdir=$(mktemp -d)
+          url="https://raw.githubusercontent.com/jeszyman/basecamp/v1.1.0/git/jeszyman_gitignore"
+          bash scripts/sync-gitignore.sh "$tmpdir" "$url"
+          bash scripts/sync-gitignore.sh "$tmpdir" "$url"
+          dupes=$(grep -v '^#' "$tmpdir/.gitignore" | grep -v '^$' | sort | uniq -d)
+          if [[ -n "$dupes" ]]; then
+            echo "FAIL: duplicate entries found:"
+            echo "$dupes"
+            exit 1
+          fi
+          echo "PASS: no duplicates"
+#+end_src
+
+
 ** README
 :PROPERTIES:
 :export_file_name: ./README.md
@@ -100,7 +154,7 @@
 Code files in this repository are managed through [[ https://orgmode.org/manual/Extracting-Source-Code.html][extracting ("tangling") code]] within source code blocks of Emacs Org-mode text files. Tangling overwrites existing target files.
 *** Change Log
 - Developments since last tag
-  - None
+  - 2026-02-23 Added GitHub Action to test =sync-gitignore.sh= (4 cases: help, missing args, successful sync, deduplication); workflow tangles to =.github/workflows/test-sync-gitignore.yml=
 - v1.3.0
   - Updated [[id:146f3266-f634-4728-8172-9ae8b459d0c7][Snakemake Style Guide and Good Practices]], exported as markdown to [[file:docs/snakemake-style-guide.md]]
 ** Documentation
@@ -1250,11 +1304,14 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
     - name: Update apt cache
       ansible.builtin.command: apt-get update --allow-releaseinfo-change
       register: apt_update
-      retries: 5
-      delay: 5
-      until: apt_update.rc == 0
       changed_when: false
+      failed_when: false
       become: true
+
+    - name: Warn if apt update had issues
+      debug:
+        msg: "WARNING: apt-get update returned rc={{ apt_update.rc }}"
+        when: apt_update.rc != 0
 
     - name: Ensure APT packages are installed
       apt:
@@ -1386,6 +1443,14 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
               [ -r "$f" ] && [ -f "$f" ] && . "$f"
             done
           fi
+
+    - name: Add GUI launcher function to bashrc
+      ansible.builtin.blockinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        marker: "# {mark} ANSIBLE MANAGED - GUI launcher function"
+        block: |
+          o() { "$@" &>/dev/null & disown; }
+          complete -c o
 #+end_src
 **** Ensure bashrc accesses symlinked libraries
 #+begin_src yaml
@@ -1410,6 +1475,321 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
         executable: /bin/bash
       environment:
         PATH: "{{ ansible_env.HOME }}/miniconda3/condabin:{{ ansible_env.PATH }}"
+
+#+end_src
+*** Emacs30                                                          :ansibp:
+:PROPERTIES:
+:ID:       58771262-07b5-435c-a3fb-21bb8b53dcb5
+:header-args:yaml: :tangle ./ansible/playbooks/emacs30-playbook.yaml
+:END:
+**** Preamble
+#+begin_src yaml
+---
+- name: Install Emacs 30.1
+  hosts: localhost
+  tasks:
+#+end_src
+
+**** Install prerequisites
+#+begin_src yaml
+    - name: Update apt cache (ignore GPG warnings)
+      become: yes
+      apt:
+        update_cache: yes
+      ignore_errors: yes
+
+    - name: Ensure required dependencies are installed
+      become: yes
+      apt:
+        name:
+          - libwebp-dev
+          - xaw3dg
+          - libxpm4
+          - libpng16-16
+          - zlib1g
+          - libjpeg8
+          - libtiff-dev
+          - libgif7
+          - libgif-dev
+          - texinfo
+          - libgnutls28-dev
+          - libncurses-dev
+          - librsvg2-2
+          - librsvg2-dev
+          - libsqlite3-dev
+          - liblcms2-dev
+          - imagemagick
+          - libmagickwand-dev
+          - pkg-config
+          - libxaw7-dev
+          - libgpm-dev
+          - libm17n-dev
+          - libotf-dev
+          - libxft-dev
+          - libsystemd-dev
+          - libjansson-dev
+          - libgtk-3-dev
+          - libwebkit2gtk-4.1-dev
+          - libacl1-dev
+        state: present
+        update_cache: no
+#+end_src
+**** Install treesitter
+#+begin_src yaml
+    - name: Check if libtree-sitter 0.20+ is installed
+      stat:
+        path: /usr/local/lib/libtree-sitter.so
+      register: treesitter_installed
+
+    - name: Download tree-sitter 0.20.8 source
+      become: yes
+      get_url:
+        url: https://github.com/tree-sitter/tree-sitter/archive/refs/tags/v0.20.8.tar.gz
+        dest: /tmp/tree-sitter-0.20.8.tar.gz
+      when: not treesitter_installed.stat.exists
+
+    - name: Extract tree-sitter source
+      become: yes
+      ansible.builtin.unarchive:
+        src: /tmp/tree-sitter-0.20.8.tar.gz
+        dest: /tmp
+        remote_src: yes
+      when: not treesitter_installed.stat.exists
+
+    - name: Build and install tree-sitter
+      become: yes
+      shell: make && make install PREFIX=/usr/local
+      args:
+        chdir: /tmp/tree-sitter-0.20.8
+      when: not treesitter_installed.stat.exists
+
+    - name: Update ldconfig for tree-sitter
+      become: yes
+      shell: ldconfig
+      when: not treesitter_installed.stat.exists
+#+end_src
+
+**** Main install
+#+begin_src yaml
+    - name: Check if Emacs 30 binary is already installed
+      stat:
+        path: /usr/local/bin/emacs-30.1
+      register: emacs_installed
+
+    - name: Download Emacs 30.1 source archive
+      become: yes
+      get_url:
+        url: https://mirrors.ocf.berkeley.edu/gnu/emacs/emacs-30.1.tar.xz
+        dest: /tmp/emacs-30.1.tar.xz
+        mode: '0644'
+      when: not emacs_installed.stat.exists
+
+    - name: Extract Emacs 30.1 source archive
+      become: yes
+      ansible.builtin.unarchive:
+        src: /tmp/emacs-30.1.tar.xz
+        dest: /tmp
+        remote_src: yes
+      args:
+        creates: /tmp/emacs-30.1
+      when: not emacs_installed.stat.exists
+
+    - name: Configure Emacs build
+      become: yes
+      shell: ./configure --prefix=/usr/local --with-imagemagick
+      args:
+        chdir: /tmp/emacs-30.1
+        creates: /tmp/emacs-30.1/Makefile
+      when: not emacs_installed.stat.exists
+
+    - name: Build Emacs
+      become: yes
+      shell: make
+      args:
+        chdir: /tmp/emacs-30.1
+        creates: /tmp/emacs-30.1/src/emacs
+      when: not emacs_installed.stat.exists
+
+    - name: Install Emacs
+      become: yes
+      shell: make install
+      args:
+        chdir: /tmp/emacs-30.1
+        creates: /usr/local/bin/emacs
+      when: not emacs_installed.stat.exists
+
+    - name: Verify Emacs installation
+      command: /usr/local/bin/emacs --version
+      register: emacs_version
+      changed_when: false
+
+    - name: Display installed Emacs version
+      debug:
+        msg: "Installed Emacs version: {{ emacs_version.stdout }}"
+#+end_src
+
+**** Make Emacs as emacsclient the default application for text files
+#+begin_src yaml
+    - name: Configure emacsclient as default for text files
+      block:
+
+        - name: Ensure ~/.local/bin exists
+          file:
+            path: "{{ user_home | default('~') }}/.local/bin"
+            state: directory
+            mode: '0755'
+
+        - name: Create emacsclient-disown wrapper script
+          copy:
+            dest: "{{ user_home | default('~') }}/.local/bin/emacsclient-disown"
+            mode: '0755'
+            content: |
+              #!/bin/bash
+              EMACS_SOCKET_NAME="$HOME/.emacs.d/server/server" setsid /usr/local/bin/emacsclient -c "$@" & disown
+
+        - name: Create local applications directory
+          file:
+            path: "{{ user_home | default('~') }}/.local/share/applications"
+            state: directory
+            mode: '0755'
+
+        - name: Create emacsclient desktop entry
+          copy:
+            dest: "{{ user_home | default('~') }}/.local/share/applications/emacsclient.desktop"
+            mode: '0644'
+            content: |
+              [Desktop Entry]
+              Name=Emacs Client
+              GenericName=Text Editor
+              Comment=Edit text files with emacsclient
+              MimeType=text/plain;text/yaml;application/x-yaml;text/x-chdr;text/x-csrc;text/x-c++hdr;text/x-c++src;text/x-java;text/x-dsrc;text/x-pascal;text/x-perl;text/x-python;application/x-php;application/x-httpd-php3;application/x-httpd-php4;application/x-httpd-php5;application/xml;application/javascript;application/x-shellscript;text/x-scheme;
+              Exec=/home/jeszyman/.local/bin/emacsclient-disown %f
+              Icon=emacs
+              Type=Application
+              Terminal=false
+              Categories=Development;TextEditor;
+              StartupWMClass=Emacs
+              Keywords=Text;Editor;
+
+        - name: Create custom MIME types file
+          copy:
+            dest: "{{ user_home | default('~') }}/.mime.types"
+            content: |
+              text/plain    block
+            mode: '0644'
+
+        - name: Add MIME_TYPES_USER to bashrc
+          lineinfile:
+            path: "{{ user_home | default('~') }}/.bashrc"
+            line: 'export MIME_TYPES_USER=~/.mime.types'
+            state: present
+
+        - name: Create local mime directory
+          file:
+            path: "{{ user_home | default('~') }}/.local/share/mime"
+            state: directory
+            mode: '0755'
+
+        - name: Ensure MIME packages directory exists
+          file:
+            path: "{{ user_home | default('~') }}/.local/share/mime/packages"
+            state: directory
+            mode: '0755'
+
+        - name: Set emacsclient as default for text files
+          shell: |
+            xdg-mime default emacsclient.desktop text/plain
+            xdg-mime default emacsclient.desktop text/yaml
+            xdg-mime default emacsclient.desktop application/x-yaml
+            xdg-mime default emacsclient.desktop text/x-python
+            xdg-mime default emacsclient.desktop text/x-shellscript
+            xdg-mime default emacsclient.desktop application/xml
+            xdg-mime default emacsclient.desktop application/javascript
+          args:
+            executable: /bin/bash
+
+        - name: Update MIME database
+          shell: update-mime-database ~/.local/share/mime
+          args:
+            executable: /bin/bash
+
+#+end_src
+
+**** Initialization with systemctl
+Explicit server-socket-dir to ~/.emacs.d/server, ensuring predictable, user-writable path for the daemon to communicate with emacsclient. This avoids runtime errors and makes emacsclient work consistently across systems. All client commands then use --socket-name ~/.emacs.d/server/server to connect.
+#+begin_src yaml
+    - name: Ensure ~/.emacs.d/server exists with correct permissions
+      file:
+        path: "{{ ansible_env.HOME }}/.emacs.d/server"
+        state: directory
+        mode: '0700'
+
+    - name: Ensure server-start and socket-dir is set in Emacs config
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.emacs.d/init.el"
+        create: yes
+        insertafter: EOF
+        line: "{{ item }}"
+      loop:
+        - "(setq server-socket-dir (expand-file-name \"server\" user-emacs-directory))"
+        - '(require ''server)'
+        - "(unless (server-running-p) (server-start))"
+      notify: Restart emacs daemon
+
+    - name: Ensure systemd user unit directory exists
+      file:
+        path: "{{ ansible_env.HOME }}/.config/systemd/user"
+        state: directory
+        mode: '0755'
+
+    - name: Install systemd user unit for emacs
+      copy:
+        dest: "{{ ansible_env.HOME }}/.config/systemd/user/emacs.service"
+        mode: '0644'
+        content: |
+          [Unit]
+          Description=Emacs 30.1 text editor daemon
+          Documentation=man:emacs(1) info:Emacs
+          After=network.target
+
+          [Service]
+          Type=forking
+          ExecStart=/usr/local/bin/emacs --daemon
+          ExecStop=/usr/bin/emacsclient --eval "(kill-emacs)"
+          Restart=always
+          RestartSec=3
+
+          [Install]
+          WantedBy=default.target
+      notify: Restart emacs daemon
+
+    - name: Enable and start emacs daemon user service
+      systemd:
+        name: emacs.service
+        scope: user
+        enabled: yes
+        state: started
+
+
+#+end_src
+**** Add socket to baschrc
+#+begin_src yaml
+    - name: Ensure EMACS_SOCKET_NAME is exported in .bashrc
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: 'export EMACS_SOCKET_NAME="$HOME/.emacs.d/server/server"'
+        state: present
+
+#+end_src
+
+**** Handlers
+#+begin_src yaml
+  handlers:
+    - name: Restart emacs daemon
+      systemd:
+        name: emacs.service
+        scope: user
+        state: restarted
 
 #+end_src
 
@@ -1827,7 +2207,6 @@ launch() {
 
 brave() { launch /usr/bin/brave-browser; }
 chrome() { launch /usr/bin/brave-browser; }
-inkscape() { launch /usr/bin/inkscape; }
 okular() { launch /usr/bin/okular; }
 
 
@@ -4610,7 +4989,6 @@ algorithm properties
 :PROPERTIES:
 :ID:       c013714a-c4f5-4c3b-9eac-94bfc3ded1ab
 :END:
-:career:informatics:study:
 validation loss curve
 https://www.reddit.com/r/MachineLearning/comments/17p42te/r_very_detailed_mathematical_introduction_to_deep/
 https://www.reddit.com/r/datascience/comments/150dyrf/xgboost_to_learn_insights_in_data/
@@ -4652,6 +5030,12 @@ https://old.reddit.com/r/dataisbeautiful/comments/jkadd0/oc_distribution_of_emot
   - https://stats.stackexchange.com/questions/13194/support-vector-machines-and-regression
 *** Large language models LLMs
 https://www.reddit.com/r/ChatGPT/comments/1hzmg1s/professor_stuart_russell_highlights_the/
+*** Supervised learning
+**** Ensemble methods
+- Stacking ensemble models
+  - train multiple diverse base models
+  - feed based model predictions as input features into a second-stage model (the "meta-learner")
+
 *** PCA for ML feature input
 :PROPERTIES:
 :ID:       41eb5607-7d2f-4dc4-9c3c-42af7223b1c0
@@ -6105,6 +6489,7 @@ dependencies:
   - scikit-learn=1.3                         # Python machine learning modules #
   - snakemake                              # Python workflow management system #
   - statsmodels                        # A stats package with causal inference #
+  - pdfplumber                                     # PDF to tabular conversion #
 #+end_src
 
 
@@ -6122,6 +6507,10 @@ dependencies:
   - r-colorramps                                  # Builds gradient color maps #
   - r-devtools                                   # R package development tools #
   - r-eulerr                           # Best area-proportional Euler diagrams #
+  - r-ggalluvial                                                # Sankey plots #
+  - r-networkd3                                                # D3 plots in R #
+  - r-xml2                                                      # XML importer #
+  - r-survminer                                      # Survival curve analysis #
   - r-ggextra                      # Has ggMarginal to add marginal histograms #
   - r-ggpattern                           # Custom ggplot2 geoms with patterns #
   - r-ggpubr                           # Functions for publication ready plots #
@@ -6861,6 +7250,7 @@ https://tomd.xyz/diagrams-as-code-drawio/
 :PROPERTIES:
 :ID:       E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6
 :END:
+https://www.reddit.com/r/learnprogramming/comments/1qabchl/just_realized_ive_been_using_git_wrong_for_like_3/
 ****** Git and GitHub Version Control                              :cookbook:
 - GitHub CLI
   - List your repositories
@@ -6873,6 +7263,12 @@ gh repo list --limit 100
 :ID:       101a3601-5b02-4506-812c-2d705c51cbe2
 :END:
 ******* Creating a new repo
+
+Initialized with =git init=, committed, and pushed to GitHub as a public repo using =gh repo create=. Remote was set to the SSH URL =git@github.com:jeszyman/emacs.git=.
+
+The =.gitignore= is seeded from a shared base file in the [[https://github.com/jeszyman/basecamp][basecamp]] repo. Run the block below to sync it.
+
+
 ******** Convert directory to repository
 ******** Initial commit to GitHub
 ******* Branches
@@ -7418,6 +7814,77 @@ do
 done
 #
 #+end_src
+******* sync-gitignore
+#+begin_src bash :tangle ./scripts/sync-gitignore.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+print_usage() {
+    cat <<EOF
+USAGE: sync-gitignore <REPO_DIR> <GITIGNORE_URL>
+
+DESCRIPTION:
+  Appends new entries from a remote base .gitignore into the local one,
+  skipping duplicates and empty lines.
+
+REQUIRED ARGUMENTS:
+  <REPO_DIR>        Path to the local git repo
+  <GITIGNORE_URL>   Raw URL of the base .gitignore to sync from
+
+OPTIONS:
+  -h, --help        Show this help message
+
+EXAMPLES:
+  sync-gitignore ~/repos/emacs https://raw.githubusercontent.com/jeszyman/basecamp/v1.1.0/git/jeszyman_gitignore
+
+EOF
+}
+
+parse_args() {
+    if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+        print_usage
+        exit 0
+    fi
+    if [[ $# -lt 2 ]]; then
+        echo "Error: Missing required arguments."
+        print_usage
+        exit 1
+    fi
+    declare -g repo_dir="$1"
+    declare -g gitignore_url="$2"
+}
+
+sync-gitignore() {
+    local target="$repo_dir/.gitignore"
+    local tmp
+    tmp=$(mktemp)
+
+    curl -fsSL "$gitignore_url" | sed 's/\r$//' > "$tmp"
+
+    touch "$target"
+    # Ensure file ends with newline
+    [[ -s "$target" ]] && tail -c1 "$target" | grep -q $'\n' || echo >> "$target"
+
+    echo "" >> "$target"
+    echo "# --- Base ignore sync $(date -u +%Y-%m-%d) ---" >> "$target"
+
+    while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        grep -Fxq "$line" "$target" || echo "$line" >> "$target"
+    done < "$tmp"
+
+    rm -f "$tmp"
+    echo "Updated $target"
+}
+
+main() {
+    parse_args "$@"
+    sync-gitignore
+}
+
+main "$@"
+#+end_src
+
 ******* No message simple git commit to github
 :PROPERTIES:
 :ID:       a97c46fe-8a23-4fa1-b9e2-f0edc29ec7f4
@@ -8988,6 +9455,17 @@ singularity version
 :ID:       146f3266-f634-4728-8172-9ae8b459d0c7
 :export_file_name: docs/snakemake-style-guide.md
 :END:
+
+no r""" for shell
+message DOES NOT referenc especific inputs via wildcard
+. vs _
+changelog structure
+thread declarations in rule vs. param
+
+
+bespoke concurrency setup
+
+
 - Scope and Philosophy
   - Intent: This guide defines conventions for Snakemake workflows, repositories, configuration, and rule structure. The primary goals are readability, reproducibility, and portability.
   - Design Principles
@@ -9011,9 +9489,10 @@ singularity version
     - Minimum Git workflow:
       1. Create the updated workflow.
       2. When the workflow is ready for a version update, document changes in the README changelog.
-      3. Commit workflow and README updates: git add -A
-      4. Tag repository with workflow version: git tag -a wf/<WORKFLOW>/v<VERSION> -m "<MESSAGE>"
-      5. Push tag: git push origin master --follow-tags
+      3. Update the README DAGs
+      4. Commit workflow and README updates: git add -A
+      5. Tag repository with workflow version: git tag -a wf/<WORKFLOW>/v<VERSION> -m "<MESSAGE>"
+      6. Push tag: git push origin master --follow-tags
 - Workflow Architecture
   - Workflow Types
     - Project (Wrapper) Snakefile
@@ -15778,6 +16257,7 @@ $0
 :PROPERTIES:
 :ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
 :END:
+- https://slicker.me/bash/gems.html
 - https://www.youtube.com/watch?v=Sx9zG7wa4FA
 - https://docs.gitlab.com/development/shell_scripting_guide/
 - https://www.reddit.com/r/bioinformatics/comments/1mexvem/command_history_to_notebook_entries/
@@ -18909,7 +19389,7 @@ ansible --version
 
 **** Reference
 - https://sweworld.net/cheatsheets/ansible/
-
+- https://www.reddit.com/r/ansible/comments/1qj33pl/best_practice_playbookrolescollection_organization/
 *** code.perl
 #+name: code.perl
 #+begin_src bash :tangle ./emacs/public_yasnippets/org-mode/code.perl

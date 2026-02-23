@@ -74,7 +74,6 @@ launch() {
 
 brave() { launch /usr/bin/brave-browser; }
 chrome() { launch /usr/bin/brave-browser; }
-inkscape() { launch /usr/bin/inkscape; }
 okular() { launch /usr/bin/okular; }
 emacs () {
     emacsclient -c --no-wait --socket-name ~/.emacs.d/server/server & disown

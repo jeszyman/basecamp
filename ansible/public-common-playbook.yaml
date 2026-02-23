@@ -91,11 +91,14 @@
     - name: Update apt cache
       ansible.builtin.command: apt-get update --allow-releaseinfo-change
       register: apt_update
-      retries: 5
-      delay: 5
-      until: apt_update.rc == 0
       changed_when: false
+      failed_when: false
       become: true
+
+    - name: Warn if apt update had issues
+      debug:
+        msg: "WARNING: apt-get update returned rc={{ apt_update.rc }}"
+        when: apt_update.rc != 0
 
     - name: Ensure APT packages are installed
       apt:
@@ -168,6 +171,14 @@
               [ -r "$f" ] && [ -f "$f" ] && . "$f"
             done
           fi
+
+    - name: Add GUI launcher function to bashrc
+      ansible.builtin.blockinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        marker: "# {mark} ANSIBLE MANAGED - GUI launcher function"
+        block: |
+          o() { "$@" &>/dev/null & disown; }
+          complete -c o
     - name: Source all ~/.bashrc.d/*.sh files from .bashrc
       lineinfile:
         path: "{{ ansible_env.HOME }}/.bashrc"
