@@ -1,3 +1,12 @@
+# ============================================================
+# AUTO-GENERATED — DO NOT EDIT DIRECTLY
+# Edits will be overwritten on next org-babel tangle.
+# 
+# Source:  /home/jeszyman/repos/basecamp/basecamp.org
+# Author:  Jeffrey Szymanski
+# Tangled: 2026-03-09 10:37:13
+# ============================================================
+
 # Check for parameters, return usage if empty
 if [ $# -ne 2 ]; then
     printf "\n usage: gtac_wget.sh <DIR PREFIX> <GTAC HTML>

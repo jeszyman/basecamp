@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+# ============================================================
+# AUTO-GENERATED — DO NOT EDIT DIRECTLY
+# Edits will be overwritten on next org-babel tangle.
+# 
+# Source:  /home/jeszyman/repos/basecamp/basecamp.org
+# Author:  Jeffrey Szymanski
+# Tangled: 2026-03-09 10:37:13
+# ============================================================
+
 
 # /etc/ImageMagick-6/policy.xml policy change allows work with PDF
 # allows file overwrite

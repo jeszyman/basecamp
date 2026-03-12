@@ -1,3 +1,12 @@
+# ============================================================
+# AUTO-GENERATED — DO NOT EDIT DIRECTLY
+# Edits will be overwritten on next org-babel tangle.
+# 
+# Source:  /home/jeszyman/repos/basecamp/basecamp.org
+# Author:  Jeffrey Szymanski
+# Tangled: 2026-03-09 10:37:13
+# ============================================================
+
 #########1#########1#########1#########1#########1#########1#########1#########1
 apt_ppas:
   - ppa:apptainer/ppa
@@ -7,8 +16,11 @@ apt_packages:
   - apptainer                 # Singularity replacement
   - aria2                     # wget improvement
   - brave-browser             # Web browser
+  - build-essential           # C compiler toolchain (whisper.cpp)
+  - cmake                     # Build system (whisper.cpp)
   - curl                      # Command-line tool for HTTP requests
   - ncdu                      # Disk usage TUI
+  - ffmpeg                    # Audio/video processing (whisper recording)
   - fonts-firacode            # Monospaced font with ligatures
   - fonts-hack                #
   - git                       # Version control system
@@ -64,7 +76,5 @@ public_symlinks:
     dest: "${HOME}/.emacs.d/lisp/latex_setup.el"
 
 wget_downloads:
-  - src: https://www.emacswiki.org/emacs/download/essh.el
-    dest: "${HOME}/repos/basecamp/emacs/essh.el"
   - src: https://raw.githubusercontent.com/arnm/ob-mermaid/refs/heads/master/ob-mermaid.el
     dest: "${HOME}/repos/basecamp/emacs/ob-mermaid.el"

@@ -1,3 +1,12 @@
+;; ============================================================
+;; AUTO-GENERATED — DO NOT EDIT DIRECTLY
+;; Edits will be overwritten on next org-babel tangle.
+;; 
+;; Source:  /home/jeszyman/repos/basecamp/basecamp.org
+;; Author:  Jeffrey Szymanski
+;; Tangled: 2026-03-09 10:37:13
+;; ============================================================
+
 ;; defun org-execute-named-block-anywhere
 ;; https://claude.ai/chat/c12f61f1-0d93-4658-8d52-be64f45a12e0
 

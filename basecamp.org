@@ -4,76 +4,11 @@
 :RESET_CHECK_BOXES: t
 :header-args:yaml: :eval never
 :END:
-
-#+begin_src emacs-lisp
-;; FIRST: Remove any existing problematic advice
-(when (fboundp 'ad-remove-advice)
-  (ad-remove-advice 'org-babel-tangle 'before 'make-files-writable)
-  (ad-remove-advice 'org-babel-tangle-single-block 'around 'force-writable)
-  (ad-activate 'org-babel-tangle)
-  (ad-activate 'org-babel-tangle-single-block))
-
-;; Disable all confirmation prompts
-(setq org-confirm-babel-evaluate nil)
-
-;; Clean approach: Override the tangle function completely
-(defun my-org-babel-tangle-force (&optional arg target-file lang)
-  "Tangle code blocks, making files writable without prompts."
-  (interactive "P")
-  (run-hooks 'org-babel-pre-tangle-hook)
-  ;; Get list of files that will be tangled to
-  (let ((tangle-files '()))
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward org-babel-src-block-regexp nil t)
-        (let* ((info (org-babel-get-src-block-info 'light))
-               (params (nth 2 info))
-               (file (cdr (assq :tangle params))))
-          (when (and file
-                     (not (string= file "no"))
-                     (not (string= file "yes")))
-            (add-to-list 'tangle-files (expand-file-name file))))))
-
-    ;; Make all target files writable
-    (dolist (file tangle-files)
-      (when (file-exists-p file)
-        (set-file-modes file #o644)))
-
-    ;; Now do the actual tangling with original function
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle arg target-file lang))))
-
-;; Replace the default tangle command
-(define-key org-mode-map (kbd "C-c C-v t") 'my-org-babel-tangle-force)
-
-;; Alternative: Just override file permissions globally during tangle
-(defun my-simple-force-tangle ()
-  "Simple force tangle - make files writable then tangle."
-  (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward "^[ \t]*#\\+begin_src" nil t)
-      (when-let* ((element (org-element-at-point))
-                  (params (org-element-property :parameters element))
-                  (tangle-param (when (string-match ":tangle \\([^[:space:]]+\\)" (or params ""))
-                                 (match-string 1 params)))
-                  (file (when (and tangle-param
-                                   (not (string= tangle-param "no"))
-                                   (not (string= tangle-param "yes")))
-                         (expand-file-name tangle-param))))
-        (when (and file (file-exists-p file))
-          (set-file-modes file #o644)))))
-  (let ((org-confirm-babel-evaluate nil))
-    (org-babel-tangle)))
-
-;; Bind simple version as backup
-(define-key org-mode-map (kbd "C-c C-v f") 'my-simple-force-tangle)
-#+end_src
-
-#+begin_src emacs-lisp
-(remove-hook 'before-save-hook #'org-table-recalculate-buffer-tables)
-
-#+end_src
+- [ ] migrate [[id:2fc1a6f1-093c-4250-a905-1bf42b7b9eee][Lisp functions]] to [[file:~/repos/emacs/emacs.org]]
+** Change log
+- [2026-03-09 Mon] Added fail2ban + linux-crashdump to apt_packages; enabled fail2ban/kdump-tools services in [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]]; added [[id:a3f1e2b7-9c84-4d5a-b6e2-83f7d1c04e92][System crash diagnosis]] reference to Linux > Sysadmin
+- [2026-03-09 Mon] Added =my/extract-pdf-annotations= + =my/pdf-from-cite-at-point= (pdfannots + citar) to emacs.org; added pdfannots pip install to public-common-playbook
+- [2026-03-09 Mon] Fixed ansible `when:` indentation bug; vendored essh.el in repo after EmacsWiki began returning HTTP 402
 
 ** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
 ** [[id:89576FD2-F863-4220-BAD7-D4E179AEA644][Bash and shell]]
@@ -1096,8 +1031,11 @@ apt_packages:
   - apptainer                 # Singularity replacement
   - aria2                     # wget improvement
   - brave-browser             # Web browser
+  - build-essential           # C compiler toolchain (whisper.cpp)
+  - cmake                     # Build system (whisper.cpp)
   - curl                      # Command-line tool for HTTP requests
   - ncdu                      # Disk usage TUI
+  - ffmpeg                    # Audio/video processing (whisper recording)
   - fonts-firacode            # Monospaced font with ligatures
   - fonts-hack                #
   - git                       # Version control system
@@ -1153,8 +1091,6 @@ public_symlinks:
     dest: "${HOME}/.emacs.d/lisp/latex_setup.el"
 
 wget_downloads:
-  - src: https://www.emacswiki.org/emacs/download/essh.el
-    dest: "${HOME}/repos/basecamp/emacs/essh.el"
   - src: https://raw.githubusercontent.com/arnm/ob-mermaid/refs/heads/master/ob-mermaid.el
     dest: "${HOME}/repos/basecamp/emacs/ob-mermaid.el"
 #+end_src
@@ -1311,7 +1247,7 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
     - name: Warn if apt update had issues
       debug:
         msg: "WARNING: apt-get update returned rc={{ apt_update.rc }}"
-        when: apt_update.rc != 0
+      when: apt_update.rc != 0
 
     - name: Ensure APT packages are installed
       apt:
@@ -1356,7 +1292,26 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
 
 #+end_src
 
+****** whisper.el
+#+begin_src yaml
+    - name: Clone whisper.el speech-to-text package
+      ansible.builtin.git:
+        repo: https://github.com/natrys/whisper.el
+        dest: "{{ ansible_env.HOME }}/.emacs.d/lisp/whisper.el"
+        update: no
+
+#+end_src
+
 ****** Python
+#+begin_src yaml
+    - name: Install Python CLI tools via pip
+      ansible.builtin.pip:
+        name:
+          - pdfannots
+        executable: pip3
+
+#+end_src
+
 ****** Nerd fonts
 #+begin_src yaml
     - name: Ensure fonts directory exists
@@ -1419,6 +1374,26 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
         systemctl --user enable --now emacs.service
       environment:
         XDG_RUNTIME_DIR: "/run/user/{{ ansible_user_uid }}"
+
+#+end_src
+***** fail2ban
+#+begin_src yaml
+    - name: Enable and start fail2ban service
+      ansible.builtin.systemd:
+        name: fail2ban
+        enabled: true
+        state: started
+      become: true
+
+#+end_src
+***** kdump
+#+begin_src yaml
+    - name: Enable kdump-tools service
+      ansible.builtin.systemd:
+        name: kdump-tools
+        enabled: true
+        state: started
+      become: true
 
 #+end_src
 **** Update bashrc
@@ -1615,7 +1590,7 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
       shell: make install
       args:
         chdir: /tmp/emacs-30.1
-        creates: /usr/local/bin/emacs
+        creates: /usr/local/bin/emacs-30.1
       when: not emacs_installed.stat.exists
 
     - name: Verify Emacs installation
@@ -4028,6 +4003,7 @@ https://chat.openai.com/c/22b1d5c5-5d9b-4ced-98cf-860f7eb493c8
 https://www.thegooddocsproject.dev/template
 **** PDF to text
 pdftotext input.pdf output.txt
+
 **** Free drawing
 - https://excalidraw.com/
 
@@ -4989,6 +4965,7 @@ algorithm properties
 :PROPERTIES:
 :ID:       c013714a-c4f5-4c3b-9eac-94bfc3ded1ab
 :END:
+- Ablation models that perform near-chance individually can still contribute incrementally to an ensemble — but the burden of proof for "integration adds value" is on the PR AUC or operating-point comparisons,   not ROC AUC alone when n is small.
 validation loss curve
 https://www.reddit.com/r/MachineLearning/comments/17p42te/r_very_detailed_mathematical_introduction_to_deep/
 https://www.reddit.com/r/datascience/comments/150dyrf/xgboost_to_learn_insights_in_data/
@@ -5730,6 +5707,7 @@ ShowSidebar=false
 :PROPERTIES:
 :ID:       9E19E626-9D6C-4296-BEDB-80033A846CF4
 :END:
+**** Claude Code- see [[id:0e00557e-a0a4-460f-8941-555e11ee2d88][claude-code]] in emacs.org
 **** Mermaid
 - Limitations
   - SVG export fucked up
@@ -6000,6 +5978,32 @@ conda config --show envs_dirs
 | envs_dirs: |                                        |                           |
 | -          | /home/jeszyman/miniconda3/envs         |                           |
 | -          | /home/jeszyman/.conda/envs             |                           |
+
+******* example of yaml to build env
+:PROPERTIES:
+:ID:       981c5d3f-86b5-4f2d-8f6f-4b0597862a85
+:END:
+#+begin_src bash
+cd ~/repos/breast
+
+ENV_NAME=$(yqgo e '.conda-env' ./config/common.yaml)
+
+mapfile -t CONDA_ENVS < <(yqgo e -N '.sourced-conda-envs[] | .name + ":" + .version' ./config/common.yaml)
+
+# Create the environment
+conda create --name "$ENV_NAME" -y
+
+for entry in "${CONDA_ENVS[@]}"; do
+  name="${entry%%:*}"
+  version="${entry##*:}"
+  url="https://raw.githubusercontent.com/jeszyman/${name}/v${version}/config/${name}-conda-env.yaml"
+  dest="/tmp/${name}_env.yaml"
+  curl -fsSL -o "$dest" "$url" \
+    && mamba env update --name "$ENV_NAME" --file "$dest"
+done
+#+end_src
+
+
 
 ****** Ansible
 ******* Conda install and provisioning playbook                      :ansipb:
@@ -11780,6 +11784,71 @@ cp /etc/skel/.bashrc ${HOME}/.bashrc
 :ID:       c6b8fecd-0da7-4246-8ded-6ac016d42305
 :END:
   - https://github.com/teejee2008/timeshift
+*********** System crash diagnosis
+:PROPERTIES:
+:ID:       a3f1e2b7-9c84-4d5a-b6e2-83f7d1c04e92
+:END:
+
+When a machine becomes completely unresponsive (hard freeze, not thermal shutdown), work through
+these steps after reboot to diagnose the cause.
+
+**** Check reboot history and uptime
+#+begin_src bash
+last reboot | head -10
+uptime
+#+end_src
+
+**** Journal from the crashed boot
+#+begin_src bash
+# Critical/alert/emergency kernel messages only
+journalctl -b -1 --no-pager -p 0..3 | tail -40
+
+# Look for OOM, thermal, hardware, or watchdog events
+journalctl -b -1 --no-pager | grep -iE \
+  "(oom|out of memory|killed process|mce|thermal|temperature|watchdog|hung|lockup|rcu_sched)" \
+  | tail -30
+#+end_src
+
+**** GPU hang (NVIDIA)
+NVIDIA Xid errors are the smoking gun for silent GPU-induced freezes. Xid 79 = GPU hang, Xid 31 =
+GPU memory fault.
+#+begin_src bash
+journalctl -b -1 | grep -i "NVRM\|Xid" | tail -20
+nvidia-smi --query-gpu=driver_version --format=csv,noheader
+#+end_src
+
+**** Hardware (MCE) errors
+#+begin_src bash
+sudo mcelog --client 2>/dev/null || journalctl -b -1 | grep -i mce
+#+end_src
+
+**** Memory and swap at time of crash
+#+begin_src bash
+free -h
+swapon --show
+#+end_src
+
+**** Enable crash dumps for future events
+Without kdump, kernel panics leave no trace. Install via ansible (=linux-crashdump= in
+=apt_packages=, =kdump-tools= service enabled in
+[[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]]).
+#+begin_src bash
+systemctl status kdump-tools
+#+end_src
+
+**** Magic SysRq — safe reboot before hard power cycle
+If system is frozen but may still have kernel responsiveness, use Magic SysRq instead of hard
+power button to flush disk writes and preserve logs:
+: Hold Alt+SysRq, then press slowly: R E I S U B
+
+**** fail2ban — SSH brute-force blocking
+Internet-exposed machines receive constant SSH brute-force attempts. fail2ban bans IPs after
+repeated auth failures. Installed via [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]] (=fail2ban= in =apt_packages=,
+service enabled).
+#+begin_src bash
+sudo fail2ban-client status sshd
+#+end_src
+
 *********** users and groups
 :PROPERTIES:
 :ID:       2c0b0cef-7551-4e6b-b7a6-1ad9d80460a1
@@ -19412,10 +19481,12 @@ $0
 #+begin_src yaml :tangle ./ansible/group_vars/all.yaml
 apt_packages:
   - ansible
-  - tree
-  - htop
   - curl
+  - fail2ban
   - git
+  - htop
+  - linux-crashdump
+  - tree
   - vim
 
 #+end_src
