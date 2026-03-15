@@ -19591,6 +19591,7 @@ pip install --upgrade paramiko cryptography
 npm i -g @ansible/ansible-language-server
 #+end_src
 **** Configuration
+
 [[file:~/.ansible.cfg]]
 
 #+begin_src bash :results output replace
