@@ -1155,6 +1155,7 @@ fn fn
 <#~/repos/basecamp/basecamp.org:ansible-debugging-info()#>
 #+end_src
 **** Include variables from the basecamp repo config file
+
 #+begin_src yaml
     - name: Include config yaml
       include_vars:
