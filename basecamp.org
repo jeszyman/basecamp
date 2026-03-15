@@ -6,6 +6,7 @@
 :END:
 - [ ] migrate [[id:2fc1a6f1-093c-4250-a905-1bf42b7b9eee][Lisp functions]] to [[file:~/repos/emacs/emacs.org]]
 ** Change log
+
 - [2026-03-09 Mon] Added fail2ban + linux-crashdump to apt_packages; enabled fail2ban/kdump-tools services in [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]]; added [[id:a3f1e2b7-9c84-4d5a-b6e2-83f7d1c04e92][System crash diagnosis]] reference to Linux > Sysadmin
 - [2026-03-09 Mon] Added =my/extract-pdf-annotations= + =my/pdf-from-cite-at-point= (pdfannots + citar) to emacs.org; added pdfannots pip install to public-common-playbook
 - [2026-03-09 Mon] Fixed ansible `when:` indentation bug; vendored essh.el in repo after EmacsWiki began returning HTTP 402
