@@ -5653,6 +5653,7 @@ optimized lambda strikes balance of coeffienct bias and optimized likelihood
 :PROPERTIES:
 :ID:       48e68cb6-e455-4765-b967-e84727e07a6a
 :END:
+
   - https://minimaxir.com/2019/09/howto-gpt2/
   - Large patient datasets
     - - http://www.sciencedirect.com/science/article/pii/S1521689608000839
