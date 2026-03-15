@@ -4,7 +4,7 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeffrey Szymanski
-# Tangled: 2026-03-09 10:37:13
+# Tangled: 2026-03-14 16:22:36
 # ============================================================
 
 ---
@@ -189,18 +189,6 @@
         path: "{{ ansible_env.HOME }}/.emacs.d/server"
         state: directory
         mode: '0700'
-
-    - name: Ensure server-start and socket-dir is set in Emacs config
-      lineinfile:
-        path: "{{ ansible_env.HOME }}/.emacs.d/init.el"
-        create: yes
-        insertafter: EOF
-        line: "{{ item }}"
-      loop:
-        - "(setq server-socket-dir (expand-file-name \"server\" user-emacs-directory))"
-        - '(require ''server)'
-        - "(unless (server-running-p) (server-start))"
-      notify: Restart emacs daemon
 
     - name: Ensure systemd user unit directory exists
       file:
