@@ -4040,6 +4040,7 @@ pdftotext input.pdf output.txt
 - https://excalidraw.com/
 
 **** Use phone on computer
+
 [[https://chatgpt.com/c/67192b0b-18b4-8005-97aa-e1f960b69a42][chatgtp]]
 scrcpy process
 adb connect 192.168.1.12:5555
