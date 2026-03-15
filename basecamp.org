@@ -4032,6 +4032,7 @@ https://chat.openai.com/c/22b1d5c5-5d9b-4ced-98cf-860f7eb493c8
 ** Processes
 *** Flat
 **** Writing documentation
+
 https://www.thegooddocsproject.dev/template
 **** PDF to text
 pdftotext input.pdf output.txt
@@ -17665,6 +17666,7 @@ fi
 :PROPERTIES:
 :ID:       69e65a70-878e-4f58-a1d1-14ca876a7c12
 :END:
+
 - https://www.reddit.com/r/commandline/comments/qsbmji/useful_sed_scripts_patterns/
 - https://www.google.com/search?q=sed+replace+space+with+tab
 - [[https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed][use shell variables]]
