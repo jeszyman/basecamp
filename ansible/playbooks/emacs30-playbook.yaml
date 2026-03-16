@@ -4,7 +4,7 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeffrey Szymanski
-# Tangled: 2026-03-14 16:22:36
+# Tangled: 2026-03-16 08:17:47
 # ============================================================
 
 ---
@@ -243,9 +243,9 @@
           After=network.target
 
           [Service]
-          Type=forking
-          ExecStart=/usr/local/bin/emacs --daemon
-          ExecStop=/usr/bin/emacsclient --eval "(kill-emacs)"
+          Type=simple
+          ExecStart=/usr/local/bin/emacs --fg-daemon
+          ExecStop=/usr/bin/emacsclient --socket-name {{ ansible_env.HOME }}/.emacs.d/server/server --eval "(kill-emacs)"
           Restart=always
           RestartSec=3
 

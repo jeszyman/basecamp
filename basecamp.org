@@ -123,6 +123,7 @@ jobs:
 Code files in this repository are managed through [[ https://orgmode.org/manual/Extracting-Source-Code.html][extracting ("tangling") code]] within source code blocks of Emacs Org-mode text files. Tangling overwrites existing target files.
 *** Change Log
 - Developments since last tag
+  - 2026-03-16 Emacs systemd service: =Type=forking= / =--daemon= → =Type=simple= / =--fg-daemon= in both emacs30 and emacs29 playbooks. Fixes daemon startup hang caused by subprocesses holding stdout fd.
   - 2026-03-12 Replaced =sync-gitignore= with =git-hygiene= system: global =core.excludesFile= / =core.hooksPath= via ansible, detection script (=scripts/git-hygiene.sh=), Claude agent + skill for interactive scanning
   - 2026-02-23 Added GitHub Action to test =sync-gitignore.sh= (4 cases: help, missing args, successful sync, deduplication); workflow tangles to =.github/workflows/test-sync-gitignore.yml=
 - v1.3.0
@@ -1397,9 +1398,9 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
           After=network.target
 
           [Service]
-          Type=forking
-          ExecStart=/usr/local/bin/emacs --daemon
-          ExecStop=/usr/bin/emacsclient --eval "(kill-emacs)"
+          Type=simple
+          ExecStart=/usr/local/bin/emacs --fg-daemon
+          ExecStop=/usr/bin/emacsclient --socket-name {{ ansible_env.HOME }}/.emacs.d/server/server --eval "(kill-emacs)"
           Restart=always
           RestartSec=3
 
@@ -1774,9 +1775,9 @@ Server socket dir and server-start are configured in emacs.org (load-first.el). 
           After=network.target
 
           [Service]
-          Type=forking
-          ExecStart=/usr/local/bin/emacs --daemon
-          ExecStop=/usr/bin/emacsclient --eval "(kill-emacs)"
+          Type=simple
+          ExecStart=/usr/local/bin/emacs --fg-daemon
+          ExecStop=/usr/bin/emacsclient --socket-name {{ ansible_env.HOME }}/.emacs.d/server/server --eval "(kill-emacs)"
           Restart=always
           RestartSec=3
 
@@ -2047,9 +2048,9 @@ Server socket dir and server-start are configured in emacs.org (load-first.el). 
           After=network.target
 
           [Service]
-          Type=forking
-          ExecStart=/usr/local/bin/emacs --daemon
-          ExecStop=/usr/bin/emacsclient --eval "(kill-emacs)"
+          Type=simple
+          ExecStart=/usr/local/bin/emacs --fg-daemon
+          ExecStop=/usr/bin/emacsclient --socket-name {{ ansible_env.HOME }}/.emacs.d/server/server --eval "(kill-emacs)"
           Restart=always
           RestartSec=3
 

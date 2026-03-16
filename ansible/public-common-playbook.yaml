@@ -4,7 +4,7 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeffrey Szymanski
-# Tangled: 2026-03-09 10:37:13
+# Tangled: 2026-03-16 08:17:47
 # ============================================================
 
 ---
@@ -147,12 +147,14 @@
     - name: Clone whisper.el speech-to-text package
       ansible.builtin.git:
         repo: https://github.com/natrys/whisper.el
-        dest: "{{ ansible_env.HOME }}/.emacs.d/lisp/whisper.el"
+        dest: "{{ ansible_env.HOME }}/.emacs.d/lisp/whisper"
         update: no
     - name: Install Python CLI tools via pip
       ansible.builtin.pip:
         name:
           - pdfannots
+          - jupyter_client
+          - ipykernel
         executable: pip3
     - name: Ensure fonts directory exists
       file:
@@ -210,6 +212,17 @@
         block: |
           o() { "$@" &>/dev/null & disown; }
           complete -c o
+    - name: Set global core.excludesFile for gitignore template
+      community.general.git_config:
+        name: core.excludesFile
+        value: "{{ ansible_env.HOME }}/repos/basecamp/resources/git/jeszyman_gitignore"
+        scope: global
+
+    - name: Set global core.hooksPath for shared git hooks
+      community.general.git_config:
+        name: core.hooksPath
+        value: "{{ ansible_env.HOME }}/repos/basecamp/tools/git"
+        scope: global
     - name: Source all ~/.bashrc.d/*.sh files from .bashrc
       lineinfile:
         path: "{{ ansible_env.HOME }}/.bashrc"
