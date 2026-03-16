@@ -7,6 +7,7 @@
 - [ ] migrate [[id:2fc1a6f1-093c-4250-a905-1bf42b7b9eee][Lisp functions]] to [[file:~/repos/emacs/emacs.org]]
 ** Change log
 
+- [2026-03-16 Sun] Restructured public common playbook: flat apt list + capability headings (SSH brute-force protection, kernel crash dumps, hardware temp monitoring, hardware error logging, Nerd Fonts). Removed Linux ansible playbook (merged into public common). Added lm-sensors + rasdaemon.
 - [2026-03-09 Mon] Added fail2ban + linux-crashdump to apt_packages; enabled fail2ban/kdump-tools services in [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]]; added [[id:a3f1e2b7-9c84-4d5a-b6e2-83f7d1c04e92][System crash diagnosis]] reference to Linux > Sysadmin
 - [2026-03-09 Mon] Added =my/extract-pdf-annotations= + =my/pdf-from-cite-at-point= (pdfannots + citar) to emacs.org; added pdfannots pip install to public-common-playbook
 - [2026-03-09 Mon] Fixed ansible `when:` indentation bug; vendored essh.el in repo after EmacsWiki began returning HTTP 402
@@ -1242,37 +1243,7 @@ fn fn
       no_log: true
 
 #+end_src
-**** Install software
-***** ATP installs
-https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
-    # - name: Add Apptainer GPG key and repo
-    #   become: true
-    #   shell: |
-    #     curl -fsSL https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xFC6218AE | gpg --dearmor -o /usr/share/keyrings/apptainer-archive-keyring.gpg
-    #     echo "deb [signed-by=/usr/share/keyrings/apptainer-archive-keyring.gpg] http://ppa.launchpad.net/apptainer/ppa/ubuntu jammy main" > /etc/apt/sources.list.d/apptainer.list
-    #   args:
-    #     executable: /bin/bash
-
-    # - name: Add required APT PPAs
-    #   apt_repository:
-    #     repo: "{{ item }}"
-    #     state: present
-    #   loop: "{{ apt_ppas }}"
-    #   become: true
-
-    # - name: Add Apptainer PPA
-    #   command: add-apt-repository -y ppa:apptainer/ppa
-    #   become: true
-    #   register: add_ppa_result
-    #   changed_when: "'already exists' not in add_ppa_result.stderr"
-
-    # - name: Install Apptainer
-    #   apt:
-    #     name: apptainer
-    #     state: present
-    #     update_cache: yes
-    #   become: true
-
+**** Common tools
 #+begin_src yaml
     - name: Update apt cache
       ansible.builtin.command: apt-get update --allow-releaseinfo-change
@@ -1293,69 +1264,71 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
       become: true
       loop: "{{ apt_packages }}"
       register: apt_install_results
-      ignore_errors: true  # Ensures playbook continues even if a package is missing
-
+      ignore_errors: true
 #+end_src
-***** Non-ATP Installs
-****** yq
+
+**** Hardware error logging
 #+begin_src yaml
-    - name: Download yq binary
+    # rasdaemon — records hardware errors (MCE, ECC memory) persistently to SQLite.
+    # Query with: sudo ras-mc-ctl --summary
+    - name: Install rasdaemon
+      ansible.builtin.apt:
+        name: rasdaemon
+        state: present
       become: true
-      ansible.builtin.get_url:
-        url: https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-        dest: /usr/local/bin/yq
-        mode: '0755'
-        force: no
 
-    - name: Verify yq installation
+    - name: Enable and start rasdaemon service
+      ansible.builtin.systemd:
+        name: rasdaemon
+        enabled: true
+        state: started
       become: true
-      ansible.builtin.command: yq --version
-      register: yq_version
-      failed_when: "'version' not in yq_version.stdout.lower()"
-
-    - name: Debug yq version
-      ansible.builtin.debug:
-        msg: "yq successfully installed: {{ yq_version.stdout }}"
-
-    # Create a separate alias 'yqgo' for the Go version of yq so it can still be used
-    # when the 'yq' command is shadowed by the Python version installed in a conda environment
-    - name: Copy yq to yqgo for unambiguous use of Go version
-      become: true
-      ansible.builtin.copy:
-        src: /usr/local/bin/yq
-        dest: /usr/local/bin/yqgo
-        remote_src: true
-        mode: '0755'
-
 #+end_src
 
-****** whisper.el
+**** Hardware temperature monitoring
 #+begin_src yaml
-    - name: Clone whisper.el speech-to-text package
-      ansible.builtin.git:
-        repo: https://github.com/natrys/whisper.el
-        dest: "{{ ansible_env.HOME }}/.emacs.d/lisp/whisper"
-        update: no
+    # lm-sensors — reads CPU, GPU, and board temperature sensors.
+    # Query with: sensors
+    - name: Install lm-sensors
+      ansible.builtin.apt:
+        name: lm-sensors
+        state: present
+      become: true
 
+    - name: Run sensors-detect in auto mode
+      ansible.builtin.command:
+        cmd: sensors-detect --auto
+      become: true
+      changed_when: false
+
+    - name: Enable and start lm-sensors service
+      ansible.builtin.systemd:
+        name: lm-sensors
+        enabled: true
+        state: started
+      become: true
 #+end_src
 
-****** Python
-# jupyter_client + ipykernel: system-level install so `jupyter kernelspec`
-# works from any conda env. Emacs finds the binary via exec-path addition
-# in [[file:~/repos/emacs/emacs.org][emacs.org]] jupyter use-package — preferred
-# over a second system jupyter to avoid conda version conflicts.
+**** Kernel crash dumps
 #+begin_src yaml
-    - name: Install Python CLI tools via pip
-      ansible.builtin.pip:
-        name:
-          - pdfannots
-          - jupyter_client
-          - ipykernel
-        executable: pip3
+    # linux-crashdump — captures kernel state on panic for post-mortem analysis.
+    # Check with: ls /var/crash/
+    # Requires one reboot after install to reserve crash kernel memory.
+    - name: Install linux-crashdump
+      ansible.builtin.apt:
+        name: linux-crashdump
+        state: present
+      become: true
 
+    - name: Enable kdump-tools service
+      ansible.builtin.systemd:
+        name: kdump-tools
+        enabled: true
+        state: started
+      become: true
 #+end_src
 
-****** Nerd fonts
+**** Nerd Fonts
 #+begin_src yaml
     - name: Ensure fonts directory exists
       file:
@@ -1374,13 +1347,31 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
 
     - name: Refresh font cache
       command: fc-cache -fv
-
 #+end_src
 
-****** [[id:36efda17-d1ef-4632-bc33-732071455543][R]]
-**** Systemd services
-***** Emacs
-#+begin_src yaml :tangle no
+**** SSH brute-force protection
+#+begin_src yaml
+    # fail2ban — bans IPs after repeated SSH auth failures.
+    # Check with: sudo fail2ban-client status sshd
+    - name: Install fail2ban
+      ansible.builtin.apt:
+        name: fail2ban
+        state: present
+      become: true
+
+    - name: Enable and start fail2ban service
+      ansible.builtin.systemd:
+        name: fail2ban
+        enabled: true
+        state: started
+      become: true
+#+end_src
+
+**** Emacs systemd service
+:PROPERTIES:
+:header-args:yaml: :tangle no
+:END:
+#+begin_src yaml
     - name: Create systemd user dir
       file:
         path: ~/.config/systemd/user
@@ -1417,28 +1408,65 @@ https://chatgpt.com/c/681d475d-50a8-8005-ba2a-2580ec479b1f
         systemctl --user enable --now emacs.service
       environment:
         XDG_RUNTIME_DIR: "/run/user/{{ ansible_user_uid }}"
-
 #+end_src
-***** fail2ban
+
+**** Non-APT installs
+***** yq
 #+begin_src yaml
-    - name: Enable and start fail2ban service
-      ansible.builtin.systemd:
-        name: fail2ban
-        enabled: true
-        state: started
+    - name: Download yq binary
       become: true
+      ansible.builtin.get_url:
+        url: https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+        dest: /usr/local/bin/yq
+        mode: '0755'
+        force: no
 
+    - name: Verify yq installation
+      become: true
+      ansible.builtin.command: yq --version
+      register: yq_version
+      failed_when: "'version' not in yq_version.stdout.lower()"
+
+    - name: Debug yq version
+      ansible.builtin.debug:
+        msg: "yq successfully installed: {{ yq_version.stdout }}"
+
+    # Create a separate alias 'yqgo' for the Go version of yq so it can still be used
+    # when the 'yq' command is shadowed by the Python version installed in a conda environment
+    - name: Copy yq to yqgo for unambiguous use of Go version
+      become: true
+      ansible.builtin.copy:
+        src: /usr/local/bin/yq
+        dest: /usr/local/bin/yqgo
+        remote_src: true
+        mode: '0755'
 #+end_src
-***** kdump
+
+***** whisper.el
 #+begin_src yaml
-    - name: Enable kdump-tools service
-      ansible.builtin.systemd:
-        name: kdump-tools
-        enabled: true
-        state: started
-      become: true
-
+    - name: Clone whisper.el speech-to-text package
+      ansible.builtin.git:
+        repo: https://github.com/natrys/whisper.el
+        dest: "{{ ansible_env.HOME }}/.emacs.d/lisp/whisper"
+        update: no
 #+end_src
+
+***** Python
+# jupyter_client + ipykernel: system-level install so `jupyter kernelspec`
+# works from any conda env. Emacs finds the binary via exec-path addition
+# in [[file:~/repos/emacs/emacs.org][emacs.org]] jupyter use-package — preferred
+# over a second system jupyter to avoid conda version conflicts.
+#+begin_src yaml
+    - name: Install Python CLI tools via pip
+      ansible.builtin.pip:
+        name:
+          - pdfannots
+          - jupyter_client
+          - ipykernel
+        executable: pip3
+#+end_src
+
+***** [[id:36efda17-d1ef-4632-bc33-732071455543][R]]
 **** Update bashrc
 #+begin_src yaml
 
@@ -19631,76 +19659,6 @@ $0
 #+end_src
 [[file:emacs/public_yasnippets/org-mode/code.perl]]
 
-*** Linux ansible playbook
-:properties:
-:header-args:yaml: :tangle ./ansible/playbooks/linux-playbook.yaml :mkdirp yes
-:end:
-**** group_vars
-#+begin_src yaml :tangle ./ansible/group_vars/all.yaml
-apt_packages:
-  - ansible
-  - curl
-  - fail2ban
-  - git
-  - htop
-  - linux-crashdump
-  - tree
-  - vim
-
-#+end_src
-**** Preamble
-#+begin_src yaml
----
-- name: Linux Basic Playbook
-  hosts: all
-  gather_facts: true
-
-  tasks:
-#+end_src
-**** Include variables from a declared yaml file
-#+begin_src yaml
-    - name: Include group_vars/all.yaml explicitly
-      include_vars:
-        file: ../group_vars/all.yaml
-#+end_src
-**** Debugging info
-#+begin_src yaml
-    - name: Debug useful variable readouts
-      debug:
-        msg: |
-          Logged in as: {{ ansible_env.USER }}
-
-          Home directory: {{ ansible_user_dir }}
-
-          Environment HOME: {{ ansible_env.HOME }}
-
-          PATH: {{ ansible_env.PATH }}
-
-          OS: {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_os_family }})
-
-          Hostname: {{ ansible_hostname }}
-
-          FQDN: {{ ansible_fqdn }}
-
-          Default IPv4: {{ ansible_default_ipv4.address }}
-
-          Inventory Sources: {{ ansible_inventory_sources }}
-
-          Package Manager: {{ ansible_pkg_mgr }}
-#+end_src
-**** Install APT package list as an external file
-:PROPERTIES:
-:ID:       b6edf46b-f569-4f13-8eb2-dc6011700f96
-:END:
-#+begin_src yaml
-    - name: Ensure APT packages are installed
-      apt:
-        name: "{{ apt_packages }}"
-        state: present
-        update_cache: yes
-      become: true  # Use sudo to run the task
-
-#+end_src
 ** Development                                                          :dev:
 :PROPERTIES:
 :header-args: :tangle no
