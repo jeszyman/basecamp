@@ -1,0 +1,18 @@
+# -*- mode: snippet -*-
+# key: smk_int
+# expand-env: ((yas-indent-line 'none))
+# --
+`(make-string (org-current-level) ?*)` [[file:./workflow/int_test.smk][Snakefile]]:smk:
+:PROPERTIES:
+:header-args:snakemake: :tangle ./workflow/int_test.smk
+:END:
+`(make-string (+ 1 (org-current-level)) ?*)` Preamble
+#+begin_src snakemake
+# Python setup
+import numpy as np
+import pandas as pd
+import re
+#+end_src
+`(make-string (+ 1 (org-current-level)) ?*)` All rule
+`(make-string (+ 1 (org-current-level)) ?*)` Symlink fastqs
+`(make-string (+ 1 (org-current-level)) ?*)` Includes statements

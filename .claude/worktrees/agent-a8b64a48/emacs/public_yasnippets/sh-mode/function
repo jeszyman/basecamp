@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# key: function
+# expand-env: ((yas-indent-line 'fixed))
+# --
+${1:$$(replace-regexp-in-string " " "_" yas-text)}(){
+    local ${2: <VARIABLE NAME> }="\${1}"
+    $0
+}

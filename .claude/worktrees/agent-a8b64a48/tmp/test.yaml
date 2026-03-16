@@ -1,0 +1,13 @@
+fields:
+  - name: id
+    type: integer
+    constraints:
+      required: true
+  - name: name
+    type: string
+    constraints:
+      required: true
+  - name: age
+    type: integer
+    constraints:
+      minimum: 0

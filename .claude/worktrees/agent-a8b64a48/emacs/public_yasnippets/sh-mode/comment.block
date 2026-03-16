@@ -1,0 +1,26 @@
+# ============================================================
+# AUTO-GENERATED — DO NOT EDIT DIRECTLY
+# Edits will be overwritten on next org-babel tangle.
+# 
+# Source:  /home/jeszyman/repos/basecamp/basecamp.org
+# Author:  Jeffrey Szymanski
+# Tangled: 2026-03-09 10:37:13
+# ============================================================
+
+# -*- mode: snippet -*-
+# key: comment.block
+# expand-env: ((yas-indent-line 'none))
+# --
+`(let* ((input (read-string "Comment block text: "))
+        ;; wrap to 80 chars using fill-region
+        (fill-column 80)
+        (temp-buf (generate-new-buffer "*yas-fill*")))
+   ;; Fill text and split into lines
+   (prog1
+       (mapconcat (lambda (line) (concat "# " line))
+                  (with-temp-buffer
+                    (insert input)
+                    (fill-region (point-min) (point-max))
+                    (split-string (buffer-string) "\n"))
+                  "\n")
+     (kill-buffer temp-buf)))`

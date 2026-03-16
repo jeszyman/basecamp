@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# key: function
+# expand-env: ((yas-indent-line 'none))
+# --
+
+def ${1:FUNCTIONNAME$$(replace-regexp-in-string " " "_" yas-text)}(${2:PARAM$$(replace-regexp-in-string " " "_" yas-text)}):
+    """
+    ${3: <DOC STRING>}
+
+    """
+    $0

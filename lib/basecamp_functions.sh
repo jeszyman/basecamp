@@ -4,7 +4,7 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeffrey Szymanski
-# Tangled: 2026-03-16 08:17:47
+# Tangled: 2026-03-16 10:19:36
 # ============================================================
 
 # Basecamp General Shell Functions

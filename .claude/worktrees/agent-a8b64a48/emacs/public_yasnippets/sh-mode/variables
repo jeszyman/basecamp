@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# key: variables
+# expand-env: ((yas-indent-line 'none))
+# --
+variables(){
+    ${1:$$(replace-regexp-in-string " " "_" yas-text)}="\${1${2:$$(when (and yas-moving-away-p (not (string= "" yas-text)))(concat ":-" yas-text))}}"
+    ${3:$$(replace-regexp-in-string " " "_" yas-text)}="\${2${4:$$(when (and yas-moving-away-p (not (string= "" yas-text)))(concat ":-" yas-text))}}"
+}
+$0

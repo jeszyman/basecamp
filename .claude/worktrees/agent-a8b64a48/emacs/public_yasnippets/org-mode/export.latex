@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# key: export.latex
+# expand-env: ((yas-indent-line 'none))
+# condition: 'auto
+# --
+#+begin_export latex
+$0
+#+end_export

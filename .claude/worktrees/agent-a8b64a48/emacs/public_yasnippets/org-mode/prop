@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: prop
+# expand-env: ((yas-indent-line 'none))
+# --
+:properties:
+$0
+:end:
