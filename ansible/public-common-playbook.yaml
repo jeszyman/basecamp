@@ -4,7 +4,7 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeffrey Szymanski
-# Tangled: 2026-03-16 08:17:47
+# Tangled: 2026-03-16 10:19:36
 # ============================================================
 
 ---
@@ -116,7 +116,87 @@
       become: true
       loop: "{{ apt_packages }}"
       register: apt_install_results
-      ignore_errors: true  # Ensures playbook continues even if a package is missing
+      ignore_errors: true
+    # rasdaemon — records hardware errors (MCE, ECC memory) persistently to SQLite.
+    # Query with: sudo ras-mc-ctl --summary
+    - name: Install rasdaemon
+      ansible.builtin.apt:
+        name: rasdaemon
+        state: present
+      become: true
+
+    - name: Enable and start rasdaemon service
+      ansible.builtin.systemd:
+        name: rasdaemon
+        enabled: true
+        state: started
+      become: true
+    # lm-sensors — reads CPU, GPU, and board temperature sensors.
+    # Query with: sensors
+    - name: Install lm-sensors
+      ansible.builtin.apt:
+        name: lm-sensors
+        state: present
+      become: true
+
+    - name: Run sensors-detect in auto mode
+      ansible.builtin.command:
+        cmd: sensors-detect --auto
+      become: true
+      changed_when: false
+
+    - name: Enable and start lm-sensors service
+      ansible.builtin.systemd:
+        name: lm-sensors
+        enabled: true
+        state: started
+      become: true
+    # linux-crashdump — captures kernel state on panic for post-mortem analysis.
+    # Check with: ls /var/crash/
+    # Requires one reboot after install to reserve crash kernel memory.
+    - name: Install linux-crashdump
+      ansible.builtin.apt:
+        name: linux-crashdump
+        state: present
+      become: true
+
+    - name: Enable kdump-tools service
+      ansible.builtin.systemd:
+        name: kdump-tools
+        enabled: true
+        state: started
+      become: true
+    - name: Ensure fonts directory exists
+      file:
+        path: "{{ ansible_env.HOME }}/.local/share/fonts"
+        state: directory
+        mode: '0755'
+
+    - name: Download and extract Nerd Fonts
+      shell: |
+        cd {{ ansible_env.HOME }}/.local/share/fonts
+        curl -LO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraCode.zip
+        unzip -o FiraCode.zip
+        rm FiraCode.zip
+      args:
+        creates: "{{ ansible_env.HOME }}/.local/share/fonts/FiraCode-Regular.ttf"
+
+    - name: Refresh font cache
+      command: fc-cache -fv
+    # fail2ban — bans IPs after repeated SSH auth failures.
+    # Check with: sudo fail2ban-client status sshd
+    - name: Install fail2ban
+      ansible.builtin.apt:
+        name: fail2ban
+        state: present
+      become: true
+
+    - name: Enable and start fail2ban service
+      ansible.builtin.systemd:
+        name: fail2ban
+        enabled: true
+        state: started
+      become: true
     - name: Download yq binary
       become: true
       ansible.builtin.get_url:
@@ -156,35 +236,6 @@
           - jupyter_client
           - ipykernel
         executable: pip3
-    - name: Ensure fonts directory exists
-      file:
-        path: "{{ ansible_env.HOME }}/.local/share/fonts"
-        state: directory
-        mode: '0755'
-
-    - name: Download and extract Nerd Fonts
-      shell: |
-        cd {{ ansible_env.HOME }}/.local/share/fonts
-        curl -LO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraCode.zip
-        unzip -o FiraCode.zip
-        rm FiraCode.zip
-      args:
-        creates: "{{ ansible_env.HOME }}/.local/share/fonts/FiraCode-Regular.ttf"
-
-    - name: Refresh font cache
-      command: fc-cache -fv
-    - name: Enable and start fail2ban service
-      ansible.builtin.systemd:
-        name: fail2ban
-        enabled: true
-        state: started
-      become: true
-    - name: Enable kdump-tools service
-      ansible.builtin.systemd:
-        name: kdump-tools
-        enabled: true
-        state: started
-      become: true
     - name: Ensure ~/.bashrc.d exists
       ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/.bashrc.d"
