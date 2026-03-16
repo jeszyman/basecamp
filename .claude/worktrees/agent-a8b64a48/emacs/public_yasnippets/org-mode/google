@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: google
+# expand-env: ((yas-indent-line 'none))
+# --
+[[https://www.google.com/search?q=${1:$(replace-regexp-in-string " " "+" yas-text)}][google:$1]]$0

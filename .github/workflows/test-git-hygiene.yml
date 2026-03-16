@@ -1,0 +1,89 @@
+# ============================================================
+# AUTO-GENERATED — DO NOT EDIT DIRECTLY
+# Edits will be overwritten on next org-babel tangle.
+# 
+# Source:  /home/jeszyman/repos/basecamp/basecamp.org
+# Author:  Jeffrey Szymanski
+# Tangled: 2026-03-16 10:19:36
+# ============================================================
+
+name: test-git-hygiene
+
+on:
+  push:
+    paths:
+      - scripts/git-hygiene.sh
+      - .github/workflows/test-git-hygiene.yml
+  pull_request:
+    paths:
+      - scripts/git-hygiene.sh
+      - .github/workflows/test-git-hygiene.yml
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test --help exits 0
+        run: bash scripts/git-hygiene.sh --help
+
+      - name: Test missing args exits 1
+        run: |
+          bash scripts/git-hygiene.sh && exit 1 || true
+
+      - name: Test --single on current repo produces TSV
+        run: |
+          output=$(bash scripts/git-hygiene.sh --single . || true)
+          if [[ -n "$output" ]]; then
+            # Verify TSV format: at least one tab per line
+            echo "$output" | while IFS= read -r line; do
+              if [[ "$line" != *$'\t'* ]]; then
+                echo "FAIL: output line not TSV: $line"
+                exit 1
+              fi
+            done
+            echo "PASS: TSV output format valid"
+            echo "$output"
+          else
+            echo "PASS: no issues found (clean output)"
+          fi
+
+      - name: Test excludesfile-missing detection (no global config in CI)
+        run: |
+          tmpdir=$(mktemp -d)
+          git init "$tmpdir"
+          output=$(bash scripts/git-hygiene.sh --single "$tmpdir" 2>&1 || true)
+          if echo "$output" | grep -q "excludesfile-missing"; then
+            echo "PASS: excludesfile-missing detected"
+          else
+            echo "FAIL: excludesfile-missing not detected"
+            echo "$output"
+            exit 1
+          fi
+
+      - name: Test hookspath-missing detection (no global config in CI)
+        run: |
+          tmpdir=$(mktemp -d)
+          git init "$tmpdir"
+          output=$(bash scripts/git-hygiene.sh --single "$tmpdir" 2>&1 || true)
+          if echo "$output" | grep -q "hookspath-missing"; then
+            echo "PASS: hookspath-missing detected"
+          else
+            echo "FAIL: hookspath-missing not detected"
+            echo "$output"
+            exit 1
+          fi
+
+      - name: Test non-git dir skipping
+        run: |
+          tmpdir=$(mktemp -d)
+          mkdir "$tmpdir/not-a-repo"
+          output=$(bash scripts/git-hygiene.sh "$tmpdir" 2>&1 || true)
+          if [[ -z "$output" ]]; then
+            echo "PASS: non-git directory was skipped"
+          else
+            echo "FAIL: unexpected output for non-git dir"
+            echo "$output"
+            exit 1
+          fi

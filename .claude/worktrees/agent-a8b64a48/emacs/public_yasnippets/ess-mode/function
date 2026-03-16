@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# key: function
+# expand-env: ((yas-indent-line 'fixed))
+# --
+${1:FUNCTIONNAME$$(replace-regexp-in-string " " "_" yas-text)} = function(${2:VARIABLE LIST}){
+  # ${3:DESCRIPTION}
+  $0
+}

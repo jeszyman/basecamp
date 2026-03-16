@@ -1,0 +1,29 @@
+# ============================================================
+# AUTO-GENERATED — DO NOT EDIT DIRECTLY
+# Edits will be overwritten on next org-babel tangle.
+# 
+# Source:  /home/jeszyman/repos/basecamp/basecamp.org
+# Author:  Jeffrey Szymanski
+# Tangled: 2026-03-09 10:37:13
+# ============================================================
+
+# -*- mode: snippet -*-
+# key: smk.rule
+# expand-env: ((yas-indent-line 'none))
+# --
+smk.rule.${1:$$(yas-choose-value '("bash" "r"))}
+# -*- mode: snippet -*-
+# key: smk.rule
+# expand-env: ((yas-indent-line 'none))
+# --
+#+begin_src snakemake
+rule ${1:$$(downcase(replace-regexp-in-string " " "_" yas-text))}:
+    input:
+    log: f"{log_dir}/$1.log",
+    output:
+    params: script = $1
+    shell:
+        """
+        """
+$0
+#+end_src

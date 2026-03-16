@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# key: yas.org
+# expand-env: ((yas-indent-line 'none))
+# --
+`(make-string (org-current-level) ?*)` $2 :yas:
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/${1:org-mode}/$2
+# -*- mode: snippet -*-
+# key: ${2: <KEY>}
+# expand-env: ((yas-indent-line 'none))
+# --
+$0
+#+end_src

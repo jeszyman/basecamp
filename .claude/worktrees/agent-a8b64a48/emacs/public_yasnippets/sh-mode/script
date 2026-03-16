@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# key: script
+# --
+#!/usr/bin/env bash
+
+block
+
+usage
+
+parse_args
+
+main(){
+    parse_args "$@"
+    # REMAINING FUNCTION LOGIC
+}
+
+# OTHER FUNCTIONS
+
+main "$@"

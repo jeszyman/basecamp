@@ -1,0 +1,25 @@
+# ============================================================
+# AUTO-GENERATED — DO NOT EDIT DIRECTLY
+# Edits will be overwritten on next org-babel tangle.
+# 
+# Source:  /home/jeszyman/repos/basecamp/basecamp.org
+# Author:  Jeffrey Szymanski
+# Tangled: 2026-03-09 10:37:13
+# ============================================================
+
+# -*- mode: snippet -*-
+# key: smk.bashscript
+# expand-env: ((yas-indent-line 'none))
+# --
+    params:
+        script = script_dir + "/${1:$$(replace-regexp-in-string " " "_" yas-text)}.sh"
+    shell:
+        """
+        {params.script} \
+        {input} \
+        {output} &> {log}
+        """
+#+end_src
+#+begin_src bash :tangle ./scripts/$1.sh
+$0
+#+end_src
