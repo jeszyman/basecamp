@@ -4,7 +4,7 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeffrey Szymanski
-# Tangled: 2026-03-16 10:19:36
+# Tangled: 2026-03-16 21:27:15
 # ============================================================
 
 ---
@@ -12,13 +12,6 @@
   # Hosts as all allows for either local or remote runs.
   # Local runs should use the syntax:
   # ANSIBLE_STDOUT_CALLBACK=yaml ansible-playbook -i localhost, --connection=local <PLAYBOOK.yaml>
-  # ANSIBLE_STDOUT_CALLBACK=yaml ensures better human-readable outputs
-  # -i localhost, (WITH comma) specifies implicit empty host file
-  # --connection=local bypasses ssh
-  #
-  # This setup allows hosts: all in the playbook but local runs via command line without
-  # an inventory.
-
   hosts: all
   tasks:
     - name: Debug useful variable readouts
@@ -44,6 +37,6 @@
     - name: Install apt packages
       apt:
         name: "{{ apt_packages }}"
-        state: present # state: latest for updates, state: present for checks
+        state: present
         update_cache: yes
       become: true
