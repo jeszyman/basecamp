@@ -7,24 +7,17 @@
 - [ ] migrate [[id:2fc1a6f1-093c-4250-a905-1bf42b7b9eee][Lisp functions]] to [[file:~/repos/emacs/emacs.org]]
 ** Change log
 
+- [2026-03-17 Mon] Collapsed =** Computers, Computer Science, and Information Technology= section: promoted R Statistical Computing, Docker, YASnippet templates to top-level =**= headings; refiled Bash/UNIX tools to =** lib=, Ansible cookbook/reference to =** Ansible=, Git content to =** Repository setup=, small reference items to =** General reference=. Deleted 8 dangling bookmark headings and ~200 lines of link stubs. Fixed =org_refile_subtree= MCP tool: ambiguity detection (errors with match list) + org-id disambiguation via =source_id= / =target_id= params. 7306 → 7121 lines.
 - [2026-03-16 Sun] Added emacs-restart and emacs-interrupt shell functions; documented bash function style standard with _template(); standardized help guards, heredoc style, and brace placement across all lib functions. Consolidated 25 scattered Ideas headings into topical areas with cross-links in [[id:b3c4c653-9584-4084-9e0e-abf16f95ac52][Ideas]]. Restructured [[id:c013714a-c4f5-4c3b-9eac-94bfc3ded1ab][Machine Learning]] per Wikipedia navbox taxonomy (ACM classification). Restructured Computers/CS/IT section per ACM taxonomy. File reduced from 19,884 to 7,305 lines (63%).
 - [2026-03-16 Sun] Restructured public common playbook: flat apt list + capability headings (SSH brute-force protection, kernel crash dumps, hardware temp monitoring, hardware error logging, Nerd Fonts). Removed Linux ansible playbook (merged into public common). Added lm-sensors + rasdaemon.
 - [2026-03-09 Mon] Added fail2ban + linux-crashdump to apt_packages; enabled fail2ban/kdump-tools services in [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]]; added [[id:a3f1e2b7-9c84-4d5a-b6e2-83f7d1c04e92][System crash diagnosis]] reference to Linux > Sysadmin
 - [2026-03-09 Mon] Added =my/extract-pdf-annotations= + =my/pdf-from-cite-at-point= (pdfannots + citar) to emacs.org; added pdfannots pip install to public-common-playbook
 - [2026-03-09 Mon] Fixed ansible `when:` indentation bug; vendored essh.el in repo after EmacsWiki began returning HTTP 402
 
-** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
-** [[id:89576FD2-F863-4220-BAD7-D4E179AEA644][Bash and shell]]
-** [[id:b16d0202-8d35-472b-b538-87a7d6a6cef7][Conda]]
 ** [[id:a49abc44-8e71-4a1a-bd35-a77849427c94][Emacs]]
-** [[id:cd560390-aa1e-4c9e-8317-08610e5de42a][Linux]]
 ** [[id:88337952-4c36-402e-882f-6ccd6c7ff6a1][Org-mode and Emacs cookbook]]
 ** [[id:28ed3017-eedb-4a6c-94e5-f477353170c8][Public emacs configuration]]
-** [[id:CA21AAC9-F147-4086-A24C-64451EE349F3][Python]]
-** [[id:F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD][R Statistical Computing]]
 ** [[id:00656e3d-e62c-4ace-a27c-252b56010fe0][Scientific Project Template]]
-** [[id:a8b27140-4b9e-40c5-86ab-ee5afeae723f][Snakemake]]
-** [[id:9E19E626-9D6C-4296-BEDB-80033A846CF4][Software]]
 ** Repository setup and administration
 *** Git and github
 **** Tests
@@ -112,6 +105,22 @@ jobs:
 #+end_src
 
 
+
+
+
+*** Git and version control
+- See [[id:9E19E626-9D6C-4296-BEDB-80033A846CF4][Software]] for git tools
+**** Version control concepts
+- [[https://git-scm.com/][Git]]
+- [[https://docs.github.com/][GitHub docs]]
+- [[https://try.github.io/][Try Git]]
+**** git-hygiene
+- Detection script: [[file:scripts/git-hygiene.sh][scripts/git-hygiene.sh]]
+- Global gitignore via =core.excludesFile= -> [[file:resources/git/jeszyman_gitignore][resources/git/jeszyman_gitignore]]
+- Global hooks via =core.hooksPath= -> [[file:tools/git/][tools/git/]]
+**** GitHub
+- [[https://github.com/jeszyman][jeszyman GitHub]]
+- [[file:tools/git/github_init.sh][github_init.sh]] -- initialize a new GitHub repo
 ** README
 :PROPERTIES:
 :export_file_name: ./README.md
@@ -202,7 +211,6 @@ Repository code is tangled from a single Org-mode file. Updates from others are 
    |---|
    |---|
 ***** Data governance
-****** Security
 ****** Architecture
 ****** Lifecycle
 ****** Management
@@ -1535,6 +1543,7 @@ wget_downloads:
         PATH: "{{ ansible_env.HOME }}/miniconda3/condabin:{{ ansible_env.PATH }}"
 
 #+end_src
+
 *** Emacs30                                                          :ansibp:
 :PROPERTIES:
 :ID:       58771262-07b5-435c-a3fb-21bb8b53dcb5
@@ -2113,6 +2122,99 @@ Server socket dir and server-start are configured in emacs.org (load-first.el). 
 #+end_src
 *** [[id:36efda17-d1ef-4632-bc33-732071455543][Ansible]]             :ansipb:
 *** [[id:e15a03de-c529-4229-b763-7df28213f1e0][Ansible install playbook]]
+
+
+
+
+*** Ansible Cookbook                                               :cookbook:
+:properties:
+:header-args:yaml: :tangle ./ansible/playbooks/ansible-cookbook.yaml :mkdirp yes
+:end:
+- [[file:ansible/playbooks/ansible-cookbook.yaml]]
+**** Preamble
+#+begin_src yaml
+---
+- name: Ansible cookbook
+  # Hosts as all allows for either local or remote runs.
+  # Local runs should use the syntax:
+  # ANSIBLE_STDOUT_CALLBACK=yaml ansible-playbook -i localhost, --connection=local <PLAYBOOK.yaml>
+  hosts: all
+  tasks:
+#+end_src
+**** Debugging info
+:PROPERTIES:
+:ID:       537315c8-951a-42bc-99af-c3977c19e812
+:END:
+#+name: ansible-debugging-info
+#+begin_src yaml
+    - name: Debug useful variable readouts
+      debug:
+        msg: "
+          \n=== System Information ===\n\n
+          Logged in as: {{ ansible_env.USER }}
+          \n\nHome directory: {{ ansible_user_dir }}
+          \n\nEnvironment HOME: {{ ansible_env.HOME }}
+          \n\nPATH:
+            {{ ansible_env.PATH }}
+          \n\nOS: {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_os_family }})
+          \n\nHostname: {{ ansible_hostname }}
+          \n\nFQDN: {{ ansible_fqdn }}
+          \n\nDefault IPv4: {{ ansible_default_ipv4.address }}
+          \n\nInventory Sources: {{ ansible_inventory_sources }}
+          \n\nPackage Manager: {{ ansible_pkg_mgr }}
+          \n========================="
+#+end_src
+**** Include variables from a yaml file
+***** Declare the yaml file
+:PROPERTIES:
+:ID:       f23ee77d-a479-40be-8111-7a5ba70ba3fd
+:END:
+#+begin_src yaml :tangle ./ansible/group_vars/cookbook-apts.yaml
+apt_packages:
+  - tree
+  - htop
+#+end_src
+
+#+name: ansible-include-vars-yaml
+#+begin_src yaml
+# Note this is relative to the playbook location
+    - name: Include yaml explicitly
+      include_vars:
+        file: ../group_vars/cookbook-apts.yaml
+#+end_src
+***** Access variables from the declared yaml
+#+begin_src yaml
+    - name: Install apt packages
+      apt:
+        name: "{{ apt_packages }}"
+        state: present
+        update_cache: yes
+      become: true
+#+end_src
+
+
+*** Ansible (configuration management)
+:PROPERTIES:
+:ID:       1169cb65-4a18-43d3-9643-67ac3e85f0d1
+:END:
+- Main Ansible content: see top-level ** Ansible section
+- [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]]
+**** Processes
+- Avoid cryptography deprecation warnings:
+  #+begin_src bash
+pip install --upgrade paramiko cryptography
+  #+end_src
+- Install ansible language server:
+  #+begin_src bash
+npm i -g @ansible/ansible-language-server
+  #+end_src
+**** Configuration
+[[file:~/.ansible.cfg]]
+**** Reference
+- [[https://sweworld.net/cheatsheets/ansible/][Ansible cheatsheet]]
+- [[https://www.reddit.com/r/ansible/comments/1qj33pl/best_practice_playbookrolescollection_organization/][Ansible best practices: playbook/roles/collection organization]]
+- [[https://ansible-ee-builder.lovable.app/][Ansible EE builder]]
+
 ** Install and setup
 #+begin_src bash :results replace
 pip install 'python-lsp-server[all]'
@@ -3933,6 +4035,7 @@ EOF
 
 
 **** [[id:a9f97cde-27bc-4777-bb12-164ac4cb421d][Shell functions in basecamp-private]] more_bashrc
+
 *** Lisp functions
 :PROPERTIES:
 :header-args: :tangle ./lib/lisp_functions.el :tangle-mode (identity #o644) :mkdirp yes :noweb yes :comments org
@@ -4037,6 +4140,270 @@ BLOCK-NAME is the name of the block to execute."
       (forward-line)
       (org-table-export csv-file "orgtbl-to-csv"))))
 #+end_src
+
+
+*** Bash and shell scripting
+- See top-level [[id:861fb855-7bac-4601-87b9-a5bb7a6db293][Bash and shell]] section
+**** Bash style guide
+- [[https://google.github.io/styleguide/shellguide.html][Google shell style guide]]
+- [[https://explainshell.com/explain?cmd=set+-euxo+pipefail][set -euxo pipefail explained]]
+- [[http://redsymbol.net/articles/unofficial-bash-strict-mode/][Unofficial bash strict mode]]
+- Script structure: header comment, usage/print_usage, parse_args, main(), other functions, main "$@"
+- Exit codes: 0 success, 1 runtime/domain error, 2 CLI misuse
+**** Bash functions                                                    :flat:
+- check_local_software
+  #+begin_src bash :tangle ./src/bash_functions.sh
+check_local_software(){
+    [[ $# -eq 0 ]] && {
+        printf "\n check_local_software\n Checks list of software in bash array and exits with error if not found\n \$1 = Bash array of software, e.g. try software=(bash, git)\n"
+        return
+    }
+    software=$1
+    for i in "${software[@]}"; do
+        if command -v $i >/dev/null 2>&1 ; then
+            echo "$i installed"
+        else
+            echo "$i not found, exiting"
+            exit 1
+        fi
+    done
+}
+  #+end_src
+- git_pull_all
+  #+begin_src bash :tangle ./src/git_pull_all.sh :dir ~/repos/basecamp
+#!/bin/bash
+#########1#########2#########3#########4#########5#########6#########7#########8
+#                                                                              #
+#                       Script to automate git pulls                           #
+#             from a set of repositories within the same root dir              #
+#                                                                              #
+#########1#########2#########3#########4#########5#########6#########7#########8
+#
+# 1. Script Checks
+command -v git >/dev/null 2>&1
+if [ $? -eq 1 ]; then
+    echo "Git not found"
+    exit 1; fi
+shopt -s nullglob
+repo_dirs=(~/repos/*)
+if [ ${#repo_dirs[@]} -eq 0 ]; then
+    echo "No repos at ~/repos/"
+    exit 1; fi
+shopt -u nullglob
+#
+# 2. Pull Function
+for d in $HOME/repos/*
+do
+    [[ ! -d "$d" ]] && continue
+    echo "$d" &&
+    cd "$d" &&
+    git pull &&
+    git submodule update --recursive &&
+    git submodule update --remote &&
+    cd "$OLDPWD"
+done
+  #+end_src
+- symlink_by_csv
+  #+begin_src sh :tangle ./src/functions.sh
+#
+######################
+### symlink-by-csv ###
+######################
+#
+# Purpose: generates symbolic links in bulk from a csv file
+# Input: .csv file with source paths in column 1, dest paths in column 2
+symlink_by_csv(){
+    export IFS=","
+    cat $1 | while read a b; do
+        ln -s $a $b; done
+}
+  #+end_src
+**** General reference
+:PROPERTIES:
+:ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
+:END:
+- [[https://github.com/jlevy/the-art-of-command-line][The Art of Command Line]]
+- [[https://github.com/awesome-lists/awesome-bash][Awesome Bash]]
+- [[https://slicker.me/bash/gems.html][Bash gems]]
+- [[https://mywiki.wooledge.org/BashPitfalls][Bash pitfalls]]
+- [[https://tldp.org/LDP/abs/html/][Advanced Bash Scripting Guide]]
+- [[https://www.gnu.org/software/bash/manual/bash.html][Bash manual]]
+- cite:greenberg2021
+- [[id:c7d8dd07-098e-4bc4-b008-5da0abcabb0d][The Missing Semester of Your CS Education]]
+******* Regular expressions
+:PROPERTIES:
+:ID:       673D5E8D-64C5-4E9F-A664-612C2A6B1770
+:END:
+- [[https://regexr.com/][regexr.com]]
+- [[https://regex101.com/][regex101.com]]
+- [[https://anystyle.io/][anystyle.io]]
+- [[http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html][POSIX regex documentation]]
+- [[https://stackoverflow.com/questions/22937618/reference-what-does-this-regex-mean/22944075#22944075][The Stack Overflow Regular Expressions FAQ]]
+- [[http://www.rexegg.com/regex-quickstart.html][Regex Cheat Sheet]]
+- [[https://regexone.com/][RegexOne]]
+- Metacharacters
+  - \d for any single numeral (\d* any number, \d+ above zero)
+  - . matches any single character
+  - ? matches zero or one of preceding group
+  - whitespace: \t tab, \n newline, \s any whitespace
+  - start ^ and end $; capture groups with parentheses
+  - match specific chars with [brackets]; exclude with [^exclude]
+  - dash for character ranges (a-z, 0-9); repetitions with {#}
+  - capitals for NON: \S non-whitespace, \D non-digit
+
+
+
+*** UNIX-based operating systems                            :software:career:
+:PROPERTIES:
+:ID:       BDC42DA2-A632-4FB7-A586-E100B2A045DC
+:CREATED:  [2019-08-15 Thu 16:17]
+:END:
+**** Processes and commands
+:PROPERTIES:
+:ID:       f6c816d4-6f1a-4954-bf90-ed90de4d0979
+:END:
+| change password         | passwd                      |
+| disk usage, top level   | du -h --summarize           |
+| see total disk usage    | df -h                       |
+| see files on disk       | df <PATH>                   |
+| see distro              | lsb_release -a              |
+| see system disks        | lsblk                       |
+| add to path (temporary) | export PATH=$PATH:/new/path |
+
+**** General reference
+:PROPERTIES:
+:ID:       b387cb19-73dd-4783-8e57-8da47837e129
+:END:
+- [[http://linuxcommand.org/][LinuxCommand.org]]
+- [[http://korflab.ucdavis.edu/Unix_and_Perl/current.html][UC Davis Unix and Perl for biologists]]
+- [[http://www.commandlinefu.com/commands/browse/sort-by-votes][commandlinefu]]
+- [[https://sanctum.geek.nz/arabesque/unix-as-ide-introduction/][Unix as IDE: Introduction]]
+- [[https://en.wikibooks.org/wiki/Guide_to_Unix][wikibooks: unix]]
+- [[https://sneak.berlin/20191011/stupid-unix-tricks/][Stupid Unix tricks]]
+- POSIX: [[https://github.com/dylanaraps/pure-sh-bible][pure sh bible]]
+**** GNU tools
+:PROPERTIES:
+:ID:       76c4836c-fe3f-4948-86dd-25d8df38d1af
+:END:
+- [[https://www.gnu.org/prep/standards/standards.html][GNU Coding Standards]]
+- sort/uniq, diff, find, printf
+- echo vs printf: [[https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo][printf is better than echo]]
+- find: [[https://stackoverflow.com/questions/12522269/how-to-find-the-largest-file-in-a-directory-and-its-subdirectories][find largest file]], [[https://stackoverflow.com/questions/158044/how-to-use-find-to-search-for-files-created-on-a-specific-date][find by date]]
+- coreutils sort: [[https://unix.stackexchange.com/questions/76049/what-is-the-difference-between-sort-u-and-sort-uniq][sort -u vs sort | uniq]]
+- nohup: [[https://unix.stackexchange.com/questions/373461/open-less-scrolled-to-the-end][nohup reference]]
+***** gnu parallel
+:PROPERTIES:
+:ID:       e13df1a8-f5f1-4495-91a7-b33ff1c4ab84
+:END:
+- [[https://www.nas.nasa.gov/hecc/support/kb/using-gnu-parallel-to-package-multiple-jobs-in-a-single-pbs-job_303.html][NASA: GNU parallel for PBS jobs]]
+- [[https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending][GNU parallel manual]]
+- [[https://www.biostars.org/p/63816/][biostars: GNU parallel]]
+***** wget
+:PROPERTIES:
+:ID:       15b0cab6-1167-49f0-a5b2-6559c9e62251
+:END:
+#+begin_src bash :tangle ./src/gtac_wget.sh
+# Check for parameters, return usage if empty
+if [ $# -ne 2 ]; then
+    printf "\n usage: gtac_wget.sh <DIR PREFIX> <GTAC HTML>
+           \n wget wrapper for WUSTL GTAC downloads
+           \n"
+elif [[ ! -r $1 ]]; then
+    echo "Directory prefix at $1 is not readable."
+else
+    wget \
+        --continue \
+        --directory-prefix $1 \
+        --execute robots=off \
+        --force-directories \
+        --no-host-directories \
+        --no-parent \
+        --recursive \
+        --reject="index.html*" \
+        --timestamping \
+        $2
+fi
+#+end_src
+- [[https://www.tecmint.com/commandline-download-accelerators-for-linux/amp/][pass list to wget]]
+- [[https://superuser.com/questions/283481/how-do-i-properly-set-wget-to-download-only-new-files][download only on server-side change]]
+- clobber = overwrite
+***** make
+:PROPERTIES:
+:ID:       5b075f74-e2cf-4d2f-a8f7-db7c64080f47
+:END:
+- install: configure, make, install — [[https://www.tldp.org/HOWTO/Software-Building-HOWTO-3.html][TLDP HOWTO]]
+- [[https://github.com/kyclark/make-tutorial][make tutorial]]
+- [[http://blog.byronjsmith.com/makefile-shortcuts.html][makefile shortcuts]]
+***** gawk
+:PROPERTIES:
+:ID:       ec6a8328-2003-48ce-b8d0-fd11252d75cd
+:END:
+- [[https://stackoverflow.com/questions/11950641/add-column-to-middle-of-tab-delimited-file-sed-awk-whatever][add column in middle of tsv]]
+- output as tsv: awk -v FS='\t' -v OFS='\t' ...
+- [[http://www.tutorialspoint.com/awk/awk_basic_examples.htm][AWK basic examples]]
+- [[http://reasoniamhere.com/2013/09/16/awk-gtf-how-to-analyze-a-transcriptome-like-a-pro-part-1/][AWK GTF: analyze a transcriptome like a pro]]
+***** grep
+:PROPERTIES:
+:ID:       024b269b-27ca-492d-981f-d8f9083a38d2
+:END:
+- grep through subdirectories: grep -rl "string" /path
+- [[https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file][grep large list against large file]]
+- [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
+***** sed
+:PROPERTIES:
+:ID:       69e65a70-878e-4f58-a1d1-14ca876a7c12
+:END:
+- [[https://www.reddit.com/r/commandline/comments/qsbmji/useful_sed_scripts_patterns/][useful sed scripts and patterns]]
+- [[https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed][use shell variables in sed]]
+- [[https://stackoverflow.com/questions/5410757/how-to-delete-from-a-text-file-all-lines-that-contain-a-specific-string][delete lines with pattern]]
+- [[https://unix.stackexchange.com/questions/99350/how-to-insert-text-before-the-first-line-of-a-file][insert before first line]]
+- [[http://www.brunolinux.com/02-The_Terminal/Find_and%2520Replace_with_Sed.html][Find and replace with SED]]
+***** ssh
+:PROPERTIES:
+:ID:       054f0013-9355-4194-8fbd-646b54db2f70
+:END:
+#+begin_src bash
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/id_rsa
+chmod 600 ~/.ssh/id_rsa.pub
+#+end_src
+- [[https://dev.to/zduey/how-to-set-up-an-ssh-server-on-a-home-computer][set up SSH server on home computer]]
+- [[https://www.techrepublic.com/article/how-to-use-multiplexing-to-speed-up-the-ssh/][multiplexing connections]]
+- [[https://serverfault.com/questions/334448/why-is-ssh-password-authentication-a-security-risk][why SSH password auth is a security risk]]
+**** MacOS
+:PROPERTIES:
+:ID:       80A0FABE-EB39-4BFC-8478-8044E6D84761
+:END:
+- [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra][Allow install of non-app store software]]
+- hide dock: <CMD>+<ALT>+d
+- [[http://www.chriswrites.com/how-to-view-and-kill-processes-using-the-terminal-in-mac-os-x/][How to View and Kill Processes in Mac OS X]]
+**** image development
+:PROPERTIES:
+:CREATED:  [2019-05-29 Wed 14:47]
+:ID:       82b8ccaa-3bb3-4a71-8123-bce4f20c5242
+:END:
+**** Android
+:PROPERTIES:
+:ID:       8773070e-c8d7-4edf-8ee7-e6de1aa6b1a3
+:END:
+- [[https://cellencooper.medium.com/how-to-change-ok-google-to-a-different-phrase-bd6ca322398][Change "OK Google" to a different phrase]]
+**** Android to Linux mirror
+- [[https://github.com/Genymobile/scrcpy][scrcpy]]
+  #+begin_src bash
+# for Debian/Ubuntu
+sudo apt install ffmpeg libsdl2-2.0-0 adb wget \
+                 gcc git pkg-config meson ninja-build libsdl2-dev \
+                 libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev \
+                 libswresample-dev libusb-1.0-0 libusb-1.0-0-dev
+
+mkdir /tmp/scrcpy && cd /tmp/scrcpy
+git clone https://github.com/Genymobile/scrcpy
+cd scrcpy && ./install_release.sh
+
+sudo adb kill-server && sudo adb start-server && sudo adb devices
+adb tcpip 5555
+adb connect 192.168.1.12:5555
+  #+end_src
 ** Processes
 *** Flat
 **** Writing documentation
@@ -4540,6 +4907,16 @@ CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
   - ALERT VIEW
   - DROP VIEW
 
+
+
+
+
+
+
+
+
+
+
 *** Data pre-processing / data wrangling
 :PROPERTIES:
 :ID:       20b10d38-1d24-4a0e-b9b8-d6f2b1394efe
@@ -4712,15 +5089,6 @@ https://streamlit.io/
 - https://www.reddit.com/r/dataisbeautiful/comments/b2fybb/animation_the_10_biggest_cities_in_the_world/
 - https://pbs.twimg.com/media/C0NSXNuXAAIpUgN.jpg:large
 - [[https://www.shipmap.org/]]
-***** Networks and graphs
-:PROPERTIES:
-:ID:       6cd2214c-a469-46af-8ec7-11063cf3022c
-:END:
-- https://www.reddit.com/r/datascience/comments/17212yf/why_are_there_no_good_graph_visualisation_programs/
-- https://www.reddit.com/r/dataisbeautiful/comments/9yg8w9/googles_autocomplete_visualized_like_a_graph_link/
-- https://www.reddit.com/r/dataisbeautiful/comments/9kg9ym/oc_recent_philosophy_visualized/
-- http://www.hiveplot.com/
-- https://gephi.org/
 ***** Miscellaneous
 :PROPERTIES:
 :ID:       1706bb63-62bd-475e-95ce-2226dcf50f18
@@ -4989,12 +5357,6 @@ algorithm properties
   - http://mlwhiz.com/blog/2017/03/26/top_data_science_resources_on_the_internet_right_now/
 - http://www.datacarpentry.org/
 - http://courses.csail.mit.edu/18.337/2015/docs/50YearsDataScience.pdf
-** Graph theory tools
-:PROPERTIES:
-:ID:       4a5444c9-918d-4651-9def-bbcc26f9016e
-:END:
-- [[f6f303fe-70ba-4e15-99e5-5f881b3b0a45][f6f303fe-70ba-4e15-99e5-5f881b3b0a45]]
-- [[http://vlado.fmf.uni-lj.si/pub/networks/pajek/][Pajek]]
 ** Machine Learning
 :PROPERTIES:
 :ID:       c013714a-c4f5-4c3b-9eac-94bfc3ded1ab
@@ -5371,6 +5733,14 @@ plot(output.forest)
 - [[https://www.sciencedirect.com/science/article/pii/S2666389921002348][ScienceDirect: ML application]]
 - [[https://www.sciencedirect.com/science/article/pii/S1874939919302500][ScienceDirect: ML application 2]]
 - [[https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0224365][PLOS ONE: ML application]]
+
+
+** Graph theory tools
+:PROPERTIES:
+:ID:       4a5444c9-918d-4651-9def-bbcc26f9016e
+:END:
+- [[f6f303fe-70ba-4e15-99e5-5f881b3b0a45][f6f303fe-70ba-4e15-99e5-5f881b3b0a45]]
+- [[http://vlado.fmf.uni-lj.si/pub/networks/pajek/][Pajek]]
 ** Public configuration files
 *** Ubuntu
 #+begin_src bash
@@ -5432,1655 +5802,7 @@ ShowSidebar=false
 
 #+end_src
 
-** Computers, Computer Science, and Information Technology           :career:
-:PROPERTIES:
-:ID:       A91BF233-F14E-4E91-A1E9-B39802A9ED2D
-:CREATED:  [2019-07-03 Wed 08:13]
-:END:
-*** Hardware
-:PROPERTIES:
-:ID:       5186083B-28F0-47B1-9CED-E8F8C4181C1C
-:END:
-- [[https://www.reddit.com/r/LifeProTips/comments/1krctt0/lpt_if_you_use_a_nas_or_leave_your_computer_on/][LPT: If you use a NAS or leave your computer on]]
-- [[https://android.izzysoft.de/applists/category/named/sensors][Android sensors app list]]
-**** Computers
-:PROPERTIES:
-:ID:       6A924528-7B1B-406E-85DB-8D2497F5D42A
-:END:
-- [[http://www.linuxfromscratch.org/][Build custom linux from source code]]
-- Porteus Linux build: [[http://build.porteus.org/][Porteus website]], [[http://www.porteus.org/faq.html][FAQ]]
-**** Robotics
-:PROPERTIES:
-:ID:       BD627071-3342-4C6A-9B80-EAD8235847A8
-:END:
 
-*** Systems organization
-:PROPERTIES:
-:ID:       16DB2FD8-1988-48E4-8D8D-E69398823A70
-:END:
-**** UNIX-based operating systems                                 :software:career:
-:PROPERTIES:
-:ID:       BDC42DA2-A632-4FB7-A586-E100B2A045DC
-:CREATED:  [2019-08-15 Thu 16:17]
-:END:
-***** Processes and commands
-:PROPERTIES:
-:ID:       f6c816d4-6f1a-4954-bf90-ed90de4d0979
-:END:
-| change password         | passwd                      |
-| disk usage, top level   | du -h --summarize           |
-| see total disk usage    | df -h                       |
-| see files on disk       | df <PATH>                   |
-| see distro              | lsb_release -a              |
-| see system disks        | lsblk                       |
-| add to path (temporary) | export PATH=$PATH:/new/path |
-
-***** General reference
-:PROPERTIES:
-:ID:       b387cb19-73dd-4783-8e57-8da47837e129
-:END:
-- [[http://linuxcommand.org/][LinuxCommand.org]]
-- [[http://korflab.ucdavis.edu/Unix_and_Perl/current.html][UC Davis Unix and Perl for biologists]]
-- [[http://www.commandlinefu.com/commands/browse/sort-by-votes][commandlinefu]]
-- [[https://sanctum.geek.nz/arabesque/unix-as-ide-introduction/][Unix as IDE: Introduction]]
-- [[https://en.wikibooks.org/wiki/Guide_to_Unix][wikibooks: unix]]
-- [[https://sneak.berlin/20191011/stupid-unix-tricks/][Stupid Unix tricks]]
-- POSIX: [[https://github.com/dylanaraps/pure-sh-bible][pure sh bible]]
-***** GNU tools
-:PROPERTIES:
-:ID:       76c4836c-fe3f-4948-86dd-25d8df38d1af
-:END:
-- [[https://www.gnu.org/prep/standards/standards.html][GNU Coding Standards]]
-- sort/uniq, diff, find, printf
-- echo vs printf: [[https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo][printf is better than echo]]
-- find: [[https://stackoverflow.com/questions/12522269/how-to-find-the-largest-file-in-a-directory-and-its-subdirectories][find largest file]], [[https://stackoverflow.com/questions/158044/how-to-use-find-to-search-for-files-created-on-a-specific-date][find by date]]
-- coreutils sort: [[https://unix.stackexchange.com/questions/76049/what-is-the-difference-between-sort-u-and-sort-uniq][sort -u vs sort | uniq]]
-- nohup: [[https://unix.stackexchange.com/questions/373461/open-less-scrolled-to-the-end][nohup reference]]
-****** gnu parallel
-:PROPERTIES:
-:ID:       e13df1a8-f5f1-4495-91a7-b33ff1c4ab84
-:END:
-- [[https://www.nas.nasa.gov/hecc/support/kb/using-gnu-parallel-to-package-multiple-jobs-in-a-single-pbs-job_303.html][NASA: GNU parallel for PBS jobs]]
-- [[https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending][GNU parallel manual]]
-- [[https://www.biostars.org/p/63816/][biostars: GNU parallel]]
-****** wget
-:PROPERTIES:
-:ID:       15b0cab6-1167-49f0-a5b2-6559c9e62251
-:END:
-#+begin_src bash :tangle ./src/gtac_wget.sh
-# Check for parameters, return usage if empty
-if [ $# -ne 2 ]; then
-    printf "\n usage: gtac_wget.sh <DIR PREFIX> <GTAC HTML>
-           \n wget wrapper for WUSTL GTAC downloads
-           \n"
-elif [[ ! -r $1 ]]; then
-    echo "Directory prefix at $1 is not readable."
-else
-    wget \
-        --continue \
-        --directory-prefix $1 \
-        --execute robots=off \
-        --force-directories \
-        --no-host-directories \
-        --no-parent \
-        --recursive \
-        --reject="index.html*" \
-        --timestamping \
-        $2
-fi
-#+end_src
-- [[https://www.tecmint.com/commandline-download-accelerators-for-linux/amp/][pass list to wget]]
-- [[https://superuser.com/questions/283481/how-do-i-properly-set-wget-to-download-only-new-files][download only on server-side change]]
-- clobber = overwrite
-****** make
-:PROPERTIES:
-:ID:       5b075f74-e2cf-4d2f-a8f7-db7c64080f47
-:END:
-- install: configure, make, install — [[https://www.tldp.org/HOWTO/Software-Building-HOWTO-3.html][TLDP HOWTO]]
-- [[https://github.com/kyclark/make-tutorial][make tutorial]]
-- [[http://blog.byronjsmith.com/makefile-shortcuts.html][makefile shortcuts]]
-****** gawk
-:PROPERTIES:
-:ID:       ec6a8328-2003-48ce-b8d0-fd11252d75cd
-:END:
-- [[https://stackoverflow.com/questions/11950641/add-column-to-middle-of-tab-delimited-file-sed-awk-whatever][add column in middle of tsv]]
-- output as tsv: awk -v FS='\t' -v OFS='\t' ...
-- [[http://www.tutorialspoint.com/awk/awk_basic_examples.htm][AWK basic examples]]
-- [[http://reasoniamhere.com/2013/09/16/awk-gtf-how-to-analyze-a-transcriptome-like-a-pro-part-1/][AWK GTF: analyze a transcriptome like a pro]]
-****** grep
-:PROPERTIES:
-:ID:       024b269b-27ca-492d-981f-d8f9083a38d2
-:END:
-- grep through subdirectories: grep -rl "string" /path
-- [[https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file][grep large list against large file]]
-- [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
-****** sed
-:PROPERTIES:
-:ID:       69e65a70-878e-4f58-a1d1-14ca876a7c12
-:END:
-- [[https://www.reddit.com/r/commandline/comments/qsbmji/useful_sed_scripts_patterns/][useful sed scripts and patterns]]
-- [[https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed][use shell variables in sed]]
-- [[https://stackoverflow.com/questions/5410757/how-to-delete-from-a-text-file-all-lines-that-contain-a-specific-string][delete lines with pattern]]
-- [[https://unix.stackexchange.com/questions/99350/how-to-insert-text-before-the-first-line-of-a-file][insert before first line]]
-- [[http://www.brunolinux.com/02-The_Terminal/Find_and%2520Replace_with_Sed.html][Find and replace with SED]]
-****** ssh
-:PROPERTIES:
-:ID:       054f0013-9355-4194-8fbd-646b54db2f70
-:END:
-#+begin_src bash
-chmod 700 ~/.ssh
-chmod 600 ~/.ssh/id_rsa
-chmod 600 ~/.ssh/id_rsa.pub
-#+end_src
-- [[https://dev.to/zduey/how-to-set-up-an-ssh-server-on-a-home-computer][set up SSH server on home computer]]
-- [[https://www.techrepublic.com/article/how-to-use-multiplexing-to-speed-up-the-ssh/][multiplexing connections]]
-- [[https://serverfault.com/questions/334448/why-is-ssh-password-authentication-a-security-risk][why SSH password auth is a security risk]]
-***** MacOS
-:PROPERTIES:
-:ID:       80A0FABE-EB39-4BFC-8478-8044E6D84761
-:END:
-- [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra][Allow install of non-app store software]]
-- hide dock: <CMD>+<ALT>+d
-- [[http://www.chriswrites.com/how-to-view-and-kill-processes-using-the-terminal-in-mac-os-x/][How to View and Kill Processes in Mac OS X]]
-***** image development
-:PROPERTIES:
-:CREATED:  [2019-05-29 Wed 14:47]
-:ID:       82b8ccaa-3bb3-4a71-8123-bce4f20c5242
-:END:
-***** Android
-:PROPERTIES:
-:ID:       8773070e-c8d7-4edf-8ee7-e6de1aa6b1a3
-:END:
-- [[https://cellencooper.medium.com/how-to-change-ok-google-to-a-different-phrase-bd6ca322398][Change "OK Google" to a different phrase]]
-***** Android to Linux mirror
-- [[https://github.com/Genymobile/scrcpy][scrcpy]]
-  #+begin_src bash
-# for Debian/Ubuntu
-sudo apt install ffmpeg libsdl2-2.0-0 adb wget \
-                 gcc git pkg-config meson ninja-build libsdl2-dev \
-                 libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev \
-                 libswresample-dev libusb-1.0-0 libusb-1.0-0-dev
-
-mkdir /tmp/scrcpy && cd /tmp/scrcpy
-git clone https://github.com/Genymobile/scrcpy
-cd scrcpy && ./install_release.sh
-
-sudo adb kill-server && sudo adb start-server && sudo adb devices
-adb tcpip 5555
-adb connect 192.168.1.12:5555
-  #+end_src
-**** Windows
-- [[http://stackoverflow.com/questions/7195503/setting-up-a-cron-job-in-windows][Cron job in Windows]]
-**** Containers and virtual machines
-- [[https://stackoverflow.com/questions/16047306/how-is-docker-different-from-a-normal-virtual-machine][Docker vs. virtual machine]]
-- VMs have virtual-only kernel access through hypervisor; containers run natively on real kernel
-- Docker shares kernel, VMs do not
-- [[https://github.com/wsargent/docker-cheat-sheet][Docker cheat sheet]]
-- Virtual Box: copying a VM — go to export appliance
-
-*** Networks
-:PROPERTIES:
-:ID:       C6BA678A-7E03-4C41-9CAB-A5EEFC48185D
-:END:
-- [[https://dev.to/radpangolin/persistent-ssh-sessions-with-tmux-25dm][Persistent SSH sessions with tmux]]
-- [[https://github.com/donnemartin/system-design-primer][system-design-primer]]
-**** ssh/scp
-- [[https://askubuntu.com/questions/970794/tab-completion-doesnt-work-over-ssh][tab completion over SSH]]
-- [[file:~/.ssh/config][SSH config]]
-- [[http://www.thegeekstuff.com/2008/11/3-steps-to-perform-ssh-login-without-password-using-ssh-keygen-ssh-copy-id][SSH keygen for no-password login]]
-- [[https://help.ubuntu.com/community/SSH/OpenSSH/Configuring][configuring to receive SSH]]
-- [[https://stackoverflow.com/questions/10197559/ssh-configuration-override-the-default-username][override default SSH username]]
-**** API and REST
-- REST APIs: lightweight HTTP-based interface for services
-
-*** Software notations and tools
-**** Mermaid diagramming
-- [[https://mermaid.js.org/][Mermaid.js]]
-- [[https://mermaid.live/][Mermaid live editor]]
-- Install in conda basecamp env:
-  #+begin_src bash
-npm install -g @mermaid-js/mermaid-cli
-  #+end_src
-**** YASnippet templates                                                :flat:
-The following headings contain YAS template source blocks tangled to the yasnippets directories.
-***** org-mode snippets
-****** code.perl                                                        :yas:
-#+name: code.perl
-#+begin_src bash :tangle ./emacs/public_yasnippets/org-mode/code.perl
-# -*- mode: snippet -*-
-# key: code.perl
-# expand-env: ((yas-indent-line 'none))
-# condition: 'auto
-# --
-,#+begin_src perl
-$0
-,#+end_src
-#+end_src
-[[file:emacs/public_yasnippets/org-mode/code.perl]]
-****** code.sh                                                          :yas:
-:PROPERTIES:
-:ID:       5c2e54cf-797e-4ccb-b12e-2167d06ce7a4
-:END:
-#+name: code.sh
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/org-mode/code.sh
-# -*- mode: snippet -*-
-# key: code.sh
-# expand-env: ((yas-indent-line 'none))
-# condition: 'auto
-# --
-,#+begin_src bash
-$0
-,#+end_src
-#+end_src
-[[file:emacs/public_yasnippets/org-mode/code.sh]]
-***** sh-mode snippets
-****** array.from.find                                                  :yas:
-:PROPERTIES:
-:ID:       68960305-58e3-43a8-8d63-ec7ea71720c4
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/array.from.find
-# -*- mode: snippet -*-
-# name: array.from.find
-# key: array.from.find
-# --
-${1:ARRAY NAME}=()
-while IFS=  read -r -d $'\0'; do
-    $1+=("$REPLY")
-done < <(find ${2:FIND DIR} -name ${3:FIND TERM} -print0)
-printf '%s\n' "\${$1[@]}"
-$0
-#+end_src
-****** comment.block                                                    :yas:
-#+name: sh-mode_comment.block
-#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/comment.block
-# -*- mode: snippet -*-
-# key: comment.block
-# expand-env: ((yas-indent-line 'none))
-# --
-`(let* ((input (read-string "Comment block text: "))
-        (fill-column 80)
-        (temp-buf (generate-new-buffer "*yas-fill*")))
-   (prog1
-       (mapconcat (lambda (line) (concat "# " line))
-                  (with-temp-buffer
-                    (insert input)
-                    (fill-region (point-min) (point-max))
-                    (split-string (buffer-string) "\n"))
-                  "\n")
-     (kill-buffer temp-buf)))`
-#+end_src
-****** doc.fun                                                          :yas:
-:PROPERTIES:
-:ID:       56dffa5f-ae66-47d0-abc1-a7a1076c12b5
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/doc.fun
-# -*- mode: snippet --*
-# key: doc.fun
-# expand-env: ((yas-indent-line 'none))
-# --
-  [[ "\$1" =~ (-h|--help) || -z "\$1" ]] && {
-    cat <<EOF
-Usage: ${1: <FUNCTION NAME>} ${2: <USAGE>}
-${3: <DESCRIPTION>}
-EOF
-    return
-  }
-
-#+end_src
-****** function                                                         :yas:
-:PROPERTIES:
-:ID:       1a349f9b-02cd-483a-aa15-2f81df598fef
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/function
-# -*- mode: snippet -*-
-# key: function
-# expand-env: ((yas-indent-line 'fixed))
-# --
-${1:$$(replace-regexp-in-string " " "_" yas-text)}(){
-    local ${2: <VARIABLE NAME> }="\${1}"
-    $0
-}
-
-#+end_src
-****** must.src                                                         :yas:
-:PROPERTIES:
-:ID:       af579d0a-ea85-4538-a120-e06c0c19cc8a
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/must.src
-# -*- mode: snippet -*-
-# key: must.src
-# expand-env: ((yas-indent-line 'none))
-# --
-if [[ "\${BASH_SOURCE[0]}" == "\${0}" ]]; then
-  echo "You must source this script"
-  exit 1
-fi
-
-#+end_src
-****** script                                                           :yas:
-:PROPERTIES:
-:ID:       72a9b2a8-3215-4472-be95-410a7d242508
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/script
-# -*- mode: snippet -*-
-# key: script
-# --
-#!/usr/bin/env bash
-
-block
-
-usage
-
-parse_args
-
-main(){
-    parse_args "$@"
-    # REMAINING FUNCTION LOGIC
-}
-
-# OTHER FUNCTIONS
-
-main "$@"
-#+end_src
-****** usage                                                            :yas:
-:PROPERTIES:
-:ID:       e383d5cd-7ad8-4761-89ed-7d028acb79f8
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/usage
-# -*- mode: snippet -*-
-# key: usage
-# expand-env: ((yas-indent-line 'fixed))
-# --
-
-print_usage(){
-    cat <<- EOF
-
- Usage: ${1:${1:SCRIPT NAME}$$(replace-regexp-in-string " " "_" yas-text)} [OPTIONS] ${2:${2:REQUIRED OPERAND}$$(upcase yas-text)}  ${3:${3:[OPTIONAL OPERAND]}$$(upcase yas-text)}
-
- ${4:<DESCRIPTION>}
-
- Options:
-   -h, --help    Show this help message and exit
-
- Arguements:
-   ${2:$(ignore-errors (format (yas-field-value 2)))} ${5: <OPERAND DESCRIPTION>}
-
- Example:
-   ${1:$(ignore-errors (format (yas-field-value 1)))} ${6: <EXAMPLE>}
-
-EOF
-}
-
-# See print usage caller yas
-# return_usage_any
-#+end_src
-****** var                                                              :yas:
-:PROPERTIES:
-:ID:       67ca3ccc-7bca-4b12-b513-05b246a217b8
-:END:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/var
-# -*- mode: snippet -*-
-# key: var
-# expand-env: ((yas-indent-line 'none))
-# --
-$1="$\{$2}"$0
-#+end_src
-****** variables                                                        :yas:
-A variables function template for shell scripts
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/variables
-# -*- mode: snippet -*-
-# key: variables
-# expand-env: ((yas-indent-line 'none))
-# --
-variables(){
-    ${1:$$(replace-regexp-in-string " " "_" yas-text)}="\${1${2:$$(when (and yas-moving-away-p (not (string= "" yas-text)))(concat ":-" yas-text))}}"
-    ${3:$$(replace-regexp-in-string " " "_" yas-text)}="\${2${4:$$(when (and yas-moving-away-p (not (string= "" yas-text)))(concat ":-" yas-text))}}"
-}
-$0
-
-#+end_src
-***** yaml-mode snippets
-****** comment.block                                                    :yas:
-[[file:emacs/public_yasnippets/yaml-mode/comment.block]]
-#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/yaml-mode/comment.block
-<#~/repos/basecamp/basecamp.org:sh-mode_comment.block()#>
-#+end_src
-***** ess-mode snippets
-****** 80                                                               :yas:
-:PROPERTIES:
-:ID:       3e97b905-780b-4612-a5a1-18e9062dd8a8
-:END:
-#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/ess-mode/80
-# -*- mode: snippet -*-
-# key: 80
-# expand-env: ((yas-indent-line 'none))
-# --
-#########1#########2#########3#########4#########5#########6#########7#########8
-#+end_src
-****** function                                                         :yas:
-:PROPERTIES:
-:ID:       db4e66ae-ddad-41f9-810b-0e41b2a216d5
-:END:
-#+name: function
-#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/ess-mode/function
-# -*- mode: snippet -*-
-# key: function
-# expand-env: ((yas-indent-line 'fixed))
-# --
-${1:FUNCTIONNAME$$(replace-regexp-in-string " " "_" yas-text)} = function(${2:VARIABLE LIST}){
-  # ${3:DESCRIPTION}
-  $0
-}
-#+end_src
-****** make.opt                                                         :yas:
-:PROPERTIES:
-:ID:       5c6b366c-d0ca-45bd-a7a3-c649c8f94e11
-:END:
-#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/ess-mode/make.opt
-# -*- mode: snippet -*-
-# key: make.opt
-# expand-env: ((yas-indent-line 'none))
-# --
-  make_option(c("--$1"), type = "character", default = "$2"),
-
-#+end_src
-****** r.cmd                                                            :yas:
-:PROPERTIES:
-:ID:       c204aa66-98eb-412f-8ffa-0227b42ed381
-:END:
-#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/bash-mode/r.cmd
-# -*- mode: snippet -*-
-# key: r.cmd
-# expand-env: ((yas-indent-line 'none))
-# --
-args = commandArgs(trailingOnly = TRUE)
-$0=args[1]
-=args[2]
-
-#+end_src
-****** script                                                           :yas:
-:PROPERTIES:
-:ID:       51bbd7ff-3f3d-4ae7-9839-142f52dd141c
-:END:
-#+name: script
-#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/ess-mode/script
-# -*- mode: snippet -*-
-# key: script
-# expand-env: ((yas-indent-line 'fixed))
-# --
-#!/usr/bin/env Rscript
-
-# ---   Load Packages   --- #
-# ------------------------- #
-
-packages <- c("optparse", "tidyverse")
-sapply(packages, require, character.only = TRUE, quietly = TRUE)
-
-# ---   Load Inputs   --- #
-# ----------------------- #
-
-option_list <- list(
-  make_option(c("--<OPTION NAME>"), type = "character"),
-
-opts <- parse_args(OptionParser(option_list = option_list))
-
-inputs_list = function(opts){
-
-  return(list())
-}
-
-# ---   Main   --- #
-# ---------------- #
-
-main = function(opts){
-
-  # Process inputs
-  inputs = inputs_list(opts)
-
-  # Return a list of outputs
-  return(list())
-}
-
-# ---   Functions   --- #
-# --------------------- #
-
-# ---   Run   --- #
-# --------------- #
-
-out = main(opts)
-
-for (name in names(out)) {
-  item <- out[[name]]
-  file_path <- file.path(opts$out_dir, paste0(name, ".rds"))
-  saveRDS(item, file_path)
-}
-
-#+end_src
-****** var                                                              :yas:
-:PROPERTIES:
-:ID:       fa91bd4f-f2d9-4a17-8e02-6891c564204b
-:END:
-#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/ess-mode/var
-# -*- mode: snippet -*-
-# key: var
-# expand-env: ((yas-indent-line 'none))
-# --
-$1 = args[$2]
-#+end_src
-
-*** Software development
-**** Anki
-:PROPERTIES:
-:ID:       0b25f799-6fe6-44ab-b3bc-e6e9b038c1f4
-:END:
-Install:
-#+begin_src bash
-flatpak install flathub net.ankiweb.Anki
-#+end_src
-**** Docker
-:PROPERTIES:
-:ID:       af96f14d-b06d-4b17-b1e0-fd9e36a30bf5
-:END:
-***** Ansible                                                        :ansipb:
-:PROPERTIES:
-:header-args:yaml: :tangle ./ansible/playbooks/docker-playbook.yaml
-:ID:       b680dad8-2b3b-4e36-9c3a-0a3c1fc71a27
-:END:
-[[file:ansible/playbooks/docker-playbook.yaml]]
-#+begin_src yaml
----
-- name: Install Docker
-  hosts: all
-  become: yes
-  tasks:
-
-    - name: Install prerequisite packages
-      apt:
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - gnupg
-          - lsb-release
-        state: present
-        update_cache: yes
-
-    - name: Add Docker GPG key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-
-    - name: Add Docker repository
-      apt_repository:
-        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
-        state: present
-
-    - name: Install Docker CE
-      apt:
-        name:
-          - docker-ce
-          - docker-ce-cli
-          - containerd.io
-        state: present
-        update_cache: yes
-
-    - name: Add user to docker group
-      user:
-        name: "{{ ansible_user }}"
-        groups: docker
-        append: yes
-
-    - name: Enable and start Docker service
-      service:
-        name: docker
-        state: started
-        enabled: yes
-#+end_src
-***** Processes
-- [[https://stackoverflow.com/questions/16047306/how-is-docker-different-from-a-normal-virtual-machine][Docker vs. virtual machine]]
-- [[https://github.com/wsargent/docker-cheat-sheet][Docker cheat sheet]]
-- docker interactive function:
-  #+begin_src bash :tangle ./src/functions.sh
-docker_interactive() {
-    if [ -f /.dockerenv ]; then
-        echo "shell already in docker, exiting"
-        exit 1
-    else
-        account="USER INPUT"
-        container="USER INPUT"
-        read -p "docker account name: " account
-        account="${account:=jeszyman}"
-        read -p "container name: " container
-        container="${container:=biotools}"
-        case $HOSTNAME in
-            (radonc-cancerbio) docker run -it \
-                                      --env HOME=${HOME} \
-                                      --hostname ${HOSTNAME} \
-                                      --user $(id -u ${USER}) \
-                                      --volume /home/:/home/ \
-                                      --volume /mnt/:/mnt/ \
-                                      --volume /tmp/:/tmp/ \
-                                      $account/$container \
-                                      /bin/bash;;
-            (*) docker run -it \
-                       --env HOME=/home/${USER} \
-                       --hostname ${HOSTNAME} \
-                       --user $(id -u ${USER}) \
-                       --volume /home/:/home/ \
-                       --volume /mnt/:/mnt/ \
-                       --volume /tmp/:/tmp/ \
-                       $account/$container \
-                       /bin/bash;;
-        esac
-    fi
-}
-  #+end_src
-***** General reference
-- [[https://docs.docker.com/][Docker documentation]]
-- [[https://hub.docker.com/][Docker Hub]]
-**** Git and version control
-- See [[id:9E19E626-9D6C-4296-BEDB-80033A846CF4][Software]] for git tools
-***** Version control concepts
-- [[https://git-scm.com/][Git]]
-- [[https://docs.github.com/][GitHub docs]]
-- [[https://try.github.io/][Try Git]]
-***** git-hygiene
-- Detection script: [[file:scripts/git-hygiene.sh][scripts/git-hygiene.sh]]
-- Global gitignore via =core.excludesFile= -> [[file:resources/git/jeszyman_gitignore][resources/git/jeszyman_gitignore]]
-- Global hooks via =core.hooksPath= -> [[file:tools/git/][tools/git/]]
-***** GitHub
-- [[https://github.com/jeszyman][jeszyman GitHub]]
-- [[file:tools/git/github_init.sh][github_init.sh]] -- initialize a new GitHub repo
-**** Singularity / Apptainer containers
-:PROPERTIES:
-:ID:       singularity-containers
-:END:
-- [[https://sylabs.io/singularity/][Singularity]]
-- [[https://apptainer.org/][Apptainer]]
-- Launch shell: [[file:src/launch_singularity_shell.sh][src/launch_singularity_shell.sh]]
-***** Ansible                                                        :ansipb:
-:PROPERTIES:
-:header-args:yaml: :tangle ./ansible/playbooks/singularity.yaml
-:END:
-[[file:ansible/playbooks/singularity.yaml]]
-#+begin_src yaml
----
-- name: Install Singularity
-  hosts: all
-  become: yes
-  tasks:
-
-    - name: Install prerequisites
-      apt:
-        name:
-          - build-essential
-          - libssl-dev
-          - uuid-dev
-          - libgpgme-dev
-          - squashfs-tools
-          - libseccomp-dev
-          - wget
-          - pkg-config
-          - git
-          - cryptsetup-bin
-        state: present
-        update_cache: yes
-#+end_src
-**** Snakemake workflow management
-- See top-level [[id:a8b27140-4b9e-40c5-86ab-ee5afeae723f][Snakemake]] section
-**** Software engineering
-***** Style and best practices
-- [[https://12factor.net/][The Twelve-Factor App]]
-- [[https://www.gnu.org/prep/standards/standards.html][GNU Coding Standards]]
-- [[https://en.wikipedia.org/wiki/SOLID][SOLID principles]]
-**** Process management
-***** PDF processes
-- pdftk -- merge PDFs: pdftk *.pdf cat output merged.pdf
-- [[https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/][pdftk]]
-***** Web and downloading
-- pandoc: [[https://pandoc.org/][pandoc.org]]
-- youtube-dl: [[https://youtube-dl.org/][youtube-dl.org]]
-- rclone: [[https://rclone.org/][rclone.org]]
-
-*** Theory of computing
-**** [[id:F80F3FAF-1D79-40F5-934B-F74D19143DBD][LINK TO Probability and Statistics]]
-**** Literate programming
-:PROPERTIES:
-:ID:       10af5937-004b-46f8-818d-b81d30462164
-:END:
-- [[http://howardism.org/Technical/Emacs/literate-devops.html][Literate Devops with Emacs]]
-- [[https://github.com/alhassy/emacs.d/blob/master/README.org#what-does-literate-programming-look-like][What does literate programming look like?]]
-- Donald Knuth developed the concept in the 1980s
-- [[https://www.youtube.com/watch?v=dljNabciEGg&ab_channel=HowardAbrams][Literate DevOps with Emacs (video)]]
-
-*** Algorithms
-**** Regular expressions
-:PROPERTIES:
-:ID:       673D5E8D-64C5-4E9F-A664-612C2A6B1770
-:END:
-- [[https://regexr.com/][regexr.com]]
-- [[https://regex101.com/][regex101.com]]
-- [[https://anystyle.io/][anystyle.io]]
-- [[http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html][POSIX regex documentation]]
-- [[https://stackoverflow.com/questions/22937618/reference-what-does-this-regex-mean/22944075#22944075][The Stack Overflow Regular Expressions FAQ]]
-- [[http://www.rexegg.com/regex-quickstart.html][Regex Cheat Sheet]]
-- [[https://regexone.com/][RegexOne]]
-- Metacharacters
-  - \d for any single numeral (\d* any number, \d+ above zero)
-  - . matches any single character
-  - ? matches zero or one of preceding group
-  - whitespace: \t tab, \n newline, \s any whitespace
-  - start ^ and end $; capture groups with parentheses
-  - match specific chars with [brackets]; exclude with [^exclude]
-  - dash for character ranges (a-z, 0-9); repetitions with {#}
-  - capitals for NON: \S non-whitespace, \D non-digit
-
-*** Information systems
-**** Standards and formats
-:PROPERTIES:
-:ID:       95011C22-8436-481A-B512-B0E82648B50C
-:END:
-- SVG: [[https://codepen.io/sdras/pen/NqYGZv][codepen SVG example]]
-**** YAML
-:PROPERTIES:
-:ID:       2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5
-:END:
-***** Example
-#+begin_src yaml :tangle /tmp/example.yaml
-# Simple YAML Example
-key: value # An inline comment
-
-# Scalars
-enabled: true
-mode: auto
-integer: 42
-
-# Lists
-fruits:
-  - apple
-  - banana
-  - cherry
-
-# Dictionaries
-servers:
-  - name: web-server
-    ip: 192.168.1.1
-    status: active
-  - name: db-server
-    ip: 192.168.1.2
-    status: inactive
-#+end_src
-***** Reference
-:PROPERTIES:
-:ID:       7e4af24b-2b05-44bc-b87c-a16393f1e9dc
-:END:
-- [[https://www.educative.io/blog/advanced-yaml-syntax-cheatsheet][Advanced YAML syntax cheatsheet]]
-- Validation: [[https://codebeautify.org/yaml-validator][YAML validator]]
-- Cannot do string concatenation: [[https://stackoverflow.com/questions/5484016/how-can-i-do-string-concatenation-or-string-replacement-in-yaml][stack]]
-***** Processes
-:PROPERTIES:
-:ID:       a7ab5383-e7c2-4341-ab78-48967db4c9ca
-:END:
-**** JSON
-:PROPERTIES:
-:ID:       9E10CCC0-BC92-4C96-BBF2-99B54E88143D
-:END:
-- [[https://github.com/antonmedv/fx/blob/master/DOCS.md][fx JSON viewer]]
-- [[https://www.w3schools.com/js/js_json_syntax.asp][JSON syntax]]
-**** Markdown
-:PROPERTIES:
-:ID:       CDECCD81-E262-4D7F-AD4A-90CE29BF7DF5
-:END:
-- [[https://commonmark.org/][CommonMark spec]]
-- [[https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet][Markdown cheat sheet]]
-- [[https://guides.github.com/features/mastering-markdown/][Mastering Markdown]]
-**** Unified Modeling Language (UML)
-:PROPERTIES:
-:ID:       06E539D4-B9EC-4D73-96FF-613D8CC51067
-:END:
-- cite:yasini2012guideline
-- [[http://creately.com/blog/diagrams/uml-diagram-types-examples/][UML diagram types and examples]]
-**** Statistical computing
-:PROPERTIES:
-:ID:       3C0D4F95-61BB-4E67-86D1-D9376B25014A
-:END:
-- [[id:F80F3FAF-1D79-40F5-934B-F74D19143DBD][Probability and Statistics]]
-- cite:downey2011
-***** [[id:F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD][LINK TO R Statistical Computing]]
-:PROPERTIES:
-:ID:       b3db5bd9-2abd-418f-8104-8ffe22ef5ad6
-:END:
-
-*** Security
-**** SSH security
-- [[https://serverfault.com/questions/334448/why-is-ssh-password-authentication-a-security-risk][Why SSH password auth is a security risk]]
-- [[https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md][How to do things safely in bash]]
-- fail2ban: [[https://www.fail2ban.org/][fail2ban.org]]
-**** Licensing
-- [[https://www.gnu.org/licenses/gpl-3.0.en.html][GPL v3]]
-- [[https://creativecommons.org/][Creative Commons]]
-
-*** Human-centered computing
-:PROPERTIES:
-:ID:       72EDC65E-5721-48AF-9FCA-69497D45DFD0
-:END:
-**** User interface and UX
-- [[https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/][UX design principles for command line interfaces]]
-**** Teaching computers and computer science
-:PROPERTIES:
-:ID:       1336B66E-EDFE-4255-A772-C592843A9DCD
-:END:
-- [[https://missing.csail.mit.edu/][The Missing Semester of Your CS Education (MIT)]]
-- [[https://software-carpentry.org/lessons/][Software Carpentry lessons]]
-- [[https://github.com/Developer-Y/cs-video-courses/blob/master/README.md][Computer science courses with video lectures]]
-
-*** Artificial intelligence
-**** Machine learning
-- See top-level Machine Learning section
-**** Large language models
-- Claude Code -> see [[id:0e00557e-a0a4-460f-8941-555e11ee2d88][claude-code]] in emacs.org
-- ChatGPT: [[https://chat.openai.com/][chat.openai.com]]
-
-*** Applied computing
-:PROPERTIES:
-:ID:       65BC9D56-26D2-47F1-A54E-40F151FAF357
-:END:
-**** Computational biology and bioinformatics
-:PROPERTIES:
-:ID:       BAD5BF49-9818-4BA4-AA62-4406F18FF1FB
-:END:
-**** Web development
-***** Jekyll
-- [[https://jekyllrb.com/][Jekyll]]
-- [[https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll][GitHub Pages with Jekyll]]
-***** HTML and CSS
-- [[https://www.w3schools.com/][W3Schools]]
-- [[https://developer.mozilla.org/][MDN Web Docs]]
-***** JavaScript
-- [[https://developer.mozilla.org/en-US/docs/Web/JavaScript][MDN JavaScript docs]]
-- [[https://d3js.org/][D3.js]]
-**** Google cloud
-:PROPERTIES:
-:ID:       5435d91b-864b-4644-a0c0-1ffb262db35b
-:END:
-#+begin_src bash
-cd /tmp
-curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-478.0.0-linux-x86_64.tar.gz
-tar -xf google-cloud-cli-478.0.0-linux-x86_64.tar.gz
-./google-cloud-sdk/install.sh
-./google-cloud-sdk/bin/gcloud init
-./google-cloud-sdk/bin/gcloud compute ssh jeszyman@instance-20240601-125838 --zone us-central1-a --ssh-key-file ~/.ssh/id_rsa
-
-sudo mkdir -p /usr/local/gcloud
-sudo mv /tmp/google-cloud-sdk /usr/local/gcloud/
-
-gcloud compute ssh jeszyman@instance-20240601-125838 --zone us-central1-a
-#+end_src
-- gsutil is python app to access cloud storage
-  - gsutil cp -- use for single files; always overwrites
-  - gsutil rsync -- use for dirs
-**** Statistical computing cross-reference
-***** [[id:F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD][LINK TO R Statistical Computing]]
-
-*** Ansible (configuration management)
-:PROPERTIES:
-:ID:       1169cb65-4a18-43d3-9643-67ac3e85f0d1
-:END:
-- Main Ansible content: see top-level ** Ansible section
-- [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]]
-**** Ansible Cookbook                                              :cookbook:
-:properties:
-:header-args:yaml: :tangle ./ansible/playbooks/ansible-cookbook.yaml :mkdirp yes
-:end:
-- [[file:ansible/playbooks/ansible-cookbook.yaml]]
-***** Preamble
-#+begin_src yaml
----
-- name: Ansible cookbook
-  # Hosts as all allows for either local or remote runs.
-  # Local runs should use the syntax:
-  # ANSIBLE_STDOUT_CALLBACK=yaml ansible-playbook -i localhost, --connection=local <PLAYBOOK.yaml>
-  hosts: all
-  tasks:
-#+end_src
-***** Debugging info
-:PROPERTIES:
-:ID:       537315c8-951a-42bc-99af-c3977c19e812
-:END:
-#+name: ansible-debugging-info
-#+begin_src yaml
-    - name: Debug useful variable readouts
-      debug:
-        msg: "
-          \n=== System Information ===\n\n
-          Logged in as: {{ ansible_env.USER }}
-          \n\nHome directory: {{ ansible_user_dir }}
-          \n\nEnvironment HOME: {{ ansible_env.HOME }}
-          \n\nPATH:
-            {{ ansible_env.PATH }}
-          \n\nOS: {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_os_family }})
-          \n\nHostname: {{ ansible_hostname }}
-          \n\nFQDN: {{ ansible_fqdn }}
-          \n\nDefault IPv4: {{ ansible_default_ipv4.address }}
-          \n\nInventory Sources: {{ ansible_inventory_sources }}
-          \n\nPackage Manager: {{ ansible_pkg_mgr }}
-          \n========================="
-#+end_src
-***** Include variables from a yaml file
-****** Declare the yaml file
-:PROPERTIES:
-:ID:       f23ee77d-a479-40be-8111-7a5ba70ba3fd
-:END:
-#+begin_src yaml :tangle ./ansible/group_vars/cookbook-apts.yaml
-apt_packages:
-  - tree
-  - htop
-#+end_src
-
-#+name: ansible-include-vars-yaml
-#+begin_src yaml
-# Note this is relative to the playbook location
-    - name: Include yaml explicitly
-      include_vars:
-        file: ../group_vars/cookbook-apts.yaml
-#+end_src
-****** Access variables from the declared yaml
-#+begin_src yaml
-    - name: Install apt packages
-      apt:
-        name: "{{ apt_packages }}"
-        state: present
-        update_cache: yes
-      become: true
-#+end_src
-**** Processes
-- Avoid cryptography deprecation warnings:
-  #+begin_src bash
-pip install --upgrade paramiko cryptography
-  #+end_src
-- Install ansible language server:
-  #+begin_src bash
-npm i -g @ansible/ansible-language-server
-  #+end_src
-**** Configuration
-[[file:~/.ansible.cfg]]
-**** Reference
-- [[https://sweworld.net/cheatsheets/ansible/][Ansible cheatsheet]]
-- [[https://www.reddit.com/r/ansible/comments/1qj33pl/best_practice_playbookrolescollection_organization/][Ansible best practices: playbook/roles/collection organization]]
-- [[https://ansible-ee-builder.lovable.app/][Ansible EE builder]]
-
-*** Computer programming and programming languages
-**** Programming style guide
-:PROPERTIES:
-:ID:       593672e1-82b2-44e0-aa00-d28825860706
-:END:
-- Naming: use ICANN convention specific <- general
-- Two-space indentation; spaces before/after operators; variable_names_with_underscore
-- Function development protocol: first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
-- [[https://en.wikipedia.org/wiki/Robustness_(computer_science)][Robustness]]
-- cite:abelson1996
-**** Python
-- See top-level [[id:CA21AAC9-F147-4086-A24C-64451EE349F3][Python]] section
-***** yasnippet: function.py                                            :yas:
-#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/bash-mode/function.py
-# -*- mode: snippet -*-
-# key: function.py
-# expand-env: ((yas-indent-line 'fixed))
-# --
-def ${1:function_name}(${2:args}):
-    """${3:Docstring.}"""
-    $0
-#+end_src
-**** Bash and shell scripting
-- See top-level [[id:861fb855-7bac-4601-87b9-a5bb7a6db293][Bash and shell]] section
-***** Bash style guide
-- [[https://google.github.io/styleguide/shellguide.html][Google shell style guide]]
-- [[https://explainshell.com/explain?cmd=set+-euxo+pipefail][set -euxo pipefail explained]]
-- [[http://redsymbol.net/articles/unofficial-bash-strict-mode/][Unofficial bash strict mode]]
-- Script structure: header comment, usage/print_usage, parse_args, main(), other functions, main "$@"
-- Exit codes: 0 success, 1 runtime/domain error, 2 CLI misuse
-***** Bash functions                                                  :flat:
-- check_local_software
-  #+begin_src bash :tangle ./src/bash_functions.sh
-check_local_software(){
-    [[ $# -eq 0 ]] && {
-        printf "\n check_local_software\n Checks list of software in bash array and exits with error if not found\n \$1 = Bash array of software, e.g. try software=(bash, git)\n"
-        return
-    }
-    software=$1
-    for i in "${software[@]}"; do
-        if command -v $i >/dev/null 2>&1 ; then
-            echo "$i installed"
-        else
-            echo "$i not found, exiting"
-            exit 1
-        fi
-    done
-}
-  #+end_src
-- git_pull_all
-  #+begin_src bash :tangle ./src/git_pull_all.sh :dir ~/repos/basecamp
-#!/bin/bash
-#########1#########2#########3#########4#########5#########6#########7#########8
-#                                                                              #
-#                       Script to automate git pulls                           #
-#             from a set of repositories within the same root dir              #
-#                                                                              #
-#########1#########2#########3#########4#########5#########6#########7#########8
-#
-# 1. Script Checks
-command -v git >/dev/null 2>&1
-if [ $? -eq 1 ]; then
-    echo "Git not found"
-    exit 1; fi
-shopt -s nullglob
-repo_dirs=(~/repos/*)
-if [ ${#repo_dirs[@]} -eq 0 ]; then
-    echo "No repos at ~/repos/"
-    exit 1; fi
-shopt -u nullglob
-#
-# 2. Pull Function
-for d in $HOME/repos/*
-do
-    [[ ! -d "$d" ]] && continue
-    echo "$d" &&
-    cd "$d" &&
-    git pull &&
-    git submodule update --recursive &&
-    git submodule update --remote &&
-    cd "$OLDPWD"
-done
-  #+end_src
-- symlink_by_csv
-  #+begin_src sh :tangle ./src/functions.sh
-#
-######################
-### symlink-by-csv ###
-######################
-#
-# Purpose: generates symbolic links in bulk from a csv file
-# Input: .csv file with source paths in column 1, dest paths in column 2
-symlink_by_csv(){
-    export IFS=","
-    cat $1 | while read a b; do
-        ln -s $a $b; done
-}
-  #+end_src
-***** General reference
-:PROPERTIES:
-:ID:       05d3b23a-4d88-4bd4-b151-34c6aecf201f
-:END:
-- [[https://github.com/jlevy/the-art-of-command-line][The Art of Command Line]]
-- [[https://github.com/awesome-lists/awesome-bash][Awesome Bash]]
-- [[https://slicker.me/bash/gems.html][Bash gems]]
-- [[https://mywiki.wooledge.org/BashPitfalls][Bash pitfalls]]
-- [[https://tldp.org/LDP/abs/html/][Advanced Bash Scripting Guide]]
-- [[https://www.gnu.org/software/bash/manual/bash.html][Bash manual]]
-- cite:greenberg2021
-- [[id:c7d8dd07-098e-4bc4-b008-5da0abcabb0d][The Missing Semester of Your CS Education]]
-**** Lisp and Emacs Lisp
-- See [[id:a49abc44-8e71-4a1a-bd35-a77849427c94][Emacs]] section
-**** R
-- See [[id:F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD][R Statistical Computing]] section
-**** Matlab
-- [[https://www.mathworks.com/products/matlab.html][MATLAB]]
-**** C++
-- [[https://isocpp.org/][isocpp.org]]
-**** Document markup languages
-:PROPERTIES:
-:ID:       d0814f52-3b46-4d3a-b46c-20e2864e43d7
-:END:
-- See YAML under [[id:95011C22-8436-481A-B512-B0E82648B50C][Standards and formats]]
-- See Markdown under [[id:CDECCD81-E262-4D7F-AD4A-90CE29BF7DF5][Markdown]]
-**** General reference
-:PROPERTIES:
-:ID:       48dfc684-aa60-4222-8641-d1646b3451be
-:END:
-- [[https://missing.csail.mit.edu/][The Missing Semester of Your CS Education]]
-- [[https://goalkicker.com/][GoalKicker: free programming books]]
-- [[https://leetcode.com/][LeetCode]]
-- [[https://github.com/sindresorhus/awesome][Awesome lists]]
-- Programming paradigms
-  - Object-oriented: class-based design, inheritance, 'bottom-up'
-  - Procedure-oriented: sequence of actions more important than data ('top-down')
-
-*** R Statistical Computing
-:PROPERTIES:
-:ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
-:END:
-**** Ansible                                                         :ansipb:
-:properties:
-:header-args:yaml: :tangle ./ansible/playbooks/r-install.yaml
-:ID:       36efda17-d1ef-4632-bc33-732071455543
-:end:
-#+begin_src yaml
----
-- name: Install Latest R
-  hosts: all
-  become: yes
-  tasks:
-
-    - name: Install prerequisites
-      apt:
-        name:
-          - software-properties-common
-          - dirmngr
-          - gnupg
-          - curl
-          - ca-certificates
-        state: present
-        update_cache: yes
-
-    - name: Remove existing R installation if present
-      apt:
-        name: r-base
-        state: absent
-      ignore_errors: yes
-
-    - name: Add CRAN GPG key
-      apt_key:
-        url: https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc
-        state: present
-
-    - name: Add CRAN R repository
-      apt_repository:
-        repo: "deb https://cloud.r-project.org/bin/linux/ubuntu {{ ansible_distribution_release }}-cran40/"
-        state: present
-        filename: "cran-r"
-
-    - name: Update package cache
-      apt:
-        update_cache: yes
-
-    - name: Install latest R base package
-      apt:
-        name: r-base
-        state: latest
-
-    - name: Verify R installation
-      command: R --version
-      register: r_version
-      changed_when: false
-
-    - name: Display installed R version
-      debug:
-        msg: "{{ r_version.stdout }}"
-#+end_src
-- note the tidyverse install takes forever, but it does work
-#+begin_src yaml
-
-    - name: Install system dependencies for tidyverse
-      apt:
-        name:
-          - libcurl4-openssl-dev
-          - libssl-dev
-          - libxml2-dev
-        state: present
-
-    - name: Install Tidyverse in R
-      command: sudo R -e 'install.packages("tidyverse", repos="https://cloud.r-project.org")'
-      args:
-        creates: /usr/local/lib/R/site-library/tidyverse
-
-#+end_src
-#+begin_src yaml
-    - name: Install R 'languageserver' package
-      shell: Rscript -e 'if (!requireNamespace("languageserver", quietly = TRUE)) install.packages("languageserver", repos="https://cloud.r-project.org")'
-      args:
-        executable: /bin/bash
-
-#+end_src
-
-**** [[id:4783cca8-92ea-4053-b3c8-7d79862e3939][R package installs in basecamp conda environment]]
-**** R Cookbook                                                    :cookbook:
-- Modern good practice
-  - Scripts: Use argparse (over optparse)
-- Get $HOSTNAME:
-  #+begin_src R
-Sys.info()["nodename"]
-  #+end_src
-**** Processes                                                    :hierarchy:
-:PROPERTIES:
-:ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
-:END:
-***** Style
-****** Best practices, style
-:PROPERTIES:
-:ID:       419ba6f0-4977-4eed-9d25-93a45933ad56
-:END:
-- See [[id:593672e1-82b2-44e0-aa00-d28825860706][My general programming style guide]]
-- [[https://stackoverflow.com/questions/6324568/function-commenting-conventions-in-r][Function commenting conventions in R]]
-- [[https://style.tidyverse.org/index.html][Tidyverse style guide]]
-- [[https://google.github.io/styleguide/Rguide.html][Google R style guide]]
-- [[http://adv-r.had.co.nz/Style.html][Advanced R style guide]] cite:wickham2014
-- Two-space indentation; spaces before/after operators; variable_names_with_underscore
-***** R Processes                                                      :flat:
-:PROPERTIES:
-:ID:       d96c05c0-838a-45ec-b7c6-a8a7e5b3e71d
-:END:
-****** Set file.path variable by hostname
-#+begin_src R
-if(Sys.info()["nodename"] %in%
-   c("jeszyman-work","jeff-mac-book","jeff-server"))
-  (data_dir = file.path("/mnt/ris/cbergom"))
-#+end_src
-****** Write a function with multiple outputs
-:PROPERTIES:
-:ID:       bd6496c7-8a45-448a-a6fb-27e1cc3e517e
-:END:
-****** Assertive programming (assertthat)
-:PROPERTIES:
-:ID:       02c59d00-54ae-4244-a192-22bfd7e59ca8
-:END:
-- [[https://github.com/hadley/assertthat][assertthat]]
-- [[https://towardsdatascience.com/assertive-programming-in-r-36c3cc290930][Assertive programming in R]]
-****** Make HTML table
-:PROPERTIES:
-:ID:       9b8939f4-402d-40d8-9a5c-a13b155476a9
-:END:
-- [[https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html][kableExtra for HTML tables]]
-***** External Files
-:PROPERTIES:
-:ID:       a571cc33-fca7-4c1f-abf8-a0114bda5a14
-:END:
-****** Writing to files
-:PROPERTIES:
-:ID:       29961249-9a6f-4a51-97a2-8bb2eea3658b
-:END:
-- [[https://www.geeksforgeeks.org/reading-and-writing-excel-files-with-r-using-readxl-and-writexl/][Reading and writing Excel with R]]
-****** Working with input files
-:PROPERTIES:
-:ID:       d7dcde01-9d91-4b22-b68d-87075d386673
-:END:
-- [[https://stackoverflow.com/questions/32129687/list-files-all-files-in-directory-and-subdirectories][List files in directory and subdirectories]]
-***** Regular expressions (REGEX) in R
-:PROPERTIES:
-:ID:       af6ebe3c-92f2-4b87-8292-d5deac52bd00
-:END:
-- [[https://www.rdocumentation.org/packages/base/versions/3.5.1/topics/regex][documentation]]
-- [[http://www.endmemo.com/program/R/gsub.php][Simplified syntax]]
-- [[https://stackoverflow.com/questions/2973436/regex-lookahead-lookbehind-and-atomic-groups][Look around examples]]
-***** [[id:26211e92-7ff9-4520-a9a7-cac04027e610][Probability and Statistics with R]]
-:PROPERTIES:
-:ID:       dc850154-68e7-452b-925d-59d66047c579
-:END:
-***** Power calculations
-:PROPERTIES:
-:ID:       bdd9e5b5-578e-48a5-b9a9-9a8163666419
-:END:
-***** System administration
-:PROPERTIES:
-:ID:       f92e9c8d-7c84-480b-a7fb-314a176f82a0
-:END:
-- [[https://stackoverflow.com/questions/15217758/remove-a-library-from-libpaths-permanently-without-rprofile-site][Remove library from .libPaths permanently]]
-***** Rscripts
-:PROPERTIES:
-:ID:       8601793b-7dfa-46e3-a658-da9624d40901
-:END:
-***** Working with tabular data in tidyverse
-:PROPERTIES:
-:ID:       09991a6a-6f80-4eb5-8344-c16ad1cf9c92
-:END:
-- [[https://dplyr.tidyverse.org/reference/bind.html][merge list of dataframes]]
-***** Dashboard
-:PROPERTIES:
-:ID:       7d6aebe4-1591-4476-8183-df4247b6a5e7
-:END:
-- [[https://bookdown.org/yihui/rmarkdown/dashboard-components.html][rmarkdown dashboard components]]
-***** Working with directories and files
-:PROPERTIES:
-:ID:       3038e42c-3c3a-483d-9848-9235ea00a9a2
-:END:
-#+begin_src R
-if(file.exists(paste0("./config/",as.character(Sys.info()["nodename"]),".R"))) {
-  source(paste0("./config/",as.character(Sys.info()["nodename"]),".R"))
-} else {
-  stop("No config file found")
-}
-#+end_src
-***** Data science in R
-:PROPERTIES:
-:ID:       7d5cda01-172e-49ee-8030-754402f3aa7d
-:END:
-- [[http://r4ds.had.co.nz/][R for Data Science]]
-- [[https://swcarpentry.github.io/r-novice-gapminder/][Software Carpentry: R for Reproducible Scientific Analysis]]
-****** [[id:39F11977-BE11-47CF-98B1-14CE6D9B97C4][Information Science / Data Science]]
-:PROPERTIES:
-:ID:       26512754-a0cf-4536-af52-74a430ac894e
-:END:
-****** General reference
-:PROPERTIES:
-:ID:       c0532578-b5c9-429a-9c6d-381990dce081
-:END:
-- [[https://rafalab.github.io/dsbook/][Data Analysis for the Life Sciences]]
-- cite:wickham2016
-****** [[id:0e6f856f-2079-42fc-92f0-5af3b292c516][LINK TO Data project management and data wrangling with R]]
-:PROPERTIES:
-:ID:       4e8a9fb2-ec01-4e14-ba88-e850d8e1c05b
-:END:
-****** [[id:39F11977-BE11-47CF-98B1-14CE6D9B97C4][LINK TO Information Science / Data Science]]
-:PROPERTIES:
-:ID:       356f811b-ca18-4a5b-b135-ca2ecaf68385
-:END:
-****** [[id:a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc][LINK TO R basecamp setup]]
-:PROPERTIES:
-:ID:       ae65c4a5-7fe5-474c-90e3-b8b567017ac4
-:END:
-***** R objects
-:PROPERTIES:
-:ID:       99eb9a24-7944-4335-b9f5-2937a610f8ac
-:END:
-- [[https://bioconductor.org/packages/devel/bioc/vignettes/SummarizedExperiment/inst/doc/Extensions.html][SummarizedExperiment extensions]]
-***** Math in R
-:PROPERTIES:
-:ID:       1cda08a5-5e3d-49bd-96aa-c262abada15d
-:END:
-- Rounding: [[https://www.rdocumentation.org/packages/base/versions/3.4.1/topics/Round][documentation]]
-****** Probability and Statistics with R
-:PROPERTIES:
-:ID:       26211e92-7ff9-4520-a9a7-cac04027e610
-:END:
-- [[https://www.cyclismo.org/tutorial/R/confidence.html][Confidence intervals in R]]
-- [[https://rpkgs.datanovia.com/rstatix/][rstatix]]
-- [[id:F80F3FAF-1D79-40F5-934B-F74D19143DBD][Probability and Statistics]]
-- cite:mangiafico2005 [[http://rcompanion.org/rcompanion/e_01.html][R Companion to Biostats Handbook]]
-- [[http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r][Correlation Test Between Two Variables in R]]
-- ROC & cutpoint: [[https://cran.r-project.org/web/packages/cutpointr/vignettes/cutpointr.html][cutpointr]], [[https://web.expasy.org/pROC/][pROC]]
-******* Inferential Testing
-:PROPERTIES:
-:ID:       85A16229-6FDB-4CAA-B23E-3A3A08F96BD7
-:END:
-******** Testing Assumptions
-:PROPERTIES:
-:ID:       531DD201-BBB4-4C21-BDDE-02982DB43847
-:END:
-********* Normalcy
-:PROPERTIES:
-:ID:       DF687DB7-128D-49E4-B83B-5D4E7F83DC52
-:END:
-********** Shapiro-Wilk
-:PROPERTIES:
-:ID:       76DD7F99-072F-49D7-A08C-7A77F48BCDAE
-:END:
-- shaprio.test(VECTOR) -- null hypothesis: population is normally distributed
-********** QQ plot
-:PROPERTIES:
-:ID:       38C4C432-EFF6-45F8-8A2A-AC5F5E68015D
-:END:
-******** Significance Testing
-:PROPERTIES:
-:ID:       CE56656E-9272-488A-A94E-5FB8F84F6E52
-:END:
-********* Categorical by chi square
-:PROPERTIES:
-:ID:       2223CFCB-A07A-4BF8-93D8-3A5E377EA317
-:END:
-********* Independent, non-normal, 2-populations: Wilcoxon-Mann Whitney
-:PROPERTIES:
-:ID:       B1DEBDF9-D94A-40EB-BC3C-DDEB3006AAD2
-:END:
-********* Nonparametric, >2 populations: Kruskal-Wallis
-:PROPERTIES:
-:ID:       5FEA38FE-3723-4ECF-8D9C-4A256163F55A
-:END:
-******** Regression Modeling
-:PROPERTIES:
-:ID:       4C723421-9630-4CD9-B586-BDA73E809CE1
-:END:
-****** R for Machine Learning
-:PROPERTIES:
-:ID:       05014193-8038-4108-bf9d-11c56c33a63c
-:END:
-- [[https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/#one][A Complete Tutorial on Tree Based Modeling (R & Python)]]
-****** General linear model glm()
-:PROPERTIES:
-:ID:       3B10C6E7-5D13-4BE4-9807-F60FC53A513B
-:END:
-- [[https://datascienceplus.com/perform-logistic-regression-in-r/][Logistic regression in R]]
-- [[https://radiant-rstats.github.io/docs/model/logistic.html][Logistic regression with Radiant]]
-- glm for multiple logistic regression: cite:mangiafico2005 @ 242
-***** apply and for-loops
-:PROPERTIES:
-:ID:       e3ece314-a12f-4cb4-8421-411013fe4cbc
-:END:
-***** Creating, Modeling, and Toy Data
-:PROPERTIES:
-:ID:       46253EF9-7B35-403F-BA1B-24F4FCA750D6
-:CREATED:  [2019-03-17 Sun 15:17]
-:END:
-- [[https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/00Index.html][Built-in datasets]]
-- set seed: set.seed(314)
-***** By artifact
-:PROPERTIES:
-:ID:       941fdf22-9023-46b9-bc38-4a47719f291d
-:END:
-- Tables
-  - [[https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html][kableExtra: awesome tables in HTML]]
-****** [[id:19d01dcc-8fef-4c07-952a-da918b3dc775][LINK TO Visualizations in R including ggplot2]]
-:PROPERTIES:
-:ID:       28b714eb-59e3-4176-a866-f4fe0980bc65
-:END:
-****** making packages
-:PROPERTIES:
-:ID:       fe1f71d0-5ace-4075-b36d-082a1199490a
-:END:
-- [[http://r-pkgs.had.co.nz/][R Packages (Hadley Wickham)]]
-- [[https://cran.r-project.org/doc/manuals/r-release/R-exts.html][CRAN: Writing R Extensions]]
-**** Visualizations in R including ggplot2
-:PROPERTIES:
-:ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
-:END:
-- [[https://r-graphics.org/][R Graphics Cookbook]]
-- [[https://ggplot2-book.org/index.html][ggplot2 book]]
-- [[https://www.r-graph-gallery.com/all-graphs.html][R graph gallery]]
-- [[id:C85F831E-4285-42D0-ABAB-96696D026671][Visualization mod]]
-****** Processes                                                  :hierarchy:
-:PROPERTIES:
-:ID:       7b47a4fa-5c0e-4e36-9d88-61593540215b
-:END:
-******* geoms
-:PROPERTIES:
-:ID:       411d2d7e-cb97-4e7c-a7b1-bacd3eb8504f
-:END:
-******* Processes                                                      :flat:
-:PROPERTIES:
-:ID:       85475db1-b795-4db1-af67-fa0de3f87fab
-:END:
-******** Interactive
-:PROPERTIES:
-:ID:       67ca5a25-5ade-41bf-84ba-17e48cf34b74
-:END:
-- [[https://www.youtube.com/watch?feature=youtu.be&v=rBp3eYHrsfo][plotly interactive graphs]]
-******** Theme
-:PROPERTIES:
-:ID:       6e585060-1fe9-47c0-97bb-b4f32cd69115
-:END:
-- [[https://wilkelab.org/cowplot/articles/themes.html][cowplot themes]]
-******** Facets
-:PROPERTIES:
-:ID:       26b04605-e83f-473e-8483-82717b71131e
-:END:
-- [[https://r-graphics.org/recipe-facet-label-appearance][facet label appearance]]
-******** Significance annotations
-:PROPERTIES:
-:ID:       bda8de09-cae8-4324-83a1-3ccee8193aa7
-:END:
-- [[https://cran.r-project.org/web/packages/ggsignif/vignettes/intro.html][ggsignif]]
-******** Labeling
-:PROPERTIES:
-:ID:       f3ac9b40-baff-4e48-af39-123460b86a93
-:END:
-- [[https://ggrepel.slowkow.com/articles/examples.html][ggrepel]]
-- [[https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html][cowplot: drawing on plots]]
-******** Venn
-:PROPERTIES:
-:ID:       b9191c77-247b-4cd9-b991-601100fac75c
-:END:
-- [[https://stackoverflow.com/questions/8713994/venn-diagram-proportional-and-color-shading-with-semi-transparency][venn R packages]]
-- [[cite:&jia2021]]
-******** Pie
-:PROPERTIES:
-:ID:       45663216-ea79-49d2-91a6-3c1376160374
-:END:
-- [[https://stackoverflow.com/questions/33594642/beautiful-pie-charts-with-r/33594843][pie charts]]
-******** Multi-panel
-:PROPERTIES:
-:ID:       2b2154cf-b61c-4287-b5dd-93d85c93ac63
-:END:
-- [[https://github.com/thomasp85/patchwork][patchwork]]
-- [[http://statisticalrecipes.blogspot.com/2015/07/cowplot-arrange-ggplot2-figures-in-grid.html][Cowplot]]
-******** Color scales and schemes
-:PROPERTIES:
-:ID:       f75e785a-381c-4865-91c3-65f61476ea89
-:END:
-- [[https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html][ggsci]]
-- [[https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html][viridis]]
-- [[http://sape.inf.usi.ch/quick-reference/ggplot2/colour][ggplot2 color reference]]
-****** General reference
-:PROPERTIES:
-:ID:       c09e8fb3-68b3-4169-bd28-a2d768266509
-:END:
-- [[https://ggplot2-book.org/index.html][ggplot2 book]]
-- [[http://minimaxir.com/2017/08/ggplot2-web/][High Quality Data Visualizations for Websites With R and ggplot2]]
-- [[http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/][Beautiful plotting in R: ggplot2 cheatsheet]]
-**** Packages
-:PROPERTIES:
-:ID:       13053897-37D7-4068-B3D0-5A6660BA0CD3
-:END:
-- [[https://packagemanager.rstudio.com/client/#/repos/1/overview][RStudio Package Manager]]
-- [[https://old.reddit.com/r/datascience/comments/av4z50/what_are_some_very_useful_lesser_known_r_packages/][Useful lesser-known R packages (reddit)]]
-***** pheatmap
-:PROPERTIES:
-:ID:       02afeb91-08fb-4174-9092-6af5285f71cb
-:END:
-- [[https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/][Making a heatmap with pheatmap]]
-***** Shiny
-:PROPERTIES:
-:ID:       03623477-AB96-4BD1-A504-126F1FCB3343
-:END:
-- [[https://engineering-shiny.org/golem.html][Engineering Shiny apps with golem]]
-***** tidyverse
-:PROPERTIES:
-:CREATED:  [2019-03-19 Tue 14:06]
-:ID:       E8EA40A5-A1C1-44D7-8985-5D8568714698
-:END:
-- [[https://jhudatascience.org/tidyversecourse/][JHU Tidyverse Course]]
-- [[https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html][dplyr programming vignette]]
-- [[https://ggplot2.tidyverse.org/reference/][ggplot2 documentation]]
-- [[https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf][ggplot2 cheat sheet]]
-****** dplyr
-:PROPERTIES:
-:CREATED:  [2021-09-13 Mon 09:31]
-:ID:       7881202e-7d7a-4bb5-99b8-a0327ce14020
-:END:
-***** bioconductor
-:PROPERTIES:
-:ID:       ac5c9fbe-7ce7-4092-989b-e63884fdd9df
-:END:
-- [[https://bioconductor.org/packages/release/bioc/vignettes/biomaRt/inst/doc/biomaRt.html][The biomaRt users guide]]
-**** R scripts
-:PROPERTIES:
-:ID:       e407afab-e6e0-45b7-a080-e587bf21a385
-:END:
-#+begin_src R
-requiredPackages = c("readxl","tidyverse")
-for(p in requiredPackages){
-   library(p,character.only = TRUE)
-}
-#+end_src
-***** Functions and programming
-:PROPERTIES:
-:ID:       479569fe-229d-4d2f-ba08-b871d3ad64ac
-:END:
-- [[https://adv-r.hadley.nz/][Advanced R (Hadley Wickham)]]
-***** R bioinformatics setup
-:PROPERTIES:
-:ID:       87b498a6-e553-4682-8038-96bbb21fda14
-:END:
-#+name: biotools_r_setup
-#+begin_src R :noweb yes
-#
-# Check Packages
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-packages = c(
-  "AnnotationDbi", "biomaRt", "circlize", "ComplexHeatmap", "copynumber",
-  "DESeq2", "DRIMSeq", "edgeR", "fgsea", "gage", "gageData",
-  "GenomicFeatures", "gplots", "limma", "pathview", "pheatmap",
-  "PoiClaClu", "SummarizedExperiment", "tximport"
-)
-## NOTE requires libcurl4-openssl-dev https://stackoverflow.com/questions/11471690/curl-h-no-such-file-or-directory/11471743
-package.check = lapply(
-  packages,
-  FUN = function(x) {
-    if (!require (x, character.only = T)) {
-      BiocManager::install(x, quietly =T, ask=F)
-      library(x, character.only = T)
-    }
-  }
-)
-#+end_src
-**** General reference                                                  :ref:
-:PROPERTIES:
-:CREATED:  [2021-06-04 Fri 10:12]
-:ID:       707e5032-ae3d-4f3e-86eb-46917bec88f8
-:END:
-- [[https://www.reddit.com/r/Rlanguage/comments/1ksy3c4/the_8020_guide_to_r_you_wish_you_read_years_ago/][The 80/20 guide to R]]
-- [[cite:&venables2018]]
-- [[https://adv-r.hadley.nz/][Advanced R]]
-- cite:lewis2010
-***** R Training
-:PROPERTIES:
-:ID:       2EDD5335-C4BC-4B9F-9140-81A25062D4A6
-:END:
-- [[https://journal.r-project.org/][The R Journal]]
-- [[https://www.edx.org/course/statistics-r-harvardx-ph525-1x][EdX: Statistics and R]]
-- cite:YaRrr_Book
-- [[https://cran.r-project.org/doc/manuals/R-intro.html][CRAN R intro]]
-***** [[https://www.r-project.org/other-docs.html][documentation]]
-:PROPERTIES:
-:ID:       5387846b-2130-468f-8d94-1f53fe2b5541
-:END:
-- [[https://cran.r-project.org/manuals.html][CRAN manuals]]
-- cite:r_core_team2018
-- [[https://www.rdocumentation.org/][RDocumentation]]
-***** Variable types
-:PROPERTIES:
-:ID:       7c76cdb1-3e3d-4846-b825-9826769b12cb
-:END:
-- [[https://stackoverflow.com/questions/24027605/determine-the-number-of-na-values-in-a-column][Determine number of NA values in column]]
-- time: [[http://neondataskills.org/R/time-series-convert-date-time-class-POSIX/][Time Series: POSIXct, POSIXlt]]
-
-*** Integrated development environments
-:PROPERTIES:
-:ID:       1f307f13-9795-4ae8-83d6-235db6e5d866
-:END:
-- [[https://code.visualstudio.com/][Visual Studio Code]]
-- [[https://eclipse.org/ide/][Eclipse]]
-- [[https://github.com/codespaces][GitHub Codespaces]]
-- See [[id:a49abc44-8e71-4a1a-bd35-a77849427c94][Emacs]] for the primary IDE
-
-*** General reference
-:PROPERTIES:
-:ID:       2faf071d-912b-4003-a42a-d9f18144434b
-:END:
-- [[https://en.wikipedia.org/wiki/SOLID][SOLID principles]]
-- [[https://software-carpentry.org/lessons/][Software Carpentry]]
-- [[https://12factor.net/][The Twelve-Factor App]]
-- [[https://ss64.com/][SS64: command line reference]]
-- [[https://hacker-tools.github.io/][Hacker Tools]]
-- [[https://missing.csail.mit.edu/][The Missing Semester of Your CS Education]]
-- Online computer educational resources
-  - [[https://github.com/Developer-Y/cs-video-courses/blob/master/README.md][CS courses with video lectures]]
-  - [[https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-042j-mathematics-for-computer-science-fall-2010/][MIT Mathematics for Computer Science]]
-  - [[https://software-carpentry.org/lessons/][Software Carpentry]]
-  - [[https://becker.wustl.edu/services/science-support/research-computing-workshops][Becker research computing workshops]]
-**** The Missing Semester of Your CS Education
-:PROPERTIES:
-:ID:       c7d8dd07-098e-4bc4-b008-5da0abcabb0d
-:END:
-- [[https://missing.csail.mit.edu/][missing.csail.mit.edu]]
 ** Development                                                          :dev:
 :PROPERTIES:
 :header-args: :tangle no
@@ -7150,6 +5872,9 @@ git_setup:
 - consider docker ADD to add scripts
 - dockerize emacs GUI: https://github.com/JAremko/docker-emacs
 - Dockerfile best practices: include comment with build time
+
+
+
 
 *** Snakemake & pipelines
 :PROPERTIES:
@@ -7304,3 +6029,1096 @@ https://www.reddit.com/r/IWantToLearn/comments/5bfegh/iwtl_how_to_make_a_very_si
 :ID:       f4d712d2-4318-4504-9eee-0a45eeededd7
 :END:
 https://community.openai.com/t/please-widen-the-code-block-style-element-in-chat/132308/2
+**** Singularity / Apptainer containers
+:PROPERTIES:
+:ID:       singularity-containers
+:END:
+- [[https://sylabs.io/singularity/][Singularity]]
+- [[https://apptainer.org/][Apptainer]]
+- Launch shell: [[file:src/launch_singularity_shell.sh][src/launch_singularity_shell.sh]]
+***** Ansible                                                        :ansipb:
+:PROPERTIES:
+:header-args:yaml: :tangle ./ansible/playbooks/singularity.yaml
+:END:
+[[file:ansible/playbooks/singularity.yaml]]
+#+begin_src yaml
+---
+- name: Install Singularity
+  hosts: all
+  become: yes
+  tasks:
+
+    - name: Install prerequisites
+      apt:
+        name:
+          - build-essential
+          - libssl-dev
+          - uuid-dev
+          - libgpgme-dev
+          - squashfs-tools
+          - libseccomp-dev
+          - wget
+          - pkg-config
+          - git
+          - cryptsetup-bin
+        state: present
+        update_cache: yes
+#+end_src
+******** Process management
+********* PDF processes
+- pdftk -- merge PDFs: pdftk *.pdf cat output merged.pdf
+- [[https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/][pdftk]]
+********* Web and downloading
+- pandoc: [[https://pandoc.org/][pandoc.org]]
+- youtube-dl: [[https://youtube-dl.org/][youtube-dl.org]]
+- rclone: [[https://rclone.org/][rclone.org]]
+
+******** Anki
+:PROPERTIES:
+:ID:       0b25f799-6fe6-44ab-b3bc-e6e9b038c1f4
+:END:
+Install:
+#+begin_src bash
+flatpak install flathub net.ankiweb.Anki
+#+end_src
+******** Security
+******** Mermaid diagramming
+- [[https://mermaid.js.org/][Mermaid.js]]
+- [[https://mermaid.live/][Mermaid live editor]]
+- Install in conda basecamp env:
+  #+begin_src bash
+npm install -g @mermaid-js/mermaid-cli
+  #+end_src
+******** Networks and graphs
+:PROPERTIES:
+:ID:       6cd2214c-a469-46af-8ec7-11063cf3022c
+:END:
+- https://www.reddit.com/r/datascience/comments/17212yf/why_are_there_no_good_graph_visualisation_programs/
+- https://www.reddit.com/r/dataisbeautiful/comments/9yg8w9/googles_autocomplete_visualized_like_a_graph_link/
+- https://www.reddit.com/r/dataisbeautiful/comments/9kg9ym/oc_recent_philosophy_visualized/
+- http://www.hiveplot.com/
+- https://gephi.org/
+******** Programming style guide
+:PROPERTIES:
+:ID:       593672e1-82b2-44e0-aa00-d28825860706
+:END:
+- Naming: use ICANN convention specific <- general
+- Two-space indentation; spaces before/after operators; variable_names_with_underscore
+- Function development protocol: first I/O validation, make example, then optimization of a) process and b) outcomes, then error handling
+- [[https://en.wikipedia.org/wiki/Robustness_(computer_science)][Robustness]]
+- cite:abelson1996
+******** Google cloud
+:PROPERTIES:
+:ID:       5435d91b-864b-4644-a0c0-1ffb262db35b
+:END:
+#+begin_src bash
+cd /tmp
+curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-478.0.0-linux-x86_64.tar.gz
+tar -xf google-cloud-cli-478.0.0-linux-x86_64.tar.gz
+./google-cloud-sdk/install.sh
+./google-cloud-sdk/bin/gcloud init
+./google-cloud-sdk/bin/gcloud compute ssh jeszyman@instance-20240601-125838 --zone us-central1-a --ssh-key-file ~/.ssh/id_rsa
+
+sudo mkdir -p /usr/local/gcloud
+sudo mv /tmp/google-cloud-sdk /usr/local/gcloud/
+
+gcloud compute ssh jeszyman@instance-20240601-125838 --zone us-central1-a
+#+end_src
+- gsutil is python app to access cloud storage
+  - gsutil cp -- use for single files; always overwrites
+  - gsutil rsync -- use for dirs
+******** Literate programming
+:PROPERTIES:
+:ID:       10af5937-004b-46f8-818d-b81d30462164
+:END:
+- [[http://howardism.org/Technical/Emacs/literate-devops.html][Literate Devops with Emacs]]
+- [[https://github.com/alhassy/emacs.d/blob/master/README.org#what-does-literate-programming-look-like][What does literate programming look like?]]
+- Donald Knuth developed the concept in the 1980s
+- [[https://www.youtube.com/watch?v=dljNabciEGg&ab_channel=HowardAbrams][Literate DevOps with Emacs (video)]]
+
+******** YAML
+:PROPERTIES:
+:ID:       2d51112e-b2a4-41c5-bbd9-d9fc85cc59c5
+:END:
+********* Example
+#+begin_src yaml :tangle /tmp/example.yaml
+# Simple YAML Example
+key: value # An inline comment
+
+# Scalars
+enabled: true
+mode: auto
+integer: 42
+
+# Lists
+fruits:
+  - apple
+  - banana
+  - cherry
+
+# Dictionaries
+servers:
+  - name: web-server
+    ip: 192.168.1.1
+    status: active
+  - name: db-server
+    ip: 192.168.1.2
+    status: inactive
+#+end_src
+********* Reference
+:PROPERTIES:
+:ID:       7e4af24b-2b05-44bc-b87c-a16393f1e9dc
+:END:
+- [[https://www.educative.io/blog/advanced-yaml-syntax-cheatsheet][Advanced YAML syntax cheatsheet]]
+- Validation: [[https://codebeautify.org/yaml-validator][YAML validator]]
+- Cannot do string concatenation: [[https://stackoverflow.com/questions/5484016/how-can-i-do-string-concatenation-or-string-replacement-in-yaml][stack]]
+********* Processes
+:PROPERTIES:
+:ID:       a7ab5383-e7c2-4341-ab78-48967db4c9ca
+:END:
+** YASnippet templates                                                 :flat:
+The following headings contain YAS template source blocks tangled to the yasnippets directories.
+*** org-mode snippets
+**** code.perl                                                          :yas:
+#+name: code.perl
+#+begin_src bash :tangle ./emacs/public_yasnippets/org-mode/code.perl
+# -*- mode: snippet -*-
+# key: code.perl
+# expand-env: ((yas-indent-line 'none))
+# condition: 'auto
+# --
+,#+begin_src perl
+$0
+,#+end_src
+#+end_src
+[[file:emacs/public_yasnippets/org-mode/code.perl]]
+**** code.sh                                                            :yas:
+:PROPERTIES:
+:ID:       5c2e54cf-797e-4ccb-b12e-2167d06ce7a4
+:END:
+#+name: code.sh
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/org-mode/code.sh
+# -*- mode: snippet -*-
+# key: code.sh
+# expand-env: ((yas-indent-line 'none))
+# condition: 'auto
+# --
+,#+begin_src bash
+$0
+,#+end_src
+#+end_src
+[[file:emacs/public_yasnippets/org-mode/code.sh]]
+*** sh-mode snippets
+**** array.from.find                                                    :yas:
+:PROPERTIES:
+:ID:       68960305-58e3-43a8-8d63-ec7ea71720c4
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/array.from.find
+# -*- mode: snippet -*-
+# name: array.from.find
+# key: array.from.find
+# --
+${1:ARRAY NAME}=()
+while IFS=  read -r -d $'\0'; do
+    $1+=("$REPLY")
+done < <(find ${2:FIND DIR} -name ${3:FIND TERM} -print0)
+printf '%s\n' "\${$1[@]}"
+$0
+#+end_src
+**** comment.block                                                      :yas:
+#+name: sh-mode_comment.block
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/comment.block
+# -*- mode: snippet -*-
+# key: comment.block
+# expand-env: ((yas-indent-line 'none))
+# --
+`(let* ((input (read-string "Comment block text: "))
+        (fill-column 80)
+        (temp-buf (generate-new-buffer "*yas-fill*")))
+   (prog1
+       (mapconcat (lambda (line) (concat "# " line))
+                  (with-temp-buffer
+                    (insert input)
+                    (fill-region (point-min) (point-max))
+                    (split-string (buffer-string) "\n"))
+                  "\n")
+     (kill-buffer temp-buf)))`
+#+end_src
+**** doc.fun                                                            :yas:
+:PROPERTIES:
+:ID:       56dffa5f-ae66-47d0-abc1-a7a1076c12b5
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/doc.fun
+# -*- mode: snippet --*
+# key: doc.fun
+# expand-env: ((yas-indent-line 'none))
+# --
+  [[ "\$1" =~ (-h|--help) || -z "\$1" ]] && {
+    cat <<EOF
+Usage: ${1: <FUNCTION NAME>} ${2: <USAGE>}
+${3: <DESCRIPTION>}
+EOF
+    return
+  }
+
+#+end_src
+**** function                                                           :yas:
+:PROPERTIES:
+:ID:       1a349f9b-02cd-483a-aa15-2f81df598fef
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/function
+# -*- mode: snippet -*-
+# key: function
+# expand-env: ((yas-indent-line 'fixed))
+# --
+${1:$$(replace-regexp-in-string " " "_" yas-text)}(){
+    local ${2: <VARIABLE NAME> }="\${1}"
+    $0
+}
+
+#+end_src
+**** must.src                                                           :yas:
+:PROPERTIES:
+:ID:       af579d0a-ea85-4538-a120-e06c0c19cc8a
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/must.src
+# -*- mode: snippet -*-
+# key: must.src
+# expand-env: ((yas-indent-line 'none))
+# --
+if [[ "\${BASH_SOURCE[0]}" == "\${0}" ]]; then
+  echo "You must source this script"
+  exit 1
+fi
+
+#+end_src
+**** script                                                             :yas:
+:PROPERTIES:
+:ID:       72a9b2a8-3215-4472-be95-410a7d242508
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/script
+# -*- mode: snippet -*-
+# key: script
+# --
+#!/usr/bin/env bash
+
+block
+
+usage
+
+parse_args
+
+main(){
+    parse_args "$@"
+    # REMAINING FUNCTION LOGIC
+}
+
+# OTHER FUNCTIONS
+
+main "$@"
+#+end_src
+**** usage                                                              :yas:
+:PROPERTIES:
+:ID:       e383d5cd-7ad8-4761-89ed-7d028acb79f8
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/usage
+# -*- mode: snippet -*-
+# key: usage
+# expand-env: ((yas-indent-line 'fixed))
+# --
+
+print_usage(){
+    cat <<- EOF
+
+ Usage: ${1:${1:SCRIPT NAME}$$(replace-regexp-in-string " " "_" yas-text)} [OPTIONS] ${2:${2:REQUIRED OPERAND}$$(upcase yas-text)}  ${3:${3:[OPTIONAL OPERAND]}$$(upcase yas-text)}
+
+ ${4:<DESCRIPTION>}
+
+ Options:
+   -h, --help    Show this help message and exit
+
+ Arguements:
+   ${2:$(ignore-errors (format (yas-field-value 2)))} ${5: <OPERAND DESCRIPTION>}
+
+ Example:
+   ${1:$(ignore-errors (format (yas-field-value 1)))} ${6: <EXAMPLE>}
+
+EOF
+}
+
+# See print usage caller yas
+# return_usage_any
+#+end_src
+**** var                                                                :yas:
+:PROPERTIES:
+:ID:       67ca3ccc-7bca-4b12-b513-05b246a217b8
+:END:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/var
+# -*- mode: snippet -*-
+# key: var
+# expand-env: ((yas-indent-line 'none))
+# --
+$1="$\{$2}"$0
+#+end_src
+**** variables                                                          :yas:
+A variables function template for shell scripts
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/sh-mode/variables
+# -*- mode: snippet -*-
+# key: variables
+# expand-env: ((yas-indent-line 'none))
+# --
+variables(){
+    ${1:$$(replace-regexp-in-string " " "_" yas-text)}="\${1${2:$$(when (and yas-moving-away-p (not (string= "" yas-text)))(concat ":-" yas-text))}}"
+    ${3:$$(replace-regexp-in-string " " "_" yas-text)}="\${2${4:$$(when (and yas-moving-away-p (not (string= "" yas-text)))(concat ":-" yas-text))}}"
+}
+$0
+
+#+end_src
+*** yaml-mode snippets
+**** comment.block                                                      :yas:
+[[file:emacs/public_yasnippets/yaml-mode/comment.block]]
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/yaml-mode/comment.block
+<#~/repos/basecamp/basecamp.org:sh-mode_comment.block()#>
+#+end_src
+*** ess-mode snippets
+**** 80                                                                 :yas:
+:PROPERTIES:
+:ID:       3e97b905-780b-4612-a5a1-18e9062dd8a8
+:END:
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/ess-mode/80
+# -*- mode: snippet -*-
+# key: 80
+# expand-env: ((yas-indent-line 'none))
+# --
+#########1#########2#########3#########4#########5#########6#########7#########8
+#+end_src
+**** function                                                           :yas:
+:PROPERTIES:
+:ID:       db4e66ae-ddad-41f9-810b-0e41b2a216d5
+:END:
+#+name: function
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/ess-mode/function
+# -*- mode: snippet -*-
+# key: function
+# expand-env: ((yas-indent-line 'fixed))
+# --
+${1:FUNCTIONNAME$$(replace-regexp-in-string " " "_" yas-text)} = function(${2:VARIABLE LIST}){
+  # ${3:DESCRIPTION}
+  $0
+}
+#+end_src
+**** make.opt                                                           :yas:
+:PROPERTIES:
+:ID:       5c6b366c-d0ca-45bd-a7a3-c649c8f94e11
+:END:
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/ess-mode/make.opt
+# -*- mode: snippet -*-
+# key: make.opt
+# expand-env: ((yas-indent-line 'none))
+# --
+  make_option(c("--$1"), type = "character", default = "$2"),
+
+#+end_src
+**** r.cmd                                                              :yas:
+:PROPERTIES:
+:ID:       c204aa66-98eb-412f-8ffa-0227b42ed381
+:END:
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/bash-mode/r.cmd
+# -*- mode: snippet -*-
+# key: r.cmd
+# expand-env: ((yas-indent-line 'none))
+# --
+args = commandArgs(trailingOnly = TRUE)
+$0=args[1]
+=args[2]
+
+#+end_src
+**** script                                                             :yas:
+:PROPERTIES:
+:ID:       51bbd7ff-3f3d-4ae7-9839-142f52dd141c
+:END:
+#+name: script
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/ess-mode/script
+# -*- mode: snippet -*-
+# key: script
+# expand-env: ((yas-indent-line 'fixed))
+# --
+#!/usr/bin/env Rscript
+
+# ---   Load Packages   --- #
+# ------------------------- #
+
+packages <- c("optparse", "tidyverse")
+sapply(packages, require, character.only = TRUE, quietly = TRUE)
+
+# ---   Load Inputs   --- #
+# ----------------------- #
+
+option_list <- list(
+  make_option(c("--<OPTION NAME>"), type = "character"),
+
+opts <- parse_args(OptionParser(option_list = option_list))
+
+inputs_list = function(opts){
+
+  return(list())
+}
+
+# ---   Main   --- #
+# ---------------- #
+
+main = function(opts){
+
+  # Process inputs
+  inputs = inputs_list(opts)
+
+  # Return a list of outputs
+  return(list())
+}
+
+# ---   Functions   --- #
+# --------------------- #
+
+# ---   Run   --- #
+# --------------- #
+
+out = main(opts)
+
+for (name in names(out)) {
+  item <- out[[name]]
+  file_path <- file.path(opts$out_dir, paste0(name, ".rds"))
+  saveRDS(item, file_path)
+}
+
+#+end_src
+**** var                                                                :yas:
+:PROPERTIES:
+:ID:       fa91bd4f-f2d9-4a17-8e02-6891c564204b
+:END:
+#+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/ess-mode/var
+# -*- mode: snippet -*-
+# key: var
+# expand-env: ((yas-indent-line 'none))
+# --
+$1 = args[$2]
+#+end_src
+
+
+*** yasnippet: function.py                                              :yas:
+#+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/bash-mode/function.py
+# -*- mode: snippet -*-
+# key: function.py
+# expand-env: ((yas-indent-line 'fixed))
+# --
+def ${1:function_name}(${2:args}):
+    """${3:Docstring.}"""
+    $0
+#+end_src
+** R Statistical Computing
+:PROPERTIES:
+:ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
+:END:
+*** Ansible                                                          :ansipb:
+:properties:
+:header-args:yaml: :tangle ./ansible/playbooks/r-install.yaml
+:ID:       36efda17-d1ef-4632-bc33-732071455543
+:end:
+#+begin_src yaml
+---
+- name: Install Latest R
+  hosts: all
+  become: yes
+  tasks:
+
+    - name: Install prerequisites
+      apt:
+        name:
+          - software-properties-common
+          - dirmngr
+          - gnupg
+          - curl
+          - ca-certificates
+        state: present
+        update_cache: yes
+
+    - name: Remove existing R installation if present
+      apt:
+        name: r-base
+        state: absent
+      ignore_errors: yes
+
+    - name: Add CRAN GPG key
+      apt_key:
+        url: https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc
+        state: present
+
+    - name: Add CRAN R repository
+      apt_repository:
+        repo: "deb https://cloud.r-project.org/bin/linux/ubuntu {{ ansible_distribution_release }}-cran40/"
+        state: present
+        filename: "cran-r"
+
+    - name: Update package cache
+      apt:
+        update_cache: yes
+
+    - name: Install latest R base package
+      apt:
+        name: r-base
+        state: latest
+
+    - name: Verify R installation
+      command: R --version
+      register: r_version
+      changed_when: false
+
+    - name: Display installed R version
+      debug:
+        msg: "{{ r_version.stdout }}"
+#+end_src
+- note the tidyverse install takes forever, but it does work
+#+begin_src yaml
+
+    - name: Install system dependencies for tidyverse
+      apt:
+        name:
+          - libcurl4-openssl-dev
+          - libssl-dev
+          - libxml2-dev
+        state: present
+
+    - name: Install Tidyverse in R
+      command: sudo R -e 'install.packages("tidyverse", repos="https://cloud.r-project.org")'
+      args:
+        creates: /usr/local/lib/R/site-library/tidyverse
+
+#+end_src
+#+begin_src yaml
+    - name: Install R 'languageserver' package
+      shell: Rscript -e 'if (!requireNamespace("languageserver", quietly = TRUE)) install.packages("languageserver", repos="https://cloud.r-project.org")'
+      args:
+        executable: /bin/bash
+
+#+end_src
+
+*** [[id:4783cca8-92ea-4053-b3c8-7d79862e3939][R package installs in basecamp conda environment]]
+*** R Cookbook                                                     :cookbook:
+- Modern good practice
+  - Scripts: Use argparse (over optparse)
+- Get $HOSTNAME:
+  #+begin_src R
+Sys.info()["nodename"]
+  #+end_src
+*** Processes                                                     :hierarchy:
+:PROPERTIES:
+:ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
+:END:
+**** Style
+***** Best practices, style
+:PROPERTIES:
+:ID:       419ba6f0-4977-4eed-9d25-93a45933ad56
+:END:
+- See [[id:593672e1-82b2-44e0-aa00-d28825860706][My general programming style guide]]
+- [[https://stackoverflow.com/questions/6324568/function-commenting-conventions-in-r][Function commenting conventions in R]]
+- [[https://style.tidyverse.org/index.html][Tidyverse style guide]]
+- [[https://google.github.io/styleguide/Rguide.html][Google R style guide]]
+- [[http://adv-r.had.co.nz/Style.html][Advanced R style guide]] cite:wickham2014
+- Two-space indentation; spaces before/after operators; variable_names_with_underscore
+**** R Processes                                                       :flat:
+:PROPERTIES:
+:ID:       d96c05c0-838a-45ec-b7c6-a8a7e5b3e71d
+:END:
+***** Set file.path variable by hostname
+#+begin_src R
+if(Sys.info()["nodename"] %in%
+   c("jeszyman-work","jeff-mac-book","jeff-server"))
+  (data_dir = file.path("/mnt/ris/cbergom"))
+#+end_src
+***** Write a function with multiple outputs
+:PROPERTIES:
+:ID:       bd6496c7-8a45-448a-a6fb-27e1cc3e517e
+:END:
+***** Assertive programming (assertthat)
+:PROPERTIES:
+:ID:       02c59d00-54ae-4244-a192-22bfd7e59ca8
+:END:
+- [[https://github.com/hadley/assertthat][assertthat]]
+- [[https://towardsdatascience.com/assertive-programming-in-r-36c3cc290930][Assertive programming in R]]
+***** Make HTML table
+:PROPERTIES:
+:ID:       9b8939f4-402d-40d8-9a5c-a13b155476a9
+:END:
+- [[https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html][kableExtra for HTML tables]]
+**** External Files
+:PROPERTIES:
+:ID:       a571cc33-fca7-4c1f-abf8-a0114bda5a14
+:END:
+***** Writing to files
+:PROPERTIES:
+:ID:       29961249-9a6f-4a51-97a2-8bb2eea3658b
+:END:
+- [[https://www.geeksforgeeks.org/reading-and-writing-excel-files-with-r-using-readxl-and-writexl/][Reading and writing Excel with R]]
+***** Working with input files
+:PROPERTIES:
+:ID:       d7dcde01-9d91-4b22-b68d-87075d386673
+:END:
+- [[https://stackoverflow.com/questions/32129687/list-files-all-files-in-directory-and-subdirectories][List files in directory and subdirectories]]
+**** Regular expressions (REGEX) in R
+:PROPERTIES:
+:ID:       af6ebe3c-92f2-4b87-8292-d5deac52bd00
+:END:
+- [[https://www.rdocumentation.org/packages/base/versions/3.5.1/topics/regex][documentation]]
+- [[http://www.endmemo.com/program/R/gsub.php][Simplified syntax]]
+- [[https://stackoverflow.com/questions/2973436/regex-lookahead-lookbehind-and-atomic-groups][Look around examples]]
+**** [[id:26211e92-7ff9-4520-a9a7-cac04027e610][Probability and Statistics with R]]
+:PROPERTIES:
+:ID:       dc850154-68e7-452b-925d-59d66047c579
+:END:
+**** Power calculations
+:PROPERTIES:
+:ID:       bdd9e5b5-578e-48a5-b9a9-9a8163666419
+:END:
+**** System administration
+:PROPERTIES:
+:ID:       f92e9c8d-7c84-480b-a7fb-314a176f82a0
+:END:
+- [[https://stackoverflow.com/questions/15217758/remove-a-library-from-libpaths-permanently-without-rprofile-site][Remove library from .libPaths permanently]]
+**** Rscripts
+:PROPERTIES:
+:ID:       8601793b-7dfa-46e3-a658-da9624d40901
+:END:
+**** Working with tabular data in tidyverse
+:PROPERTIES:
+:ID:       09991a6a-6f80-4eb5-8344-c16ad1cf9c92
+:END:
+- [[https://dplyr.tidyverse.org/reference/bind.html][merge list of dataframes]]
+**** Dashboard
+:PROPERTIES:
+:ID:       7d6aebe4-1591-4476-8183-df4247b6a5e7
+:END:
+- [[https://bookdown.org/yihui/rmarkdown/dashboard-components.html][rmarkdown dashboard components]]
+**** Working with directories and files
+:PROPERTIES:
+:ID:       3038e42c-3c3a-483d-9848-9235ea00a9a2
+:END:
+#+begin_src R
+if(file.exists(paste0("./config/",as.character(Sys.info()["nodename"]),".R"))) {
+  source(paste0("./config/",as.character(Sys.info()["nodename"]),".R"))
+} else {
+  stop("No config file found")
+}
+#+end_src
+**** Data science in R
+:PROPERTIES:
+:ID:       7d5cda01-172e-49ee-8030-754402f3aa7d
+:END:
+- [[http://r4ds.had.co.nz/][R for Data Science]]
+- [[https://swcarpentry.github.io/r-novice-gapminder/][Software Carpentry: R for Reproducible Scientific Analysis]]
+***** [[id:39F11977-BE11-47CF-98B1-14CE6D9B97C4][Information Science / Data Science]]
+:PROPERTIES:
+:ID:       26512754-a0cf-4536-af52-74a430ac894e
+:END:
+***** General reference
+:PROPERTIES:
+:ID:       c0532578-b5c9-429a-9c6d-381990dce081
+:END:
+- [[https://rafalab.github.io/dsbook/][Data Analysis for the Life Sciences]]
+- cite:wickham2016
+***** [[id:0e6f856f-2079-42fc-92f0-5af3b292c516][LINK TO Data project management and data wrangling with R]]
+:PROPERTIES:
+:ID:       4e8a9fb2-ec01-4e14-ba88-e850d8e1c05b
+:END:
+***** [[id:39F11977-BE11-47CF-98B1-14CE6D9B97C4][LINK TO Information Science / Data Science]]
+:PROPERTIES:
+:ID:       356f811b-ca18-4a5b-b135-ca2ecaf68385
+:END:
+***** [[id:a843f826-cdbc-4ca3-a30c-a7f2c30a9cbc][LINK TO R basecamp setup]]
+:PROPERTIES:
+:ID:       ae65c4a5-7fe5-474c-90e3-b8b567017ac4
+:END:
+**** R objects
+:PROPERTIES:
+:ID:       99eb9a24-7944-4335-b9f5-2937a610f8ac
+:END:
+- [[https://bioconductor.org/packages/devel/bioc/vignettes/SummarizedExperiment/inst/doc/Extensions.html][SummarizedExperiment extensions]]
+**** Math in R
+:PROPERTIES:
+:ID:       1cda08a5-5e3d-49bd-96aa-c262abada15d
+:END:
+- Rounding: [[https://www.rdocumentation.org/packages/base/versions/3.4.1/topics/Round][documentation]]
+***** Probability and Statistics with R
+:PROPERTIES:
+:ID:       26211e92-7ff9-4520-a9a7-cac04027e610
+:END:
+- [[https://www.cyclismo.org/tutorial/R/confidence.html][Confidence intervals in R]]
+- [[https://rpkgs.datanovia.com/rstatix/][rstatix]]
+- [[id:F80F3FAF-1D79-40F5-934B-F74D19143DBD][Probability and Statistics]]
+- cite:mangiafico2005 [[http://rcompanion.org/rcompanion/e_01.html][R Companion to Biostats Handbook]]
+- [[http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r][Correlation Test Between Two Variables in R]]
+- ROC & cutpoint: [[https://cran.r-project.org/web/packages/cutpointr/vignettes/cutpointr.html][cutpointr]], [[https://web.expasy.org/pROC/][pROC]]
+****** Inferential Testing
+:PROPERTIES:
+:ID:       85A16229-6FDB-4CAA-B23E-3A3A08F96BD7
+:END:
+******* Testing Assumptions
+:PROPERTIES:
+:ID:       531DD201-BBB4-4C21-BDDE-02982DB43847
+:END:
+******** Normalcy
+:PROPERTIES:
+:ID:       DF687DB7-128D-49E4-B83B-5D4E7F83DC52
+:END:
+********* Shapiro-Wilk
+:PROPERTIES:
+:ID:       76DD7F99-072F-49D7-A08C-7A77F48BCDAE
+:END:
+- shaprio.test(VECTOR) -- null hypothesis: population is normally distributed
+********* QQ plot
+:PROPERTIES:
+:ID:       38C4C432-EFF6-45F8-8A2A-AC5F5E68015D
+:END:
+******* Significance Testing
+:PROPERTIES:
+:ID:       CE56656E-9272-488A-A94E-5FB8F84F6E52
+:END:
+******** Categorical by chi square
+:PROPERTIES:
+:ID:       2223CFCB-A07A-4BF8-93D8-3A5E377EA317
+:END:
+******** Independent, non-normal, 2-populations: Wilcoxon-Mann Whitney
+:PROPERTIES:
+:ID:       B1DEBDF9-D94A-40EB-BC3C-DDEB3006AAD2
+:END:
+******** Nonparametric, >2 populations: Kruskal-Wallis
+:PROPERTIES:
+:ID:       5FEA38FE-3723-4ECF-8D9C-4A256163F55A
+:END:
+******* Regression Modeling
+:PROPERTIES:
+:ID:       4C723421-9630-4CD9-B586-BDA73E809CE1
+:END:
+***** R for Machine Learning
+:PROPERTIES:
+:ID:       05014193-8038-4108-bf9d-11c56c33a63c
+:END:
+- [[https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/#one][A Complete Tutorial on Tree Based Modeling (R & Python)]]
+***** General linear model glm()
+:PROPERTIES:
+:ID:       3B10C6E7-5D13-4BE4-9807-F60FC53A513B
+:END:
+- [[https://datascienceplus.com/perform-logistic-regression-in-r/][Logistic regression in R]]
+- [[https://radiant-rstats.github.io/docs/model/logistic.html][Logistic regression with Radiant]]
+- glm for multiple logistic regression: cite:mangiafico2005 @ 242
+**** apply and for-loops
+:PROPERTIES:
+:ID:       e3ece314-a12f-4cb4-8421-411013fe4cbc
+:END:
+**** Creating, Modeling, and Toy Data
+:PROPERTIES:
+:ID:       46253EF9-7B35-403F-BA1B-24F4FCA750D6
+:CREATED:  [2019-03-17 Sun 15:17]
+:END:
+- [[https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/00Index.html][Built-in datasets]]
+- set seed: set.seed(314)
+**** By artifact
+:PROPERTIES:
+:ID:       941fdf22-9023-46b9-bc38-4a47719f291d
+:END:
+- Tables
+  - [[https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html][kableExtra: awesome tables in HTML]]
+***** [[id:19d01dcc-8fef-4c07-952a-da918b3dc775][LINK TO Visualizations in R including ggplot2]]
+:PROPERTIES:
+:ID:       28b714eb-59e3-4176-a866-f4fe0980bc65
+:END:
+***** making packages
+:PROPERTIES:
+:ID:       fe1f71d0-5ace-4075-b36d-082a1199490a
+:END:
+- [[http://r-pkgs.had.co.nz/][R Packages (Hadley Wickham)]]
+- [[https://cran.r-project.org/doc/manuals/r-release/R-exts.html][CRAN: Writing R Extensions]]
+*** Visualizations in R including ggplot2
+:PROPERTIES:
+:ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
+:END:
+- [[https://r-graphics.org/][R Graphics Cookbook]]
+- [[https://ggplot2-book.org/index.html][ggplot2 book]]
+- [[https://www.r-graph-gallery.com/all-graphs.html][R graph gallery]]
+- [[id:C85F831E-4285-42D0-ABAB-96696D026671][Visualization mod]]
+***** Processes                                                   :hierarchy:
+:PROPERTIES:
+:ID:       7b47a4fa-5c0e-4e36-9d88-61593540215b
+:END:
+****** geoms
+:PROPERTIES:
+:ID:       411d2d7e-cb97-4e7c-a7b1-bacd3eb8504f
+:END:
+****** Processes                                                       :flat:
+:PROPERTIES:
+:ID:       85475db1-b795-4db1-af67-fa0de3f87fab
+:END:
+******* Interactive
+:PROPERTIES:
+:ID:       67ca5a25-5ade-41bf-84ba-17e48cf34b74
+:END:
+- [[https://www.youtube.com/watch?feature=youtu.be&v=rBp3eYHrsfo][plotly interactive graphs]]
+******* Theme
+:PROPERTIES:
+:ID:       6e585060-1fe9-47c0-97bb-b4f32cd69115
+:END:
+- [[https://wilkelab.org/cowplot/articles/themes.html][cowplot themes]]
+******* Facets
+:PROPERTIES:
+:ID:       26b04605-e83f-473e-8483-82717b71131e
+:END:
+- [[https://r-graphics.org/recipe-facet-label-appearance][facet label appearance]]
+******* Significance annotations
+:PROPERTIES:
+:ID:       bda8de09-cae8-4324-83a1-3ccee8193aa7
+:END:
+- [[https://cran.r-project.org/web/packages/ggsignif/vignettes/intro.html][ggsignif]]
+******* Labeling
+:PROPERTIES:
+:ID:       f3ac9b40-baff-4e48-af39-123460b86a93
+:END:
+- [[https://ggrepel.slowkow.com/articles/examples.html][ggrepel]]
+- [[https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html][cowplot: drawing on plots]]
+******* Venn
+:PROPERTIES:
+:ID:       b9191c77-247b-4cd9-b991-601100fac75c
+:END:
+- [[https://stackoverflow.com/questions/8713994/venn-diagram-proportional-and-color-shading-with-semi-transparency][venn R packages]]
+- [[cite:&jia2021]]
+******* Pie
+:PROPERTIES:
+:ID:       45663216-ea79-49d2-91a6-3c1376160374
+:END:
+- [[https://stackoverflow.com/questions/33594642/beautiful-pie-charts-with-r/33594843][pie charts]]
+******* Multi-panel
+:PROPERTIES:
+:ID:       2b2154cf-b61c-4287-b5dd-93d85c93ac63
+:END:
+- [[https://github.com/thomasp85/patchwork][patchwork]]
+- [[http://statisticalrecipes.blogspot.com/2015/07/cowplot-arrange-ggplot2-figures-in-grid.html][Cowplot]]
+******* Color scales and schemes
+:PROPERTIES:
+:ID:       f75e785a-381c-4865-91c3-65f61476ea89
+:END:
+- [[https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html][ggsci]]
+- [[https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html][viridis]]
+- [[http://sape.inf.usi.ch/quick-reference/ggplot2/colour][ggplot2 color reference]]
+***** General reference
+:PROPERTIES:
+:ID:       c09e8fb3-68b3-4169-bd28-a2d768266509
+:END:
+- [[https://ggplot2-book.org/index.html][ggplot2 book]]
+- [[http://minimaxir.com/2017/08/ggplot2-web/][High Quality Data Visualizations for Websites With R and ggplot2]]
+- [[http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/][Beautiful plotting in R: ggplot2 cheatsheet]]
+*** Packages
+:PROPERTIES:
+:ID:       13053897-37D7-4068-B3D0-5A6660BA0CD3
+:END:
+- [[https://packagemanager.rstudio.com/client/#/repos/1/overview][RStudio Package Manager]]
+- [[https://old.reddit.com/r/datascience/comments/av4z50/what_are_some_very_useful_lesser_known_r_packages/][Useful lesser-known R packages (reddit)]]
+**** pheatmap
+:PROPERTIES:
+:ID:       02afeb91-08fb-4174-9092-6af5285f71cb
+:END:
+- [[https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/][Making a heatmap with pheatmap]]
+**** Shiny
+:PROPERTIES:
+:ID:       03623477-AB96-4BD1-A504-126F1FCB3343
+:END:
+- [[https://engineering-shiny.org/golem.html][Engineering Shiny apps with golem]]
+**** tidyverse
+:PROPERTIES:
+:CREATED:  [2019-03-19 Tue 14:06]
+:ID:       E8EA40A5-A1C1-44D7-8985-5D8568714698
+:END:
+- [[https://jhudatascience.org/tidyversecourse/][JHU Tidyverse Course]]
+- [[https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html][dplyr programming vignette]]
+- [[https://ggplot2.tidyverse.org/reference/][ggplot2 documentation]]
+- [[https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf][ggplot2 cheat sheet]]
+***** dplyr
+:PROPERTIES:
+:CREATED:  [2021-09-13 Mon 09:31]
+:ID:       7881202e-7d7a-4bb5-99b8-a0327ce14020
+:END:
+**** bioconductor
+:PROPERTIES:
+:ID:       ac5c9fbe-7ce7-4092-989b-e63884fdd9df
+:END:
+- [[https://bioconductor.org/packages/release/bioc/vignettes/biomaRt/inst/doc/biomaRt.html][The biomaRt users guide]]
+*** R scripts
+:PROPERTIES:
+:ID:       e407afab-e6e0-45b7-a080-e587bf21a385
+:END:
+#+begin_src R
+requiredPackages = c("readxl","tidyverse")
+for(p in requiredPackages){
+   library(p,character.only = TRUE)
+}
+#+end_src
+**** Functions and programming
+:PROPERTIES:
+:ID:       479569fe-229d-4d2f-ba08-b871d3ad64ac
+:END:
+- [[https://adv-r.hadley.nz/][Advanced R (Hadley Wickham)]]
+**** R bioinformatics setup
+:PROPERTIES:
+:ID:       87b498a6-e553-4682-8038-96bbb21fda14
+:END:
+#+name: biotools_r_setup
+#+begin_src R :noweb yes
+#
+# Check Packages
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+packages = c(
+  "AnnotationDbi", "biomaRt", "circlize", "ComplexHeatmap", "copynumber",
+  "DESeq2", "DRIMSeq", "edgeR", "fgsea", "gage", "gageData",
+  "GenomicFeatures", "gplots", "limma", "pathview", "pheatmap",
+  "PoiClaClu", "SummarizedExperiment", "tximport"
+)
+## NOTE requires libcurl4-openssl-dev https://stackoverflow.com/questions/11471690/curl-h-no-such-file-or-directory/11471743
+package.check = lapply(
+  packages,
+  FUN = function(x) {
+    if (!require (x, character.only = T)) {
+      BiocManager::install(x, quietly =T, ask=F)
+      library(x, character.only = T)
+    }
+  }
+)
+#+end_src
+*** General reference                                                   :ref:
+:PROPERTIES:
+:CREATED:  [2021-06-04 Fri 10:12]
+:ID:       707e5032-ae3d-4f3e-86eb-46917bec88f8
+:END:
+- [[https://www.reddit.com/r/Rlanguage/comments/1ksy3c4/the_8020_guide_to_r_you_wish_you_read_years_ago/][The 80/20 guide to R]]
+- [[cite:&venables2018]]
+- [[https://adv-r.hadley.nz/][Advanced R]]
+- cite:lewis2010
+**** R Training
+:PROPERTIES:
+:ID:       2EDD5335-C4BC-4B9F-9140-81A25062D4A6
+:END:
+- [[https://journal.r-project.org/][The R Journal]]
+- [[https://www.edx.org/course/statistics-r-harvardx-ph525-1x][EdX: Statistics and R]]
+- cite:YaRrr_Book
+- [[https://cran.r-project.org/doc/manuals/R-intro.html][CRAN R intro]]
+**** [[https://www.r-project.org/other-docs.html][documentation]]
+:PROPERTIES:
+:ID:       5387846b-2130-468f-8d94-1f53fe2b5541
+:END:
+- [[https://cran.r-project.org/manuals.html][CRAN manuals]]
+- cite:r_core_team2018
+- [[https://www.rdocumentation.org/][RDocumentation]]
+**** Variable types
+:PROPERTIES:
+:ID:       7c76cdb1-3e3d-4846-b825-9826769b12cb
+:END:
+- [[https://stackoverflow.com/questions/24027605/determine-the-number-of-na-values-in-a-column][Determine number of NA values in column]]
+- time: [[http://neondataskills.org/R/time-series-convert-date-time-class-POSIX/][Time Series: POSIXct, POSIXlt]]
+
+** Docker
+:PROPERTIES:
+:ID:       af96f14d-b06d-4b17-b1e0-fd9e36a30bf5
+:END:
+*** Ansible                                                          :ansipb:
+:PROPERTIES:
+:header-args:yaml: :tangle ./ansible/playbooks/docker-playbook.yaml
+:ID:       b680dad8-2b3b-4e36-9c3a-0a3c1fc71a27
+:END:
+[[file:ansible/playbooks/docker-playbook.yaml]]
+#+begin_src yaml
+---
+- name: Install Docker
+  hosts: all
+  become: yes
+  tasks:
+
+    - name: Install prerequisite packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+        update_cache: yes
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker CE
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+        update_cache: yes
+
+    - name: Add user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    - name: Enable and start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+#+end_src
+*** Processes
+- [[https://stackoverflow.com/questions/16047306/how-is-docker-different-from-a-normal-virtual-machine][Docker vs. virtual machine]]
+- [[https://github.com/wsargent/docker-cheat-sheet][Docker cheat sheet]]
+- docker interactive function:
+  #+begin_src bash :tangle ./src/functions.sh
+docker_interactive() {
+    if [ -f /.dockerenv ]; then
+        echo "shell already in docker, exiting"
+        exit 1
+    else
+        account="USER INPUT"
+        container="USER INPUT"
+        read -p "docker account name: " account
+        account="${account:=jeszyman}"
+        read -p "container name: " container
+        container="${container:=biotools}"
+        case $HOSTNAME in
+            (radonc-cancerbio) docker run -it \
+                                      --env HOME=${HOME} \
+                                      --hostname ${HOSTNAME} \
+                                      --user $(id -u ${USER}) \
+                                      --volume /home/:/home/ \
+                                      --volume /mnt/:/mnt/ \
+                                      --volume /tmp/:/tmp/ \
+                                      $account/$container \
+                                      /bin/bash;;
+            (*) docker run -it \
+                       --env HOME=/home/${USER} \
+                       --hostname ${HOSTNAME} \
+                       --user $(id -u ${USER}) \
+                       --volume /home/:/home/ \
+                       --volume /mnt/:/mnt/ \
+                       --volume /tmp/:/tmp/ \
+                       $account/$container \
+                       /bin/bash;;
+        esac
+    fi
+}
+  #+end_src
+*** General reference
+- [[https://docs.docker.com/][Docker documentation]]
+- [[https://hub.docker.com/][Docker Hub]]
