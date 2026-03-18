@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# key: var
-# expand-env: ((yas-indent-line 'none))
-# --
-$1="$\{$2}"$0
