@@ -48,9 +48,13 @@
             -   Does not own global workflow logic.
             -   References variables provided by the wrapper.
             -   Intended for inclusion by the wrapper; not typically executed standalone.
-    -   General Principles  
+    -   General Principles
         -   Rules should read top-to-bottom.
         -   Avoid hiding workflow decisions inside helper functions when a rule pattern or explicit expansion would suffice.
+    -   Preamble Conventions
+        -   Every Snakefile begins with a standard preamble after `configfile:`.
+        -   `resolve_config_paths(config)`: Call immediately after `configfile:` to expand `~` and `$VAR` in all string config values. Implementation is a recursive dict walker using `os.path.expandvars` and `os.path.expanduser`.
+        -   D\_ directory constants and ENV\_ conda paths are derived from config in the preamble and used throughout rules.
 -   Path and Variable Conventions  
     -   Paths should be declarative and reflect intended output organization.
     -   Build paths at the level of intended output organization. If an output directory structure is a meaningful stable construct, encode it at the level of each relevant rule.  
@@ -62,7 +66,7 @@
     -   Hungarian notation prefixes for defined classes:  
         -   D\_ for data directories (absolute paths from config).
         -   R\_ for repository locations.
-        -   CONDA\_ for conda environment YAML files.
+        -   ENV\_ for conda environment YAML files.
     -   Build paths using Python f-strings with explicit structure (e.g., f"{D\_EMSEQ}/align/{{sample}}.bam").
     -   Escape wildcards in f-strings with double braces.
     -   Avoid os.path.join unless necessary for complex cross-platform compatibility; f-strings are more readable for this use case.
@@ -78,9 +82,15 @@
         -   Project (wrapper) workflows use a two-layer YAML config pattern:  
             -   A common/base config checked into the repo that defines defaults.
             -   An override config passed at runtime via &#x2013;configfile or &#x2013;config that changes behavior without editing code.
-    -   Tabular Configuration  
+    -   Tabular Configuration
         -   Use tabular configuration (TSV/CSV) for sample- or unit-level metadata.
         -   Load once in the Snakefile preamble and index by identifier.
+        -   When using tabular sample metadata, define a `SampleTable` class in the Snakefile preamble with a consistent interface:
+            -   `__init__(self, tsv_path, selected_ids=None)`: Load TSV, optionally filter to selected library IDs.
+            -   `.library_ids` property: Returns sorted list of unique library IDs.
+            -   `.r1_map` / `.r2_map` properties (where applicable): Return `dict(library_id -> basename)`.
+        -   Implementations vary per project (lane-aware indexing, cloud paths, field normalization) but the core interface should remain consistent.
+        -   Project-specific properties should be prefixed with the workflow ID when the module will be included by other workflows (e.g., `frag_library_ids`).
 -   Sample and Experiment Grouping  
     -   Experiment-Level Configuration  
         -   When aggregating library-level outputs into experiment-level analyses:  
