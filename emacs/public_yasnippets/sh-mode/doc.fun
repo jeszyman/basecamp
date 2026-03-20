@@ -4,14 +4,14 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeffrey Szymanski
-# Tangled: 2026-03-16 21:27:15
+# Tangled: 2026-03-19 09:41:47
 # ============================================================
 
 # -*- mode: snippet --*
 # key: doc.fun
 # expand-env: ((yas-indent-line 'none))
 # --
-  [[ "\$1" =~ (-h|--help) || -z "\$1" ]] && {
+  [[ "\$1" == "-h" || "\$1" == "--help" || -z "\$1" ]] && {
     cat <<EOF
 Usage: ${1: <FUNCTION NAME>} ${2: <USAGE>}
 ${3: <DESCRIPTION>}

@@ -1,11 +1,11 @@
-# ============================================================
-# AUTO-GENERATED — DO NOT EDIT DIRECTLY
-# Edits will be overwritten on next org-babel tangle.
-# 
-# Source:  /home/jeszyman/repos/basecamp/basecamp.org
-# Author:  Jeffrey Szymanski
-# Tangled: 2026-03-16 21:27:15
-# ============================================================
+rem ============================================================
+rem AUTO-GENERATED — DO NOT EDIT DIRECTLY
+rem Edits will be overwritten on next org-babel tangle.
+rem 
+rem Source:  /home/jeszyman/repos/basecamp/basecamp.org
+rem Author:  Jeffrey Szymanski
+rem Tangled: 2026-03-19 09:41:47
+rem ============================================================
 
 # -*- mode: snippet -*-
 # key: r.cmd

@@ -7,6 +7,7 @@
 - [ ] migrate [[id:2fc1a6f1-093c-4250-a905-1bf42b7b9eee][Lisp functions]] to [[file:~/repos/emacs/emacs.org]]
 ** Change log
 
+- [2026-03-20 Thu] Restructured basecamp.org: collapsed 13,895-line CSIT section safely (all 770 IDs preserved), then reorganized 9,505-line ** General reference into 11 topical CS sections (Wikipedia taxonomy). Revamped org-reorganize skill with mandatory safety protocol (git checkpoint, ID census, auto-revert). Fixed help-flag patterns (regex → exact match) and resolved old merge conflict markers.
 - [2026-03-16 Sun] Restructured public common playbook: flat apt list + capability headings (SSH brute-force protection, kernel crash dumps, hardware temp monitoring, hardware error logging, Nerd Fonts). Removed Linux ansible playbook (merged into public common). Added lm-sensors + rasdaemon.
 - [2026-03-09 Mon] Added fail2ban + linux-crashdump to apt_packages; enabled fail2ban/kdump-tools services in [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]]; added [[id:a3f1e2b7-9c84-4d5a-b6e2-83f7d1c04e92][System crash diagnosis]] reference to Linux > Sysadmin
 - [2026-03-09 Mon] Added =my/extract-pdf-annotations= + =my/pdf-from-cite-at-point= (pdfannots + citar) to emacs.org; added pdfannots pip install to public-common-playbook

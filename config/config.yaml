@@ -4,7 +4,7 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeffrey Szymanski
-# Tangled: 2026-03-16 21:27:15
+# Tangled: 2026-03-19 09:41:47
 # ============================================================
 
 #########1#########1#########1#########1#########1#########1#########1#########1
@@ -51,7 +51,6 @@ directory_structure:
   - "${HOME}/.emacs.d/snippets"
   - "${HOME}/.emacs.d/lisp"
   - "${HOME}/.emacs.d/config"
-
 
 public_symlinks:
   - src: "${HOME}/repos/emacs/emacs/init.el"
