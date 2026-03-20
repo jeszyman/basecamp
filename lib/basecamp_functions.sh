@@ -4,7 +4,7 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeffrey Szymanski
-# Tangled: 2026-03-16 21:27:15
+# Tangled: 2026-03-19 09:41:47
 # ============================================================
 
 # Basecamp General Shell Functions
@@ -265,7 +265,7 @@ EOF
 }
 emacs-save ()
 {
-    [[ "$1" =~ (-h|--help) ]] && {
+    [[ "$1" == "-h" || "$1" == "--help" ]] && {
         cat <<EOF
 Usage: emacs-save
 
@@ -288,7 +288,7 @@ ubuntu-settings(){
     env XDG_CURRENT_DESKTOP=GNOME gnome-control-center sound & exit
 }
 check_mnt(){
-  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+  [[ "$1" == "-h" || "$1" == "--help" || -z "$1" ]] && {
     cat <<EOF
 Usage: check_mnt <DIRECTORY>
 Checks if directory is a mount point (must be top directory of mtn).
@@ -377,7 +377,7 @@ EOF
     echo "Conversion complete. Output saved to $output_file with a white background."
 }
 cpout() {
-    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
+    if [[ "$1" == "-h" || "$1" == "--help" || -z "$1" ]]; then
         cat <<EOF
 
 Usage: cpout <COMMAND>
@@ -511,7 +511,7 @@ find_in_files test /path/to/dir
 EOF
     }
 
-    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
+    if [[ "$1" == "-h" || "$1" == "--help" || -z "$1" ]]; then
         print_usage
         return
     fi
@@ -601,7 +601,7 @@ debug(){
 EOF
     }
 
-    if [[ "$@" =~ (-h|--help) ]]; then
+    if [[ "$1" == "-h" || "$1" == "--help" ]]; then
         print_usage
         return
     fi
@@ -644,7 +644,7 @@ git_search_all(){
 EOF
     }
 
-    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
+    if [[ "$1" == "-h" || "$1" == "--help" || -z "$1" ]]; then
         print_usage
         return
     fi
@@ -843,7 +843,7 @@ git_wkflow_up(){
 EOF
     }
 
-    if [[ "$@" =~ (-h|--help) ]]; then
+    if [[ "$1" == "-h" || "$1" == "--help" ]]; then
         print_usage
         return
     fi
@@ -883,7 +883,7 @@ example: test.pdf
 EOF
     }
 
-    if [[ "$@" =~ (-h|--help) || -z "$1" ]]; then
+    if [[ "$1" == "-h" || "$1" == "--help" || -z "$1" ]]; then
         print_usage
         return
     fi
@@ -1006,7 +1006,7 @@ EOF
     main "$@"
 }
 tangle() {
-  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+  [[ "$1" == "-h" || "$1" == "--help" || -z "$1" ]] && {
     cat <<EOF
 Usage: tangle <ORG FILE>
 Tangle an org-mode file non‑interactively, saving any unsaved buffer first.
@@ -1074,7 +1074,7 @@ EOF
     conda deactivate
 }
 smk_unlock() {
-    [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+    [[ "$1" == "-h" || "$1" == "--help" || -z "$1" ]] && {
 	cat <<- EOF
 
 Usage: smk_unlock <SNAKEFILE> [CONFIGFILE]
@@ -1114,7 +1114,7 @@ EOF
   fi
 }
 smk_draw () {
-  [[ "$1" =~ (-h|--help) || -z "$1" || -z "$2" ]] && {
+  [[ "$1" == "-h" || "$1" == "--help" || -z "$1" || -z "$2" ]] && {
     cat <<EOF
 Usage: smk_draw <SNAKEFILE> <CONFIG FILE>
 Generates a rulegraph DAG → ./resources/<snakefile>_smk.pdf and .png
@@ -1293,7 +1293,7 @@ EOF
   fi
 }
 smk_nohup(){
-  [[ "$1" =~ (-h|--help) || -z "$1" ]] && {
+  [[ "$1" == "-h" || "$1" == "--help" || -z "$1" ]] && {
     cat <<EOF
 
 Usage: smk_nohup <SNAKEFILE> [CONFIGFILE]

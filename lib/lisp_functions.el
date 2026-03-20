@@ -1,11 +1,11 @@
-;; ============================================================
-;; AUTO-GENERATED — DO NOT EDIT DIRECTLY
-;; Edits will be overwritten on next org-babel tangle.
-;; 
-;; Source:  /home/jeszyman/repos/basecamp/basecamp.org
-;; Author:  Jeffrey Szymanski
-;; Tangled: 2026-03-16 21:27:15
-;; ============================================================
+; ============================================================
+; AUTO-GENERATED — DO NOT EDIT DIRECTLY
+; Edits will be overwritten on next org-babel tangle.
+; 
+; Source:  /home/jeszyman/repos/basecamp/basecamp.org
+; Author:  Jeffrey Szymanski
+; Tangled: 2026-03-19 09:41:47
+; ============================================================
 
 ;; defun org-execute-named-block-anywhere
 ;; https://claude.ai/chat/c12f61f1-0d93-4658-8d52-be64f45a12e0
@@ -33,7 +33,6 @@ BLOCK-NAME is the name of the block to execute."
                (not (get-file-buffer file)))
       (kill-buffer target-buffer))))
 ;; find-duplicate-lines
-
 
 (defun find-duplicate-lines ()
   "Find and list all duplicate lines in the current buffer."

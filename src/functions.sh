@@ -4,9 +4,21 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeffrey Szymanski
-# Tangled: 2026-03-16 21:27:15
+# Tangled: 2026-03-19 09:41:47
 # ============================================================
 
+#
+######################
+### symlink-by-csv ###
+######################
+#
+# Purpose: generates symbolic links in bulk from a csv file
+# Input: .csv file with source paths in column 1, dest paths in column 2
+symlink_by_csv(){
+    export IFS=","
+    cat $1 | while read a b; do
+        ln -s $a $b; done
+}
 docker_interactive() {
     if [ -f /.dockerenv ]; then
         echo "shell already in docker, exiting"
@@ -39,16 +51,4 @@ docker_interactive() {
                        /bin/bash;;
         esac
     fi
-}
-#
-######################
-### symlink-by-csv ###
-######################
-#
-# Purpose: generates symbolic links in bulk from a csv file
-# Input: .csv file with source paths in column 1, dest paths in column 2
-symlink_by_csv(){
-    export IFS=","
-    cat $1 | while read a b; do
-        ln -s $a $b; done
 }
