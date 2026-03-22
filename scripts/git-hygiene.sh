@@ -4,15 +4,15 @@
 # Edits will be overwritten on next org-babel tangle.
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
-# Author:  Jeffrey Szymanski
-# Tangled: 2026-03-16 19:52:56
+# Author:  Jeff Szymanski
+# Tangled: 2026-03-22 08:10:57
 # ============================================================
 
 set -euo pipefail
 
 TEMPLATE="${HOME}/repos/basecamp/resources/git/jeszyman_gitignore"
-SOFT_LIMIT=5000000
-HARD_LIMIT=50000000
+SOFT_LIMIT=50000000
+HARD_LIMIT=100000000
 CLAUDE_SETTINGS_LIMIT=51200
 EXIT_CODE=0
 
@@ -111,11 +111,20 @@ check_repo() {
     fi
 
     # --- large-file-tracked ---
+    # Load per-repo allowlist (.git-hygiene-allow, one path per line)
+    local -A allowed_files=()
+    if [[ -f "$repo_dir/.git-hygiene-allow" ]]; then
+        while IFS= read -r allowed_path; do
+            [[ -z "$allowed_path" || "$allowed_path" == \#* ]] && continue
+            allowed_files["$allowed_path"]=1
+        done < "$repo_dir/.git-hygiene-allow"
+    fi
     while IFS= read -r line; do
         [[ -z "$line" ]] && continue
         local hash file_path file_size
         hash=$(echo "$line" | awk '{print $2}')
         file_path=$(echo "$line" | sed 's/^[^\t]*\t//')
+        [[ -n "${allowed_files[$file_path]+x}" ]] && continue
         file_size=$(git -C "$repo_dir" cat-file -s "$hash" 2>/dev/null || echo 0)
         if [[ "$file_size" -gt "$HARD_LIMIT" ]]; then
             emit "$repo_name" "large-file-tracked" "error" "${file_path} ($(human_size "$file_size")) exceeds hard limit $(human_size $HARD_LIMIT)"
@@ -140,6 +149,30 @@ check_repo() {
         settings_size=$(stat -c%s "$settings_file" 2>/dev/null || stat -f%z "$settings_file" 2>/dev/null || echo 0)
         if [[ "$settings_size" -gt "$CLAUDE_SETTINGS_LIMIT" ]]; then
             emit "$repo_name" "claude-settings-bloat" "warn" "settings.local.json is $(human_size "$settings_size") (limit: $(human_size $CLAUDE_SETTINGS_LIMIT))"
+        fi
+    fi
+
+    # --- public-repo-sensitive-files ---
+    local remote_url owner_repo is_private
+    remote_url=$(git -C "$repo_dir" remote get-url origin 2>/dev/null || true)
+    if [[ "$remote_url" == *github.com* ]]; then
+        owner_repo=$(echo "$remote_url" | sed -E 's#.*github\.com[:/]##; s/\.git$//')
+        is_private=$(gh repo view "$owner_repo" --json isPrivate -q '.isPrivate' 2>/dev/null || echo "unknown")
+        if [[ "$is_private" == "false" ]]; then
+            local sensitive_patterns=(
+                '.env' '.env.*' '*.pem' '*.key' 'id_rsa' 'id_ed25519'
+                'credentials.json' '.htpasswd' '*.p12' '*.pfx'
+                'secret*' '*secret*.json' '*secret*.yaml' '*secret*.yml'
+                'token*.json' '.netrc' '.npmrc' '.pypirc'
+            )
+            local tracked_files
+            tracked_files=$(git -C "$repo_dir" ls-files 2>/dev/null || true)
+            for pattern in "${sensitive_patterns[@]}"; do
+                while IFS= read -r match; do
+                    [[ -z "$match" ]] && continue
+                    emit "$repo_name" "public-sensitive-file" "error" "PUBLIC repo tracks potentially sensitive file: $match (pattern: $pattern)"
+                done < <(echo "$tracked_files" | grep -iE "(^|/)${pattern//\*/.*}$" 2>/dev/null || true)
+            done
         fi
     fi
 }
