@@ -100,19 +100,19 @@ jobs:
 #+end_src
 
 
-*** Git                                                            :career:
+*** Git                                                              :career:
 :PROPERTIES:
 :ID:       E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6
 :END:
 https://www.reddit.com/r/learnprogramming/comments/1qabchl/just_realized_ive_been_using_git_wrong_for_like_3/
-**** Git and GitHub Version Control                              :cookbook:
+**** Git and GitHub Version Control                                :cookbook:
 - GitHub CLI
   - List your repositories
     #+begin_src bash
 gh repo list --limit 100
 #+end_src
 
-**** Processes                                                  :hierarchy:
+**** Processes                                                    :hierarchy:
 :PROPERTIES:
 :ID:       101a3601-5b02-4506-812c-2d705c51cbe2
 :END:
@@ -364,7 +364,7 @@ gh repo archive jeszyman/basecamp-private
 
 #+end_src
 
-***** 0 Flat                                                         :flat:
+***** 0 Flat                                                           :flat:
 :PROPERTIES:
 :ID:       f10536f7-729b-4c47-aa91-3f5e890fb5e7
 :END:
@@ -563,7 +563,7 @@ git clone -b opencv-2.4 --single-branch https://github.com/Itseez/opencv.git
 **** [[id:fcffb312-ca8d-4450-b837-b1945201f9c1][My git]]
 **** Scripts
 :PROPERTIES:
-:header-args:bash: :tangle-mode (identity #o555) :mkdirp yes
+:header-args:bash: :mkdirp yes
 :ID:       ae3f89ee-ec11-421e-b8ae-ff9930a6faf2
 :END:
 #+begin_src bash
@@ -623,8 +623,8 @@ Scans repos for: missing =core.excludesFile= / =core.hooksPath= git config, larg
 set -euo pipefail
 
 TEMPLATE="${HOME}/repos/basecamp/resources/git/jeszyman_gitignore"
-SOFT_LIMIT=5000000
-HARD_LIMIT=50000000
+SOFT_LIMIT=50000000
+HARD_LIMIT=100000000
 CLAUDE_SETTINGS_LIMIT=51200
 EXIT_CODE=0
 
@@ -723,11 +723,20 @@ check_repo() {
     fi
 
     # --- large-file-tracked ---
+    # Load per-repo allowlist (.git-hygiene-allow, one path per line)
+    local -A allowed_files=()
+    if [[ -f "$repo_dir/.git-hygiene-allow" ]]; then
+        while IFS= read -r allowed_path; do
+            [[ -z "$allowed_path" || "$allowed_path" == \#* ]] && continue
+            allowed_files["$allowed_path"]=1
+        done < "$repo_dir/.git-hygiene-allow"
+    fi
     while IFS= read -r line; do
         [[ -z "$line" ]] && continue
         local hash file_path file_size
         hash=$(echo "$line" | awk '{print $2}')
         file_path=$(echo "$line" | sed 's/^[^\t]*\t//')
+        [[ -n "${allowed_files[$file_path]+x}" ]] && continue
         file_size=$(git -C "$repo_dir" cat-file -s "$hash" 2>/dev/null || echo 0)
         if [[ "$file_size" -gt "$HARD_LIMIT" ]]; then
             emit "$repo_name" "large-file-tracked" "error" "${file_path} ($(human_size "$file_size")) exceeds hard limit $(human_size $HARD_LIMIT)"
@@ -752,6 +761,30 @@ check_repo() {
         settings_size=$(stat -c%s "$settings_file" 2>/dev/null || stat -f%z "$settings_file" 2>/dev/null || echo 0)
         if [[ "$settings_size" -gt "$CLAUDE_SETTINGS_LIMIT" ]]; then
             emit "$repo_name" "claude-settings-bloat" "warn" "settings.local.json is $(human_size "$settings_size") (limit: $(human_size $CLAUDE_SETTINGS_LIMIT))"
+        fi
+    fi
+
+    # --- public-repo-sensitive-files ---
+    local remote_url owner_repo is_private
+    remote_url=$(git -C "$repo_dir" remote get-url origin 2>/dev/null || true)
+    if [[ "$remote_url" == *github.com* ]]; then
+        owner_repo=$(echo "$remote_url" | sed -E 's#.*github\.com[:/]##; s/\.git$//')
+        is_private=$(gh repo view "$owner_repo" --json isPrivate -q '.isPrivate' 2>/dev/null || echo "unknown")
+        if [[ "$is_private" == "false" ]]; then
+            local sensitive_patterns=(
+                '.env' '.env.*' '*.pem' '*.key' 'id_rsa' 'id_ed25519'
+                'credentials.json' '.htpasswd' '*.p12' '*.pfx'
+                'secret*' '*secret*.json' '*secret*.yaml' '*secret*.yml'
+                'token*.json' '.netrc' '.npmrc' '.pypirc'
+            )
+            local tracked_files
+            tracked_files=$(git -C "$repo_dir" ls-files 2>/dev/null || true)
+            for pattern in "${sensitive_patterns[@]}"; do
+                while IFS= read -r match; do
+                    [[ -z "$match" ]] && continue
+                    emit "$repo_name" "public-sensitive-file" "error" "PUBLIC repo tracks potentially sensitive file: $match (pattern: $pattern)"
+                done < <(echo "$tracked_files" | grep -iE "(^|/)${pattern//\*/.*}$" 2>/dev/null || true)
+            done
         fi
     fi
 }
@@ -857,7 +890,7 @@ else
     fi
 fi
 #+end_src
-***** Development                                                     :dev:
+***** Development                                                       :dev:
 :PROPERTIES:
 :ID:       0a745e73-84c6-466e-8486-37d17af8df62
 :END:
@@ -982,7 +1015,7 @@ check_file_size()
 list_new_or_modified_files | check_file_size
 #+end_src
 
-***** Initialize github-linked repository                      :bashscript:
+***** Initialize github-linked repository                        :bashscript:
 :PROPERTIES:
 :header-args:bash: :tangle ./tools/git/github_init.sh :mkdirp yes
 :ID:       5bd05481-a646-4a4b-bb93-2c1a44c346e9
@@ -1459,7 +1492,7 @@ TSWLatexianTemp*
 :PROPERTIES:
 :ID:       e1bbc57a-0660-4ccf-a7e7-9870b3afbff7
 :END:
-**** Processes                                                       :flat:
+**** Processes                                                         :flat:
 :PROPERTIES:
 :ID:       a21144ea-1793-466e-87da-a88f3a540c25
 :END:
@@ -1500,7 +1533,7 @@ curl -u jeszyman:$GITHUB_TOKEN -s https://api.github.com/repos/jeszyman/sci
 #+end_src
 
 **** [[id:E56ADCB0-F6DD-4D58-8B68-CEDF7DC176E6][Git]]
-**** General reference                                                :ref:
+**** General reference                                                  :ref:
 :PROPERTIES:
 :ID:       d393ce6b-fd67-44e7-8543-221fa38d7634
 :END:
@@ -2155,7 +2188,7 @@ if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
 fi
 #+end_src
 
-**** Bash Cookbook                                                  :cookbook:
+**** Bash Cookbook                                                 :cookbook:
 ***** Help flag checking
 Help flag checking in shell functions must use exact string comparison, not regex matching. The regex pattern =[[ "$@" =~ (-h|--help) ]]= matches =-h= as a substring anywhere in the arguments — so a filename like =pdx-read-handling.pdf= triggers the help message.
 
@@ -5474,7 +5507,7 @@ EOF
 **** [[id:a9f97cde-27bc-4777-bb12-164ac4cb421d][Shell functions in basecamp-private]] more_bashrc
 *** Lisp functions
 :PROPERTIES:
-:header-args: :tangle ./lib/lisp_functions.el :tangle-mode (identity #o644) :mkdirp yes :noweb yes :comments org
+:header-args: :tangle ./lib/lisp_functions.el :mkdirp yes :noweb yes :comments org
 :ID:       2fc1a6f1-093c-4250-a905-1bf42b7b9eee
 :END:
 [[file:lib/lisp_functions.el]]
@@ -5910,7 +5943,6 @@ primeKeyUnique = function(df,pk){
 :header-args:bash: :tangle ./docker/basecamp_Dockerfile
 :header-args: :mkdirp yes
 :header-args+: :comments no
-:header-args:bash+: :tangle-mode (identity #o555)
 :END:
 https://github.com/eclarke/ggbeeswarm
 ******* Preamble and environmental variables
@@ -7891,7 +7923,7 @@ ShowSidebar=false
 :PROPERTIES:
 :ID:       3616424d-6e5d-44ef-acad-45d4b44891e3
 :END:
-#+begin_src bash :tangle ./tmp/makefile :tangle-mode (identity #o555) :mkdirp yes
+#+begin_src bash :tangle ./tmp/makefile :mkdirp yes
 .PHONY: all
 
 all: git_setup
@@ -7912,7 +7944,7 @@ git_setup:
 - https://www.reddit.com/r/ChatGPT/comments/13r3v36/i_run_an_ai_tools_directory_here_are_some_top_ai/
 - https://dev.to/devdefinitive/33-github-projects-i-have-bookmarked-and-you-should-298o
 - https://www.reddit.com/r/datascience/comments/mlfy02/what_is_your_ds_stack_and_roast_mine/
-*** Software catalog                                                 :flat:
+*** Software catalog                                                   :flat:
 :PROPERTIES:
 :ID:       9E19E626-9D6C-4296-BEDB-80033A846CF4
 :END:
@@ -11981,7 +12013,7 @@ cp /etc/skel/.bashrc ${HOME}/.bashrc
 When a machine becomes completely unresponsive (hard freeze, not thermal shutdown), work through
 these steps after reboot to diagnose the cause.
 
-*** Programming languages                                        :career:
+*** Programming languages                                            :career:
 :PROPERTIES:
 :ID:       CBD1C9BA-44CB-4510-8ACD-F12CEF7E3402
 :END:
@@ -15579,7 +15611,7 @@ https://github.com/politza/pdf-tools
 ;;https://github.com/joaotavora/yasnippet/pull/789
 (advice-remove 'yas--auto-fill-wrapper #'ignore)
 #+end_src
-*** Software engineering                                            :ref:
+*** Software engineering                                                :ref:
 **** Style Guide
 :PROPERTIES:
 :ID:       593672e1-82b2-44e0-aa00-d28825860706
@@ -16223,7 +16255,7 @@ https://www.google.com/search?q=javascript+diagram&oq=Javascript+dia&aqs=chrome.
   - github pages
     -   - https://github.com/toperkin/staticFormEmails/blob/master/README.md
 
-******* Javascript                                                    :career:
+******* Javascript                                                   :career:
 :PROPERTIES:
 :ID:       76047F17-44EE-4A0B-97F1-93AEE6F49EB2
 :END:
@@ -16865,7 +16897,7 @@ power button to flush disk writes and preserve logs:
 :ID:       72EDC65E-5721-48AF-9FCA-69497D45DFD0
 :END:
 
-*** Applied computing                                           :career:
+*** Applied computing                                                :career:
 :PROPERTIES:
 :ID:       65BC9D56-26D2-47F1-A54E-40F151FAF357
 :END:
@@ -17220,7 +17252,7 @@ print 'The square of your number is: ' + str(userNumber)
 - Character encoding
   - ASCII- 1 bit
   - Unicode- 2 bits
-*** General reference                                                :ref:
+*** General reference                                                   :ref:
 **** Integrated development environments
 :PROPERTIES:
 :ID:       1f307f13-9795-4ae8-83d6-235db6e5d866
@@ -17274,7 +17306,7 @@ print 'The square of your number is: ' + str(userNumber)
 :END:
 - https://www.youtube.com/watch?v=WtM3wPVhkik&list=PLY0K6zoKdhlDrkxqaRJUXfHpTjE_kVzYB
 
-****** completed work                                                :ARCHIVE:
+****** completed work                                               :ARCHIVE:
 :PROPERTIES:
 :ID:       83e46b45-0ea3-4ebc-8253-399b11f4eda0
 :END:
@@ -17414,12 +17446,12 @@ CLOCK: [2017-10-19 Thu 14:01]--[2017-10-19 Thu 15:01] =>  1:00
 - yaml cannot do variable placeholders- https://stackoverflow.com/questions/41620674/use-placeholders-in-yaml/41620747#41620747
   - some workarounds https://stackoverflow.com/questions/2063616/how-to-reference-a-yaml-setting-from-elsewhere-in-the-same-yaml-file
 - https://yaml.org/spec/1.2.2/
-** Docker                                                       :software:
+** Docker                                                          :software:
 :PROPERTIES:
 :ID:       D2FAA88D-70CC-4450-BBB3-8A446CB43AF3
 :CREATED:  [2019-07-07 Sun 09:05]
 :END:
-*** Ansible install playbook                                      :ansipb:
+*** Ansible install playbook                                         :ansipb:
 :PROPERTIES:
 :ID:       e15a03de-c529-4229-b763-7df28213f1e0
 :header-args:yaml: :tangle ./ansible/playbooks/docker-playbook.yaml
@@ -18080,7 +18112,7 @@ docker run jeszyman/test
 :PROPERTIES:
 :ID:       F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD
 :END:
-*** Ansible                                                         :ansipb:
+*** Ansible                                                          :ansipb:
 :properties:
 :header-args:yaml: :tangle ./ansible/playbooks/r-install.yaml
 :ID:       36efda17-d1ef-4632-bc33-732071455543
@@ -18165,7 +18197,7 @@ https://chatgpt.com/c/67d18bbf-d1ec-8005-bbbb-836fd4d82dd4
 #+end_src
 
 *** [[id:4783cca8-92ea-4053-b3c8-7d79862e3939][R package installs in basecamp conda environment]]
-*** R Cookbook                                                    :cookbook:
+*** R Cookbook                                                     :cookbook:
 - Modern good practice
   - Scripts
     - Use argparse (over optparse)
@@ -18174,7 +18206,7 @@ https://chatgpt.com/c/67d18bbf-d1ec-8005-bbbb-836fd4d82dd4
   #+begin_src R
 Sys.info()["nodename"]
 #+end_src
-*** Processes                                                    :hierarchy:
+*** Processes                                                     :hierarchy:
 :PROPERTIES:
 :ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
 :END:
@@ -18232,7 +18264,7 @@ These guides and tools offer a consensus on best practices for R coding, promoti
 - examples
   - https://github.com/TheEconomist/us-potus-model/blob/master/scripts/model/final_2016.R
 - https://google.github.io/styleguide/Rguide.html
-**** R Processes                                                      :flat:
+**** R Processes                                                       :flat:
 :PROPERTIES:
 :ID:       d96c05c0-838a-45ec-b7c6-a8a7e5b3e71d
 :END:
@@ -18623,7 +18655,7 @@ https://github.com/thomasp85/patchwork/issues/136
 - https://www.reddit.com/r/rstats/comments/b4ol4z/unbin_data_to_make_histogram/
 - [[http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/][histogram]]
 - [[http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/#modifying-the-text-of-legend-titles-and-labels][modify ggplot2 legend text]]
-***** Processes                                                  :hierarchy:
+***** Processes                                                   :hierarchy:
 :PROPERTIES:
 :ID:       7b47a4fa-5c0e-4e36-9d88-61593540215b
 :END:
@@ -18631,7 +18663,7 @@ https://github.com/thomasp85/patchwork/issues/136
 :PROPERTIES:
 :ID:       411d2d7e-cb97-4e7c-a7b1-bacd3eb8504f
 :END:
-****** Processes                                                      :flat:
+****** Processes                                                       :flat:
 :PROPERTIES:
 :ID:       85475db1-b795-4db1-af67-fa0de3f87fab
 :END:
@@ -18962,7 +18994,7 @@ package.check = lapply(
 :PROPERTIES:
 :ID:       d013547e-3e14-4510-948a-4b24de6a2e62
 :END:
-**** code.r                                                            :yas:
+**** code.r                                                             :yas:
 :PROPERTIES:
 :ID:       109c8d78-8cf5-4f22-a106-cb31bd002776
 :END:
@@ -18976,7 +19008,7 @@ package.check = lapply(
 $0
 ,#+end_src
 #+end_src
-**** 80                                                                :yas:
+**** 80                                                                 :yas:
 :PROPERTIES:
 :ID:       3e97b905-780b-4612-a5a1-18e9062dd8a8
 :END:
@@ -18988,7 +19020,7 @@ $0
 #########1#########2#########3#########4#########5#########6#########7#########8
 #+end_src
 
-**** script                                                            :yas:
+**** script                                                             :yas:
 :PROPERTIES:
 :ID:       51bbd7ff-3f3d-4ae7-9839-142f52dd141c
 :END:
@@ -19046,7 +19078,7 @@ for (name in names(out)) {
 }
 
 #+end_src
-**** var                                                               :yas:
+**** var                                                                :yas:
 :PROPERTIES:
 :ID:       fa91bd4f-f2d9-4a17-8e02-6891c564204b
 :END:
@@ -19057,7 +19089,7 @@ for (name in names(out)) {
 # --
 $1 = args[$2]
 #+end_src
-**** make.opt                                                          :yas:
+**** make.opt                                                           :yas:
 :PROPERTIES:
 :ID:       5c6b366c-d0ca-45bd-a7a3-c649c8f94e11
 :END:
@@ -19069,7 +19101,7 @@ $1 = args[$2]
   make_option(c("--$1"), type = "character", default = "$2"),
 
 #+end_src
-**** optparse                                                          :yas:
+**** optparse                                                           :yas:
 :PROPERTIES:
 :ID:       49258803-a4f9-4fc1-b44d-2f5c7eda14a3
 :END:
@@ -19085,7 +19117,7 @@ option_list <- list(
 opts <- parse_args(OptionParser(option_list = option_list))
 
 #+end_src
-**** r.cmd                                                             :yas:
+**** r.cmd                                                              :yas:
 :PROPERTIES:
 :ID:       c204aa66-98eb-412f-8ffa-0227b42ed381
 :END:
@@ -19099,7 +19131,7 @@ $0=args[1]
 =args[2]
 
 #+end_src
-**** function                                                          :yas:
+**** function                                                           :yas:
 :PROPERTIES:
 :ID:       db4e66ae-ddad-41f9-810b-0e41b2a216d5
 :END:
@@ -19126,7 +19158,7 @@ ${1:FUNCTIONNAME$$(replace-regexp-in-string " " "_" yas-text)} = function(${2:VA
 :PROPERTIES:
 :ID:       b04e0542-9f48-4182-b093-f5bf0c9c8a5b
 :END:
-***** h2                                                               :yas:
+***** h2                                                                :yas:
 :PROPERTIES:
 :ID:       27db6fe2-6bd4-4cbb-8eb2-83487d76ce20
 :END:
@@ -19161,11 +19193,11 @@ bash.file.size
 :ID:       d38e898b-e264-48b9-ad9e-fa4bea8d5a5d
 :END:
 # ##### Level 3: Handle Missing Values #####
-**** Ideas                                                           :ideas:
+**** Ideas                                                            :ideas:
 :PROPERTIES:
 :ID:       76669340-b70a-44dd-b5f2-54788140796d
 :END:
-***** long.comment                                                     :yas:
+***** long.comment                                                      :yas:
 :PROPERTIES:
 :ID:       6c4dfb22-6263-42c1-b333-73a8abd55ba8
 :END:
@@ -19534,7 +19566,7 @@ https://stat.ethz.ch/pipermail/ess-help/2015-July/010628.html
   - and get docker ip
   - and provision container for ssh
 - https://gtown-ds.netlify.app/2017/08/16/docker-emacs/
-*** General reference                                                  :ref:
+*** General reference                                                   :ref:
 :PROPERTIES:
 :CREATED:  [2021-06-04 Fri 10:12]
 :ID:       707e5032-ae3d-4f3e-86eb-46917bec88f8
