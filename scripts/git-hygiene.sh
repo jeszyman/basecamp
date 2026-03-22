@@ -5,7 +5,7 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeff Szymanski
-# Tangled: 2026-03-22 08:10:57
+# Tangled: 2026-03-22 08:17:45
 # ============================================================
 
 set -euo pipefail
@@ -150,6 +150,16 @@ check_repo() {
         if [[ "$settings_size" -gt "$CLAUDE_SETTINGS_LIMIT" ]]; then
             emit "$repo_name" "claude-settings-bloat" "warn" "settings.local.json is $(human_size "$settings_size") (limit: $(human_size $CLAUDE_SETTINGS_LIMIT))"
         fi
+    fi
+
+    # --- conflict-markers ---
+    local conflict_files
+    conflict_files=$(git -C "$repo_dir" grep -rl '<<<<<<< \|>>>>>>> \|^=======$' -- ':!*.git-hygiene-allow' 2>/dev/null || true)
+    if [[ -n "$conflict_files" ]]; then
+        while IFS= read -r cfile; do
+            [[ -z "$cfile" ]] && continue
+            emit "$repo_name" "conflict-markers" "error" "unresolved conflict markers in $cfile"
+        done <<< "$conflict_files"
     fi
 
     # --- public-repo-sensitive-files ---
