@@ -5,7 +5,7 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeff Szymanski
-# Tangled: 2026-03-22 08:17:45
+# Tangled: 2026-03-22 08:22:31
 # ============================================================
 
 set -euo pipefail
@@ -154,7 +154,9 @@ check_repo() {
 
     # --- conflict-markers ---
     local conflict_files
-    conflict_files=$(git -C "$repo_dir" grep -rl '<<<<<<< \|>>>>>>> \|^=======$' -- ':!*.git-hygiene-allow' 2>/dev/null || true)
+    local marker_pat
+    marker_pat="$(printf '<%.0s' {1..7}) \|$(printf '>%.0s' {1..7}) "
+    conflict_files=$(git -C "$repo_dir" grep -rl "$marker_pat" -- ':!*.git-hygiene-allow' ':!*~' 2>/dev/null || true)
     if [[ -n "$conflict_files" ]]; then
         while IFS= read -r cfile; do
             [[ -z "$cfile" ]] && continue
