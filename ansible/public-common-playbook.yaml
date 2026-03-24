@@ -4,7 +4,7 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeffrey Szymanski
-# Tangled: 2026-03-24 10:57:46
+# Tangled: 2026-03-24 12:16:11
 # ============================================================
 
 ---
@@ -299,10 +299,22 @@
             for f in ~/.bashrc.d/*.sh; do [ -r "$f" ] && . "$f"; done
           fi
         state: present
+    - name: Find conda installation
+      ansible.builtin.shell: |
+        for p in /opt/conda /opt/miniconda /opt/miniconda3 {{ ansible_env.HOME }}/miniconda3; do
+          if [ -x "$p/bin/conda" ]; then echo "$p"; exit 0; fi
+        done
+        exit 1
+      args:
+        executable: /bin/bash
+      register: conda_prefix_public
+      ignore_errors: yes
+
     - name: Ensure conda uses strict channel priority
       ansible.builtin.shell: |
-        source ~/miniconda3/etc/profile.d/conda.sh && conda config --set channel_priority strict
+        source {{ conda_prefix_public.stdout }}/etc/profile.d/conda.sh && conda config --set channel_priority strict
       args:
         executable: /bin/bash
       environment:
-        PATH: "{{ ansible_env.HOME }}/miniconda3/condabin:{{ ansible_env.PATH }}"
+        PATH: "{{ conda_prefix_public.stdout }}/bin:{{ ansible_env.PATH }}"
+      when: conda_prefix_public.rc == 0
