@@ -4,7 +4,7 @@
 ; 
 ; Source:  /home/jeszyman/repos/basecamp/basecamp.org
 ; Author:  Jeffrey Szymanski
-; Tangled: 2026-03-19 09:41:47
+; Tangled: 2026-03-24 10:57:46
 ; ============================================================
 
 ;; defun org-execute-named-block-anywhere
@@ -86,3 +86,14 @@ BLOCK-NAME is the name of the block to execute."
     (when (re-search-forward (concat "^#\\+NAME: " (regexp-quote table-name)) nil t)
       (forward-line)
       (org-table-export csv-file "orgtbl-to-csv"))))
+(defun open-vterm-in-new-frame ()
+  "Open a new vterm buffer in a new frame."
+  (interactive)
+  (let* ((current-prefix-arg '(4))  ; simulate pressing C-u
+         (timestamp (format-time-string "%Y%m%d%H%M%S")) ; timestamp generated
+         (buffer-name (concat "TEST-" timestamp)) ; buffer-name created
+         (new-frame (make-frame))) ; create new frame
+    (select-frame-set-input-focus new-frame) ; focus the new frame
+    (call-interactively 'vterm)    ; execute M-x vterm
+    ;; Rename the buffer.
+    (rename-buffer buffer-name t)))  ; The t parameter forces the renaming even if a buffer named "TEST-<timestamp>" already exists.
