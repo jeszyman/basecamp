@@ -4,7 +4,7 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeffrey Szymanski
-# Tangled: 2026-03-19 09:41:47
+# Tangled: 2026-03-24 10:57:46
 # ============================================================
 
 ---
@@ -117,6 +117,22 @@
       loop: "{{ apt_packages }}"
       register: apt_install_results
       ignore_errors: true
+    - name: Add desktop APT PPAs
+      apt_repository:
+        repo: "{{ item }}"
+        state: present
+      loop: "{{ apt_ppas_desktop }}"
+      become: true
+      when: ansible_virtualization_role != "guest"
+
+    - name: Install desktop APT packages
+      apt:
+        name: "{{ item }}"
+        state: latest
+      become: true
+      loop: "{{ apt_packages_desktop }}"
+      ignore_errors: true
+      when: ansible_virtualization_role != "guest"
     # rasdaemon — records hardware errors (MCE, ECC memory) persistently to SQLite.
     # Query with: sudo ras-mc-ctl --summary
     - name: Install rasdaemon

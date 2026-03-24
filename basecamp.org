@@ -243,6 +243,25 @@ git push -u origin master
 :ID:       fdcb89a5-8a2d-4d3e-8d7c-494a3df2aba6
 :END:
 - https://stackoverflow.com/questions/2050450/git-hooks-management
+- Global hooks path: =~/.config/git/hooks/= (set via =core.hooksPath=)
+****** Global pre-commit hook
+=~/.config/git/hooks/pre-commit= runs two checks:
+1. **Merge conflict markers** — rejects staged files containing =<<<<<<<= / ======= / =>>>>>>>=
+2. **Large org file deletion guard** — rejects commits where any =.org= file has a net deletion exceeding 200 lines. This catches Syncthing overwrites and accidental truncations before they are cemented in git history. Override with =git commit --no-verify= when deletions are intentional.
+****** Claude Code buffer sync hooks
+Claude Code's Edit/Write tools write directly to disk, bypassing Emacs. With =auto-save-visited-mode= enabled (30s timer), a stale Emacs buffer can overwrite Claude's disk changes. Two hooks in =~/.claude/settings.json= close this race window:
+- =PreToolUse= on =Edit|Write=: [[file:~/.claude/hooks/save-before-edit.sh][save-before-edit.sh]] — saves the Emacs buffer to disk before Claude touches the file, flushing any pending buffer changes. Uses =get-file-buffer= so it only acts on files already open in Emacs.
+- =PostToolUse= on =Edit|Write=: [[file:~/.claude/hooks/revert-after-edit.sh][revert-after-edit.sh]] — reverts the Emacs buffer after Claude's edit, so the buffer matches disk and =auto-save-visited-mode= sees the correct content.
+Together these make Claude's edits behave like Emacs edits from the auto-save perspective.
+****** Data loss pattern: Syncthing + Emacs + Claude
+Documented incidents: career.org (2026-02-09, 2026-01-24, 2026-03-06), private.org (2026-03-23). Root cause chain:
+1. Claude edits a file on disk via Edit tool
+2. Emacs buffer is now stale (still has old content)
+3. =auto-save-visited-mode= fires within 30 seconds, writing the stale buffer back to disk — overwriting Claude's changes
+4. Syncthing propagates the truncated file to jeff-pad (=sendreceive= mode)
+5. The =daily_git_commit.sh= "." commit captures the corrupted state
+6. Later, pad's stale version can also overwrite beast via Syncthing
+The buffer sync hooks (above) close the race at step 2-3. The pre-commit large deletion guard catches it at step 5.
 ***** Pull
 :PROPERTIES:
 :ID:       6f6fa9c2-38d3-4f49-ac88-4da5df86a468
@@ -2522,43 +2541,45 @@ except Exception as e:
 [[file:config/config.yaml]]
 #+begin_src yaml :tangle ./config/config.yaml
 #########1#########1#########1#########1#########1#########1#########1#########1
-apt_ppas:
-  - ppa:apptainer/ppa
-
 apt_packages:
   - ansible                   # Provisioning automation tool
-  - apptainer                 # Singularity replacement
   - aria2                     # wget improvement
-  - brave-browser             # Web browser
-  - build-essential           # C compiler toolchain (whisper.cpp)
-  - cmake                     # Build system (whisper.cpp)
+  - build-essential           # C compiler toolchain
+  - cmake                     # Build system
   - curl                      # Command-line tool for HTTP requests
   - ncdu                      # Disk usage TUI
-  - ffmpeg                    # Audio/video processing (whisper recording)
-  - fonts-firacode            # Monospaced font with ligatures
-  - fonts-hack                #
   - git                       # Version control system
   - gh                        # GitHub command line tool
   - htop                      # Interactive process viewer
   - hunspell                  # Spell checker library
   - hunspell-en-us            # English dictionary for Hunspell
   - jq                        # JSON processor
-  - libtool-bin               # vterm prereq
-  - okular                    # Universal document viewer (PDF, ePub, etc.)
   - pandoc                    # Document converter (Markdown, LaTeX, etc.)
   - parallel
   - rename
-  - syncthing                 # Continuous file synchronization
-  - texlive-full              # Complete LaTeX distribution
   - tree                      # Directory structure viewer
-  - ttf-mscorefonts-installer # Microsoft TrueType fonts
   - vim                       # Advanced text editor
-  - default-jre
-  - libreoffice-java-common
-  - poppler-utils # PDF manipulation
+  - poppler-utils             # PDF manipulation
   - bibtool
   - libenchant-2-dev
   - pkgconf
+
+apt_ppas_desktop:
+  - ppa:apptainer/ppa
+
+apt_packages_desktop:
+  - apptainer                 # Singularity replacement
+  - brave-browser             # Web browser
+  - default-jre
+  - ffmpeg                    # Audio/video processing (whisper recording)
+  - fonts-firacode            # Monospaced font with ligatures
+  - fonts-hack                # Monospaced font
+  - libreoffice-java-common
+  - libtool-bin               # vterm prereq
+  - okular                    # Universal document viewer (PDF, ePub, etc.)
+  - syncthing                 # Continuous file synchronization
+  - texlive-full              # Complete LaTeX distribution
+  - ttf-mscorefonts-installer # Microsoft TrueType fonts
 
 directory_structure:
   - "${HOME}/repos"
@@ -2727,6 +2748,26 @@ fn fn
       loop: "{{ apt_packages }}"
       register: apt_install_results
       ignore_errors: true
+#+end_src
+
+**** Desktop tools
+#+begin_src yaml
+    - name: Add desktop APT PPAs
+      apt_repository:
+        repo: "{{ item }}"
+        state: present
+      loop: "{{ apt_ppas_desktop }}"
+      become: true
+      when: ansible_virtualization_role != "guest"
+
+    - name: Install desktop APT packages
+      apt:
+        name: "{{ item }}"
+        state: latest
+      become: true
+      loop: "{{ apt_packages_desktop }}"
+      ignore_errors: true
+      when: ansible_virtualization_role != "guest"
 #+end_src
 
 **** Hardware error logging
@@ -9582,7 +9623,6 @@ singularity version
 no r""" for shell
 message DOES NOT referenc especific inputs via wildcard
 . vs _
-changelog structure
 thread declarations in rule vs. param
 
 
@@ -9608,10 +9648,16 @@ bespoke concurrency setup
   - Version Management
     - Manage workflow versions with Git tags using semantic versioning.
     - Tag format: wf/<workflow>/vX.Y.Z (e.g., wf/cfdna-cna/v2.1.0, wf/emseq/v1.7.1).
-    - Document workflow versions in the README changelog.
+    - Document workflow versions in both the README changelog and the org-file changelog.
+    - Org-file changelog
+      - Each repository's main =.org= file contains a =**** Change Log= heading.
+      - Entries are reverse chronological list items with org timestamps: =- [YYYY-MM-DD Day] Description=.
+      - The top entry is always "Development since last tag" — a running accumulator for work not yet tagged to a version.
+      - When a version is tagged, the accumulator entries move under a =wf/<repo>/vX.Y.Z= bullet. The accumulator resets to empty.
+      - Entries describe functional changes (what was added, fixed, or changed), not commit-by-commit replay.
     - Minimum Git workflow:
       1. Create the updated workflow.
-      2. When the workflow is ready for a version update, document changes in the README changelog.
+      2. When the workflow is ready for a version update, document changes in the README changelog and move org-file changelog accumulator entries under the new version bullet.
       3. Update the README DAGs
       4. Commit workflow and README updates: git add -A
       5. Tag repository with workflow version: git tag -a wf/<WORKFLOW>/v<VERSION> -m "<MESSAGE>"
