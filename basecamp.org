@@ -2557,6 +2557,7 @@ apt_packages:
   - pandoc                    # Document converter (Markdown, LaTeX, etc.)
   - parallel
   - rename
+  - tmux                      # Terminal multiplexer
   - tree                      # Directory structure viewer
   - vim                       # Advanced text editor
   - poppler-utils             # PDF manipulation
