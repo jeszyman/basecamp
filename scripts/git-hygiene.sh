@@ -4,8 +4,8 @@
 # Edits will be overwritten on next org-babel tangle.
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
-# Author:  Jeff Szymanski
-# Tangled: 2026-03-22 08:22:31
+# Author:  Jeffrey Szymanski
+# Tangled: 2026-03-24 10:57:46
 # ============================================================
 
 set -euo pipefail

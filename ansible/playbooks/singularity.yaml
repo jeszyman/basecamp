@@ -4,27 +4,70 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeffrey Szymanski
-# Tangled: 2026-03-19 09:41:47
+# Tangled: 2026-03-24 10:57:46
 # ============================================================
 
 ---
-- name: Install Singularity
+- name: Install Singularity from source
   hosts: all
   become: yes
+  vars:
+    go_version: "1.13.15"
+    singularity_version: "v3.6.3"
   tasks:
 
-    - name: Install prerequisites
+    - name: Install build dependencies
       apt:
         name:
           - build-essential
           - libssl-dev
           - uuid-dev
-          - libgpgme-dev
+          - libgpgme11-dev
           - squashfs-tools
           - libseccomp-dev
-          - wget
           - pkg-config
           - git
-          - cryptsetup-bin
-        state: present
+          - curl
         update_cache: yes
+        state: present
+
+    - name: Remove old Go install
+      file:
+        path: /usr/local/go
+        state: absent
+
+    - name: Download Go {{ go_version }}
+      get_url:
+        url: "https://dl.google.com/go/go{{ go_version }}.linux-amd64.tar.gz"
+        dest: "/tmp/go{{ go_version }}.tar.gz"
+        mode: '0644'
+
+    - name: Install Go
+      unarchive:
+        src: "/tmp/go{{ go_version }}.tar.gz"
+        dest: /usr/local
+        remote_src: yes
+
+    - name: Set Go environment
+      shell: |
+        echo 'export PATH=/usr/local/go/bin:$PATH' > /etc/profile.d/go_path.sh
+        echo 'export GOPATH=/root/go' >> /etc/profile.d/go_path.sh
+      args:
+        creates: /etc/profile.d/go_path.sh
+
+    - name: Clone Singularity source
+      git:
+        repo: https://github.com/sylabs/singularity.git
+        dest: /root/go/src/github.com/sylabs/singularity
+        version: "{{ singularity_version }}"
+
+    - name: Build and install Singularity
+      shell: |
+        export PATH=/usr/local/go/bin:$PATH
+        export GOPATH=/root/go
+        cd /root/go/src/github.com/sylabs/singularity
+        ./mconfig
+        make -C builddir
+        make -C builddir install
+      args:
+        creates: /usr/local/bin/singularity

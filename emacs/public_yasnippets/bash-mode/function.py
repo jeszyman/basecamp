@@ -4,13 +4,12 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeffrey Szymanski
-# Tangled: 2026-03-19 09:41:47
+# Tangled: 2026-03-24 10:57:46
 # ============================================================
 
 # -*- mode: snippet -*-
 # key: function.py
-# expand-env: ((yas-indent-line 'fixed))
+# expand-env: ((yas-indent-line 'none))
 # --
-def ${1:function_name}(${2:args}):
-    """${3:Docstring.}"""
+def ${1: <FUNCTION NAME>}(${2: <ARGUMENT 1>}):
     $0

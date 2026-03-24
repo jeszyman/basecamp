@@ -1,11 +1,11 @@
-# ============================================================
-# AUTO-GENERATED — DO NOT EDIT DIRECTLY
-# Edits will be overwritten on next org-babel tangle.
-# 
-# Source:  /home/jeszyman/repos/basecamp/basecamp.org
-# Author:  Jeffrey Szymanski
-# Tangled: 2026-03-16 19:52:56
-# ============================================================
+; ============================================================
+; AUTO-GENERATED — DO NOT EDIT DIRECTLY
+; Edits will be overwritten on next org-babel tangle.
+; 
+; Source:  /home/jeszyman/repos/basecamp/basecamp.org
+; Author:  Jeffrey Szymanski
+; Tangled: 2026-03-24 10:57:46
+; ============================================================
 
 # -*- mode: snippet -*-
 # key: #+begin_src emacs-lisp

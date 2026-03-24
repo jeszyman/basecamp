@@ -6,7 +6,6 @@ FROM ubuntu:bionic
 #######################################################
 #######################################################
 
-
 #################
 ###   Notes   ###
 #################
@@ -49,7 +48,6 @@ RUN apt-get install -yq --no-install-recommends --allow-unauthenticated --fix-mi
     software-properties-common \
     wget
 
-
 RUN apt-get autoremove -y && \
     apt-get autoclean -y && \
     apt-get clean
@@ -83,7 +81,6 @@ RUN apt-get update -qq \
 	&& apt-get install -qq --no-install-recommends \
         libcurl4-openssl-dev \
         libssl-dev
-
 
 # import the signing key (by Michael Rutter) for these repo
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9

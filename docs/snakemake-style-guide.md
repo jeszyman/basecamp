@@ -1,3 +1,10 @@
+no r""" for shell  
+message DOES NOT referenc especific inputs via wildcard  
+. vs \_  
+thread declarations in rule vs. param  
+
+bespoke concurrency setup  
+
 -   Scope and Philosophy  
     -   Intent: This guide defines conventions for Snakemake workflows, repositories, configuration, and rule structure. The primary goals are readability, reproducibility, and portability.
     -   Design Principles  
@@ -17,13 +24,20 @@
     -   Version Management  
         -   Manage workflow versions with Git tags using semantic versioning.
         -   Tag format: wf/<workflow>/vX.Y.Z (e.g., wf/cfdna-cna/v2.1.0, wf/emseq/v1.7.1).
-        -   Document workflow versions in the README changelog.
+        -   Document workflow versions in both the README changelog and the org-file changelog.
+        -   Org-file changelog  
+            -   Each repository's main `.org` file contains a `**** Change Log` heading.
+            -   Entries are reverse chronological list items with org timestamps: `- [YYYY-MM-DD Day] Description`.
+            -   The top entry is always "Development since last tag" — a running accumulator for work not yet tagged to a version.
+            -   When a version is tagged, the accumulator entries move under a `wf/<repo>/vX.Y.Z` bullet. The accumulator resets to empty.
+            -   Entries describe functional changes (what was added, fixed, or changed), not commit-by-commit replay.
         -   Minimum Git workflow:  
             1.  Create the updated workflow.
-            2.  When the workflow is ready for a version update, document changes in the README changelog.
-            3.  Commit workflow and README updates: git add -A
-            4.  Tag repository with workflow version: git tag -a wf/<WORKFLOW>/v<VERSION> -m "<MESSAGE>"
-            5.  Push tag: git push origin master &#x2013;follow-tags
+            2.  When the workflow is ready for a version update, document changes in the README changelog and move org-file changelog accumulator entries under the new version bullet.
+            3.  Update the README DAGs
+            4.  Commit workflow and README updates: git add -A
+            5.  Tag repository with workflow version: git tag -a wf/<WORKFLOW>/v<VERSION> -m "<MESSAGE>"
+            6.  Push tag: git push origin master &#x2013;follow-tags
 -   Workflow Architecture  
     -   Workflow Types  
         -   Project (Wrapper) Snakefile  
@@ -48,13 +62,9 @@
             -   Does not own global workflow logic.
             -   References variables provided by the wrapper.
             -   Intended for inclusion by the wrapper; not typically executed standalone.
-    -   General Principles
+    -   General Principles  
         -   Rules should read top-to-bottom.
         -   Avoid hiding workflow decisions inside helper functions when a rule pattern or explicit expansion would suffice.
-    -   Preamble Conventions
-        -   Every Snakefile begins with a standard preamble after `configfile:`.
-        -   `resolve_config_paths(config)`: Call immediately after `configfile:` to expand `~` and `$VAR` in all string config values. Implementation is a recursive dict walker using `os.path.expandvars` and `os.path.expanduser`.
-        -   D\_ directory constants and ENV\_ conda paths are derived from config in the preamble and used throughout rules.
 -   Path and Variable Conventions  
     -   Paths should be declarative and reflect intended output organization.
     -   Build paths at the level of intended output organization. If an output directory structure is a meaningful stable construct, encode it at the level of each relevant rule.  
@@ -66,7 +76,7 @@
     -   Hungarian notation prefixes for defined classes:  
         -   D\_ for data directories (absolute paths from config).
         -   R\_ for repository locations.
-        -   ENV\_ for conda environment YAML files.
+        -   CONDA\_ for conda environment YAML files.
     -   Build paths using Python f-strings with explicit structure (e.g., f"{D\_EMSEQ}/align/{{sample}}.bam").
     -   Escape wildcards in f-strings with double braces.
     -   Avoid os.path.join unless necessary for complex cross-platform compatibility; f-strings are more readable for this use case.
@@ -82,15 +92,9 @@
         -   Project (wrapper) workflows use a two-layer YAML config pattern:  
             -   A common/base config checked into the repo that defines defaults.
             -   An override config passed at runtime via &#x2013;configfile or &#x2013;config that changes behavior without editing code.
-    -   Tabular Configuration
+    -   Tabular Configuration  
         -   Use tabular configuration (TSV/CSV) for sample- or unit-level metadata.
         -   Load once in the Snakefile preamble and index by identifier.
-        -   When using tabular sample metadata, define a `SampleTable` class in the Snakefile preamble with a consistent interface:
-            -   `__init__(self, tsv_path, selected_ids=None)`: Load TSV, optionally filter to selected library IDs.
-            -   `.library_ids` property: Returns sorted list of unique library IDs.
-            -   `.r1_map` / `.r2_map` properties (where applicable): Return `dict(library_id -> basename)`.
-        -   Implementations vary per project (lane-aware indexing, cloud paths, field normalization) but the core interface should remain consistent.
-        -   Project-specific properties should be prefixed with the workflow ID when the module will be included by other workflows (e.g., `frag_library_ids`).
 -   Sample and Experiment Grouping  
     -   Experiment-Level Configuration  
         -   When aggregating library-level outputs into experiment-level analyses:  
@@ -103,6 +107,8 @@
         -   Expand library-level inputs for a given experiment using the YAML-provided library list:
         -   Treat experiments as first-class workflow units by expanding experiment outputs in rule all:
         -   This approach keeps experiment definitions human-auditable and version-controlled as data while preserving rule-level usability as a Python dict-of-dicts.
+        -   Dual-path workflows: When an experiment can use multiple methods (e.g., STAR vs Salmon alignment), include `align_method` as a list in the experiment map. Use it as a filename designator and expand across it in rule all:
+        -   Method-conditional rules (e.g., BAM QC only for STAR path) gate on list membership:
 -   Rule Construction  
     -   General Principles  
         -   Rules describe what is produced, not how it is computed.
@@ -152,6 +158,8 @@
     -   Path References  
         -   Prefer paths relative to a master data directory or repository.
         -   Avoid hard-coded absolute paths.
+-   Known Issues  
+    -   Snakemake + mamba prefix collision: `mamba env create` fails with "Non-conda folder exists at prefix" when Snakemake manages per-rule conda environments. Workaround: use `--conda-frontend conda` flag. Observed 2026-03 with Snakemake 7.x + mamba.
 -   See Also  
     -   [Python style guide](basecamp.md)
     -   <https://snakemake.readthedocs.io/en/stable/>

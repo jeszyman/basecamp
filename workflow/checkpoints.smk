@@ -4,7 +4,7 @@
 # 
 # Source:  /home/jeszyman/repos/basecamp/basecamp.org
 # Author:  Jeffrey Szymanski
-# Tangled: 2026-03-16 19:52:56
+# Tangled: 2026-03-24 10:57:46
 # ============================================================
 
 rule all:
@@ -36,7 +36,6 @@ def aggregate_input(wildcards):
     return expand('scatter_copy_head/{i}_head.txt',
            i=glob_wildcards(os.path.join(checkpoint_output, '{i}.txt')).i)
 
-
 # process these unknown number of files
 rule scatter_copy:
     output:
@@ -60,7 +59,6 @@ rule scatter_copy_head:
         cp -f {input.txt} {output.txt}
         echo "_head" >> {output.txt}
         '''
-
 
 rule scatter_copy_head_collect:
     output:

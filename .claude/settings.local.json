@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(idea-mod)",
+      "Bash(emacsclient:*)",
+      "Bash(bash -n /home/jeszyman/repos/basecamp/lib/basecamp_functions.sh && echo \"OK\")",
+      "Bash(grep:*)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "Bash(curl:*)",
+      "Skill(org-edit)",
+      "Bash(uuidgen:*)",
+      "Bash(bash -n /home/jeszyman/repos/basecamp/lib/basecamp_functions.sh && echo \"lib OK\"; bash -n /home/jeszyman/repos/basecamp/scripts/git-hygiene.sh && echo \"git-hygiene OK\"; bash -n /home/jeszyman/repos/basecamp/src/functions.sh && echo \"functions OK\")",
+      "WebFetch(domain:www.reddit.com)",
+      "WebFetch(domain:old.reddit.com)",
+      "WebFetch(domain:ghuntley.com)",
+      "Bash(for id:*)",
+      "Bash(do echo:*)",
+      "Bash(done)",
+      "Bash(find ~/repos/emacs -name *.py -type f)",
+      "Bash(find ~/.emacs.d -name *.py -type f)",
+      "Skill(tangle)",
+      "Skill(closeout)"
+    ]
+  }
+}
