@@ -1,0 +1,957 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2026-03-29 Sun 08:55 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Basecamp</title>
+<meta name="author" content="Jeff Szymanski" />
+<meta name="generator" content="Org Mode" />
+<style type="text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Basecamp</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orgfd163d7">1. Commenting Verbosity</a>
+<ul>
+<li><a href="#org0c84973">1.1. How to use this table</a></li>
+<li><a href="#org37cb9b3">1.2. When NOT to comment</a></li>
+</ul>
+</li>
+<li><a href="#orgab57124">2. Bash</a>
+<ul>
+<li><a href="#org7044a0c">2.1. Indentation</a></li>
+<li><a href="#org9c4213d">2.2. Comments</a></li>
+<li><a href="#org0e474b9">2.3. Comment template</a></li>
+<li><a href="#org4e18a6f">2.4. Scripts</a></li>
+<li><a href="#org4a549b6">2.5. Script template</a></li>
+<li><a href="#orgb1c44cc">2.6. Functions</a></li>
+<li><a href="#org89421d8">2.7. References</a></li>
+</ul>
+</li>
+<li><a href="#org5fb0562">3. Python</a>
+<ul>
+<li><a href="#org8434a09">3.1. Indentation</a></li>
+<li><a href="#org66db887">3.2. Comments</a></li>
+<li><a href="#org57edbb2">3.3. Comment template</a></li>
+<li><a href="#org1d4255a">3.4. Scripts</a></li>
+<li><a href="#org17bdef5">3.5. Script template</a></li>
+<li><a href="#org8e95246">3.6. Functions</a></li>
+<li><a href="#org8fd7872">3.7. References</a></li>
+</ul>
+</li>
+<li><a href="#org26e3932">4. R</a>
+<ul>
+<li><a href="#org7b29c0e">4.1. Indentation</a></li>
+<li><a href="#org71b0b99">4.2. Comment format</a></li>
+<li><a href="#org18b17d5">4.3. Cookbook / notebook conventions</a></li>
+<li><a href="#orgefea6e1">4.4. Script structure (standalone R scripts)</a></li>
+<li><a href="#org0752547">4.5. References</a></li>
+</ul>
+</li>
+<li><a href="#orga0f6359">5. Emacs Lisp</a>
+<ul>
+<li><a href="#org01ffcb1">5.1. Comment format</a></li>
+<li><a href="#org8611d0e">5.2. Verbosity by context</a></li>
+<li><a href="#org227442a">5.3. Template</a></li>
+</ul>
+</li>
+<li><a href="#org3231767">6. Snakemake</a>
+<ul>
+<li><a href="#org4967845">6.1. Comments</a></li>
+<li><a href="#org4ff9952">6.2. Path and variable conventions</a></li>
+<li><a href="#orgc2fe154">6.3. Rule construction</a></li>
+<li><a href="#orgcbdc9a7">6.4. Shell blocks and scripts</a></li>
+<li><a href="#org3e4484e">6.5. Configuration</a></li>
+<li><a href="#org7c22798">6.6. Rule template</a></li>
+<li><a href="#org5dd5d41">6.7. References</a></li>
+</ul>
+</li>
+<li><a href="#orgb79b227">7. YAML / Config</a></li>
+</ul>
+</div>
+</div>
+<p>
+Consolidated code style guide covering commenting verbosity, comment formatting, and language-specific conventions. Exported to <code>docs/code-style-guide.md</code> for Claude and other tool consumption.<br />
+</p>
+<div id="outline-container-orgfd163d7" class="outline-2">
+<h2 id="orgfd163d7"><span class="section-number-2">1.</span> Commenting Verbosity</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Match commenting density to context. When the context is ambiguous, ask the user.<br />
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Context</th>
+<th scope="col" class="org-left">Verbosity</th>
+<th scope="col" class="org-left">What to comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Cookbook / notebook (R/Python analysis in org-babel)</td>
+<td class="org-left">Heavy</td>
+<td class="org-left">Narrate analytical reasoning, explain why each step, section headers between logical phases</td>
+</tr>
+
+<tr>
+<td class="org-left">Standalone scripts (bash, Python)</td>
+<td class="org-left">Moderate–heavy</td>
+<td class="org-left">Top block comment, section banners, function docstrings, non-obvious logic</td>
+</tr>
+
+<tr>
+<td class="org-left">Snakemake rules (.smk)</td>
+<td class="org-left">Moderate</td>
+<td class="org-left">Rule-level purpose, key params, workflow rationale</td>
+</tr>
+
+<tr>
+<td class="org-left">Snakemake <code>script:</code> R/Python files</td>
+<td class="org-left">Moderate</td>
+<td class="org-left">Explain the analytical step; pipeline context lives in the rule</td>
+</tr>
+
+<tr>
+<td class="org-left">Infrastructure elisp (defuns called from many places)</td>
+<td class="org-left">Moderate</td>
+<td class="org-left">Function docstring, non-obvious logic</td>
+</tr>
+
+<tr>
+<td class="org-left">Config elisp (tangled from emacs.org)</td>
+<td class="org-left">Light</td>
+<td class="org-left">One-liner above function; org source is canonical documentation</td>
+</tr>
+
+<tr>
+<td class="org-left">Ansible playbooks/tasks (YAML)</td>
+<td class="org-left">Light</td>
+<td class="org-left">Task <code>name:</code> field is the comment; <code>#</code> only for non-obvious <code>when:</code> or workarounds</td>
+</tr>
+
+<tr>
+<td class="org-left">Config YAML (conda envs, i3, etc.)</td>
+<td class="org-left">Minimal</td>
+<td class="org-left">Comment only version pins or workarounds</td>
+</tr>
+
+<tr>
+<td class="org-left">Org-babel blocks in documentation/tutorial headings</td>
+<td class="org-left">Heavy</td>
+<td class="org-left">Reader is learning; treat like a cookbook</td>
+</tr>
+
+<tr>
+<td class="org-left">Quick org-babel snippets (exploratory, throwaway)</td>
+<td class="org-left">Minimal</td>
+<td class="org-left">Only if logic is non-obvious</td>
+</tr>
+
+<tr>
+<td class="org-left">Test code</td>
+<td class="org-left">Light</td>
+<td class="org-left">Test name describes intent; comment only surprising setup</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="outline-container-org0c84973" class="outline-3">
+<h3 id="org0c84973"><span class="section-number-3">1.1.</span> How to use this table</h3>
+<div class="outline-text-3" id="text-1-1">
+<ol class="org-ol">
+<li>Identify which row matches the code you are about to write<br /></li>
+<li>Apply the verbosity level from that row<br /></li>
+<li>Use the language-specific comment format conventions below<br /></li>
+<li>If no row matches or the context is ambiguous, ask<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org37cb9b3" class="outline-3">
+<h3 id="org37cb9b3"><span class="section-number-3">1.2.</span> When NOT to comment</h3>
+<div class="outline-text-3" id="text-1-2">
+<ul class="org-ul">
+<li>Do not restate what the code does — explain <i>why</i><br /></li>
+<li>Do not comment obvious stdlib calls or standard idioms<br /></li>
+<li>Do not add <code>TODO</code> comments without a corresponding task/ticket<br /></li>
+<li>Do not add comments that will immediately go stale (e.g. "this list has 5 items")<br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgab57124" class="outline-2">
+<h2 id="orgab57124"><span class="section-number-2">2.</span> Bash</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Consolidated from <a href="basecamp.html#ID-89576FD2-F863-4220-BAD7-D4E179AEA644">Bash and shell</a> (under Programming languages).<br />
+</p>
+</div>
+<div id="outline-container-org7044a0c" class="outline-3">
+<h3 id="org7044a0c"><span class="section-number-3">2.1.</span> Indentation</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li>2 spaces, no tabs<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org9c4213d" class="outline-3">
+<h3 id="org9c4213d"><span class="section-number-3">2.2.</span> Comments</h3>
+<div class="outline-text-3" id="text-2-2">
+<ul class="org-ul">
+<li>Wrap comments at 80 columns when practical; allow exceptions for unbreakable tokens (paths, commands, URLs) and for usage synopsis lines.<br /></li>
+<li>Comment types<br />
+<ul class="org-ul">
+<li>Sectioning comments: major section headers use a separator banner with an UPPERCASE title; minor section subheaders use a separator banner with a Mixed-case title<br /></li>
+<li>Block comments: multi-line explanations sectioned off with a banner (same width/style as other separators); not indented, not subheaders; subheaders are always single-line<br /></li>
+<li>Standalone comments: single-line comments that precede the code they describe; used for short context or rationale<br /></li>
+<li>Inline comments: on the same line as code, placed after two spaces; kept short, explain rationale rather than restating the code. Do not place inline comments after a line-continuation backslash (<code>\</code>) or after a here-doc delimiter (<code>&lt;&lt;EOF</code>), as this breaks parsing.<br /></li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org0e474b9" class="outline-3">
+<h3 id="org0e474b9"><span class="section-number-3">2.3.</span> Comment template</h3>
+<div class="outline-text-3" id="text-2-3">
+<div class="org-src-container">
+<pre class="src src-bash"><span style="color: #ff7f24; font-style: italic;"># =============================================================================</span>
+<span style="color: #ff7f24; font-style: italic;"># SECTION: CONFIGURATION</span>
+<span style="color: #ff7f24; font-style: italic;"># =============================================================================</span>
+
+<span style="color: #ff7f24; font-style: italic;"># Default threads. Keep low for interactive nodes.</span>
+<span style="color: #7fffd4; font-weight: bold; font-style: italic;">DEFAULT_THREADS</span>=8
+
+<span style="color: #ff7f24; font-style: italic;"># -----------------------------------------------------------------------------</span>
+<span style="color: #ff7f24; font-style: italic;"># Subsection: Input parsing</span>
+<span style="color: #ff7f24; font-style: italic;"># -----------------------------------------------------------------------------</span>
+
+<span style="color: #ff7f24; font-style: italic;"># parse_args parses CLI arguments and sets global config variables.</span>
+<span style="color: #00fa9a; font-weight: bold;">parse_args</span><span style="color: #8c8c8c;">()</span> <span style="color: #8c8c8c;">{</span>
+  <span style="color: #7fffd4; font-weight: bold; font-style: italic;">out_dir</span>=<span style="color: #ffc1c1;">"</span><span style="color: #00ffff;">${</span><span style="color: #8470ff; background-color: #000000; font-weight: bold; font-style: italic;">2</span><span style="color: #ffc1c1;">%</span><span style="color: #f5f5f5; background-color: #000000;">/</span><span style="color: #00ffff;">}</span><span style="color: #ffc1c1;">"</span>  <span style="color: #ff7f24; font-style: italic;"># normalize output directory (avoid trailing slash)</span>
+
+<span style="color: #ff7f24; font-style: italic;"># -----------------------------------------------------------------------------</span>
+<span style="color: #ff7f24; font-style: italic;"># Block comment: input validation rationale</span>
+<span style="color: #ff7f24; font-style: italic;">#</span>
+<span style="color: #ff7f24; font-style: italic;"># Validate inputs early so downstream functions can assume invariants.</span>
+<span style="color: #ff7f24; font-style: italic;"># This keeps work functions simple and avoids duplicated checks.</span>
+<span style="color: #ff7f24; font-style: italic;"># Fail fast with a targeted message if a required input is missing.</span>
+<span style="color: #ff7f24; font-style: italic;"># -----------------------------------------------------------------------------</span>
+
+  <span style="color: #00ffff;">if</span> <span style="color: #93a8c6;">[</span><span style="color: #b0b1a3;">[</span> ! -f <span style="color: #ffc1c1;">"</span><span style="color: #00ffff;">$</span><span style="color: #8470ff; font-weight: bold; font-style: italic;">1</span><span style="color: #ffc1c1;">"</span> <span style="color: #b0b1a3;">]</span><span style="color: #93a8c6;">]</span><span style="color: #00ffff;">;</span> <span style="color: #00ffff;">then</span>
+    <span style="color: #b0c4de; font-weight: bold;">echo</span> <span style="color: #ffc1c1;">"Error: Input file not found: </span><span style="color: #00ffff;">$</span><span style="color: #8470ff; font-weight: bold; font-style: italic;">1</span><span style="color: #ffc1c1;">"</span> &gt;&amp;2
+    <span style="color: #00ffff; font-weight: bold;">exit</span> 1
+  <span style="color: #00ffff;">fi</span>
+<span style="color: #8c8c8c;">}</span>
+
+<span style="color: #ff7f24; font-style: italic;"># =============================================================================</span>
+<span style="color: #ff7f24; font-style: italic;"># SECTION: WORK FUNCTIONS</span>
+<span style="color: #ff7f24; font-style: italic;"># =============================================================================</span>
+
+<span style="color: #00fa9a; font-weight: bold;">run_tool</span><span style="color: #8c8c8c;">()</span> <span style="color: #8c8c8c;">{</span>
+  <span style="color: #b0c4de; font-weight: bold;">echo</span> <span style="color: #ffc1c1;">"[INFO] Running tool"</span> &gt;&amp;2  <span style="color: #ff7f24; font-style: italic;"># log to stderr to keep stdout clean</span>
+<span style="color: #8c8c8c;">}</span>
+
+<span style="color: #ff7f24; font-style: italic;"># -----------------------------------------------------------------------------</span>
+<span style="color: #ff7f24; font-style: italic;"># Subsection: Inline comment parse hazards</span>
+<span style="color: #ff7f24; font-style: italic;"># -----------------------------------------------------------------------------</span>
+
+<span style="color: #ff7f24; font-style: italic;"># BAD: inline comment after a continuation backslash breaks line continuation</span>
+<span style="color: #b0c4de; font-weight: bold;">echo</span> <span style="color: #ffc1c1;">"a"</span> \  <span style="color: #ff7f24; font-style: italic;"># breaks parsing because '\' is no longer the last character on the line</span>
+  <span style="color: #ffc1c1;">"b"</span>
+
+<span style="color: #ff7f24; font-style: italic;"># GOOD: comment above; backslash is the last character on the line</span>
+<span style="color: #ff7f24; font-style: italic;"># Split command across lines for readability.</span>
+<span style="color: #b0c4de; font-weight: bold;">echo</span> <span style="color: #ffc1c1;">"a"</span> \
+  <span style="color: #ffc1c1;">"b"</span>
+
+<span style="color: #ff7f24; font-style: italic;"># BAD: inline comment after here-doc delimiter breaks the delimiter</span>
+<span style="color: #00ffff; font-weight: bold;">cat</span> <span style="color: #00ffff;">&lt;&lt;</span><span style="color: #ffc1c1; font-weight: bold;">EOF</span>  <span style="color: #ff7f24; font-style: italic;"># delimiter must be the last token on the line</span>
+<span style="color: #ffc1c1; font-weight: bold;">hello
+</span>EOF
+
+<span style="color: #ff7f24; font-style: italic;"># GOOD: comment above; delimiter line contains only the delimiter token</span>
+<span style="color: #ff7f24; font-style: italic;"># Print a small block of text.</span>
+<span style="color: #00ffff; font-weight: bold;">cat</span> <span style="color: #00ffff;">&lt;&lt;</span><span style="color: #ffc1c1; font-weight: bold;">EOF</span>
+<span style="color: #ffc1c1; font-weight: bold;">hello
+</span>EOF
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org4e18a6f" class="outline-3">
+<h3 id="org4e18a6f"><span class="section-number-3">2.4.</span> Scripts</h3>
+<div class="outline-text-3" id="text-2-4">
+<ul class="org-ul">
+<li>Overall structure: functions first, <code>main "$@"</code> last. <code>main()</code> is the entry point.<br /></li>
+<li>Shebang: <code>#!/usr/bin/env bash</code><br /></li>
+<li>Documentation: top block comment describing script purpose<br /></li>
+<li><code>print_usage()</code>: follows Unix man-page conventions (Usage line, Options, Arguments, Examples). Required arguments use <code>&lt;UPPERCASE&gt;</code> notation; optional in brackets.<br /></li>
+<li><code>parse_args()</code><br />
+<ul class="org-ul">
+<li>The only function that may read positional args (<code>$1</code>, <code>$2</code>, <code>$@</code>, <code>$#</code>)<br /></li>
+<li>Validates inputs, applies defaults, computes derived values<br /></li>
+<li>Sets script configuration variables (globals) for downstream functions<br /></li>
+<li><code>-h|--help</code> prints usage and exits 0; misuse exits 2; runtime errors exit 1<br /></li>
+</ul></li>
+<li><code>main()</code>: entry point; calls <code>parse_args "$@"</code>, then work functions in order<br /></li>
+<li>Work functions: consume named variables only, no CLI parsing, no new globals, assume preconditions satisfied<br /></li>
+<li>Final line: <code>main "$@"</code><br /></li>
+<li>Error policy: stdout for machine-consumable output; stderr for all diagnostics<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org4a549b6" class="outline-3">
+<h3 id="org4a549b6"><span class="section-number-3">2.5.</span> Script template</h3>
+<div class="outline-text-3" id="text-2-5">
+<div class="org-src-container">
+<pre class="src src-bash"><span style="color: #ff7f24; font-style: italic;">#!/usr/bin/env bash</span>
+
+<span style="color: #ff7f24; font-style: italic;"># -----------------------------------------------------------------------------</span>
+<span style="color: #ff7f24; font-style: italic;"># Script name</span>
+<span style="color: #ff7f24; font-style: italic;"># Purpose, inputs, outputs, assumptions, etc.</span>
+<span style="color: #ff7f24; font-style: italic;"># -----------------------------------------------------------------------------</span>
+
+<span style="color: #00fa9a; font-weight: bold;">print_usage</span><span style="color: #8c8c8c;">()</span> <span style="color: #8c8c8c;">{</span>
+  <span style="color: #00ffff; font-weight: bold;">cat</span> <span style="color: #00ffff;">&lt;&lt;</span><span style="color: #ffc1c1; font-weight: bold;">EOF</span>
+<span style="color: #ffc1c1; font-weight: bold;">Usage: </span><span style="color: #00ffff; font-weight: bold;">${</span><span style="color: #8470ff; background-color: #000000; font-weight: bold; font-style: italic;">0</span><span style="color: #ffc1c1; font-weight: bold;">##</span><span style="color: #f5f5f5; background-color: #000000; font-weight: bold;">*/</span><span style="color: #00ffff; font-weight: bold;">}</span><span style="color: #ffc1c1; font-weight: bold;"> [OPTIONS] &lt;REQUIRED_ARG&gt; [OPTIONAL_ARG]
+
+Short description of what the command does.
+
+Options:
+  -h, --help        Show this help message and exit
+  -o, --output DIR  Write output to DIR
+
+Arguments:
+  REQUIRED_ARG      Description
+  OPTIONAL_ARG      Description
+
+Examples:
+  ${0##*/} input.txt
+  ${0##*/} -o out input.txt
+</span>EOF
+<span style="color: #8c8c8c;">}</span>
+
+<span style="color: #00fa9a; font-weight: bold;">parse_args</span><span style="color: #8c8c8c;">()</span> <span style="color: #8c8c8c;">{</span>
+  <span style="color: #ff7f24; font-style: italic;"># 1) Check help first,</span>
+  <span style="color: #ff7f24; font-style: italic;">#    exit 0 to stdout</span>
+  <span style="color: #ff7f24; font-style: italic;"># 2) Check command line misuse (command invoked incorrectly),</span>
+  <span style="color: #ff7f24; font-style: italic;">#    exit 2 to stderr</span>
+  <span style="color: #ff7f24; font-style: italic;"># 3) Make input argument declarations</span>
+  <span style="color: #ff7f24; font-style: italic;"># 4) Perform variable-specific runtime validations as needed,</span>
+  <span style="color: #ff7f24; font-style: italic;">#    These exit 1 to stderr with variable-specific message</span>
+  <span style="color: #ff7f24; font-style: italic;"># 5) Compute derived variables as needed</span>
+<span style="color: #8c8c8c;">}</span>
+
+<span style="color: #00fa9a; font-weight: bold;">function_1</span><span style="color: #8c8c8c;">()</span> <span style="color: #8c8c8c;">{}</span>
+<span style="color: #00fa9a; font-weight: bold;">function_2</span><span style="color: #8c8c8c;">()</span> <span style="color: #8c8c8c;">{}</span>
+
+<span style="color: #00fa9a; font-weight: bold;">main</span><span style="color: #8c8c8c;">()</span> <span style="color: #8c8c8c;">{</span>
+  <span style="color: #00ffff; font-weight: bold;">parse_args</span> <span style="color: #ffc1c1;">"</span><span style="color: #00ffff;">$</span><span style="color: #ffc0cb; font-weight: bold;">@</span><span style="color: #ffc1c1;">"</span>
+  <span style="color: #00ffff; font-weight: bold;">function_1</span>
+  <span style="color: #00ffff; font-weight: bold;">function_2</span>
+<span style="color: #8c8c8c;">}</span>
+
+<span style="color: #00ffff; font-weight: bold;">main</span> <span style="color: #ffc1c1;">"</span><span style="color: #00ffff;">$</span><span style="color: #ffc0cb; font-weight: bold;">@</span><span style="color: #ffc1c1;">"</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb1c44cc" class="outline-3">
+<h3 id="orgb1c44cc"><span class="section-number-3">2.6.</span> Functions</h3>
+<div class="outline-text-3" id="text-2-6">
+<ul class="org-ul">
+<li><code>lower_snake_case</code> names, opening brace on same line: <code>name() {</code><br /></li>
+<li>In-script functions (parse-once model): <code>parse_args()</code> populates globals; other functions must not read positional args<br /></li>
+<li>Standalone reusable functions (sourced): accept inputs as positional parameters, immediately assign to <code>local</code> variables, declare all temporaries <code>local</code><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org89421d8" class="outline-3">
+<h3 id="org89421d8"><span class="section-number-3">2.7.</span> References</h3>
+<div class="outline-text-3" id="text-2-7">
+<ul class="org-ul">
+<li><a href="https://google.github.io/styleguide/shellguide.html">Google Shell Style Guide</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org5fb0562" class="outline-2">
+<h2 id="org5fb0562"><span class="section-number-2">3.</span> Python</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Consolidated from <a href="basecamp.html#ID-89576FD2-F863-4220-BAD7-D4E179AEA644">Bash and shell → Python</a> (under Programming languages).<br />
+</p>
+</div>
+<div id="outline-container-org8434a09" class="outline-3">
+<h3 id="org8434a09"><span class="section-number-3">3.1.</span> Indentation</h3>
+<div class="outline-text-3" id="text-3-1">
+<ul class="org-ul">
+<li>4 spaces, no tabs<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org66db887" class="outline-3">
+<h3 id="org66db887"><span class="section-number-3">3.2.</span> Comments</h3>
+<div class="outline-text-3" id="text-3-2">
+<ul class="org-ul">
+<li>Wrap at 80 columns (Black default 88); exceptions for unbreakable tokens<br /></li>
+<li>Comment types<br />
+<ul class="org-ul">
+<li>Sectioning comments: same banner style as bash (<code># =====</code>, <code># -----</code>)<br /></li>
+<li>Docstrings: <code>"""..."""</code> as first statement in module/class/function<br /></li>
+<li>Block comments: multi-line with banner, not indented, not subheaders<br /></li>
+<li>Standalone comments: single line preceding code<br /></li>
+<li>Inline comments: after two spaces, rationale not restatement<br /></li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org57edbb2" class="outline-3">
+<h3 id="org57edbb2"><span class="section-number-3">3.3.</span> Comment template</h3>
+<div class="outline-text-3" id="text-3-3">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #ff7f24; font-style: italic;"># =============================================================================</span>
+<span style="color: #ff7f24; font-style: italic;"># SECTION: CONFIGURATION</span>
+<span style="color: #ff7f24; font-style: italic;"># =============================================================================</span>
+
+
+<span style="color: #7fffd4; font-weight: bold;">DEFAULT_THREADS</span> <span style="color: #00ffff;">=</span> <span style="color: #8470ff; font-weight: bold;">8</span>  <span style="color: #ff7f24; font-style: italic;"># keep low for interactive nodes</span>
+
+<span style="color: #ff7f24; font-style: italic;"># -----------------------------------------------------------------------------</span>
+<span style="color: #ff7f24; font-style: italic;"># Subsection: Input parsing</span>
+<span style="color: #ff7f24; font-style: italic;"># -----------------------------------------------------------------------------</span>
+
+<span style="color: #00ffff;">def</span> <span style="color: #00fa9a; font-weight: bold;">parse_args</span><span style="color: #8c8c8c;">(</span><span style="color: #7fffd4;">argv</span>: list<span style="color: #93a8c6;">[</span><span style="color: #b0c4de;">str</span><span style="color: #93a8c6;">]</span><span style="color: #8c8c8c;">)</span> -&gt; <span style="color: #63b8ff;">"Args"</span>:
+
+<span style="color: #ff7f24; font-style: italic;"># -----------------------------------------------------------------------------</span>
+<span style="color: #ff7f24; font-style: italic;"># Block comment</span>
+<span style="color: #ff7f24; font-style: italic;">#</span>
+<span style="color: #ff7f24; font-style: italic;"># Parse arguments once, validate inputs, and compute derived values here.</span>
+<span style="color: #ff7f24; font-style: italic;"># Downstream functions should consume named attributes only.</span>
+<span style="color: #ff7f24; font-style: italic;"># -----------------------------------------------------------------------------</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org1d4255a" class="outline-3">
+<h3 id="org1d4255a"><span class="section-number-3">3.4.</span> Scripts</h3>
+<div class="outline-text-3" id="text-3-4">
+<ul class="org-ul">
+<li>Overall structure: definitions first, <code>main()</code> last, <code>if __name__ == "__main__":</code> entry point<br /></li>
+<li>Shebang: <code>#!/usr/bin/env python3</code> only for directly executed files<br /></li>
+<li>Top module docstring describing purpose, inputs, outputs, assumptions<br /></li>
+<li><code>argparse</code> for CLI parsing in <code>parse_args()</code><br /></li>
+<li><code>parse_args()</code>: only function that reads raw CLI args; returns structured object (dataclass or Namespace); <code>-h/--help</code> exits 0, CLI misuse exits 2, runtime errors exit 1<br /></li>
+<li><code>main()</code>: entry point, short linear orchestration, calls <code>parse_args(argv)</code> then work functions<br /></li>
+<li>Work functions: consume named values only, prefer returning over mutating globals<br /></li>
+<li>Entry point: <code>if __name__ == "__main__": raise SystemExit(main())</code><br /></li>
+<li>Error policy: stdout for machine-consumable output; stderr for all diagnostics<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org17bdef5" class="outline-3">
+<h3 id="org17bdef5"><span class="section-number-3">3.5.</span> Script template</h3>
+<div class="outline-text-3" id="text-3-5">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #ff7f24; font-style: italic;">#!/usr/bin/env python3</span>
+<span style="color: #f08080; font-style: italic;">"""
+Docstring
+"""</span>
+
+<span style="color: #00ffff;">import</span> argparse
+<span style="color: #00ffff;">from</span> pathlib <span style="color: #00ffff;">import</span> <span style="color: #63b8ff;">Path</span>
+
+<span style="color: #ff7f24; font-style: italic;"># Centralize defaults as named constants so:</span>
+<span style="color: #ff7f24; font-style: italic;"># - help text stays consistent</span>
+<span style="color: #ff7f24; font-style: italic;"># - you do not repeat long strings</span>
+<span style="color: #ff7f24; font-style: italic;"># - defaults are easy to change later</span>
+<span style="color: #7fffd4; font-weight: bold;">DEFAULT_INPUTS_DIR</span> <span style="color: #00ffff;">=</span> <span style="color: #ffc1c1;">"chaudhuri-lab-bucket1/jeszyman/projects/breast/inputs"</span>
+<span style="color: #7fffd4; font-weight: bold;">DEFAULT_OUTPUT_TSV</span> <span style="color: #00ffff;">=</span> <span style="color: #63b8ff; font-weight: bold;">Path</span><span style="color: #8c8c8c;">(</span><span style="color: #ffc1c1;">"./data/emseq-fastq-inputs.tsv"</span><span style="color: #8c8c8c;">)</span>
+
+<span style="color: #00ffff;">def</span> <span style="color: #00fa9a; font-weight: bold;">parse_args</span><span style="color: #8c8c8c;">()</span>:
+<span style="color: #f5deb3;"> </span>   <span style="color: #7fffd4;">parser</span> <span style="color: #00ffff;">=</span> argparse.<span style="color: #63b8ff; font-weight: bold; font-style: italic;">ArgumentParser</span><span style="color: #8c8c8c;">(</span>
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #6495ed; font-style: italic;">prog</span><span style="color: #00ffff;">=</span><span style="color: #63b8ff; font-weight: bold;">Path</span><span style="color: #93a8c6;">(</span>sys.<span style="color: #8470ff; font-weight: bold; font-style: italic;">argv</span><span style="color: #b0b1a3;">[</span><span style="color: #8470ff; font-weight: bold;">0</span><span style="color: #b0b1a3;">]</span><span style="color: #93a8c6;">)</span>.<span style="color: #8470ff; font-weight: bold; font-style: italic;">name</span>,
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #6495ed; font-style: italic;">description</span><span style="color: #00ffff;">=</span><span style="color: #ffc1c1;">"Extract R1 FASTQ metadata from a GCS bucket."</span>,
+<span style="color: #f5deb3;"> </span>   <span style="color: #8c8c8c;">)</span>
+<span style="color: #f5deb3;"> </span>   parser.<span style="color: #00ffff; font-weight: bold; font-style: italic;">add_argument</span><span style="color: #8c8c8c;">(</span>
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #ffc1c1;">"--inputs-dir"</span>,
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #6495ed; font-style: italic;">default</span><span style="color: #00ffff;">=</span><span style="color: #8470ff; font-weight: bold;">DEFAULT_INPUTS_DIR</span>,
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #6495ed; font-style: italic;">metavar</span><span style="color: #00ffff;">=</span><span style="color: #ffc1c1;">"GCS_PATH"</span>,
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #6495ed; font-style: italic;">help</span><span style="color: #00ffff;">=</span><span style="color: #ffc1c1;">f"GCS path after gs:// (default: </span><span style="color: #00ffff;">{</span><span style="color: #8470ff; background-color: #000000; font-weight: bold;">DEFAULT_INPUTS_DIR</span><span style="color: #00ffff;">}</span><span style="color: #ffc1c1;">)"</span>,
+<span style="color: #f5deb3;"> </span>   <span style="color: #8c8c8c;">)</span>
+<span style="color: #f5deb3;"> </span>   parser.<span style="color: #00ffff; font-weight: bold; font-style: italic;">add_argument</span><span style="color: #8c8c8c;">(</span>
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #ffc1c1;">"--output-tsv"</span>,
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #6495ed; font-style: italic;">type</span><span style="color: #00ffff;">=</span><span style="color: #63b8ff;">Path</span>,
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #6495ed; font-style: italic;">default</span><span style="color: #00ffff;">=</span><span style="color: #8470ff; font-weight: bold;">DEFAULT_OUTPUT_TSV</span>,
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #6495ed; font-style: italic;">metavar</span><span style="color: #00ffff;">=</span><span style="color: #ffc1c1;">"TSV"</span>,
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #6495ed; font-style: italic;">help</span><span style="color: #00ffff;">=</span><span style="color: #ffc1c1;">f"Output TSV path (default: </span><span style="color: #00ffff;">{</span><span style="color: #8470ff; background-color: #000000; font-weight: bold;">DEFAULT_OUTPUT_TSV</span><span style="color: #00ffff;">}</span><span style="color: #ffc1c1;">)"</span>,
+<span style="color: #f5deb3;"> </span>   <span style="color: #8c8c8c;">)</span>
+<span style="color: #f5deb3;"> </span>   <span style="color: #7fffd4;">args</span> <span style="color: #00ffff;">=</span> parser.<span style="color: #00ffff; font-weight: bold; font-style: italic;">parse_args</span><span style="color: #8c8c8c;">()</span>
+<span style="color: #f5deb3;"> </span>   <span style="color: #00ffff;">return</span> args
+
+<span style="color: #00ffff;">def</span> <span style="color: #00fa9a; font-weight: bold;">main</span><span style="color: #8c8c8c;">(</span><span style="color: #7fffd4;">argv</span>: list<span style="color: #93a8c6;">[</span><span style="color: #b0c4de;">str</span><span style="color: #93a8c6;">]</span> <span style="color: #00ffff;">|</span> <span style="color: #b0c4de;">None</span> <span style="color: #00ffff;">=</span> <span style="color: #b0c4de;">None</span><span style="color: #8c8c8c;">)</span> -&gt; <span style="color: #b0c4de;">int</span>:
+<span style="color: #f5deb3;"> </span>   <span style="color: #f08080; font-style: italic;">"""
+</span><span style="color: #f5deb3; font-style: italic;"> </span><span style="color: #f08080; font-style: italic;">   Orchestrate the script.
+
+</span><span style="color: #f5deb3; font-style: italic;"> </span><span style="color: #f08080; font-style: italic;">   Good practice:
+</span><span style="color: #f5deb3; font-style: italic;"> </span><span style="color: #f08080; font-style: italic;">   - parse args once
+</span><span style="color: #f5deb3; font-style: italic;"> </span><span style="color: #f08080; font-style: italic;">   - call work functions with named values
+</span><span style="color: #f5deb3; font-style: italic;"> </span><span style="color: #f08080; font-style: italic;">   - return an exit code (0 success; nonzero failure)
+</span><span style="color: #f5deb3; font-style: italic;"> </span><span style="color: #f08080; font-style: italic;">   """</span>
+<span style="color: #f5deb3;"> </span>   <span style="color: #7fffd4;">args</span> <span style="color: #00ffff;">=</span> <span style="color: #00ffff; font-weight: bold;">parse_args</span><span style="color: #8c8c8c;">(</span>argv<span style="color: #8c8c8c;">)</span>
+
+<span style="color: #f5deb3;"> </span>   <span style="color: #ff7f24; font-style: italic;"># Placeholder for the real work. Keep heavy logic out of parse_args.</span>
+<span style="color: #f5deb3;"> </span>   <span style="color: #ff7f24; font-style: italic;"># Example:</span>
+<span style="color: #f5deb3;"> </span>   <span style="color: #ff7f24; font-style: italic;"># run_work(inputs_dir=args.inputs_dir, output_tsv=args.output_tsv)</span>
+<span style="color: #f5deb3;"> </span>   <span style="color: #00ffff;">return</span> <span style="color: #8470ff; font-weight: bold;">0</span>
+
+
+<span style="color: #00ffff;">if</span> <span style="color: #b0c4de;">__name__</span> <span style="color: #00ffff;">==</span> <span style="color: #ffc1c1;">"__main__"</span>:
+<span style="color: #f5deb3;"> </span>   <span style="color: #ff7f24; font-style: italic;"># Entry point:</span>
+<span style="color: #f5deb3;"> </span>   <span style="color: #ff7f24; font-style: italic;"># - ensures the script does not run when imported as a module</span>
+<span style="color: #f5deb3;"> </span>   <span style="color: #ff7f24; font-style: italic;"># - propagates main()'s integer return value as the process exit code</span>
+<span style="color: #f5deb3;"> </span>   <span style="color: #00ffff;">raise</span> <span style="color: #63b8ff; font-weight: bold;">SystemExit</span><span style="color: #8c8c8c;">(</span><span style="color: #00ffff; font-weight: bold;">main</span><span style="color: #93a8c6;">()</span><span style="color: #8c8c8c;">)</span>
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org8e95246" class="outline-3">
+<h3 id="org8e95246"><span class="section-number-3">3.6.</span> Functions</h3>
+<div class="outline-text-3" id="text-3-6">
+<ul class="org-ul">
+<li><code>lower_snake_case</code> names, type hints for public functions<br /></li>
+<li>Single-purpose, explicit parameters over globals<br /></li>
+<li>Reusable (library-style): parameterize inputs, return outputs, never print; raise specific exceptions, convert to exit codes only in <code>main()</code><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org8fd7872" class="outline-3">
+<h3 id="org8fd7872"><span class="section-number-3">3.7.</span> References</h3>
+<div class="outline-text-3" id="text-3-7">
+<ul class="org-ul">
+<li><a href="https://google.github.io/styleguide/pyguide.html">Google Python Style Guide</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org26e3932" class="outline-2">
+<h2 id="org26e3932"><span class="section-number-2">4.</span> R</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-org7b29c0e" class="outline-3">
+<h3 id="org7b29c0e"><span class="section-number-3">4.1.</span> Indentation</h3>
+<div class="outline-text-3" id="text-4-1">
+<ul class="org-ul">
+<li>2 spaces, no tabs<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org71b0b99" class="outline-3">
+<h3 id="org71b0b99"><span class="section-number-3">4.2.</span> Comment format</h3>
+<div class="outline-text-3" id="text-4-2">
+<ul class="org-ul">
+<li><b>Sectioning comments</b>: use banner style consistent with bash/Python (<code># =====</code> for major, <code># ----</code> for minor)<br /></li>
+<li><b>Roxygen-style docstrings</b> for functions: <code>#' @param</code>, <code>#' @return</code>, <code>#' @examples</code><br /></li>
+<li><b>Standalone comments</b>: single <code>#</code> line preceding code<br /></li>
+<li><b>Inline comments</b>: after two spaces<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org18b17d5" class="outline-3">
+<h3 id="org18b17d5"><span class="section-number-3">4.3.</span> Cookbook / notebook conventions</h3>
+<div class="outline-text-3" id="text-4-3">
+<ul class="org-ul">
+<li>Heavy commenting is expected — narrate the analytical reasoning<br /></li>
+<li>Section headers between logical phases (data loading, filtering, transformation, visualization, output)<br /></li>
+<li>Explain <i>why</i> a filter threshold or parameter was chosen, not just what the code does<br /></li>
+<li>When a step produces an intermediate result, briefly describe what the result looks like (rows, columns, expected values)<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgefea6e1" class="outline-3">
+<h3 id="orgefea6e1"><span class="section-number-3">4.4.</span> Script structure (standalone R scripts)</h3>
+<div class="outline-text-3" id="text-4-4">
+<ul class="org-ul">
+<li>Follow tidyverse style (dplyr, ggplot2, readxl)<br /></li>
+<li><code>variable_names_with_underscore</code><br /></li>
+<li>Spaces before and after <code>=</code>, <code>+</code>, <code>-</code>, <code>&lt;-</code>, etc.; after comma<br /></li>
+<li>For Snakemake <code>script:</code> files: use <code>snakemake@input</code>, <code>snakemake@output</code>, <code>snakemake@log</code><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org0752547" class="outline-3">
+<h3 id="org0752547"><span class="section-number-3">4.5.</span> References</h3>
+<div class="outline-text-3" id="text-4-5">
+<ul class="org-ul">
+<li><a href="https://style.tidyverse.org/">Tidyverse style guide</a><br /></li>
+<li><a href="https://google.github.io/styleguide/Rguide.html">Google R style guide</a><br /></li>
+<li><a href="https://contributions.bioconductor.org/r-code.html">Bioconductor coding style</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orga0f6359" class="outline-2">
+<h2 id="orga0f6359"><span class="section-number-2">5.</span> Emacs Lisp</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org01ffcb1" class="outline-3">
+<h3 id="org01ffcb1"><span class="section-number-3">5.1.</span> Comment format</h3>
+<div class="outline-text-3" id="text-5-1">
+<ul class="org-ul">
+<li><code>;</code> — inline (end of line), rare<br /></li>
+<li><code>;;</code> — standalone comment preceding code (most common)<br /></li>
+<li><code>;;;</code> — section header<br /></li>
+<li><code>;;;;</code> — top-level file section header<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org8611d0e" class="outline-3">
+<h3 id="org8611d0e"><span class="section-number-3">5.2.</span> Verbosity by context</h3>
+<div class="outline-text-3" id="text-5-2">
+<ul class="org-ul">
+<li><b>Config functions</b> (tangled from emacs.org/private.org): one-liner <code>;;</code> above the function. The org prose is the documentation; the tangled file just needs enough to grep.<br /></li>
+<li><b>Infrastructure defuns</b> (called from many places, hooks, capture templates): full docstring as first form in the function body, plus <code>;;</code> for non-obvious logic.<br /></li>
+<li><b>Use-package blocks</b>: generally no comments needed; the package name and <code>:config</code> are self-documenting.<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org227442a" class="outline-3">
+<h3 id="org227442a"><span class="section-number-3">5.3.</span> Template</h3>
+<div class="outline-text-3" id="text-5-3">
+<pre class="example" id="org24944f3">
+;;;; Navigation utilities
+
+;;; Filter helm results to exclude structural headings
+(defun jg/helm-filter-example (candidate)
+  "Return non-nil if CANDIDATE should be shown in helm."
+  (not (string-match-p ":nohelm:" candidate)))  ; tag-based exclusion
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org3231767" class="outline-2">
+<h2 id="org3231767"><span class="section-number-2">6.</span> Snakemake</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+Style conventions for Snakemake workflow files. For workflow architecture (wrapper vs module types, experiment grouping), see the full <a href="basecamp.html#ID-146f3266-f634-4728-8172-9ae8b459d0c7">Snakemake Style Guide and Good Practices</a>.<br />
+</p>
+</div>
+<div id="outline-container-org4967845" class="outline-3">
+<h3 id="org4967845"><span class="section-number-3">6.1.</span> Comments</h3>
+<div class="outline-text-3" id="text-6-1">
+<ul class="org-ul">
+<li><code>#</code> comments follow Python conventions<br /></li>
+<li>Rule-level: brief docstring comment immediately after <code>rule name:</code> explaining purpose and key I/O<br /></li>
+<li>Workflow-level: section banners between logical groups of rules<br /></li>
+<li>Do not comment individual <code>input:</code> / <code>output:</code> / <code>params:</code> lines unless non-obvious<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org4ff9952" class="outline-3">
+<h3 id="org4ff9952"><span class="section-number-3">6.2.</span> Path and variable conventions</h3>
+<div class="outline-text-3" id="text-6-2">
+<ul class="org-ul">
+<li>Hungarian notation prefixes: <code>D_</code> for data directories (absolute paths from config), <code>R_</code> for repository locations, <code>CONDA_</code> for conda environment YAML files<br /></li>
+<li>Build paths using Python f-strings with explicit structure: <code>f"{D_EMSEQ}/align/{{sample}}.bam"</code><br /></li>
+<li>Escape wildcards in f-strings with double braces<br /></li>
+<li>Paths should be declarative and reflect intended output organization<br /></li>
+<li>Avoid <code>os.path.join</code> unless necessary for cross-platform compatibility<br /></li>
+<li>Avoid encoding workflow logic or conditionals inside path expressions<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgc2fe154" class="outline-3">
+<h3 id="orgc2fe154"><span class="section-number-3">6.3.</span> Rule construction</h3>
+<div class="outline-text-3" id="text-6-3">
+<ul class="org-ul">
+<li>Rules describe what is produced, not how it is computed<br /></li>
+<li>Prefix modular workflow rules with the workflow ID (e.g., <code>rule emseq_align</code>)<br /></li>
+<li>Standard directive order:<br />
+<ol class="org-ol">
+<li>message<br /></li>
+<li>conda<br /></li>
+<li>input<br /></li>
+<li>log<br /></li>
+<li>benchmark<br /></li>
+<li>params<br /></li>
+<li>threads<br /></li>
+<li>output<br /></li>
+</ol></li>
+<li>Always parameterize threads as a directive; never hard-code thread counts in shell or scripts<br /></li>
+<li>Each rule specifies its conda environment<br /></li>
+<li>Every rule defines a log file; redirect stdout/stderr explicitly so logs land in <code>D_LOG</code><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgcbdc9a7" class="outline-3">
+<h3 id="orgcbdc9a7"><span class="section-number-3">6.4.</span> Shell blocks and scripts</h3>
+<div class="outline-text-3" id="text-6-4">
+<ul class="org-ul">
+<li>Prefer external scripts over inline shell; scripts should be runnable outside Snakemake with explicit arguments<br /></li>
+<li>Keep log and workflow logic in the Snakefile, external to the script<br /></li>
+<li>Echo an execution-specific message: <code>echo "[tool] $(date) lib={wildcards.library_id} threads={threads}"</code><br /></li>
+<li>Redirect stdout/stderr explicitly (e.g., <code>exec &gt; "{log}" 2&gt;&amp;1</code>)<br /></li>
+<li>Avoid embedding complex logic in <code>run</code> or <code>shell</code> blocks<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org3e4484e" class="outline-3">
+<h3 id="org3e4484e"><span class="section-number-3">6.5.</span> Configuration</h3>
+<div class="outline-text-3" id="text-6-5">
+<ul class="org-ul">
+<li>Prefer structured (nested) YAML over flat keys: <code>config["ref"]["index"]</code> not <code>config["ref_index"]</code><br /></li>
+<li>Two-layer config: base (committed to repo) + override (runtime via <code>--configfile</code>)<br /></li>
+<li>Use booleans for conditional execution; express conditional branches in <code>rule all</code><br /></li>
+<li>Use tabular configuration (TSV/CSV) for sample/unit metadata; load once in the preamble<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org7c22798" class="outline-3">
+<h3 id="org7c22798"><span class="section-number-3">6.6.</span> Rule template</h3>
+<div class="outline-text-3" id="text-6-6">
+<div class="org-src-container">
+<pre class="src src-snakemake"><span style="color: #fa8072;"># </span><span style="color: #ff7f24; font-style: italic;">=============================================================================
+</span><span style="color: #fa8072;"># </span><span style="color: #ff7f24; font-style: italic;">SECTION: ALIGNMENT
+</span><span style="color: #fa8072;"># </span><span style="color: #ff7f24; font-style: italic;">=============================================================================
+</span>
+<span style="color: #fa8072;"># </span><span style="color: #ff7f24; font-style: italic;">Align reads to reference genome using bwa-mem2.
+</span><span style="color: #fa8072;"># </span><span style="color: #ff7f24; font-style: italic;">Input: trimmed FASTQs; Output: sorted BAM + index.
+</span><span style="color: #00ffff;">rule</span> <span style="color: #00fa9a; font-weight: bold;">align_reads</span>:
+<span style="color: #f5deb3;"> </span>   <span style="color: #63b8ff;">input</span>:
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #7fffd4;">r1</span> = rules.trim.<span style="color: #b0c4de;">output</span>.r1,
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #7fffd4;">r2</span> = rules.trim.<span style="color: #b0c4de;">output</span>.r2,
+<span style="color: #f5deb3;"> </span>   <span style="color: #63b8ff;">output</span>:
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #7fffd4;">bam</span> = D_ALIGNED / <span style="color: #ffc1c1;">"{sample}.bam"</span>,
+<span style="color: #f5deb3;"> </span>   <span style="color: #63b8ff;">threads</span>: 8
+<span style="color: #f5deb3;"> </span>   <span style="color: #63b8ff;">conda</span>: ENV_BIOTOOLS
+<span style="color: #f5deb3;"> </span>   <span style="color: #63b8ff;">shell</span>:
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #ffc1c1;">"bwa-mem2 mem -t {threads} {config[ref_genome]} "</span>
+<span style="color: #f5deb3;"> </span>   <span style="color: #f5deb3;"> </span>   <span style="color: #ffc1c1;">"{input.r1} {input.r2} | samtools sort -o {output.bam}"</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org5dd5d41" class="outline-3">
+<h3 id="org5dd5d41"><span class="section-number-3">6.7.</span> References</h3>
+<div class="outline-text-3" id="text-6-7">
+<ul class="org-ul">
+<li><a href="https://snakemake.readthedocs.io/en/stable/">Snakemake documentation</a><br /></li>
+<li><a href="#org5fb0562">Python style guide</a> (comments in .smk files follow Python conventions)<br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb79b227" class="outline-2">
+<h2 id="orgb79b227"><span class="section-number-2">7.</span> YAML / Config</h2>
+<div class="outline-text-2" id="text-7">
+<ul class="org-ul">
+<li>Minimal commenting — the structure is self-documenting<br /></li>
+<li>Comment version pins: <code># pinned for compat with X</code><br /></li>
+<li>Comment workarounds: <code># workaround for bug in Y</code><br /></li>
+<li>Ansible tasks: the <code>name:</code> field IS the comment; add <code>#</code> only for non-obvious <code>when:</code> conditions<br /></li>
+</ul>
+</div>
+</div>
+</div>
+</body>
+</html>
