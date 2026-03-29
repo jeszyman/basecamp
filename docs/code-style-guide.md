@@ -1,57 +1,117 @@
+- [Commenting Verbosity](#org3fc3f39)
+        - [How to use this table](#orgf3b2aa4)
+        - [When NOT to comment](#org0816d1b)
+      - [Bash](#org0fdffbb)
+        - [Indentation](#orgefd4de4)
+        - [Comments](#org4cbbf34)
+        - [Comment template](#orgdef1d77)
+        - [Scripts](#org6430c14)
+        - [Script template](#org84d6bd9)
+        - [Functions](#org852c4d7)
+        - [References](#orgabbc0bc)
+      - [Python](#orga580dfd)
+        - [Indentation](#org4d9b991)
+        - [Comments](#org7b853d1)
+        - [Comment template](#orgb2560d8)
+        - [Scripts](#org5366dd7)
+        - [Script template](#org106988e)
+        - [Functions](#orgefc1ed4)
+        - [References](#org7c6f553)
+      - [R](#orgcc2c913)
+        - [Indentation](#orgcd7c5e6)
+        - [Comment format](#org8f4d366)
+        - [Cookbook / notebook conventions](#orgb4c0e46)
+        - [Script structure (standalone R scripts)](#org92d465b)
+        - [References](#orgd03b05f)
+      - [Emacs Lisp](#org19fbd94)
+        - [Comment format](#org30aa51d)
+        - [Verbosity by context](#orgd819c93)
+        - [Template](#orga6b642d)
+      - [Snakemake](#orgdfcaf42)
+        - [Comments](#org3af8a8d)
+        - [Path and variable conventions](#orgba25b68)
+        - [Rule construction](#org4c122c2)
+        - [Shell blocks and scripts](#orgc1775e8)
+        - [Configuration](#org25e5cf9)
+        - [Rule template](#org8360642)
+        - [References](#orgcc1d9a5)
+      - [YAML / Config](#orga16d473)
+
 Consolidated code style guide covering commenting verbosity, comment formatting, and language-specific conventions. Exported to `docs/code-style-guide.md` for Claude and other tool consumption.  
 
-## Commenting Verbosity
+
+<a id="org3fc3f39"></a>
+
+# Commenting Verbosity
 
 Match commenting density to context. When the context is ambiguous, ask the user.  
 
-| Context | Verbosity | What to comment |
-|----|----|----|
-| Cookbook / notebook (R/Python analysis in org-babel) | Heavy | Narrate analytical reasoning, explain why each step, section headers between logical phases |
-| Standalone scripts (bash, Python) | Moderate–heavy | Top block comment, section banners, function docstrings, non-obvious logic |
-| Snakemake rules (.smk) | Moderate | Rule-level purpose, key params, workflow rationale |
-| Snakemake `script:` R/Python files | Moderate | Explain the analytical step; pipeline context lives in the rule |
-| Infrastructure elisp (defuns called from many places) | Moderate | Function docstring, non-obvious logic |
-| Config elisp (tangled from emacs.org) | Light | One-liner above function; org source is canonical documentation |
-| Ansible playbooks/tasks (YAML) | Light | Task `name:` field is the comment; `#` only for non-obvious `when:` or workarounds |
-| Config YAML (conda envs, i3, etc.) | Minimal | Comment only version pins or workarounds |
-| Org-babel blocks in documentation/tutorial headings | Heavy | Reader is learning; treat like a cookbook |
-| Quick org-babel snippets (exploratory, throwaway) | Minimal | Only if logic is non-obvious |
-| Test code | Light | Test name describes intent; comment only surprising setup |
+| Context                                               | Verbosity      | What to comment                                                                             |
+|----------------------------------------------------- |-------------- |------------------------------------------------------------------------------------------- |
+| Cookbook / notebook (R/Python analysis in org-babel)  | Heavy          | Narrate analytical reasoning, explain why each step, section headers between logical phases |
+| Standalone scripts (bash, Python)                     | Moderate–heavy | Top block comment, section banners, function docstrings, non-obvious logic                  |
+| Snakemake rules (.smk)                                | Moderate       | Rule-level purpose, key params, workflow rationale                                          |
+| Snakemake `script:` R/Python files                    | Moderate       | Explain the analytical step; pipeline context lives in the rule                             |
+| Infrastructure elisp (defuns called from many places) | Moderate       | Function docstring, non-obvious logic                                                       |
+| Config elisp (tangled from emacs.org)                 | Light          | One-liner above function; org source is canonical documentation                             |
+| Ansible playbooks/tasks (YAML)                        | Light          | Task `name:` field is the comment; `#` only for non-obvious `when:` or workarounds          |
+| Config YAML (conda envs, i3, etc.)                    | Minimal        | Comment only version pins or workarounds                                                    |
+| Org-babel blocks in documentation/tutorial headings   | Heavy          | Reader is learning; treat like a cookbook                                                   |
+| Quick org-babel snippets (exploratory, throwaway)     | Minimal        | Only if logic is non-obvious                                                                |
+| Test code                                             | Light          | Test name describes intent; comment only surprising setup                                   |
 
-### How to use this table
 
-1.  Identify which row matches the code you are about to write  
-2.  Apply the verbosity level from that row  
-3.  Use the language-specific comment format conventions below  
-4.  If no row matches or the context is ambiguous, ask  
+<a id="orgf3b2aa4"></a>
 
-### When NOT to comment
+## How to use this table
 
-- Do not restate what the code does — explain *why*  
-- Do not comment obvious stdlib calls or standard idioms  
-- Do not add `TODO` comments without a corresponding task/ticket  
-- Do not add comments that will immediately go stale (e.g. "this list has 5 items")  
+1.  Identify which row matches the code you are about to write
+2.  Apply the verbosity level from that row
+3.  Use the language-specific comment format conventions below
+4.  If no row matches or the context is ambiguous, ask
 
-## Bash
 
-Consolidated from [Bash and shell](basecamp.html#ID-89576FD2-F863-4220-BAD7-D4E179AEA644) (under Programming languages).  
+<a id="org0816d1b"></a>
 
-### Indentation
+## When NOT to comment
 
-- 2 spaces, no tabs  
+-   Do not restate what the code does — explain *why*
+-   Do not comment obvious stdlib calls or standard idioms
+-   Do not add `TODO` comments without a corresponding task/ticket
+-   Do not add comments that will immediately go stale (e.g. "this list has 5 items")
 
-### Comments
 
-- Wrap comments at 80 columns when practical; allow exceptions for unbreakable tokens (paths, commands, URLs) and for usage synopsis lines.  
-- Comment types  
-  - Sectioning comments: major section headers use a separator banner with an UPPERCASE title; minor section subheaders use a separator banner with a Mixed-case title  
-  - Block comments: multi-line explanations sectioned off with a banner (same width/style as other separators); not indented, not subheaders; subheaders are always single-line  
-  - Standalone comments: single-line comments that precede the code they describe; used for short context or rationale  
-  - Inline comments: on the same line as code, placed after two spaces; kept short, explain rationale rather than restating the code. Do not place inline comments after a line-continuation backslash (`\`) or after a here-doc delimiter (`<<EOF`), as this breaks parsing.  
+<a id="org0fdffbb"></a>
 
-### Comment template
+# Bash
 
-``` src
+Consolidated from [Bash and shell](basecamp.md) (under Programming languages).  
+
+
+<a id="orgefd4de4"></a>
+
+## Indentation
+
+-   2 spaces, no tabs
+
+
+<a id="org4cbbf34"></a>
+
+## Comments
+
+-   Wrap comments at 80 columns when practical; allow exceptions for unbreakable tokens (paths, commands, URLs) and for usage synopsis lines.
+-   Comment types  
+    -   Sectioning comments: major section headers use a separator banner with an UPPERCASE title; minor section subheaders use a separator banner with a Mixed-case title
+    -   Block comments: multi-line explanations sectioned off with a banner (same width/style as other separators); not indented, not subheaders; subheaders are always single-line
+    -   Standalone comments: single-line comments that precede the code they describe; used for short context or rationale
+    -   Inline comments: on the same line as code, placed after two spaces; kept short, explain rationale rather than restating the code. Do not place inline comments after a line-continuation backslash (`\`) or after a here-doc delimiter (`<<EOF`), as this breaks parsing.
+
+
+<a id="orgdef1d77"></a>
+
+## Comment template
+
+```bash
 # =============================================================================
 # SECTION: CONFIGURATION
 # =============================================================================
@@ -114,25 +174,31 @@ hello
 EOF
 ```
 
-### Scripts
 
-- Overall structure: functions first, `main "$@"` last. `main()` is the entry point.  
-- Shebang: `#!/usr/bin/env bash`  
-- Documentation: top block comment describing script purpose  
-- `print_usage()`: follows Unix man-page conventions (Usage line, Options, Arguments, Examples). Required arguments use `<UPPERCASE>` notation; optional in brackets.  
-- `parse_args()`  
-  - The only function that may read positional args (`$1`, `$2`, `$@`, `$#`)  
-  - Validates inputs, applies defaults, computes derived values  
-  - Sets script configuration variables (globals) for downstream functions  
-  - `-h|--help` prints usage and exits 0; misuse exits 2; runtime errors exit 1  
-- `main()`: entry point; calls `parse_args "$@"`, then work functions in order  
-- Work functions: consume named variables only, no CLI parsing, no new globals, assume preconditions satisfied  
-- Final line: `main "$@"`  
-- Error policy: stdout for machine-consumable output; stderr for all diagnostics  
+<a id="org6430c14"></a>
 
-### Script template
+## Scripts
 
-``` src
+-   Overall structure: functions first, `main "$@"` last. `main()` is the entry point.
+-   Shebang: `#!/usr/bin/env bash`
+-   Documentation: top block comment describing script purpose
+-   `print_usage()`: follows Unix man-page conventions (Usage line, Options, Arguments, Examples). Required arguments use `<UPPERCASE>` notation; optional in brackets.
+-   `parse_args()`  
+    -   The only function that may read positional args (`$1`, `$2`, `$@`, `$#`)
+    -   Validates inputs, applies defaults, computes derived values
+    -   Sets script configuration variables (globals) for downstream functions
+    -   `-h|--help` prints usage and exits 0; misuse exits 2; runtime errors exit 1
+-   `main()`: entry point; calls `parse_args "$@"`, then work functions in order
+-   Work functions: consume named variables only, no CLI parsing, no new globals, assume preconditions satisfied
+-   Final line: `main "$@"`
+-   Error policy: stdout for machine-consumable output; stderr for all diagnostics
+
+
+<a id="org84d6bd9"></a>
+
+## Script template
+
+```bash
 #!/usr/bin/env bash
 
 # -----------------------------------------------------------------------------
@@ -183,40 +249,59 @@ main() {
 main "$@"
 ```
 
-### Functions
 
-- `lower_snake_case` names, opening brace on same line: `name() {`  
-- In-script functions (parse-once model): `parse_args()` populates globals; other functions must not read positional args  
-- Standalone reusable functions (sourced): accept inputs as positional parameters, immediately assign to `local` variables, declare all temporaries `local`  
+<a id="org852c4d7"></a>
 
-### References
+## Functions
 
-- [Google Shell Style Guide](https://google.github.io/styleguide/shellguide.html)  
+-   `lower_snake_case` names, opening brace on same line: `name() {`
+-   In-script functions (parse-once model): `parse_args()` populates globals; other functions must not read positional args
+-   Standalone reusable functions (sourced): accept inputs as positional parameters, immediately assign to `local` variables, declare all temporaries `local`
 
-## Python
 
-Consolidated from [Bash and shell → Python](basecamp.html#ID-89576FD2-F863-4220-BAD7-D4E179AEA644) (under Programming languages).  
+<a id="orgabbc0bc"></a>
 
-### Indentation
+## References
 
-- 4 spaces, no tabs  
+-   [Google Shell Style Guide](https://google.github.io/styleguide/shellguide.html)
 
-### Comments
 
-- Wrap at 80 columns (Black default 88); exceptions for unbreakable tokens  
-- Comment types  
-  - Sectioning comments: same banner style as bash (`# =====`, `# -----`)  
-  - Docstrings: `"""..."""` as first statement in module/class/function  
-  - Block comments: multi-line with banner, not indented, not subheaders  
-  - Standalone comments: single line preceding code  
-  - Inline comments: after two spaces, rationale not restatement  
+<a id="orga580dfd"></a>
 
-### Comment template
+# Python
 
-``` src
+Consolidated from [Bash and shell → Python](basecamp.md) (under Programming languages).  
+
+
+<a id="org4d9b991"></a>
+
+## Indentation
+
+-   4 spaces, no tabs
+
+
+<a id="org7b853d1"></a>
+
+## Comments
+
+-   Wrap at 80 columns (Black default 88); exceptions for unbreakable tokens
+-   Comment types  
+    -   Sectioning comments: same banner style as bash (`# =====`, `# -----`)
+    -   Docstrings: `"""..."""` as first statement in module/class/function
+    -   Block comments: multi-line with banner, not indented, not subheaders
+    -   Standalone comments: single line preceding code
+    -   Inline comments: after two spaces, rationale not restatement
+
+
+<a id="orgb2560d8"></a>
+
+## Comment template
+
+```python
 # =============================================================================
 # SECTION: CONFIGURATION
 # =============================================================================
+
 
 DEFAULT_THREADS = 8  # keep low for interactive nodes
 
@@ -234,21 +319,27 @@ def parse_args(argv: list[str]) -> "Args":
 # -----------------------------------------------------------------------------
 ```
 
-### Scripts
 
-- Overall structure: definitions first, `main()` last, `if __name__ == "__main__":` entry point  
-- Shebang: `#!/usr/bin/env python3` only for directly executed files  
-- Top module docstring describing purpose, inputs, outputs, assumptions  
-- `argparse` for CLI parsing in `parse_args()`  
-- `parse_args()`: only function that reads raw CLI args; returns structured object (dataclass or Namespace); `-h/--help` exits 0, CLI misuse exits 2, runtime errors exit 1  
-- `main()`: entry point, short linear orchestration, calls `parse_args(argv)` then work functions  
-- Work functions: consume named values only, prefer returning over mutating globals  
-- Entry point: `if __name__ == "__main__": raise SystemExit(main())`  
-- Error policy: stdout for machine-consumable output; stderr for all diagnostics  
+<a id="org5366dd7"></a>
 
-### Script template
+## Scripts
 
-``` src
+-   Overall structure: definitions first, `main()` last, `if __name__ == "__main__":` entry point
+-   Shebang: `#!/usr/bin/env python3` only for directly executed files
+-   Top module docstring describing purpose, inputs, outputs, assumptions
+-   `argparse` for CLI parsing in `parse_args()`
+-   `parse_args()`: only function that reads raw CLI args; returns structured object (dataclass or Namespace); `-h/--help` exits 0, CLI misuse exits 2, runtime errors exit 1
+-   `main()`: entry point, short linear orchestration, calls `parse_args(argv)` then work functions
+-   Work functions: consume named values only, prefer returning over mutating globals
+-   Entry point: `if __name__ == "__main__": raise SystemExit(main())`
+-   Error policy: stdout for machine-consumable output; stderr for all diagnostics
+
+
+<a id="org106988e"></a>
+
+## Script template
+
+```python
 #!/usr/bin/env python3
 """
 Docstring
@@ -301,75 +392,112 @@ def main(argv: list[str] | None = None) -> int:
     # run_work(inputs_dir=args.inputs_dir, output_tsv=args.output_tsv)
     return 0
 
+
 if __name__ == "__main__":
     # Entry point:
     # - ensures the script does not run when imported as a module
     # - propagates main()'s integer return value as the process exit code
     raise SystemExit(main())
+
 ```
 
-### Functions
 
-- `lower_snake_case` names, type hints for public functions  
-- Single-purpose, explicit parameters over globals  
-- Reusable (library-style): parameterize inputs, return outputs, never print; raise specific exceptions, convert to exit codes only in `main()`  
+<a id="orgefc1ed4"></a>
 
-### References
+## Functions
 
-- [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)  
+-   `lower_snake_case` names, type hints for public functions
+-   Single-purpose, explicit parameters over globals
+-   Reusable (library-style): parameterize inputs, return outputs, never print; raise specific exceptions, convert to exit codes only in `main()`
 
-## R
 
-### Indentation
+<a id="org7c6f553"></a>
 
-- 2 spaces, no tabs  
+## References
 
-### Comment format
+-   [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)
 
-- **Sectioning comments**: use banner style consistent with bash/Python (`# =====` for major, `# ----` for minor)  
-- **Roxygen-style docstrings** for functions: `#' @param`, `#' @return`, `#' @examples`  
-- **Standalone comments**: single `#` line preceding code  
-- **Inline comments**: after two spaces  
 
-### Cookbook / notebook conventions
+<a id="orgcc2c913"></a>
 
-- Heavy commenting is expected — narrate the analytical reasoning  
-- Section headers between logical phases (data loading, filtering, transformation, visualization, output)  
-- Explain *why* a filter threshold or parameter was chosen, not just what the code does  
-- When a step produces an intermediate result, briefly describe what the result looks like (rows, columns, expected values)  
+# R
 
-### Script structure (standalone R scripts)
 
-- Follow tidyverse style (dplyr, ggplot2, readxl)  
-- `variable_names_with_underscore`  
-- Spaces before and after `=`, `+`, `-`, `<-`, etc.; after comma  
-- For Snakemake `script:` files: use `snakemake@input`, `snakemake@output`, `snakemake@log`  
+<a id="orgcd7c5e6"></a>
 
-### References
+## Indentation
 
-- [Tidyverse style guide](https://style.tidyverse.org/)  
-- [Google R style guide](https://google.github.io/styleguide/Rguide.html)  
-- [Bioconductor coding style](https://contributions.bioconductor.org/r-code.html)  
+-   2 spaces, no tabs
 
-## Emacs Lisp
 
-### Comment format
+<a id="org8f4d366"></a>
 
-- `;` — inline (end of line), rare  
-- `;;` — standalone comment preceding code (most common)  
-- `;;;` — section header  
-- `;;;;` — top-level file section header  
+## Comment format
 
-### Verbosity by context
+-   **Sectioning comments**: use banner style consistent with bash/Python (`# =====` for major, `# ----` for minor)
+-   **Roxygen-style docstrings** for functions: `#' @param`, `#' @return`, `#' @examples`
+-   **Standalone comments**: single `#` line preceding code
+-   **Inline comments**: after two spaces
 
-- **Config functions** (tangled from emacs.org/private.org): one-liner `;;` above the function. The org prose is the documentation; the tangled file just needs enough to grep.  
-- **Infrastructure defuns** (called from many places, hooks, capture templates): full docstring as first form in the function body, plus `;;` for non-obvious logic.  
-- **Use-package blocks**: generally no comments needed; the package name and `:config` are self-documenting.  
 
-### Template
+<a id="orgb4c0e46"></a>
 
-``` example
+## Cookbook / notebook conventions
 
+-   Heavy commenting is expected — narrate the analytical reasoning
+-   Section headers between logical phases (data loading, filtering, transformation, visualization, output)
+-   Explain *why* a filter threshold or parameter was chosen, not just what the code does
+-   When a step produces an intermediate result, briefly describe what the result looks like (rows, columns, expected values)
+
+
+<a id="org92d465b"></a>
+
+## Script structure (standalone R scripts)
+
+-   Follow tidyverse style (dplyr, ggplot2, readxl)
+-   `variable_names_with_underscore`
+-   Spaces before and after `=`, `+`, `-`, `<-`, etc.; after comma
+-   For Snakemake `script:` files: use `snakemake@input`, `snakemake@output`, `snakemake@log`
+
+
+<a id="orgd03b05f"></a>
+
+## References
+
+-   [Tidyverse style guide](https://style.tidyverse.org/)
+-   [Google R style guide](https://google.github.io/styleguide/Rguide.html)
+-   [Bioconductor coding style](https://contributions.bioconductor.org/r-code.html)
+
+
+<a id="org19fbd94"></a>
+
+# Emacs Lisp
+
+
+<a id="org30aa51d"></a>
+
+## Comment format
+
+-   `;` — inline (end of line), rare
+-   `;;` — standalone comment preceding code (most common)
+-   `;;;` — section header
+-   `;;;;` — top-level file section header
+
+
+<a id="orgd819c93"></a>
+
+## Verbosity by context
+
+-   **Config functions** (tangled from emacs.org/private.org): one-liner `;;` above the function. The org prose is the documentation; the tangled file just needs enough to grep.
+-   **Infrastructure defuns** (called from many places, hooks, capture templates): full docstring as first form in the function body, plus `;;` for non-obvious logic.
+-   **Use-package blocks**: generally no comments needed; the package name and `:config` are self-documenting.
+
+
+<a id="orga6b642d"></a>
+
+## Template
+
+```
 ;;;; Navigation utilities
 
 ;;; Filter helm results to exclude structural headings
@@ -378,61 +506,82 @@ if __name__ == "__main__":
   (not (string-match-p ":nohelm:" candidate)))  ; tag-based exclusion
 ```
 
-## Snakemake
 
-Style conventions for Snakemake workflow files. For workflow architecture (wrapper vs module types, experiment grouping), see the full [Snakemake Style Guide and Good Practices](basecamp.html#ID-146f3266-f634-4728-8172-9ae8b459d0c7).  
+<a id="orgdfcaf42"></a>
 
-### Comments
+# Snakemake
 
-- `#` comments follow Python conventions  
-- Rule-level: brief docstring comment immediately after `rule name:` explaining purpose and key I/O  
-- Workflow-level: section banners between logical groups of rules  
-- Do not comment individual `input:` / `output:` / `params:` lines unless non-obvious  
+Style conventions for Snakemake workflow files. For workflow architecture (wrapper vs module types, experiment grouping), see the full [Snakemake Style Guide and Good Practices](basecamp.md).  
 
-### Path and variable conventions
 
-- Hungarian notation prefixes: `D_` for data directories (absolute paths from config), `R_` for repository locations, `CONDA_` for conda environment YAML files  
-- Build paths using Python f-strings with explicit structure: `f"{D_EMSEQ}/align/{{sample}}.bam"`  
-- Escape wildcards in f-strings with double braces  
-- Paths should be declarative and reflect intended output organization  
-- Avoid `os.path.join` unless necessary for cross-platform compatibility  
-- Avoid encoding workflow logic or conditionals inside path expressions  
+<a id="org3af8a8d"></a>
 
-### Rule construction
+## Comments
 
-- Rules describe what is produced, not how it is computed  
-- Prefix modular workflow rules with the workflow ID (e.g., `rule emseq_align`)  
-- Standard directive order:  
-  1.  message  
-  2.  conda  
-  3.  input  
-  4.  log  
-  5.  benchmark  
-  6.  params  
-  7.  threads  
-  8.  output  
-- Always parameterize threads as a directive; never hard-code thread counts in shell or scripts  
-- Each rule specifies its conda environment  
-- Every rule defines a log file; redirect stdout/stderr explicitly so logs land in `D_LOG`  
+-   `#` comments follow Python conventions
+-   Rule-level: brief docstring comment immediately after `rule name:` explaining purpose and key I/O
+-   Workflow-level: section banners between logical groups of rules
+-   Do not comment individual `input:` / `output:` / `params:` lines unless non-obvious
 
-### Shell blocks and scripts
 
-- Prefer external scripts over inline shell; scripts should be runnable outside Snakemake with explicit arguments  
-- Keep log and workflow logic in the Snakefile, external to the script  
-- Echo an execution-specific message: `echo "[tool] $(date) lib={wildcards.library_id} threads={threads}"`  
-- Redirect stdout/stderr explicitly (e.g., `exec > "{log}" 2>&1`)  
-- Avoid embedding complex logic in `run` or `shell` blocks  
+<a id="orgba25b68"></a>
 
-### Configuration
+## Path and variable conventions
 
-- Prefer structured (nested) YAML over flat keys: `config["ref"]["index"]` not `config["ref_index"]`  
-- Two-layer config: base (committed to repo) + override (runtime via `--configfile`)  
-- Use booleans for conditional execution; express conditional branches in `rule all`  
-- Use tabular configuration (TSV/CSV) for sample/unit metadata; load once in the preamble  
+-   Hungarian notation prefixes: `D_` for data directories (absolute paths from config), `R_` for repository locations, `CONDA_` for conda environment YAML files
+-   Build paths using Python f-strings with explicit structure: `f"{D_EMSEQ}/align/{{sample}}.bam"`
+-   Escape wildcards in f-strings with double braces
+-   Paths should be declarative and reflect intended output organization
+-   Avoid `os.path.join` unless necessary for cross-platform compatibility
+-   Avoid encoding workflow logic or conditionals inside path expressions
 
-### Rule template
 
-``` src
+<a id="org4c122c2"></a>
+
+## Rule construction
+
+-   Rules describe what is produced, not how it is computed
+-   Prefix modular workflow rules with the workflow ID (e.g., `rule emseq_align`)
+-   Standard directive order:  
+    1.  message
+    2.  conda
+    3.  input
+    4.  log
+    5.  benchmark
+    6.  params
+    7.  threads
+    8.  output
+-   Always parameterize threads as a directive; never hard-code thread counts in shell or scripts
+-   Each rule specifies its conda environment
+-   Every rule defines a log file; redirect stdout/stderr explicitly so logs land in `D_LOG`
+
+
+<a id="orgc1775e8"></a>
+
+## Shell blocks and scripts
+
+-   Prefer external scripts over inline shell; scripts should be runnable outside Snakemake with explicit arguments
+-   Keep log and workflow logic in the Snakefile, external to the script
+-   Echo an execution-specific message: `echo "[tool] $(date) lib={wildcards.library_id} threads={threads}"`
+-   Redirect stdout/stderr explicitly (e.g., `exec > "{log}" 2>&1`)
+-   Avoid embedding complex logic in `run` or `shell` blocks
+
+
+<a id="org25e5cf9"></a>
+
+## Configuration
+
+-   Prefer structured (nested) YAML over flat keys: `config["ref"]["index"]` not `config["ref_index"]`
+-   Two-layer config: base (committed to repo) + override (runtime via `--configfile`)
+-   Use booleans for conditional execution; express conditional branches in `rule all`
+-   Use tabular configuration (TSV/CSV) for sample/unit metadata; load once in the preamble
+
+
+<a id="org8360642"></a>
+
+## Rule template
+
+```snakemake
 # =============================================================================
 # SECTION: ALIGNMENT
 # =============================================================================
@@ -452,14 +601,20 @@ rule align_reads:
         "{input.r1} {input.r2} | samtools sort -o {output.bam}"
 ```
 
-### References
 
-- [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/)  
-- [Python style guide](#org5fb0562) (comments in .smk files follow Python conventions)  
+<a id="orgcc1d9a5"></a>
 
-## YAML / Config
+## References
 
-- Minimal commenting — the structure is self-documenting  
-- Comment version pins: `# pinned for compat with X`  
-- Comment workarounds: `# workaround for bug in Y`  
-- Ansible tasks: the `name:` field IS the comment; add `#` only for non-obvious `when:` conditions
+-   [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/)
+-   [Python style guide](#orga580dfd) (comments in .smk files follow Python conventions)
+
+
+<a id="orga16d473"></a>
+
+# YAML / Config
+
+-   Minimal commenting — the structure is self-documenting
+-   Comment version pins: `# pinned for compat with X`
+-   Comment workarounds: `# workaround for bug in Y`
+-   Ansible tasks: the `name:` field IS the comment; add `#` only for non-obvious `when:` conditions

@@ -1,50 +1,48 @@
-#!/bin/bash
-# ============================================================
-# AUTO-GENERATED — DO NOT EDIT DIRECTLY
-# Edits will be overwritten on next org-babel tangle.
-# 
-# Source:  /home/jeszyman/repos/basecamp/basecamp.org
-# Author:  Jeffrey Szymanski
-# Tangled: 2026-03-24 12:27:30
-# ============================================================
+#!/usr/bin/env bash
 
-#########1#########2#########3#########4#########5#########6#########7#########8
-#                                                                              #
-#                       Script to automate git pulls                           #
-#             from a set of repositories within the same root dir              #
-#                                                                              #
-#########1#########2#########3#########4#########5#########6#########7#########8
-#
-date_today=$(date +%F)
-# 1. Script Checks
-#
-## Check if git exist
-command -v git >/dev/null 2>&1 # stop if git not found
-if [ $? -eq 1 ]; then
-    echo "Git not found"
-    exit 1; fi
-##
-## Check if any repos exist
-shopt -s nullglob
-repo_dirs=(~/repos/*)
-if [ ${#repo_dirs[@]} -eq 0 ]; then
-    echo "No repos at ~/repos/"
-    exit 1; fi
-shopt -u nullglob
-##
-# 2. Pull Function
-#
-for d in $HOME/repos/*
-do
+# -----------------------------------------------------------------------------
+# daily_git_commit.sh
+# Stage, commit, pull, and push all repos under ~/repos/.
+# Intended for cron or manual batch sync — commit message is today's date.
+# -----------------------------------------------------------------------------
+
+check_prerequisites() {
+  if ! command -v git &>/dev/null; then
+    echo "Error: git not found" >&2
+    exit 1
+  fi
+
+  shopt -s nullglob
+  local repo_dirs=(~/repos/*)
+  shopt -u nullglob
+
+  if [[ ${#repo_dirs[@]} -eq 0 ]]; then
+    echo "Error: no repos at ~/repos/" >&2
+    exit 1
+  fi
+}
+
+sync_repos() {
+  local date_today
+  date_today=$(date +%F)
+
+  for d in "$HOME"/repos/*; do
     [[ ! -d "$d" ]] && continue
-    echo "$d" &&
-    cd "$d" &&
-    git add -A &&
-    git commit -am $date_today &&
-    git pull &&
-    git submodule update --recursive &&
-    git submodule update --remote &&
-    git push
+    echo "$d"
+    cd "$d" \
+      && git add -A \
+      && git commit -am "$date_today" \
+      && git pull \
+      && git submodule update --recursive \
+      && git submodule update --remote \
+      && git push
     cd "$OLDPWD"
-done
-#
+  done
+}
+
+main() {
+  check_prerequisites
+  sync_repos
+}
+
+main "$@"
