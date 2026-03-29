@@ -1,13 +1,4 @@
 #!/bin/bash
-# ============================================================
-# AUTO-GENERATED — DO NOT EDIT DIRECTLY
-# Edits will be overwritten on next org-babel tangle.
-# 
-# Source:  /home/jeszyman/repos/basecamp/basecamp.org
-# Author:  Jeffrey Szymanski
-# Tangled: 2026-03-24 12:27:30
-# ============================================================
-
 #########1#########2#########3#########4#########5#########6#########7#########8
 #                                                                              #
 #                       Script to automate git pulls                           #
