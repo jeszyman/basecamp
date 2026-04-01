@@ -4340,6 +4340,14 @@ emacs () {
 
 #+end_src
 
+***** emacs-interrupt()
+#+begin_src bash
+emacs-interrupt() {
+    pkill -USR2 emacs
+    echo "Sent SIGUSR2 to Emacs"
+}
+#+end_src
+
 ***** Volume control with amixer
 #+begin_src bash
 #+end_src
@@ -10288,7 +10296,10 @@ bespoke concurrency setup
     - Prefer paths relative to a master data directory or repository.
     - Avoid hard-coded absolute paths.
 - Known Issues
-  - Snakemake + mamba prefix collision: =mamba env create= fails with "Non-conda folder exists at prefix" when Snakemake manages per-rule conda environments. Workaround: use =--conda-frontend conda= flag. Observed 2026-03 with Snakemake 7.x + mamba.
+  - Snakemake + mamba prefix collision: =mamba env create= fails with "Non-conda folder exists at prefix" when Snakemake manages per-rule conda environments via =--use-conda=. Mamba refuses to create an env if the target prefix directory exists but is not a valid conda environment (no =conda-meta/= inside). Snakemake does not clean up partial directories on failure, so subsequent attempts fail repeatedly. Observed 2026-03 with Snakemake 7.x + mamba. Workarounds:
+    - Use =--conda-frontend conda= flag (slower but avoids the mamba bug)
+    - Pre-create envs manually: run =mamba env create --file <yaml> --prefix <path>= for each env, then run Snakemake normally. The envs and their prefix paths are listed in =.snakemake/conda/=.
+    - Clean =.snakemake/conda/= entirely (=rm -rf .snakemake/conda/=) and retry — but this forces all envs to be rebuilt from scratch.
 - See Also
   - [[id:dd9c7b11-7bb1-4a3d-8a40-b74ed0e2b55e][Python style guide]]
   - https://snakemake.readthedocs.io/en/stable/
