@@ -79,6 +79,10 @@ emacs () {
     emacsclient -c --no-wait --socket-name ~/.emacs.d/server/server & disown
     exit
 }
+emacs-interrupt() {
+    pkill -USR2 emacs
+    echo "Sent SIGUSR2 to Emacs"
+}
 
 mute() {
     print_usage() {
@@ -962,7 +966,17 @@ EOF
             return 1
         fi
 
-        ansible-playbook -i localhost, --connection=local "$1"
+        # Auto-detect vault-encrypted files in the playbook's ansible tree
+        # and add --ask-vault-pass if any are found.
+        local playbook="$1"
+        local ansible_root
+        ansible_root=$(dirname "$(dirname "$(readlink -f "$playbook")")")
+        local vault_flag=""
+        if grep -rlq '^\$ANSIBLE_VAULT' "$ansible_root" 2>/dev/null; then
+            vault_flag="--ask-vault-pass"
+        fi
+
+        ansible-playbook $vault_flag -i localhost, --connection=local "$playbook"
     }
 
     main "$@"

@@ -5485,7 +5485,17 @@ EOF
             return 1
         fi
 
-        ansible-playbook -i localhost, --connection=local "$1"
+        # Auto-detect vault-encrypted files in the playbook's ansible tree
+        # and add --ask-vault-pass if any are found.
+        local playbook="$1"
+        local ansible_root
+        ansible_root=$(dirname "$(dirname "$(readlink -f "$playbook")")")
+        local vault_flag=""
+        if grep -rlq '^\$ANSIBLE_VAULT' "$ansible_root" 2>/dev/null; then
+            vault_flag="--ask-vault-pass"
+        fi
+
+        ansible-playbook $vault_flag -i localhost, --connection=local "$playbook"
     }
 
     main "$@"
@@ -9797,6 +9807,8 @@ y
 q
 #+end_src
 - no option to work by path ID [2022-11-28 Mon]
+- GDrive API rate limiting: bulk operations (copy, sync) hit per-minute quotas quickly. Use =--tpslimit 2 --drive-pacer-min-sleep 1s= for sustained transfers. Without these, rclone burns through the quota in ~300 API calls and gets 403 =RATE_LIMIT_EXCEEDED= for minutes.
+- =rclone cleanup box:= fails with JSON unmarshalling error (rclone 1.x vs Box trash API). Empty Box trash via web UI instead.
 - [[https://rclone.org/][rclone]]
 #+begin_src bash
 rclone config
