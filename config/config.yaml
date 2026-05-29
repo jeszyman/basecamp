@@ -25,6 +25,7 @@ apt_packages:
 
 apt_ppas_desktop:
   - ppa:apptainer/ppa
+  - ppa:remmina-ppa-team/remmina-next
 
 apt_packages_desktop:
   - apptainer                 # Singularity replacement
@@ -36,6 +37,9 @@ apt_packages_desktop:
   - libreoffice-java-common
   - libtool-bin               # vterm prereq
   - okular                    # Universal document viewer (PDF, ePub, etc.)
+  - remmina                   # Remote desktop client (RDP/VNC)
+  - remmina-plugin-rdp        # RDP protocol support
+  - remmina-plugin-vnc        # VNC protocol support
   - syncthing                 # Continuous file synchronization
   - texlive-full              # Complete LaTeX distribution
   - ttf-mscorefonts-installer # Microsoft TrueType fonts
@@ -70,4 +74,4 @@ public_symlinks:
 
 wget_downloads:
   - src: https://raw.githubusercontent.com/arnm/ob-mermaid/refs/heads/master/ob-mermaid.el
-    dest: "${HOME}/repos/basecamp/emacs/ob-mermaid.el"
+    dest: "${HOME}/repos/emacs/emacs/ob-mermaid.el"

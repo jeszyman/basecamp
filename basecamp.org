@@ -5,6 +5,7 @@
 :header-args:yaml: :eval never
 :END:
 - [ ] migrate [[id:2fc1a6f1-093c-4250-a905-1bf42b7b9eee][Lisp functions]] to [[file:~/repos/emacs/emacs.org]]
+** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
 ** Change log
 
 - [2026-03-22 Sun] Enhanced git-hygiene.sh: raised size limits to 50MB/100MB (GitHub thresholds), added .git-hygiene-allow per-repo allowlist support, public-repo sensitive file detection via gh API, and conflict-markers check. Cleaned stale conflict markers across chaudhuri-lab, rna-seq, gastronomy. Untracked derived/stale large files in basecamp, meth, mpnst. Created allowlists in emseq, frag, meth for intentional test fixtures.
@@ -245,14 +246,29 @@ git push -u origin master
 - https://stackoverflow.com/questions/2050450/git-hooks-management
 - Global hooks path: =~/.config/git/hooks/= (set via =core.hooksPath=)
 ****** Global pre-commit hook
-=~/.config/git/hooks/pre-commit= runs two checks:
-1. **Merge conflict markers** — rejects staged files containing =<<<<<<<= / ======= / =>>>>>>>=
-2. **Large org file deletion guard** — rejects commits where any =.org= file has a net deletion exceeding 200 lines. This catches Syncthing overwrites and accidental truncations before they are cemented in git history. Override with =git commit --no-verify= when deletions are intentional.
-****** Claude Code buffer sync hooks
-Claude Code's Edit/Write tools write directly to disk, bypassing Emacs. With =auto-save-visited-mode= enabled (30s timer), a stale Emacs buffer can overwrite Claude's disk changes. Two hooks in =~/.claude/settings.json= close this race window:
-- =PreToolUse= on =Edit|Write=: [[file:~/.claude/hooks/save-before-edit.sh][save-before-edit.sh]] — saves the Emacs buffer to disk before Claude touches the file, flushing any pending buffer changes. Uses =get-file-buffer= so it only acts on files already open in Emacs.
-- =PostToolUse= on =Edit|Write=: [[file:~/.claude/hooks/revert-after-edit.sh][revert-after-edit.sh]] — reverts the Emacs buffer after Claude's edit, so the buffer matches disk and =auto-save-visited-mode= sees the correct content.
-Together these make Claude's edits behave like Emacs edits from the auto-save perspective.
+Global =core.hooksPath= points to =[[file:~/repos/basecamp/tools/git/][tools/git/]]=. The dispatcher runs all executable scripts in =tools/git/pre-commit.d/= in sorted order. Source blocks tangled from =**** Scripts= under =*** Git=. Current checks:
+1. **File size** — rejects staged files exceeding 10 MB hard limit, warns above 500 KB
+2. **Conflict markers** — rejects staged files containing =<<<<<<<= / ======= / =>>>>>>>=
+3. **Org deletion guard** — rejects commits where any =.org= file has net deletion exceeding 200 lines
+4. **Lint** — runs =ruff= (Python/Snakemake), =shellcheck= (shell), =lintr= (R) on staged files; skips gracefully when tool is absent
+5. **Quality gates** — file length (all code, ≤350), cyclomatic complexity (Python, ≤10), parameter count (Python, ≤4); thresholds overridable via =git config=
+Per-repo skip: =git config hooks.skip-<name> true= (e.g., =hooks.skip-lint=, =hooks.skip-quality-gates=). Override all: =git commit --no-verify=.
+****** Claude Code hooks
+Registered in =~/.claude/settings.json=. Full inventory with descriptions in [[file:~/repos/org/private.org::*Claude Code][private.org Claude Code heading]].
+
+*Buffer sync* — closes the race between Claude's disk edits and Emacs =auto-save-visited-mode=:
+- =PreToolUse= (Edit|Write): [[file:~/.claude/hooks/save-before-edit.sh][save-before-edit.sh]] — saves Emacs buffer before Claude touches the file
+- =PostToolUse= (Edit|Write): [[file:~/.claude/hooks/revert-after-edit.sh][revert-after-edit.sh]] — reverts Emacs buffer after edit
+
+*Code quality* — deterministic checks without burning tokens:
+- =PostToolUse= (Bash): [[file:~/.claude/hooks/auto-debug.sh][auto-debug.sh]] — on Python/R crash, re-runs with debugger wrapping to capture traceback + locals; forces debugger use after 2+ failures per turn
+- =Stop=: [[file:~/.claude/hooks/stop-sanity-check.sh][stop-sanity-check.sh]] — conflict markers, debug statements, secrets, org block mismatches, flycheck/flymake diagnostics on recently modified files
+
+*Safety* — prevents accidental damage:
+- =PreToolUse= (Edit|Write): [[file:~/.claude/hooks/protect-cal.sh][protect-cal.sh]] — blocks =cal.org= edits
+- =PreToolUse= (Edit|Write|Bash): [[file:~/.claude/hooks/protect-shared-mounts.sh][protect-shared-mounts.sh]] — blocks writes to Box/GCS
+- =PreToolUse= (Bash): [[file:~/.claude/hooks/git-dirty-guard.sh][git-dirty-guard.sh]] — prevents destructive git ops with uncommitted changes
+- Git pre-commit hooks: [[id:669a5d96-0bea-4d56-ae7e-11151fbfe4a4][pre-commit dispatcher]] (filesize, conflict markers, org deletion guard, lint, quality gates)
 ****** Data loss pattern: Syncthing + Emacs + Claude
 Documented incidents: career.org (2026-02-09, 2026-01-24, 2026-03-06), private.org (2026-03-23). Root cause chain:
 1. Claude edits a file on disk via Edit tool
@@ -589,11 +605,47 @@ git clone -b opencv-2.4 --single-branch https://github.com/Itseez/opencv.git
 #+begin_src bash
 git log --pretty="- %s"
 #+end_src
-***** Pre-commit file size check hook
+***** Pre-commit hooks
 :PROPERTIES:
 :ID:       669a5d96-0bea-4d56-ae7e-11151fbfe4a4
 :END:
+Global =core.hooksPath= points to =[[file:./tools/git/][tools/git/]]=. The =pre-commit= dispatcher runs every executable script in =pre-commit.d/= in sorted order. Individual checks can be skipped per-repo via =git config hooks.skip-<name> true= (e.g., =git config hooks.skip-lint true=).
+
+****** Dispatcher
+:PROPERTIES:
+:ID:       c24b957e-5257-407f-959e-690545380a2a
+:END:
+
 #+begin_src bash :tangle ./tools/git/pre-commit
+#!/bin/sh
+# Pre-commit dispatcher — runs all executable scripts in pre-commit.d/
+HOOK_DIR="$(cd "$(dirname "$0")" && pwd)/pre-commit.d"
+[ -d "$HOOK_DIR" ] || exit 0
+
+status=0
+for hook in "$HOOK_DIR"/*; do
+    [ -x "$hook" ] || continue
+    name="$(basename "$hook" | sed 's/^[0-9]*-//;s/\.sh$//')"
+    skip=$(git config --bool "hooks.skip-${name}" 2>/dev/null || true)
+    if [ "$skip" = "true" ]; then
+        continue
+    fi
+    "$hook"
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        status=$rc
+    fi
+done
+exit $status
+#+end_src
+
+****** File size check
+:PROPERTIES:
+:ID:       e18473eb-f744-4cdb-9fee-2c1a66e17af0
+:END:
+Rejects staged files exceeding a hard size limit (default 10 MB). Warns on files exceeding a soft limit (default 500 KB). Per-repo limits configurable via =git config hooks.filesizehardlimit= and =hooks.filesizesoftlimit=.
+
+#+begin_src bash :tangle ./tools/git/pre-commit.d/01-filesize.sh
 #!/bin/sh
 hard_limit=$(git config hooks.filesizehardlimit)
 soft_limit=$(git config hooks.filesizesoftlimit)
@@ -634,6 +686,196 @@ check_file_size()
 }
 
 list_new_or_modified_files | check_file_size
+#+end_src
+
+****** Conflict markers
+:PROPERTIES:
+:ID:       4495282f-2add-4b64-a2a4-36a37c7c1315
+:END:
+Rejects commits containing unresolved merge conflict markers. Installed after the 2026-03-17 career.org incident where 236 conflict markers were committed across 11 repos.
+
+#+begin_src bash :tangle ./tools/git/pre-commit.d/02-conflict-markers.sh
+#!/bin/sh
+files=$(git diff --cached --name-only --diff-filter=ACM)
+[ -z "$files" ] && exit 0
+
+conflict_files=""
+for f in $files; do
+    if git show ":$f" 2>/dev/null | grep -qE '^(<{7}|={7}|>{7})( |$)'; then
+        conflict_files="$conflict_files $f"
+    fi
+done
+
+if [ -n "$conflict_files" ]; then
+    echo "ERROR: conflict markers found in staged files:" >&2
+    for f in $conflict_files; do
+        echo "  $f" >&2
+    done
+    exit 1
+fi
+exit 0
+#+end_src
+
+****** Org deletion guard
+:PROPERTIES:
+:ID:       e20facec-1d0f-484e-b085-458268fc406e
+:END:
+Rejects commits where any =.org= file has net deletion exceeding 200 lines. Catches Syncthing overwrites and accidental truncations before they enter git history. Override with =git commit --no-verify= when large deletions are intentional.
+
+#+begin_src bash :tangle ./tools/git/pre-commit.d/03-org-deletion-guard.sh
+#!/bin/sh
+threshold=200
+org_files=$(git diff --cached --name-only --diff-filter=M | grep '\.org$' || true)
+[ -z "$org_files" ] && exit 0
+
+blocked=""
+for f in $org_files; do
+    added=$(git diff --cached --numstat -- "$f" | awk '{print $1}')
+    deleted=$(git diff --cached --numstat -- "$f" | awk '{print $2}')
+    [ -z "$added" ] && added=0
+    [ -z "$deleted" ] && deleted=0
+    net=$((deleted - added))
+    if [ "$net" -gt "$threshold" ]; then
+        blocked="$blocked  $f (net -${net} lines)\n"
+    fi
+done
+
+if [ -n "$blocked" ]; then
+    echo "ERROR: large net deletion in org file(s) — possible truncation:" >&2
+    printf "$blocked" >&2
+    echo "Use 'git commit --no-verify' if this is intentional." >&2
+    exit 1
+fi
+exit 0
+#+end_src
+
+****** Lint
+:PROPERTIES:
+:ID:       c56a3b1c-b4c5-440c-99fc-58ceff6da896
+:END:
+Runs language-appropriate linters on staged files. Skips gracefully when a linter is not installed. Skip per-repo with =git config hooks.skip-lint true=.
+
+#+begin_src bash :tangle ./tools/git/pre-commit.d/04-lint.sh
+#!/bin/sh
+staged_files=$(git diff --cached --name-only --diff-filter=ACM)
+[ -z "$staged_files" ] && exit 0
+
+status=0
+
+# Python / Snakemake
+py_files=$(echo "$staged_files" | grep -E '\.(py|smk)$' || true)
+if [ -n "$py_files" ]; then
+    if command -v ruff >/dev/null 2>&1; then
+        echo "$py_files" | xargs ruff check --force-exclude --no-fix 2>&1
+        [ $? -ne 0 ] && status=1
+    elif conda run -n basecamp ruff --version >/dev/null 2>&1; then
+        echo "$py_files" | xargs conda run -n basecamp ruff check --force-exclude --no-fix 2>&1
+        [ $? -ne 0 ] && status=1
+    fi
+fi
+
+# Shell
+sh_files=$(echo "$staged_files" | grep -E '\.sh$' || true)
+if [ -n "$sh_files" ]; then
+    if command -v shellcheck >/dev/null 2>&1; then
+        echo "$sh_files" | xargs shellcheck -S error 2>&1
+        [ $? -ne 0 ] && status=1
+    fi
+fi
+
+# R
+r_files=$(echo "$staged_files" | grep -E '\.[rR]$' || true)
+if [ -n "$r_files" ]; then
+    if command -v Rscript >/dev/null 2>&1 && Rscript -e 'library(lintr)' 2>/dev/null; then
+        for f in $r_files; do
+            errors=$(Rscript -e "cat(length(lintr::lint('$f', linters=lintr::linters_with_defaults(line_length_linter=NULL, object_name_linter=NULL)))")
+            if [ "$errors" != "0" ]; then
+                Rscript -e "lintr::lint('$f', linters=lintr::linters_with_defaults(line_length_linter=NULL, object_name_linter=NULL))" >&2
+                status=1
+            fi
+        done
+    fi
+fi
+
+exit $status
+#+end_src
+
+****** Quality gates
+:PROPERTIES:
+:ID:       34f28cd2-1ce5-42c2-9d1a-7319a44d1138
+:END:
+Enforces structural code quality limits on staged files. Defaults are hardcoded; override per-repo via =git config=. Skip with =git config hooks.skip-quality-gates true=.
+
+| Metric                | git config key          | Default | Applies to       | Tool           |
+|-----------------------+-------------------------+---------+------------------+----------------|
+| File length           | =hooks.max-file-length= |     350 | all code files   | =wc -l=        |
+| Cyclomatic complexity | =hooks.max-complexity=  |      10 | Python/Snakemake | =ruff= C901    |
+| Parameter count       | =hooks.max-params=      |       4 | Python/Snakemake | =ruff= PLR0913 |
+
+Cyclomatic complexity ≤ 10 is the most evidence-backed threshold (McCabe 1976, NIST SP 500-235). File length and parameter count are conventions. Skips gracefully when tools are absent.
+
+#+begin_src bash :tangle ./tools/git/pre-commit.d/05-quality-gates.sh
+#!/bin/sh
+staged_files=$(git diff --cached --name-only --diff-filter=ACM)
+[ -z "$staged_files" ] && exit 0
+
+# Defaults, overridable per-repo via git config
+max_file_length=$(git config hooks.max-file-length 2>/dev/null || echo 350)
+max_complexity=$(git config hooks.max-complexity 2>/dev/null || echo 10)
+max_params=$(git config hooks.max-params 2>/dev/null || echo 4)
+
+status=0
+
+# --- File length (all code files) ---
+code_files=$(echo "$staged_files" | grep -E '\.(py|smk|r|R|sh|el|js|ts)$' || true)
+if [ -n "$code_files" ]; then
+    for f in $code_files; do
+        [ -f "$f" ] || continue
+        lines=$(wc -l < "$f")
+        if [ "$lines" -gt "$max_file_length" ]; then
+            echo "QUALITY: $f is $lines lines (max $max_file_length)" >&2
+            status=1
+        fi
+    done
+fi
+
+# --- Python / Snakemake: complexity + param count via ruff ---
+py_files=$(echo "$staged_files" | grep -E '\.(py|smk)$' || true)
+if [ -n "$py_files" ]; then
+    RUFF=""
+    if command -v ruff >/dev/null 2>&1; then
+        RUFF="ruff"
+    else
+        for env in basecamp biotools org; do
+            if conda run -n "$env" ruff version >/dev/null 2>&1; then
+                RUFF="conda run -n $env ruff"
+                break
+            fi
+        done
+    fi
+
+    if [ -n "$RUFF" ]; then
+        # Write temp config with enforced thresholds
+        tmp_cfg=$(mktemp /tmp/ruff-qg-XXXXXX.toml)
+        cat > "$tmp_cfg" <<RUFF_EOF
+[lint]
+select = ["C901", "PLR0913"]
+
+[lint.mccabe]
+max-complexity = $max_complexity
+
+[lint.pylint]
+max-args = $max_params
+RUFF_EOF
+
+        echo "$py_files" | xargs $RUFF check --config "$tmp_cfg" --no-fix --force-exclude 2>&1
+        rc=$?
+        rm -f "$tmp_cfg"
+        [ $rc -ne 0 ] && status=1
+    fi
+fi
+
+exit $status
 #+end_src
 
 ***** git-hygiene detection script
@@ -2079,11 +2321,56 @@ if __name__ == "__main__":
 ***** Indentation
 - 2 spaces, no tabs
 
-***** Comment format
-- *Sectioning comments*: use banner style consistent with bash/Python (=# ====== for major, =# ----= for minor)
-- *Roxygen-style docstrings* for functions: =#' @param=, =#' @return=, =#' @examples=
-- *Standalone comments*: single =#= line preceding code
-- *Inline comments*: after two spaces
+***** Comments
+- Wrap comments at 80 columns when practical; allow exceptions for unbreakable tokens (paths, URLs)
+- Comment types
+  - Sectioning comments: same banner style as bash/Python (=# ====== for major, =# ----= for minor)
+  - Roxygen docstrings: =#'= lines as the first form before a function (=#' @param=, =#' @return=, =#' @examples=)
+  - Block comments: multi-line explanations sectioned off with a banner; not indented
+  - Standalone comments: single =#= line preceding code
+  - Inline comments: on the same line as code, placed after two spaces; rationale not restatement
+
+***** Comment template
+
+#+begin_src R
+# =============================================================================
+# SECTION: CONFIGURATION
+# =============================================================================
+
+# Default chromosome set; restrict to autosomes for fragmentomics.
+default_chroms <- paste0("chr", 1:22)
+
+# -----------------------------------------------------------------------------
+# Subsection: Argument parsing
+# -----------------------------------------------------------------------------
+
+#' Parse command-line options via optparse.
+#'
+#' @return Named list of parsed options.
+#' @examples
+#' opts <- parse_options()
+parse_options <- function() {
+  option_list <- list(
+    make_option(c("-i", "--input"), type = "character", help = "Input file"),
+    make_option(c("-o", "--output"), type = "character", help = "Output file")
+  )
+  parse_args(OptionParser(option_list = option_list))
+}
+
+# -----------------------------------------------------------------------------
+# Block comment: input validation rationale
+#
+# Validate inputs early so downstream functions can assume invariants.
+# This keeps work functions simple and avoids duplicated checks.
+# Fail fast with a targeted message if a required input is missing.
+# -----------------------------------------------------------------------------
+
+if (!file.exists(opts$input)) {
+  stop("Input file not found: ", opts$input)
+}
+
+n_threads <- 8  # keep low for interactive nodes
+#+end_src
 
 ***** Cookbook / notebook conventions
 - Heavy commenting is expected — narrate the analytical reasoning
@@ -2091,11 +2378,134 @@ if __name__ == "__main__":
 - Explain /why/ a filter threshold or parameter was chosen, not just what the code does
 - When a step produces an intermediate result, briefly describe what the result looks like (rows, columns, expected values)
 
-***** Script structure (standalone R scripts)
-- Follow tidyverse style (dplyr, ggplot2, readxl)
+***** Cookbook section header template
+
+#+begin_src R
+# =============================================================================
+# Data loading
+# =============================================================================
+
+metadata <- read_xlsx("metadata.xlsx")
+
+# =============================================================================
+# Filtering
+# =============================================================================
+
+# Drop samples missing both treatment and outcome (n=3 expected).
+filtered <- metadata %>%
+  filter(!is.na(treatment), !is.na(outcome))
+
+# =============================================================================
+# Visualization
+# =============================================================================
+
+ggplot(filtered, aes(x = treatment, y = outcome)) +
+  geom_boxplot()
+#+end_src
+
+***** Scripts
+- Follow tidyverse style (dplyr, ggplot2, readxl); ~<-~ for assignment
 - =variable_names_with_underscore=
 - Spaces before and after ~=~, ~+~, ~-~, ~<-~, etc.; after comma
-- For Snakemake =script:= files: use =snakemake@input=, =snakemake@output=, =snakemake@log=
+- Overall structure: packages → option parsing → work functions → ~main()~ → entry guard
+- Shebang: ~#!/usr/bin/env Rscript~
+- Top block comment describing purpose, inputs, outputs, assumptions
+- Use =optparse= for CLI parsing in a wrapper function (e.g., ~parse_options()~) to avoid shadowing optparse's own ~parse_args~
+- ~main()~: orchestrate; call ~parse_options()~ then work functions; return an integer-like exit code (~invisible(0)~ on success)
+- Work functions: consume named values, return objects rather than mutate globals; avoid ~print()~ / ~cat()~ side effects in reusable code
+- Entry guard: wrap the ~main()~ call in ~if (!interactive()) { ... }~ so the file can be sourced for interactive testing without re-running
+- Error policy: ~stop()~ for fatal errors, ~warning()~ for non-fatal; let ~main()~ convert exceptions to exit codes
+- For Snakemake =script:= files: use =snakemake@input=, =snakemake@output=, =snakemake@log=; no =parse_options=, no entry guard
+- Save R-native outputs as =.rds= via ~saveRDS()~; use ~readr::write_tsv()~ for portable cross-tool output
+
+***** Script template
+
+#+begin_src R
+#!/usr/bin/env Rscript
+
+# -----------------------------------------------------------------------------
+# Script name
+# Purpose, inputs, outputs, assumptions, etc.
+# -----------------------------------------------------------------------------
+
+# =============================================================================
+# SECTION: PACKAGES
+# =============================================================================
+
+packages <- c("optparse", "tidyverse")
+suppressPackageStartupMessages(
+  invisible(lapply(packages, require, character.only = TRUE))
+)
+
+# =============================================================================
+# SECTION: ARGUMENT PARSING
+# =============================================================================
+
+parse_options <- function() {
+  option_list <- list(
+    make_option(c("-i", "--input"), type = "character",
+                help = "Input file path"),
+    make_option(c("-o", "--output"), type = "character",
+                help = "Output file path")
+  )
+  parse_args(OptionParser(option_list = option_list))
+}
+
+# =============================================================================
+# SECTION: WORK FUNCTIONS
+# =============================================================================
+
+#' Read input data and return a tibble.
+#'
+#' @param path Path to input file.
+#' @return Tibble of input data.
+read_input <- function(path) {
+  read_tsv(path, show_col_types = FALSE)
+}
+
+# =============================================================================
+# SECTION: MAIN
+# =============================================================================
+
+main <- function() {
+  opts <- parse_options()
+  data <- read_input(opts$input)
+  saveRDS(data, opts$output)
+  invisible(0)
+}
+
+# Run main() only when executed via Rscript, not when sourced interactively.
+if (!interactive()) {
+  main()
+}
+#+end_src
+
+***** Functions
+- ~lower_snake_case~ names; opening brace on same line: ~name <- function(args) {~
+- Single-purpose, explicit parameters over globals
+- Roxygen docstring above each non-trivial function (~#' @param~, ~#' @return~, ~#' @examples~)
+- Reusable functions: parameterize inputs, return outputs; avoid ~print()~ / ~cat()~ side effects
+- Use ~stop()~ for fatal errors, ~warning()~ for non-fatal
+- Validate inputs early; return early on failure paths
+
+***** Function template
+
+#+begin_src R
+#' Compute mean fragment length per sample.
+#'
+#' @param frag_df Tibble with columns =sample= and =length=.
+#' @return Tibble with one row per sample and column =mean_length=.
+#' @examples
+#' compute_mean_length(frag_df)
+compute_mean_length <- function(frag_df) {
+  if (!all(c("sample", "length") %in% names(frag_df))) {
+    stop("frag_df must contain columns 'sample' and 'length'")
+  }
+  frag_df %>%
+    group_by(sample) %>%
+    summarize(mean_length = mean(length), .groups = "drop")
+}
+#+end_src
 
 ***** References
 - [[https://style.tidyverse.org/][Tidyverse style guide]]
@@ -2836,26 +3246,7 @@ ls
 **** Notes
 See also Emacs and Org-mode use in my LaTeX repository ([[https://github.com/jeszyman/latex][GitHub]], [[plain:7F54F016-934E-45AA-BABF-B640464BDEF1][local buffer]]).
 *** Appendices
-**** Lisp Files
-:PROPERTIES:
-:ID:       7b58510f-fe81-4f0f-beaf-e3b369d06b9a
-:END:
-***** Initialization
-#+begin_export latex
-\inputminted{emacs-lisp}{../emacs/init.el}
-#+end_export
-***** Load First
-#+begin_export latex
-\inputminted{emacs-lisp}{../emacs/init.el}
-#+end_export
-***** Public configuration
-#+begin_export latex
-\inputminted{emacs-lisp}{../emacs/public_config.el}
-#+end_export
-***** Load Last
-#+begin_export latex
-\inputminted{emacs-lisp}{../emacs/load-last.el}
-#+end_export
+
 ** Frictionless
 
 https://framework.frictionlessdata.io/docs/getting-started.html
@@ -3020,6 +3411,7 @@ apt_packages:
 
 apt_ppas_desktop:
   - ppa:apptainer/ppa
+  - ppa:remmina-ppa-team/remmina-next
 
 apt_packages_desktop:
   - apptainer                 # Singularity replacement
@@ -3031,6 +3423,9 @@ apt_packages_desktop:
   - libreoffice-java-common
   - libtool-bin               # vterm prereq
   - okular                    # Universal document viewer (PDF, ePub, etc.)
+  - remmina                   # Remote desktop client (RDP/VNC)
+  - remmina-plugin-rdp        # RDP protocol support
+  - remmina-plugin-vnc        # VNC protocol support
   - syncthing                 # Continuous file synchronization
   - texlive-full              # Complete LaTeX distribution
   - ttf-mscorefonts-installer # Microsoft TrueType fonts
@@ -3066,7 +3461,7 @@ public_symlinks:
 
 wget_downloads:
   - src: https://raw.githubusercontent.com/arnm/ob-mermaid/refs/heads/master/ob-mermaid.el
-    dest: "${HOME}/repos/basecamp/emacs/ob-mermaid.el"
+    dest: "${HOME}/repos/emacs/emacs/ob-mermaid.el"
 #+end_src
 ** Ansible
 - See [[id:1169cb65-4a18-43d3-9643-67ac3e85f0d1][general ansible reference]]
@@ -3210,7 +3605,15 @@ fn fn
       apt_repository:
         repo: "{{ item }}"
         state: present
+        update_cache: no
       loop: "{{ apt_ppas_desktop }}"
+      become: true
+      when: ansible_virtualization_role != "guest"
+
+    - name: Refresh apt cache after PPA changes
+      ansible.builtin.command: apt-get update --allow-releaseinfo-change
+      changed_when: false
+      failed_when: false
       become: true
       when: ansible_virtualization_role != "guest"
 
@@ -3263,6 +3666,29 @@ fn fn
         name: lm-sensors
         enabled: true
         state: started
+      become: true
+#+end_src
+
+**** Historical per-process monitoring
+#+begin_src yaml
+    # atop — logs per-process CPU, memory, disk, and network at 10-second
+    # resolution. Enables retroactive answers to "what was using CPU
+    # between HH:MM and HH:MM" via: atop -r /var/log/atop/atop_YYYYMMDD -b HH:MM
+    - name: Install atop
+      ansible.builtin.apt:
+        name: atop
+        state: present
+      become: true
+
+    - name: Enable and start atop services
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        enabled: true
+        state: started
+      loop:
+        - atop.service       # the sampler daemon
+        - atopacct.service   # per-process accounting source
+        - atop-rotate.timer  # daily log rotation
       become: true
 #+end_src
 
@@ -3420,6 +3846,7 @@ fn fn
           - pdfannots
           - jupyter_client
           - ipykernel
+          - ruff
         executable: pip3
 #+end_src
 
@@ -7708,689 +8135,8 @@ algorithm properties
   - http://mlwhiz.com/blog/2017/03/26/top_data_science_resources_on_the_internet_right_now/
 - http://www.datacarpentry.org/
 - http://courses.csail.mit.edu/18.337/2015/docs/50YearsDataScience.pdf
-** Graph theory tools
-:PROPERTIES:
-:ID:       4a5444c9-918d-4651-9def-bbcc26f9016e
-:END:
-- [[f6f303fe-70ba-4e15-99e5-5f881b3b0a45][f6f303fe-70ba-4e15-99e5-5f881b3b0a45]]
-- [[http://vlado.fmf.uni-lj.si/pub/networks/pajek/][Pajek]]
-** Machine Learning
-:PROPERTIES:
-:ID:       c013714a-c4f5-4c3b-9eac-94bfc3ded1ab
-:END:
-- Ablation models that perform near-chance individually can still contribute incrementally to an ensemble — but the burden of proof for "integration adds value" is on the PR AUC or operating-point comparisons,   not ROC AUC alone when n is small.
-validation loss curve
-https://www.reddit.com/r/MachineLearning/comments/17p42te/r_very_detailed_mathematical_introduction_to_deep/
-https://www.reddit.com/r/datascience/comments/150dyrf/xgboost_to_learn_insights_in_data/
-https://distill.pub/
-- cite:james2021
--
-https://www.reddit.com/r/MachineLearning/comments/t55lbw/d_whats_your_favorite_unpopularforgotten_machine/
-https://github.com/edwardleardi/mle-ds-swe-cheat-sheets
-https://christophm.github.io/interpretable-ml-book/
-https://www.reddit.com/r/MachineLearning/comments/uwibp8/d_calculating_shannon_information_of_data/
-https://stats.stackexchange.com/questions/471822/are-there-any-power-calculation-formulas-for-ml-methods-beyond-logistic-regressi
-https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0224365
-https://www.reddit.com/r/statistics/comments/t3ok40/q_is_there_any_difference_between_latent_profile/
-https://torchstudio.ai/
-https://www.reddit.com/r/datascience/comments/sxtppd/stop_resampling_data_in_classification_problems/
-https://www.reddit.com/r/datascience/comments/so7l3n/must_reads/
-https://www.reddit.com/r/datascience/comments/sm96f5/machine_learning_simplified_book/
-https://github.com/aaronwangy/Data-Science-Cheatsheet/blob/main/Data_Science_Cheatsheet.pdf
-https://www.sciencedirect.com/science/article/pii/S2666389921002348
-https://www.nature.com/articles/s41587-021-01070-8#Sec2
-https://www.reddit.com/r/datascience/comments/ps1ysk/1st_attempt_algorithm_selection_flowchart/
-https://www.3blue1brown.com/
-- https://meta.stackoverflow.com/questions/404799/lets-gift-wrap-our-good-machine-learning-theory-questions-for-cross-validated?noredirect=1#comment822113_404799
-- https://www.google.com/search?q=machine+learning+train+validate+test+split+sizes
-- https://distill.pub/
-- https://www.nature.com/articles/s41598-018-24783-4#Sec6
-https://www.statlearning.com/
-https://www.deeplearningbook.org/
-- Error-Correcting Output Codes
-- cite:ma2018
-https://web.stanford.edu/class/stats202/intro.html
-cite:yala2021
-https://github.com/qarchli
-https://www.sciencedirect.com/science/article/pii/S1874939919302500
-https://old.reddit.com/r/dataisbeautiful/comments/jkadd0/oc_distribution_of_emotions_during_the/
-- Data mining
-  - cite:fayyad1996
-- support vectors
-  - https://stats.stackexchange.com/questions/13194/support-vector-machines-and-regression
-*** Large language models LLMs
-https://www.reddit.com/r/ChatGPT/comments/1hzmg1s/professor_stuart_russell_highlights_the/
-*** Supervised learning
-**** Ensemble methods
-- Stacking ensemble models
-  - train multiple diverse base models
-  - feed based model predictions as input features into a second-stage model (the "meta-learner")
-
-*** PCA for ML feature input
-:PROPERTIES:
-:ID:       41eb5607-7d2f-4dc4-9c3c-42af7223b1c0
-:END:
-- https://stats.stackexchange.com/questions/27300/using-principal-component-analysis-pca-for-feature-selection
-- https://builtin.com/data-science/step-step-explanation-principal-component-analysis
-*** Processes
-:PROPERTIES:
-:ID:       a07f9a2e-ff18-4560-9450-617bfb764fc2
-:END:
-**** Compare classifier accuracy
-:PROPERTIES:
-:ID:       7a39e53c-1fce-428e-a9dd-f00a5f0499e9
-:END:
-https://stats.stackexchange.com/questions/26271/comparing-two-classifier-accuracy-results-for-statistical-significance-with-t-te
-*** Dimensionality reduction
-:PROPERTIES:
-:ID:       48e06b9b-c3ba-4d84-bfd4-ba64e482be70
-:END:
-https://www.reddit.com/r/statistics/comments/14n7inh/pca_tsne_and_umap_terminology_q/
-- https://stats.stackexchange.com/questions/238538/are-there-cases-where-pca-is-more-suitable-than-t-sne
-- https://stats.stackexchange.com/questions/14002/whats-the-difference-between-principal-component-analysis-and-multidimensional#:~:text=PCA%20is%20just%20a%20method,MDS%20is%20only%20a%20mapping.&text=One%20definition%20is%20that%20CMDS%20is%20a%20synonym%20of%20Torgerson's%20metric%20MDS
-
-https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-3310-7
-[[id:4165A14F-6BDE-4D8C-B556-A349A3F5B720][Principal Component Analysis]]
-*** [[Statistical Computing][LINK TO Statistical computing]]
-:PROPERTIES:
-:ID:       4b9459e9-4192-4e8c-afe9-f449dbdc73f9
-:END:
-*** general education and guides
-:PROPERTIES:
-:ID:       cb149912-d14b-4934-a0cc-9b4f0e10d9bd
-:END:
-  - https://developers.google.com/machine-learning/crash-course
-    - https://developers.google.com/machine-learning/data-prep/?utm_source=mlcc&utm_campaign=mlcc-next-steps&utm_medium=referral&utm_content=data-prep-ss
-  - https://old.reddit.com/r/datascience/comments/ia8gc6/amazons_machine_learning_university_is_making_its/
-  - https://www.reddit.com/r/MachineLearning/comments/fks2xv/d_what_machine_learning_concepts_would_you_like/
-  - https://www.reddit.com/r/datascience/comments/exk6ub/courses_as_good_as_andrew_ngs_ml_from_recent_years/
-   https://www.ibm.com/blogs/research/2019/07/ai-tools-for-cancer-research/
-  - https://towardsdatascience.com/top-7-data-science-course-repositories-on-github-11a47e4b8dc2
-  - https://pypi.org/project/aix360/
-  - https://chemicalstatistician.wordpress.com/2014/01/24/machine-learning-lesson-of-the-day-the-no-free-lunch-theorem/
-  - Overview
-    - http://www.cs.princeton.edu/courses/archive/spr08/cos511/scribe_notes/0204.pdf
-    - No free lunch
-    - <<<Overfitting>>>: model that performs better on a training set but worse on unseen data
-    - http://ethen8181.github.io/machine-learning/
-    - https://startupsventurecapital.com/essential-cheat-sheets-for-machine-learning-and-deep-learning-researchers-efb6a8ebd2e5
-  - Learning resources
-    - Tutorials and Examples
-      - Kaggle
-        - [[Kaggle titanic tutorial with R]]
-        - [[https://www.kaggle.com/c/house-prices-advanced-regression-techniques][House Prices: Advanced Regression Techniques]]
-      - [[https://spark.apache.org/docs/2.1.0/ml-classification-regression.html][Apache Spark Classification and regression]]
-      - [[https://developers.google.com/machine-learning/crash-course/][Google machine learning crash course]]
-      - Worked examples
-        - [[https://blog.insightdatascience.com/separating-overlapping-chromosomes-with-deep-learning-based-image-segmentation-22f97afd3283][Separating Overlapping Chromosomes with Deep Learning]]
-        - [[http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0174944][Can machine-learning improve cardiovascular risk prediction using routine clinical data?]]
-    - Full courses and texts
-      - [[https://www.r-bloggers.com/in-depth-introduction-to-machine-learning-in-15-hours-of-expert-videos/][r-bloggers machine learning intro videos]]
-      - http://web.stanford.edu/~hastie/sldm.html
-      - [[http://online.stanford.edu/course/machine-learning-su-2014][Stanford Machine learning 2014]]
-      - [[https://www.udemy.com/data-science-and-machine-learning-with-python-hands-on/learn/v4/overview][Data science and machine learning with Python]]
-      - [[https://www.datacamp.com/courses/machine-learning-toolbox?utm_source=fb_paid&utm_medium=fb_desktop&utm_campaign=dc_visitors][DataCamp machine learning toolbox]]
-      - [[https://www.datacamp.com/community/open-courses/kaggle-tutorial-on-machine-learing-the-sinking-of-the-titanic?utm_source=fb_paid&utm_medium=fb_desktop&utm_campaign=fb_ppa#gs.LVTutww][Kaggle R Tutorial on Machine Learning]]
-    - Books
-      - cite:hastie2009
-      - cite:james2013a
-      - cite:cleophas2015
-    - Data
-      - [[https://gengo.ai/articles/the-50-best-free-datasets-for-machine-learning/][The 50 Best Free Datasets for Machine Learning]]
-      - [[http://archive.ics.uci.edu/ml/index.php][UCI Machine Learning Repository]]
-      - https://www.kaggle.com/datasets
-    - [[https://jermwatt.github.io/mlrefined/][Blog for Machine learning refined book]]
-    - [[https://ai.google/education][Google AI education]]
-    - [[http://deeplearning.net/reading-list/][deeplearning.net reading list]]
-    - [[https://developers.google.com/machine-learning/crash-course/ml-intro][Google Machine Learning Crash Course]]
-    - [[https://github.com/stevebottos/stevebottos.github.io/blob/master/_downloads/HMM_Tutorial.pdf][hidden markov model tutorial]]
-  - [[https://www.zdnet.com/google-amp/article/google-ponders-the-shortcomings-of-machine-learning/][Google ponders the shortcomings of machine learning]]
-**** Udemy Python for Data Science and Machine Learning
-:PROPERTIES:
-:ID:       421B4E74-174E-4F42-8024-31EC23EEF602
-:END:
-:LOGBOOK:
-CLOCK: [2017-08-15 Tue 08:14]--[2017-08-15 Tue 09:21] =>  1:07
-CLOCK: [2017-08-11 Fri 10:05]--[2017-08-11 Fri 10:19] =>  0:14
-CLOCK: [2017-08-11 Fri 09:21]--[2017-08-11 Fri 10:05] =>  0:44
-CLOCK: [2017-08-09 Wed 07:59]--[2017-08-09 Wed 08:53] =>  0:54
-CLOCK: [2017-08-02 Wed 15:15]--[2017-08-02 Wed 15:36] =>  0:21
-CLOCK: [2017-08-02 Wed 14:37]--[2017-08-02 Wed 15:14] =>  0:37
-CLOCK: [2017-07-31 Mon 08:35]--[2017-07-31 Mon 09:11] =>  0:36
-CLOCK: [2017-07-31 Mon 07:42]--[2017-07-31 Mon 08:27] =>  0:45
-CLOCK: [2017-07-07 Fri 08:24]--[2017-07-07 Fri 08:58] =>  0:34
-CLOCK: [2017-07-07 Fri 08:15]--[2017-07-07 Fri 08:22] =>  0:07
-CLOCK: [2017-06-30 Fri 08:21]--[2017-06-30 Fri 09:03] =>  0:42
-CLOCK: [2017-06-30 Fri 08:02]--[2017-06-30 Fri 08:10] =>  0:08
-:END:
-- [[https://www.udemy.com/python-for-data-science-and-machine-learning-bootcamp/learn/v4/overview][Course link]]
-- Jupyter
-- Notation
-  - Functions
-    - Function name- descriptor / : definition
-      - i.e.:
-      - e.g.:
-- Python Crash Course
-  - Part 1
-    - Numbers
-      - either integer or float
-      - Exponent is e.g. 2 ** 4 = 16
-      - Mod % is remainder of division
-    - Variables
-      - separate_words_with_underscore
-      - can't start w/
-        - numbers
-        - special symbols
-    - Strings
-      - create with quotes
-      - print strings, e.g.: print('My number is {one} and my name is {two}' .format(one=num,two=name))
-      - indexing strings
-        - starts at zero!
-        - i.e. "slice" notation
-    - Lists
-      - append- e.g.: my_list = ['a','b','c'] <RETURN> my_list.append('d')
-      - edit
-      - nest
-    - dictionary- e.g. d = {'key1':'value','key2':'value2'}
-    - boolean
-    - tuples
-      - e.g. t = (1,2,3)
-      - unlike lists, tuples are immutable (cannot re-assign element)
-    - set
-      - list defined by only unique elements
-      - e.g.: new_set=set([1,2,3,1,2,3,2,4,5,6,2])
-        - {1, 2, 3, 4, 5, 6}
-      - add elements with <SET_NAME>.add(#), e.g: new_set.add(12)
-    - comparison operators- compare elements with boolean
-      - e.g.: 1 > 2
-    - logic operators
-      - and
-      - or
-    - if, if/else, elif
-      - elif is for stacked if/else statements
-        - only executes first true condition
-    - python uses space where other languages would include a bracket
-  - Part 3
-    - for loops- e.g.: for item in seq: print (item)
-    - while- e.g.: while i <5: print('i is: {}'.format(i)) i=1+1
-    - to stop an infinite loop, click Kernel->Restart
-    - range- e.g.: for x in range(0,5):print(x)
-    - list comprehension
-      - reduce typing with for loop lists
-      - e.g.: [num**2 for num in x] rather than for num in x: out.append(num**2)
-    - functions
-      - create- e.g.: def my_fun(param1):print(param1)
-      - returning values- e.g.: def square(num): return num**2
-      - documentation
-        - within triple quotes
-        - expand in jupyter with <SHIFT><TAB>
-  - Part 4
-    - map function
-      - apply function to list
-      - e.g.: list(map(times2,seq))
-    - lambda
-      - an annonymous function
-      - e.g.: list(map(lambda num: num*3,seq))
-    - filter
-      - filter out elements from a sequence
-    - string functions
-      - call with <STRING>.<FUNCTION>
-      - common
-        - split
-        - upper
-        - lower
-    - dictionary functions
-      - .keys
-      - .items
-    - list functions
-      - .pop - 'pop' last item off of a list
-      - .append
-    - tuple unpacking
-      - tuple- e.g.: x=[(1,2),(3,4),(5,6)]
-      - unpacking- e.g.: for (a,b) in x: print(b)
-  - [X] Exercises
-- NumPy
-  - Introduction to NumPy- linear algebra library
-  - NumPy Arrays
-    - import numpy as np
-    - np.array(<LIST>)
-    - np.arange(<START>,<STOP>,<STEP SIZE>)
-    - np.#s
-      - np.zeros
-        - e.g.: np.zeros(3)
-        - np.zeros((5,5)) # this is a tuple
-      - np.ones
-    - np.linspace(<START>,<STOP>,<NUMBER OF POINTS>)- equally spaced points
-    - np.eye- identity matrix
-      - i.e.: np.eye(<DIMENSION>)
-    - randoms
-      - np.random.rand(<DIM1>,<DIM2>...) uniform from zero to 1
-      - np.random.randn(<DIM1>,<DIM2>...) normal distribution around zero
-      - np.random.randint(<LOW>,<HIGH>,<SIZE>)
-    - shape, reshape
-      - <ARRAY>.shape
-      - reshape(<DIM1>,<DIM2>)
-    - max and min
-      - max/min values
-        - <ARRAY>.max()
-        - <ARRAY>.min()
-      - max/min positions
-        - <ARRAY>.argmax()
-        - <ARRAU>.argmin()
-    - data type: <ARRAY>.dtype
-    - import functions to avoid calling np.
-      - e.g.: from numpy.random import randint
-  - NumPy Indexing and Selection
-    - Select from an array
-    - Single element: <ARRAY>[<INDEX POS>]
-    - Slice notation: <ARRAY>[<INDEX POS1>:<INDEX POS2>]
-      - Everything up to POS: <ARRAY>[:<POS>]
-      - If calling slice of array an object, change affect original array
-        - or <ARRAY>.copy() to avoid
-    - 2-D arrays
-      - <ARRAY>brackbrack
-    - Booloean- e.g: <ARRAY> > 5
-    - Conditional selection- i.e.: <ARRAY>[<ARRAY> <CONDITIONAL>]
-      - e.g.: arr[arr<3]
-  - NumPy Opertations
-    - Array with array- per element arithmatic
-    - Array with scalars
-    - Universal array functions (np. functions)
-      - note np.max(arr) = arr.max()
-    - NumPy exercises overview
-- Pandas
-  - Introduction to Pandas- Like dataframe for R
-  - Series
-    - numpy array with axis labels
-    - pd.Series(data, labels)
-  - DataFrames- just series which share an index
-    -
-  - Missing Data
-    - dropna
-      - <DF>.dropna()
-      - columns with axis=1
-      - thresh- NON-na values to retain
-      - .fillna
-        - e.g.: df['A'].fillna(value=df['A'].mean())
-  - Groupby
-    - 2 Steps- e.g.:
-      - by_comp = df.groupby("Company")
-      - by_comp.mean()
-    - result is a df that can be passed to other functions
-  - Merging, joining, and concatenating
-    - e.g.:
-      - pd.concat([df1,df2,df3])
-      - pd.merge(left,right,how='inner',on='key')
-      -
-  - Operations
-    - e.g.:
-      - unique and unique counts
-        - df['col2'].unique()
-        - df['col2'].value_counts()
-      - conditional selection- df[df['col1']>2]
-      - apply
-        - df['col1'].apply(times2)
-        - df['col2'].apply(lambda x: x*2)
-      - drop-
-      - index- df.columns
-      - sorting- df.sort_values('col2')
-      - booleans- df.isnull()
-      - pivot (multi-index)
-  - Data input and output
-    - i.e.:
-      - pd.read_excel('<FILE>',sheetname='<SHEET>')
-      - df=pd.read_csv('<FILE>')
-      - df.to_csv('<FILE>',index=False)
-      - html
-    - for html- e.g.:
-      - data = pd.read_html('https://www.fdic.gov/bank/individual/failed/banklist.html')
-      - then get the first html element
-    - sql
-*** platforms
-:PROPERTIES:
-:ID:       d5710651-ae8d-41b6-b71c-314f98484daf
-:END:
-  - https://realpython.com/podcasts/rpp/8/
-  - tensor flow
-    - https://www.reddit.com/r/MachineLearning/comments/fsphh0/p_simple_tensorflow_2x_collection_of_easytouse/
-    - https://github.com/microsoft/tensorwatch
-  - Tensor Flow
-    - cite:yu2018
-    - [[http://bcomposes.com/2015/11/26/simple-end-to-end-tensorflow-examples/][Simple end-to-end TensorFlow examples]]
-      - https://github.com/jasonbaldridge/try-tf
-  - Weka
-    - cite:frank2004
-    - [[http://www.cs.waikato.ac.nz/ml/weka/][Weka 3: Data Mining Software in Java]]
-    - [[http://machinelearningmastery.com/binary-classification-tutorial-weka/][How To Work Through a Binary Classification Project in Weka Step-By-Step]]
-  - Python
-    - [[https://github.com/rhiever/Data-Analysis-and-Machine-Learning-Projects/blob/master/example-data-science-notebook/Example%2520Machine%2520Learning%2520Notebook.ipynb][example machine learning notebook]]
-    - Pandas
-    - [[http://scikit-learn.org/stable/tutorial/machine_learning_map/][scikit-learn algorithm cheat sheet]]
-    - [[https://github.com/rushter/MLAlgorithms][github: Minimal and clean examples of machine learning algorithms]]
-  - R
-    - [[https://amunategui.github.io/binary-outcome-modeling/][Modeling 101 - Predicting Binary Outcomes with R, gbm, glmnet, and {caret}]]
-    - cite:james2013a
-  - [[https://prodi.gy/][prodigy ML tool focused on annotation]]
-  - [[https://towardsdatascience.com/python-for-data-science-from-scratch-part-i-390f01d91748][python data science from scratch]]
-  - https://www.reddit.com/r/datascience/comments/9cwddt/from_pandas_to_scikitlearn_a_new_exciting_workflow/
-*** datasets
-:PROPERTIES:
-:ID:       e0185c4b-df81-45a3-8f50-e2537f562e01
-:END:
-  - https://gengo.ai/datasets/18-free-life-sciences-medical-datasets-for-machine-learning/
-  - https://www.english-corpora.org/coca/
-*** design
-:PROPERTIES:
-:ID:       4481b858-3c85-4f49-8768-cf43758ef874
-:END:
-- [[http://www.fharrell.com/post/stat-ml/][Road Map for Choosing Between Statistical Modeling and Machine Learning]]
-- Data pre-processing
-  - Normalization
-    - Tree-based methods are scale-invariant
-    - http://sebastianraschka.com/Articles/2014_about_feature_scaling.html
-    - [[https://machinelearningmastery.com/normalize-standardize-time-series-data-python/][How to Normalize and Standardize Time Series Data in
-Validation
-- <<<Out-of-bag>>> error estimate (<<<OOB>>>)
-  - For random forest,
-- Conventional validation by subsetting data
-  - Training
-  - Test
-- Confusion matrix
-  - https://en.wikipedia.org/wiki/Confusion_matrix
-- Validation approaches
-  - Validation set (e.g. randomly split dataset in two)
-  - Cross-validation- generalizes to new, smaller datasets
-    - http://www.milanor.net/blog/cross-validation-for-predictive-analytics-using-r/
-    - K-fold
-      - SD of each test/train set
-      - Error rates over rounds
-    - LOO
-    - Repeat random sub-sampling
-*** machine learning methods and models
-:PROPERTIES:
-:ID:       40A2D1C9-E730-43E8-9726-DEECB3EE1641
-:END:
-**** naive bayes classifier
-:PROPERTIES:
-:ID:       c4753ee7-7fed-4ec0-9f8e-950436a54b16
-:END:
-  - https://www.youtube.com/watch?v=CPqOCI0ahss&t=95s
-
-**** Supervised
-:PROPERTIES:
-:ID:       a874f9fe-9799-4ca4-b22d-73e323815047
-:END:
-  - [[*Logistic Regression][Logistic Regression]]
-  - Regression-based supervised learning
-  - [[https://en.wikipedia.org/wiki/Binary_classification][Wikipedia: binary classification]]
-  - Random forest
-  - Classification-based supervised learning
-    - Neural networks
-      - https://blog.statsbot.co/neural-networks-for-beginners-d99f2235efca
-      - [[http://neuralnetworksanddeeplearning.com/chap4.html][neural nets intro]]
-    - Naive bayes
-      - Assumptions- features are independent
-    - Decision Trees
-      - [[https://www.reddit.com/r/datascience/comments/62jsk9/decision_tree_explained_from_scratch_a_complete/][reddit: decision tree explained from scratch]]
-**** Unsupervised- exploratory, find underlying structure based on statistical properties
-:PROPERTIES:
-:ID:       2eabab54-c260-4fb8-9dd2-2a3e395fb3b5
-:END:
-  - Clustering
-    - Elbow method
-    - Hierarchical clustering
-    - K-means
-      - puts n observations into k clusters
-      - useful for unlabeled data
-      - no a priori assumptions
-  - Maximum entropy classification
-
-**** Decision trees
-:PROPERTIES:
-:ID:       2383e27f-0f91-436d-8d34-e2f8595975cd
-:END:
-  - https://datascience.stackexchange.com/questions/6048/decision-tree-or-logistic-regression
-  - decision trees that I didn’t mention last time: they are biased to favour factors with many levels.
-  - in R- rpart
-***** <<<Random Forest>>>
-:PROPERTIES:
-:ID:       4FF74F86-E830-4D4E-B290-7BF09F7E00AB
-:END:
-- random forest
-  - https://stats.stackexchange.com/questions/141619/wont-highly-correlated-variables-in-random-forest-distort-accuracy-and-feature
-- https://www.reddit.com/r/statistics/comments/8hbwuh/how_can_we_select_the_strongest_decision_tree/
-- [[https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm][Breiman and Cutler Random Forests]]
-  - Error depends on
-    - Increases with increasing correlation between trees
-    - Decreases with low error of any individual tree
-- My examples
-  - [[file:~/Box%20Sync/career/order.interval/amia2018.org]]
-- Ensemble method- classification and regression
-- [[https://datascience.stackexchange.com/questions/6510/does-modeling-with-random-forests-requre-cross-validation][stack: random forest may require cross-validation]]
-- http://dni-institute.in/blogs/random-forest-using-r-step-by-step-tutorial/
-- cite:breiman2001
-- https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm
-- http://blog.citizennet.com/blog/2012/11/10/random-forests-ensembles-and-performance-metrics
-- Variable importance metrics
-  - Decrease accuracy
-  - Decrease G=ini ~ how pure terminal nodes are
-- randomForest in R
-  - Only handles factors to 32 levels
-    - take two paths forward here, either
-      - change these levels to their underlying integers (using the unclass() function) and having the tree treat them as continuous variables
-      - , or manually reduce the number of levels to keep it under the threshold.
-- Sources of randomness in trees
-  - Bagging- Subsetting samples to test, with replacement (i.e. same row can repeat), does not control for strong features
-    - Out of bag observations are used to test tree performance
-  - Subsetting variables to test, usually srqt of the number of variables
-- Missing values are not tolerated
-  - These can be imputed by making a decision tree!
-
-****** Random Forests with R
-:PROPERTIES:
-:ID:       95AB6400-7E60-4129-9CFA-34436285D5D2
-:END:
-
-******* R randomForest
-:PROPERTIES:
-:ID:       5E6D8972-1E72-4B40-9BA4-719F079FB350
-:END:
-
-A tutorial: https://www.tutorialspoint.com/r/r_random_forest.htm
-
-#+BEGIN_SRC R
-library(party)
-library(randomForest)
-head(readingSkills)
-output.forest=randomForest(nativeSpeaker ~ age + shoeSize + score, data = readingSkills)
-output.forest
-plot(output.forest)
-#+END_SRC
-- [[http://www.crcnetbase.com/doi/book/10.1201/9781315399102][data mining in R]]
-- [[https://www.r-bloggers.com/random-forests-in-r/][random forests in R]]
-
-**** genetic algorithms
-:PROPERTIES:
-:ID:       a2351d48-c55f-4e48-9833-36f454b3def7
-:END:
-  - https://blog.floydhub.com/introduction-to-genetic-algorithms/
-  - https://towardsdatascience.com/evolution-of-a-salesman-a-complete-genetic-algorithm-tutorial-for-python-6fe5d2b3ca35
-**** generative adversarial network
-:PROPERTIES:
-:ID:       d879b135-9393-4da0-b9c8-e20e0f1bf0fc
-:END:
-- cite:lan2020
-- cite:lopez2020
-- cite:wang2020
-- https://developers.google.com/machine-learning/gan/gan_structure
-**** structural equation modeling
-:PROPERTIES:
-:ID:       cc10c6df-9fdb-410c-a62c-cc52e7ca0f55
-:END:
-- https://www.reddit.com/r/AskStatistics/comments/no2cwv/is_learning_structural_equation_modeling_methods/
-- https://royalsocietypublishing.org/doi/10.1098/rsos.150541
-- https://www.cscu.cornell.edu/news/Handouts/SEM_fit.pdf
-- note SEM is causal https://en.wikipedia.org/wiki/Causal_inference#:~:text=Causal%20inference%20is%20the%20process,when%20the%20cause%20is%20changed.
-- https://www.pnas.org/content/114/25/E4914
-- https://www.nature.com/articles/s41396-019-0407-y
-- https://www.nature.com/articles/s41598-019-52886-z
-- https://socialsciences.mcmaster.ca/jfox/Misc/ISM-Japan/sems-notes.pdf
-- cite:huisman2018
-- cite:eldridge2017
-- cite:kline2015
-- cite:tomarken2005
-- [[https://blog.efpsa.org/2015/12/14/structural-equation-modeling-what-is-it-what-does-it-have-in-common-with-hippie-music-and-why-does-it-eat-cake-to-get-rid-of-measurement-error/][JEP blog SEM]]
-- http://joophox.net/publist/semfamre.pdf
-- https://lavaan.ugent.be/tutorial/cat.html
-- https://www.ianruginski.com/post/sem_handout1/
-- constructs are "pruged of measurement error"
-- test model structure by fit to patterns in observed data
-- OpenMx https://openmx.ssri.psu.edu//
-- combination of factor analysis and multiple regression analysis
-- estimates the multiple and interrelated dependence in a single analysis
-- application examples
-  - cite:angelini2017
-**** autoencoder
-:PROPERTIES:
-:ID:       5a6dfe61-3fe0-4e28-8998-93314486bcd9
-:END:
-- https://bmcmedinformdecismak.biomedcentral.com/articles/10.1186/s12911-020-1114-3
-- https://www.kaggle.com/saivarunk/dimensionality-reduction-using-keras-auto-encoder
-- https://statcompute.wordpress.com/2017/01/15/autoencoder-for-dimensionality-reduction/0
-- https://stats.stackexchange.com/questions/397656/autoencoder-for-sparse-data
-- utility
-  - dimensionality reduction
-**** Artificial Neural Nets
-:PROPERTIES:
-:ID:       739D4D70-90F2-4D30-8F7C-63D648440A32
-:END:
-https://bmcmedgenomics.biomedcentral.com/articles/10.1186/s12920-019-0628-y
-- cite:lecun2015
-- https://stanford.edu/~shervine/teaching/cs-229/cheatsheet-deep-learning
-- https://github.com/afshinea/stanford-cs-230-deep-learning
-- [[https://www.youtube.com/watch?v=bxe2T-V8XRs][Neural Networks Demystified]]
-- neural network
-  - https://www.r-bloggers.com/variable-importance-in-neural-networks/
-**** Logistic Regression
-:PROPERTIES:
-:ID:       5EB27BAF-0471-4A53-A48C-8268D2B023DA
-:END:
-:LOGBOOK:
-CLOCK: [2019-01-21 Mon 15:01]--[2019-01-21 Mon 15:29] =>  0:28
-:END:
-http://cran.nexr.com/web/packages/elrm/vignettes/elrm.pdf
-https://stats.idre.ucla.edu/r/dae/exact-logistic-regression/
-https://stats.idre.ucla.edu/r/dae/logit-regression/
-probability of class membership equals exp
-
-logarithm of odds:
-log (probability of X / prob 1-X)= B0 +B1X +B2X...
-
-always b/w zero and 1
-
- " the objective of regularisation is to balance accuracy and simplicity. "
-
-"Where \lambda is a free parameter which is usually selected in such a way that the resulting model minimises the out of sample error. Typically, the optimal value of \lambda is found using grid search with cross-validation, "
-
-optimized lambda strikes balance of coeffienct bias and optimized likelihood
-
-- Regularization- for overfit models w/ high variance
-   - Ridge regression
-     - penalty creates small bias in over-fit data such that least squares fit plus lambda * slope^2 is minimuized
-     - optimized lambda balances benefit of bias from modified slope with change in sum squred residuals
-     - penalty is lambda * slopes^2
-     - requires
-   - LASSO variable selection and regularization for binary logistic regression
-     - https://www.youtube.com/watch?v=NGf0voTMlcs&t=14s
-     - lasso is just like ridge, e/c penalty is lambda * ABS(slope)
-     - Glmnet
-       - https://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection
-       - http://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html
-     - [[https://eight2late.wordpress.com/2017/07/11/a-gentle-introduction-to-logistic-regression-and-lasso-regularisation-using-r/][A gentle introduction to logistic regression and lasso regularisation using R]]
-     - [[https://stats.stackexchange.com/questions/135067/using-lasso-for-variable-selection-then-using-logit][Using LASSO for variable selection, then using Logit]]
-- dependent variable is categorical
-- subtypes
-  - binary
-    - See [[*Statistical Computing][R glm function]]
-    - Takes odds of event happening for levels of each IV
-    - Logarithm of ratio of those odds is continuous, transformed version of dependent variable
-    - Logit of successes is fit to predictors with conventional linear regression
-    - Exponential (inverse of log) converts linear regression result back to odds
-  - multinomial
-  - ordinal
-- scaling
-  - https://stats.stackexchange.com/questions/290958/logistic-regression-and-scaling-of-features/290960
-- stats Logistic regression
-- [[https://www.ibm.com/support/knowledgecenter/en/SSLVMB_21.0.0/com.ibm.spss.statistics.help/logistic_regression_methods.htm][IBM: Logistic Regression Variable Selection Methods]]
-- cite:bursac2008
-- [[https://www.ibm.com/support/knowledgecenter/en/SSLVMB_24.0.0/spss/regression/idh_lreg.html][IBM: Logistic regression]]
-- https://statistics.laerd.com/spss-tutorials/binomial-logistic-regression-using-spss-statistics.php
-- [[https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/logistic-regression-analysis-r/tutorial/][Practical Guide to Logistic Regression Analysis in R]]
-- [[https://stackoverflow.com/questions/39550118/cross-validation-function-for-logistic-regression-in-r][stack: cross validation with caret]]
-- https://www.r-bloggers.com/evaluating-logistic-regression-models/
-- https://www.staff.ncl.ac.uk/mike.cox/III/spss10.pdf
-- http://www.restore.ac.uk/srme/www/fac/soc/wie/research-new/srme/modules/mod4/15/index.html
-- [[https://hackernoon.com/practical-machine-learning-ridge-regression-vs-lasso-a00326371ece][Practical machine learning: Ridge Regression vs. Lasso]]
-- [[http://thestatsgeek.com/2014/05/05/area-under-the-roc-curve-assessing-discrimination-in-logistic-regression/][Area under the ROC curve - assessing discrimination in logistic regression]]
-- https://rcompanion.org/rcompanion/e_07.html
-- http://www.utstat.toronto.edu/~brunner/oldclass/appliedf11/handouts/2101f11StepwiseLogisticR.pdf
-- https://www.r-bloggers.com/evaluating-logistic-regression-models/
-- https://www.quora.com/Should-input-data-to-logistic-regression-be-normalized
-- http://www.simafore.com/blog/bid/99443/Understand-3-critical-steps-in-developing-logistic-regression-models
-- https://www.r-bloggers.com/predicting-creditability-using-logistic-regression-in-r-cross-validating-the-classifier-part-2-2/
-
-**** Method comparisons
-:PROPERTIES:
-:ID:       56a2d711-20cf-4b87-b414-6823f33a2e28
-:END:
-  - cite:yoo2013
-  - [[https://datascience.stackexchange.com/questions/6048/decision-tree-or-logistic-regression][stack: Decision tree or logistic regression?]]
-  - [[https://discuss.analyticsvidhya.com/t/what-is-the-difference-between-regression-and-random-forest-where-is-random-forest-more-effective/10095][What is the difference between regression and random forest.? where is random forest more effective?]]
-  - [[https://www.edvancer.in/logistic-regression-vs-decision-trees-vs-svm-part2/][Logistic Regression vs Decision Trees vs SVM: Part II]]
-  - [[https://www.quora.com/What-are-the-advantages-of-different-classification-algorithms][What are the advantages of different classification algorithms?]]
-  - [[https://blog.bigml.com/2016/09/28/logistic-regression-versus-decision-trees/][Logistic Regression versus Decision Trees]]
-  - - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3686280/
-  - https://cs.stackexchange.com/questions/10392/using-the-appropriate-machine-learning-algorithm
-  - comparisons of random forest and binary logistic
-    - ROC AUC http://thestatsgeek.com/2014/05/05/area-under-the-roc-curve-assessing-discrimination-in-logistic-regression/
-    - https://www.google.com/search?q=binary+logistic+regression+random+forest&oq=binary+logistic+regression+random+forest&aqs=chrome..69i57.7601j0j9&sourceid=chrome&ie=UTF-8
-  - CHECK ZOTERO https://arxiv.org/pdf/0804.0650.pdf
-  - - https://www.edvancer.in/logistic-regression-vs-decision-trees-vs-svm-part1/
-  - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3686280/
-*** visualization - see table 1 in [[#liu2019a][liu2019a]]
-:PROPERTIES:
-:ID:       b364b310-aaf2-4ebd-8e83-3a98f1ff06ce
-:END:
-  - viSNA/tSNE
-  - UMAP
-  - PhenoGraph
-  - X-shift
-  - SPADE
-  - CITRUS
-  - FlowSOM
-*** applications
-:PROPERTIES:
-:ID:       48e68cb6-e455-4765-b967-e84727e07a6a
-:END:
-
-  - https://minimaxir.com/2019/09/howto-gpt2/
-  - Large patient datasets
-    - - http://www.sciencedirect.com/science/article/pii/S1521689608000839
-  - computer vision
-    - https://aws.amazon.com/rekognition/
-  - cite:hume2017
-  - https://adeshpande3.github.io/
-  - https://www.google.com/search?q=super+mario+genetic+algorithm
-*** ideas
-:PROPERTIES:
-:ID:       b0e0ccec-3083-41e4-a9b9-fafcee1788f9
-:END:
-  - DRAFT Machine learning workflow
-    - Prepare data
-      - Feature engineering- Calculate derived variables
-      - Eliminate variables from
-        - Unique identifiers
-    - Initial testing- exploratory prediction honing
+** [[id:4a5444c9-918d-4651-9def-bbcc26f9016e][Graph theory tools]]
+** [[id:c013714a-c4f5-4c3b-9eac-94bfc3ded1ab][Machine Learning]]
 ** Public configuration files
 *** Ubuntu
 #+begin_src bash
@@ -8409,8 +8155,6 @@ xdg-user-dirs-update
 
 #+name: symlink_to_emacsd
 | ${HOME}/repos/basecamp/emacs/public_yasnippets |
-| ${HOME}/repos/basecamp/emacs/init.el           |
-| ${HOME}/repos/basecamp/emacs/public_config.el  |
 
 #+begin_src emacs-lisp
 (export-org-table-by-name-to-csv "~/repos/basecamp/basecamp.org"
@@ -9149,6 +8893,7 @@ dependencies:
   - r-rlang             # Toolbox for working with base types, core R features #
   - r-rstatix            # Pipe-friendly framework for basic statistical tests #
   - r-rtsne  # t-distributed stochastic neighbor embedding dimension reduction #
+  - r-survival
   - r-svglite                                   # Provides svg graphics output #
   - r-tidyverse                    # Collection of R packages for data science #
   - r-upsetr       # Visualizations of intersecting sets using a matrix design #
@@ -13350,6 +13095,23 @@ https://chatgpt.com/c/68b84c54-4d80-8331-9277-0347bd3ce460
 
 #+end_src
 
+******** Reset vterm display
+:PROPERTIES:
+:ID:       a3f2b1c0-8e5d-4f9a-b6d7-2e4c8a1f3b7e
+:END:
+
+#+begin_src emacs-lisp :tangle ./lib/lisp_functions.el
+;; Reset garbled vterm display (narrow columns, corrupted output, drifted TUI)
+(defun jg/vterm-reset-display ()
+  (interactive)
+  (vterm-clear-scrollback)
+  (vterm-send-string "reset\n"))
+
+(with-eval-after-load 'vterm
+  (define-key vterm-mode-map (kbd "C-c C-r") #'jg/vterm-reset-display))
+
+#+end_src
+
 ******* Launch program
 :PROPERTIES:
 :ID:       305dcf2f-3103-41d3-9216-e7cb18bece49
@@ -15593,6 +15355,26 @@ sudo apt-get install emacs-snapshot
         |            | add word        | i       |
         |            | check next word | M-s M-n |
         | minibuffer | add to dict     | i       |
+      - Personal dictionary sync (aspell → LibreOffice)
+
+#+begin_src bash
+ASPELL_DICT=~/repos/org/resources/aspell.en.pws
+LO_DICT=~/.config/libreoffice/4/user/wordbook/standard.dic
+
+aspell_words=$(tail -n +2 "$ASPELL_DICT" | sort)
+lo_words=$(awk '/^---$/{found=1; next} found{print}' "$LO_DICT" | sort)
+
+new_words=$(comm -23 <(echo "$aspell_words") <(echo "$lo_words"))
+
+if [ -z "$new_words" ]; then
+  echo "No new words to add."
+  exit 0
+fi
+
+echo "Adding:"
+echo "$new_words"
+echo "$new_words" >> "$LO_DICT"
+#+end_src
     - next
 
     | type    | action            | command        |
