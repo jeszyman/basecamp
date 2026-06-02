@@ -3898,20 +3898,6 @@ fn fn
         scope: global
 
 #+end_src
-**** Ensure bashrc accesses symlinked libraries
-#+begin_src yaml
-    - name: Source all ~/.bashrc.d/*.sh files from .bashrc
-      lineinfile:
-        path: "{{ ansible_env.HOME }}/.bashrc"
-        insertafter: EOF
-        line: |
-          if [ -d ~/.bashrc.d ]; then
-            for f in ~/.bashrc.d/*.sh; do [ -r "$f" ] && . "$f"; done
-          fi
-        state: present
-
-#+end_src
-
 **** Conda
 #+begin_src yaml
     - name: Find conda installation

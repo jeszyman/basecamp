@@ -112,7 +112,15 @@
       apt_repository:
         repo: "{{ item }}"
         state: present
+        update_cache: no
       loop: "{{ apt_ppas_desktop }}"
+      become: true
+      when: ansible_virtualization_role != "guest"
+
+    - name: Refresh apt cache after PPA changes
+      ansible.builtin.command: apt-get update --allow-releaseinfo-change
+      changed_when: false
+      failed_when: false
       become: true
       when: ansible_virtualization_role != "guest"
 
@@ -157,6 +165,25 @@
         name: lm-sensors
         enabled: true
         state: started
+      become: true
+    # atop — logs per-process CPU, memory, disk, and network at 10-second
+    # resolution. Enables retroactive answers to "what was using CPU
+    # between HH:MM and HH:MM" via: atop -r /var/log/atop/atop_YYYYMMDD -b HH:MM
+    - name: Install atop
+      ansible.builtin.apt:
+        name: atop
+        state: present
+      become: true
+
+    - name: Enable and start atop services
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        enabled: true
+        state: started
+      loop:
+        - atop.service       # the sampler daemon
+        - atopacct.service   # per-process accounting source
+        - atop-rotate.timer  # daily log rotation
       become: true
     # linux-crashdump — captures kernel state on panic for post-mortem analysis.
     # Check with: ls /var/crash/
@@ -242,6 +269,7 @@
           - pdfannots
           - jupyter_client
           - ipykernel
+          - ruff
         executable: pip3
     - name: Ensure ~/.bashrc.d exists
       ansible.builtin.file:
@@ -281,15 +309,6 @@
         name: core.hooksPath
         value: "{{ ansible_env.HOME }}/repos/basecamp/tools/git"
         scope: global
-    - name: Source all ~/.bashrc.d/*.sh files from .bashrc
-      lineinfile:
-        path: "{{ ansible_env.HOME }}/.bashrc"
-        insertafter: EOF
-        line: |
-          if [ -d ~/.bashrc.d ]; then
-            for f in ~/.bashrc.d/*.sh; do [ -r "$f" ] && . "$f"; done
-          fi
-        state: present
     - name: Find conda installation
       ansible.builtin.shell: |
         for p in /opt/conda /opt/miniconda /opt/miniconda3 {{ ansible_env.HOME }}/miniconda3; do
