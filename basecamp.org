@@ -2222,7 +2222,8 @@ DEFAULT_THREADS = 8  # keep low for interactive nodes
 # Subsection: Input parsing
 # -----------------------------------------------------------------------------
 
-def parse_args(argv: list[str]) -> "Args":
+def parse_args():
+    ...  # full body in the Script template below
 
 # -----------------------------------------------------------------------------
 # Block comment
@@ -2237,8 +2238,8 @@ def parse_args(argv: list[str]) -> "Args":
 - Shebang: ~#!/usr/bin/env python3~ only for directly executed files
 - Top module docstring describing purpose, inputs, outputs, assumptions
 - ~argparse~ for CLI parsing in ~parse_args()~
-- ~parse_args()~: only function that reads raw CLI args; returns structured object (dataclass or Namespace); ~-h/--help~ exits 0, CLI misuse exits 2, runtime errors exit 1
-- ~main()~: entry point, short linear orchestration, calls ~parse_args(argv)~ then work functions
+- ~parse_args()~: only function that reads raw CLI args; ends with ~return parser.parse_args()~ and yields the argparse Namespace by default. Wrap the Namespace in a frozen dataclass ONLY when you need typed/validated/derived fields or immutability, and say why in a comment.
+- ~main()~: top-level driver, short linear orchestration, calls ~parse_args()~ then work functions
 - Work functions: consume named values only, prefer returning over mutating globals
 - Entry point: ~if __name__ == "__main__": raise SystemExit(main())~
 - Error policy: stdout for machine-consumable output; stderr for all diagnostics
@@ -2252,6 +2253,7 @@ Docstring
 """
 
 import argparse
+import sys
 from pathlib import Path
 
 # Centralize defaults as named constants so:
@@ -2282,7 +2284,7 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def main(argv: list[str] | None = None) -> int:
+def main() -> int:
     """
     Orchestrate the script.
 
@@ -2291,7 +2293,7 @@ def main(argv: list[str] | None = None) -> int:
     - call work functions with named values
     - return an exit code (0 success; nonzero failure)
     """
-    args = parse_args(argv)
+    args = parse_args()
 
     # Placeholder for the real work. Keep heavy logic out of parse_args.
     # Example:
