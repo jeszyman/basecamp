@@ -2202,9 +2202,10 @@ main "$@"
 ***** Comments
 - Code: format with Black (88-column target). Black is the source of truth for code-line wrapping; Black-unsplittable tokens (file paths, URLs, single long string/f-string literals) may exceed 88 — do not hand-wrap them.
 - Comments and docstring prose: wrap at 80 columns; allow exceptions for unbreakable tokens (paths, URLs). Black does not rewrap comment text, so this is a manual convention.
+- Section banners (the Comment-template ~# ===~ / ~# ---~ style) are OPTIONAL and scaled to the file: short single-purpose scripts may omit them; multi-section scripts should use them to mark major phases (e.g. CONFIGURATION, PARSE/CLI, WORK, MAIN). Label wording is free-form.
 - Comment types
-  - Sectioning comments: same banner style as bash (~# =====~, ~# -----~)
-  - Docstrings: ~"""..."""~ as first statement in module/class/function
+  - Sectioning comments: a three-line banner — a rule line, a ~# TITLE~ line, then a rule line. Major sections use ~#~ + space + 77 ~=~ (79 cols) with an UPPERCASE title; subsections use ~#~ + space + 77 ~-~ with a Mixed-case title. See the Comment template.
+  - Docstrings: ~"""..."""~ as first statement in module/class/function. The first line of docstring prose is a one-line summary of purpose; it may sit on the same line as the opening ~"""~ (PEP 257 style) or on the line below a ~"""~ on its own line (as in the Script template). Either is acceptable; pick one per file.
   - Block comments: multi-line with banner, not indented, not subheaders
   - Standalone comments: single line preceding code
   - Inline comments: after two spaces, rationale not restatement
@@ -2235,14 +2236,20 @@ def parse_args():
 #+end_src
 
 ***** Scripts
-- Overall structure: definitions first, ~main()~ last, ~if __name__ == "__main__":~ entry point
+- Overall structure (top to bottom): shebang, module docstring, imports, module-level constants, ~parse_args()~, work functions, ~main()~, then the ~if __name__ == "__main__"~ guard. A constant consumed by exactly one function may instead be defined immediately above that consumer; the sibling-import shim (below) follows the stdlib/third-party import block.
 - Shebang: ~#!/usr/bin/env python3~ only for directly executed files
-- Top module docstring describing purpose, inputs, outputs, assumptions
+- Top module docstring. REQUIRED: a one-line purpose summary and a Usage line showing argument order. RECOMMENDED, and required when the I/O schema is non-obvious: Inputs and Outputs sections; Assumptions when correctness depends on caller-guaranteed invariants.
+- Imports grouped: stdlib, then third-party, then local — each group separated by a blank line. Within a group, list plain ~import X~ statements first (alphabetized), then ~from Y import Z~ statements (alphabetized by module), per PEP 8 / Google §3.13.
+- Sibling-module imports (scripts run as a file, not an installed package): after the other import groups, add ~sys.path.insert(0, str(Path(__file__).resolve().parent))~ on the line immediately preceding the sibling import, and annotate that import ~# noqa: E402~. Keep the shim and its import together as the final import block; an explanatory comment naming the sibling is optional.
+- Module-level constants are UPPER_SNAKE_CASE — including computed constants (numpy lookup tables / power vectors, e.g. POWERS) and fixed column-name lists (e.g. METRIC_COLUMNS), not just literal strings/Paths. Place them after imports, or immediately above the single function that uses them — whichever keeps the definition near its use. Give computed arrays an explicit dtype and a one-line comment explaining non-obvious math.
 - ~argparse~ for CLI parsing in ~parse_args()~
 - ~parse_args()~: only function that reads raw CLI args; ends with ~return parser.parse_args()~ and yields the argparse Namespace by default. Wrap the Namespace in a frozen dataclass ONLY when you need typed/validated/derived fields or immutability, and say why in a comment.
+- Help text: for scripts run by hand, give each ~add_argument~ a ~help=~ string and the parser a ~description=~ so ~-h~ is self-documenting; optionals taking a value MAY add ~metavar=~. Strong recommendation, not a conformance gate — internal/pipeline-only scripts may omit it.
 - ~main()~: top-level driver, short linear orchestration, calls ~parse_args()~ then work functions
 - Work functions: consume named values only, prefer returning over mutating globals
-- Entry point: ~if __name__ == "__main__": raise SystemExit(main())~
+- File handles: open files in a ~with~ statement so they close on every exit path, including exceptions. For a fixed small count, chain them in one ~with~. For a variable number, use ~contextlib.ExitStack~ rather than storing raw handles and closing them in a loop. A factory that returns a handle is fine if the caller wraps the returned handle in ~with~.
+- Blank lines: two between top-level defs/classes (and before the ~if __name__~ guard); one between methods inside a class (PEP 8 / Google Python Style Guide).
+- Entry point: ~if __name__ == "__main__": raise SystemExit(main())~. ~main()~ returns the process exit code: ~0~ success, ~1~ for a runtime/checked-input failure; argparse itself exits ~0~ on ~-h/--help~ and ~2~ on CLI misuse. Prefer ~parser.error()~ (exit 2) for problems detectable from the arguments alone; a ~return 1~ from ~main()~ for a checked-but-failing input (e.g. missing directory) is also acceptable.
 - Error policy: stdout is reserved for machine-consumable output; all diagnostics, progress, and summaries go to stderr. Emit diagnostics with ~print(..., file=sys.stderr)~; the ~logging~ module is not used in these scripts.
 - Long-running scripts emit a final stderr summary (counts/timing) and may stream incremental progress (per-record or every N records). Pass ~flush=True~ on progress prints when output must stay visible under nohup / GNU parallel (optional — short scripts do not need it).
 
@@ -2265,6 +2272,7 @@ from pathlib import Path
 DEFAULT_INPUTS_DIR = "chaudhuri-lab-bucket1/jeszyman/projects/breast/inputs"
 DEFAULT_OUTPUT_TSV = Path("./data/emseq-fastq-inputs.tsv")
 
+
 def parse_args():
     parser = argparse.ArgumentParser(
         prog=Path(sys.argv[0]).name,
@@ -2286,6 +2294,7 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 def main() -> int:
     """
     Orchestrate the script.
@@ -2300,7 +2309,7 @@ def main() -> int:
     # Placeholder for the real work. Keep heavy logic out of parse_args.
     # Example:
     # run_work(inputs_dir=args.inputs_dir, output_tsv=args.output_tsv)
-    return 0
+    return 0  # placeholder success; real failures surface via raised exceptions / explicit return 1
 
 
 if __name__ == "__main__":
@@ -2312,7 +2321,9 @@ if __name__ == "__main__":
 #+end_src
 
 ***** Functions
-- ~lower_snake_case~ names, type hints for public functions
+- ~lower_snake_case~ names
+- Type hints: ~main()~ returns ~-> int~; ~parse_args()~ needs no return or parameter hints (Namespace implied); work/helper functions should carry hints where types are non-obvious. Full annotation is encouraged, never required; trivial one-line wrappers may be left unhinted.
+- Generator functions (any ~yield~): hint the return type with ~Iterator[T]~ (from ~collections.abc~), e.g. ~def iter_chromosomes(path: str) -> Iterator[tuple[str, bytes]]:~. The type-hint rule applies to generators — annotate the yielded element type.
 - Single-purpose, explicit parameters over globals
 - Reusable (library-style) functions — any function imported by another module — parameterize inputs, return outputs, never print, and raise specific exceptions; only ~main()~ converts exceptions to exit codes and emits diagnostics. Script-local work functions called only from ~main()~ may write progress/diagnostics to stderr (see Error policy).
 
