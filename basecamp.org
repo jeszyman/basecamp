@@ -2200,7 +2200,8 @@ main "$@"
 - 4 spaces, no tabs
 
 ***** Comments
-- Wrap at 80 columns (Black default 88); exceptions for unbreakable tokens
+- Code: format with Black (88-column target). Black is the source of truth for code-line wrapping; Black-unsplittable tokens (file paths, URLs, single long string/f-string literals) may exceed 88 — do not hand-wrap them.
+- Comments and docstring prose: wrap at 80 columns; allow exceptions for unbreakable tokens (paths, URLs). Black does not rewrap comment text, so this is a manual convention.
 - Comment types
   - Sectioning comments: same banner style as bash (~# =====~, ~# -----~)
   - Docstrings: ~"""..."""~ as first statement in module/class/function
@@ -2242,7 +2243,8 @@ def parse_args():
 - ~main()~: top-level driver, short linear orchestration, calls ~parse_args()~ then work functions
 - Work functions: consume named values only, prefer returning over mutating globals
 - Entry point: ~if __name__ == "__main__": raise SystemExit(main())~
-- Error policy: stdout for machine-consumable output; stderr for all diagnostics
+- Error policy: stdout is reserved for machine-consumable output; all diagnostics, progress, and summaries go to stderr. Emit diagnostics with ~print(..., file=sys.stderr)~; the ~logging~ module is not used in these scripts.
+- Long-running scripts emit a final stderr summary (counts/timing) and may stream incremental progress (per-record or every N records). Pass ~flush=True~ on progress prints when output must stay visible under nohup / GNU parallel (optional — short scripts do not need it).
 
 ***** Script template
 
@@ -2312,7 +2314,7 @@ if __name__ == "__main__":
 ***** Functions
 - ~lower_snake_case~ names, type hints for public functions
 - Single-purpose, explicit parameters over globals
-- Reusable (library-style): parameterize inputs, return outputs, never print; raise specific exceptions, convert to exit codes only in ~main()~
+- Reusable (library-style) functions — any function imported by another module — parameterize inputs, return outputs, never print, and raise specific exceptions; only ~main()~ converts exceptions to exit codes and emits diagnostics. Script-local work functions called only from ~main()~ may write progress/diagnostics to stderr (see Error policy).
 
 ***** References
 - [[https://google.github.io/styleguide/pyguide.html][Google Python Style Guide]]
