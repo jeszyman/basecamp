@@ -2192,12 +2192,10 @@ main "$@"
 ***** References
 - [[https://google.github.io/styleguide/shellguide.html][Google Shell Style Guide]]
 
-**** Python
+**** Python Style Guide
 :PROPERTIES:
 :ID:       dd9c7b11-7bb1-4a3d-8a40-b74ed0e2b55e
 :END:
-Consolidated from [[id:89576FD2-F863-4220-BAD7-D4E179AEA644][Bash and shell → Python]] (under Programming languages).
-
 ***** Indentation
 - 4 spaces, no tabs
 
@@ -3398,6 +3396,7 @@ apt_packages:
   - hunspell                  # Spell checker library
   - hunspell-en-us            # English dictionary for Hunspell
   - jq                        # JSON processor
+  - mosh                      # Mobile shell - roaming/resumable SSH
   - pandoc                    # Document converter (Markdown, LaTeX, etc.)
   - parallel
   - rename
@@ -3456,6 +3455,8 @@ public_symlinks:
     dest: "${HOME}/.emacs.d/lisp/ob-mermaid.el"
   - src: "${HOME}/repos/basecamp/lib/basecamp_functions.sh"
     dest: "${HOME}/.bashrc.d/basecamp_functions.sh"
+  - src: "${HOME}/repos/basecamp/config/tmux.conf"
+    dest: "${HOME}/.tmux.conf"
   - src: "${HOME}/repos/latex/emacs/latex_setup.el"
     dest: "${HOME}/.emacs.d/lisp/latex_setup.el"
 
@@ -3881,6 +3882,24 @@ fn fn
         block: |
           o() { "$@" &>/dev/null & disown; }
           complete -c o
+#+end_src
+**** Terminal multiplexer auto-start
+#+begin_src yaml
+
+    - name: Auto-start tmux for interactive terminal sessions
+      ansible.builtin.copy:
+        dest: "{{ ansible_env.HOME }}/.bashrc.d/tmux-autostart.sh"
+        mode: '0644'
+        content: |
+          # Auto-start tmux for interactive terminal sessions
+          if command -v tmux &>/dev/null \
+              && [[ $- == *i* ]] \
+              && [[ -z "$TMUX" ]] \
+              && [[ -z "$INSIDE_EMACS" ]] \
+              && [[ -z "$EMACS" ]]; then
+              exec tmux new-session
+          fi
+
 #+end_src
 **** Git configuration
 #+begin_src yaml
@@ -4638,6 +4657,15 @@ apt-get install xauth
 :end:
 
 https://chatgpt.com/c/66f5b550-66f0-8005-b5a1-733d20a01aed
+**** Loading mechanism
+The functions in this section tangle to [[file:lib/basecamp_functions.sh][lib/basecamp_functions.sh]] and reach every interactive shell through a fixed, ansible-managed chain:
+
+1. Tangling this =*** Shell= subtree writes the =bash= blocks to =lib/basecamp_functions.sh=.
+2. The =public_symlinks= list in [[file:config/config.yaml][config/config.yaml]] declares =lib/basecamp_functions.sh= → =~/.bashrc.d/basecamp_functions.sh=, and the [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][public common playbook]] creates that symlink with =ansible.builtin.file state: link=.
+3. The same playbook writes a loop into =~/.bashrc= that sources every readable =~/.bashrc.d/*.sh=.
+4. Each new shell runs =~/.bash_profile= → =~/.bashrc= → that loop → sources =basecamp_functions.sh=, executing each =name() { … }= so the name is bound in the shell. tmux panes inherit them because =tmux-autostart.sh= launches login shells.
+
+To add a function: create a =***** name= subheading with a =bash= src block here, tangle, then re-run the playbook on any host missing the symlink. Already-open shells pick it up only after =source ~/.bashrc.d/basecamp_functions.sh= or a new shell.
 **** Ideas
 kill -9 $(pgrep brave)
 open "$(find /tmp -type f -printf '%T@ %p\n' 2>/dev/null | sort -n | tail -1 | cut -d' ' -f2-)"
@@ -4751,6 +4779,41 @@ emacs () {
     exit
 }
 
+#+end_src
+***** tmux-ls
+#+begin_src bash
+# List every tmux session: attached (●) / detached (○), running command, and
+# context — claude panes show the task title, other panes show their cwd.
+tmux-ls() {
+    tmux list-panes -a -F \
+        '#{?session_attached,●,○} #{session_name}|#{pane_current_command}|#{?#{==:#{pane_current_command},claude},#{=50:pane_title},#{pane_current_path}}' \
+    | column -t -s '|'
+}
+#+end_src
+***** tmux-attach
+#+begin_src bash
+# Pick a tmux session (fzf menu if installed, else list + prompt) and go to it;
+# used to reach a Claude session running in tmux, e.g. after ssh-ing into a host.
+tmux-attach() {
+    local sel sid
+    if command -v fzf >/dev/null; then
+        sel=$(tmux list-panes -a -F \
+              '#{session_name}  [#{pane_current_command}]  #{pane_title}  (#{pane_current_path})' \
+              | fzf --reverse --prompt='attach> ') || return
+        sid=${sel%% *}
+    else
+        tmux-ls
+        read -rp 'session> ' sid
+    fi
+    [ -z "$sid" ] && return
+    # Inside tmux (e.g. the ssh-autostart session) an attach can't nest, so
+    # switch the current client instead; a bare terminal attaches with -d.
+    if [ -n "$TMUX" ]; then
+        tmux switch-client -t "$sid"
+    else
+        tmux attach -d -t "$sid"
+    fi
+}
 #+end_src
 
 ***** emacs-interrupt()
@@ -5205,7 +5268,7 @@ EOF
     local file="$1"
     local id="$2"
 
-    /usr/local/bin/emacs --batch -l "${HOME}/repos/basecamp/emacs/latex_init.el" --eval "(progn
+    /usr/local/bin/emacs --batch -l "${HOME}/repos/latex/emacs/latex_init.el" --eval "(progn
                         (require 'org)
                         (require 'org-id)
                         (setq org-confirm-babel-evaluate nil)
@@ -11312,6 +11375,40 @@ https://carpentries-incubator.github.io/workflows-snakemake/
 :END:
 - https://ostechnix.com/how-to-backup-and-restore-linux-system-with-timeshift/
 - https://github.com/teejee2008/timeshift
+***** tmux
+:PROPERTIES:
+:ID:       4ee33baa-c413-4bb1-a511-873d39ea4510
+:header-args:conf: :tangle ./config/tmux.conf
+:END:
+Terminal multiplexer; on jeff-pad it runs inside [[id:9213fc1c-c365-41e0-b32a-dd18f33c36d9][gnome-terminal]] (X11; clipboard via =xclip=). It brings vterm-like buffer navigation, copy/paste, persistent sessions, and split panes to a plain terminal — set up primarily for running =claude= on the command line. Copy mode is emacs-style (=mode-keys emacs=), not vi — chosen to match Emacs/vterm muscle memory. Prefix key is =C-b=. Config is tangled from the block below to [[file:./config/tmux.conf][config/tmux.conf]] and symlinked to [[file:~/.tmux.conf][~/.tmux.conf]] via the ansible =public_symlinks= list, so it reaches every host (jeff-beast, jeff-pad).
+
+- Copy / paste (emacs-style, vterm parity):
+  - =C-b [= — enter copy mode (the vterm =C-c C-t= analogue; it cannot literally be =C-c C-t= because while a program is running it owns =C-c=, so tmux only ever sees the prefix)
+  - =C-Space= start selection · move with =C-p/C-n/C-f/C-b= · search =C-s= (down) / =C-r= (up)
+  - =C-c= copy and exit copy mode in one stroke (custom binding; native =M-w= also copies) · =q= or =Escape= leaves without copying
+  - =C-v= paste the system clipboard into the pane (custom binding) · or =Ctrl+Shift+V= / middle-click
+- Sessions, scrollback, panes:
+  - =C-b d= detach — the running process (e.g. =claude=) keeps going; =tmux attach= (or =tmux a=) reattaches later
+  - =C-b [= then =C-r= — search scrollback backward
+  - =C-b %= split left/right · =C-b "= split top/bottom · =C-b= + arrow to move between panes · =C-b z= zoom a pane fullscreen and back
+  - =C-b ?= — list every key binding (authoritative live reference)
+
+Config (tangle source for [[file:~/.tmux.conf][~/.tmux.conf]]):
+
+#+begin_src conf
+# ~/.tmux.conf
+set -g default-terminal "tmux-256color"             # 256-color terminfo inside panes (vs default 8-color 'screen')
+set -as terminal-features ",*:RGB"                  # pass 24-bit truecolor through (themes, syntax highlighting)
+set -g mode-keys emacs                              # explicit (already the default here)
+set -g mouse on                                     # wheel scrolls into copy mode; drag selects
+set -g copy-command 'xclip -selection clipboard -i' # M-w / drag-copy -> X11 clipboard
+set -g history-limit 50000                          # deep scrollback
+
+# vterm-parity copy/paste keys
+bind-key -T copy-mode C-c send-keys -X copy-pipe-and-cancel                              # C-c = copy + exit (CUA), inside copy mode
+bind-key -n C-v run-shell "xclip -o -selection clipboard | tmux load-buffer - ; tmux paste-buffer"  # C-v = paste system clipboard into pane
+#+end_src
+
 ***** tramp
 :PROPERTIES:
 :ID:       17551e34-13c7-4a19-89ac-5377c9bcd8fe
@@ -12359,11 +12456,7 @@ https://www.freecodecamp.org/news/rust-in-replit/
 #+begin_src bash :results replace
 pip list
 #+end_src
-****** Python style guide
-:PROPERTIES:
-:ID:       dd9c7b11-7bb1-4a3d-8a40-b74ed0e2b55e
-:END:
-Moved to [[file:basecamp.org::*Python][Code Style Guide → Python]].
+****** [[id:dd9c7b11-7bb1-4a3d-8a40-b74ed0e2b55e][Python Style Guide]]
 ****** Processes                                                  :hierarchy:
 :PROPERTIES:
 :ID:       2d89162b-ce67-4846-9e58-5f6143f2fe05
