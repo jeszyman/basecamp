@@ -10119,9 +10119,15 @@ bespoke concurrency setup
     - D_ for data directories (absolute paths from config).
     - R_ for repository locations.
     - CONDA_ for conda environment YAML files.
-  - Build paths using Python f-strings with explicit structure (e.g., f"{D_EMSEQ}/align/{{sample}}.bam").
-  - Escape wildcards in f-strings with double braces.
-  - Avoid os.path.join unless necessary for complex cross-platform compatibility; f-strings are more readable for this use case.
+  - Choose the path-construction style by whether the path carries Snakemake wildcards:
+    - Wildcard paths -> f-strings with double-braced wildcards. This is the Snakemake idiom; os.path.join handles wildcard templates awkwardly. Escape every wildcard with double braces so Snakemake (not Python) resolves it.
+      - Example: =output: f"{D_EMSEQ}/align/{{sample}}.bam"=
+      - Example: =f"{config['data_dir']}/bams/{{sample}}.sorted.bam"=
+    - Wildcard-free joins (config root + fixed leaf) -> os.path.join (or pathlib.Path). It is separator-safe — a trailing slash in the root cannot produce a double slash — and signals "this is a path join."
+      - Example: =D_REF = os.path.join(config["data-dir"], "ref")=
+      - Example: =GENOME = os.path.join(D_REF, "chm13v2.0.fa")=
+      - Example (pathlib): =D_REF = Path(config["data-dir"]) / "ref"=
+  - The value of os.path.join / pathlib is separator normalization and intent, not cross-platform compatibility (irrelevant on a Linux-only stack). Do not avoid it for wildcard-free joins; do not reach for it on wildcard paths.
 - Configuration Files
   - YAML Configuration
     - Prefer structured (nested) YAML over flat keys.
