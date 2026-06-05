@@ -75,13 +75,25 @@
 			((yas-indent-line 'none))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/org.hy"
 			nil nil)
+		       ("org.hx" "<x\\{$1\\}x>" "org.hx" 'auto nil
+			((yas-indent-line 'none))
+			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/org.hx"
+			nil nil)
 		       ("org.hl" "<\\{$1\\}>" "org.hl" 'auto nil
 			((yas-indent-line 'none))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/org.hl"
 			nil nil)
+		       ("org.hi" "<i\\{$1\\}i>" "org.hi" 'auto nil
+			((yas-indent-line 'none))
+			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/org.hi"
+			nil nil)
 		       ("org.hg" "<g\\{$1\\}g>" "org.hg" 'auto nil
 			((yas-indent-line 'none))
 			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/org.hg"
+			nil nil)
+		       ("org.hb" "<b\\{$1\\}b>" "org.hb" 'auto nil
+			((yas-indent-line 'none))
+			"/home/jeszyman/.emacs.d/snippets/public_yasnippets/org-mode/org.hb"
 			nil nil)
 		       ("open_choose"
 			"#+begin_src bash\n\n#+end_src\n"
@@ -182,4 +194,4 @@
 			nil nil)))
 
 
-;;; Do not edit! File generated at Fri Jun  5 10:35:28 2026
+;;; Do not edit! File generated at Fri Jun  5 11:25:28 2026
