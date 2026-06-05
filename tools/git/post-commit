@@ -1,0 +1,20 @@
+#!/bin/sh
+# Post-commit auto-push. Opt in per repo:  git config --bool hooks.autopush true
+[ "$(git config --bool hooks.autopush 2>/dev/null)" = "true" ] || exit 0
+
+branch=$(git symbolic-ref --quiet --short HEAD) || exit 0   # detached HEAD: skip
+
+git push origin "$branch" && exit 0
+
+# Push failed. The commit already succeeded and must not be aborted — fail LOUD.
+cat >&2 <<EOF
+
+  ##############################################################
+  ##  AUTO-PUSH FAILED                                        ##
+  ##############################################################
+  Commit succeeded locally, but 'git push origin $branch' did not.
+  The other machine is probably ahead. Do NOT keep committing blindly.
+  Realign first:  sync   (or run closeout and take the align action)
+  ##############################################################
+EOF
+exit 0

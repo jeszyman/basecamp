@@ -244,7 +244,7 @@ git push -u origin master
 :ID:       fdcb89a5-8a2d-4d3e-8d7c-494a3df2aba6
 :END:
 - https://stackoverflow.com/questions/2050450/git-hooks-management
-- Global hooks path: =~/.config/git/hooks/= (set via =core.hooksPath=)
+- Global hooks path: =[[file:~/repos/basecamp/tools/git/][tools/git/]]= (set via =core.hooksPath=)
 ****** Global pre-commit hook
 Global =core.hooksPath= points to =[[file:~/repos/basecamp/tools/git/][tools/git/]]=. The dispatcher runs all executable scripts in =tools/git/pre-commit.d/= in sorted order. Source blocks tangled from =**** Scripts= under =*** Git=. Current checks:
 1. **File size** — rejects staged files exceeding 10 MB hard limit, warns above 500 KB
@@ -876,6 +876,35 @@ RUFF_EOF
 fi
 
 exit $status
+#+end_src
+
+***** Post-commit hook
+:PROPERTIES:
+:ID:       e585a5a4-9774-46c3-9fbd-9e07e9eff82e
+:END:
+Auto-pushes after every commit, but only in repos that opt in with =git config --bool hooks.autopush true=. Inert everywhere else, so it is safe to ship as a shared (global =core.hooksPath=) hook — third-party forks simply never opt in. Makes "commit implies push" structural, so a push is never forgotten on the two-machine (beast/pad) setup where =.git= is not synced and history is shared only through the remote. A post-commit hook runs /after/ the commit, so it cannot abort it; a failed push is therefore advisory — but it fails *loud* so an unpushed divergence is impossible to miss. Realign a loud failure with =sync= or the =closeout= align step.
+
+#+begin_src bash :tangle ./tools/git/post-commit
+#!/bin/sh
+# Post-commit auto-push. Opt in per repo:  git config --bool hooks.autopush true
+[ "$(git config --bool hooks.autopush 2>/dev/null)" = "true" ] || exit 0
+
+branch=$(git symbolic-ref --quiet --short HEAD) || exit 0   # detached HEAD: skip
+
+git push origin "$branch" && exit 0
+
+# Push failed. The commit already succeeded and must not be aborted — fail LOUD.
+cat >&2 <<EOF
+
+  ##############################################################
+  ##  AUTO-PUSH FAILED                                        ##
+  ##############################################################
+  Commit succeeded locally, but 'git push origin $branch' did not.
+  The other machine is probably ahead. Do NOT keep committing blindly.
+  Realign first:  sync   (or run closeout and take the align action)
+  ##############################################################
+EOF
+exit 0
 #+end_src
 
 ***** git-hygiene detection script
