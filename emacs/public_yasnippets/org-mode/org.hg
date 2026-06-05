@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
-# key: org.hl
+# key: org.hg
 # expand-env: ((yas-indent-line 'none))
 # condition: 'auto
 # --
-<\{$1\}>
+<g\{$1\}g>
