@@ -109,59 +109,60 @@ tmux-attach() {
     fi
 }
 # gsync — reconcile this machine's git branch with origin (beast+pad setup).
-# Commits + pushes local work, or fast-forwards a clean follower to origin.
-# Never force-pushes, never auto-merges; refuses loudly on real divergence.
+# Working files are the Syncthing-shared source of truth; gsync only moves this
+# machine's git POINTER to match origin and never overwrites working files
+# (follower realign uses 'reset --mixed', not --hard). Pushes genuine local
+# commits; refuses loudly on real (commit-level) divergence.
 gsync() {
-    local branch
+    local branch head remote
     branch=$(git symbolic-ref --quiet --short HEAD) || {
         echo "gsync: detached HEAD — refusing." >&2; return 1; }
+    git fetch --quiet origin "$branch" || { echo "gsync: fetch failed." >&2; return 1; }
+    head=$(git rev-parse HEAD)
+    remote=$(git rev-parse "origin/$branch")
 
-    # Stage + commit tracked changes only (interactive message). Untracked files
-    # are listed but never auto-committed — matches the closeout convention.
+    # Follower (behind, no local commits): origin is strictly ahead. The working
+    # tree may LOOK dirty only because Syncthing delivered origin's newer content
+    # while this machine's pointer stayed old — that is NOT local work to commit.
+    # Move the pointer with --mixed: working files are never touched, so a synced
+    # follower lands clean and any unsynced/uncommitted file is preserved.
+    if [ "$head" != "$remote" ] && git merge-base --is-ancestor "$head" "$remote"; then
+        local f
+        while IFS= read -r f; do
+            [ -n "$f" ] && [ -e "$f" ] || continue
+            git show "origin/$branch:$f" 2>/dev/null | cmp -s - "$f" || \
+                echo "gsync: note — keeping working file that differs from origin: $f" >&2
+        done < <(git diff --name-only HEAD "origin/$branch")
+        echo "gsync: follower — realigning pointer to origin/$branch (working files untouched)."
+        git reset --mixed "origin/$branch" || return 1
+        if git diff --quiet; then
+            echo "gsync: in sync, tree clean."
+        else
+            echo "gsync: realigned; working changes above remain for you to review/commit."
+        fi
+        return 0
+    fi
+
+    # Diverged: local holds commits origin lacks AND is not behind → refuse before
+    # committing anything onto a branch that cannot fast-forward.
+    if [ "$head" != "$remote" ] && ! git merge-base --is-ancestor "$remote" "$head"; then
+        echo "gsync: REFUSING — local and origin/$branch have diverged. Resolve manually." >&2
+        return 1
+    fi
+
+    # Up-to-date or strictly ahead: commit genuine local work (tracked only; warn
+    # on untracked), then push. The post-commit hook also pushes when enabled.
     local untracked
     untracked=$(git ls-files --others --exclude-standard)
     [ -n "$untracked" ] && printf 'gsync: untracked (not committed):\n%s\n' "$untracked" >&2
     if ! git diff --quiet || ! git diff --cached --quiet; then
         echo "gsync: committing tracked changes…"
         git commit -a || { echo "gsync: commit aborted." >&2; return 1; }
-        # post-commit hook auto-pushes when hooks.autopush=true
+        head=$(git rev-parse HEAD)
     fi
-
-    git fetch --quiet origin "$branch" || { echo "gsync: fetch failed." >&2; return 1; }
-    local head remote
-    head=$(git rev-parse HEAD)
-    remote=$(git rev-parse "origin/$branch")
     [ "$head" = "$remote" ] && { echo "gsync: up to date with origin/$branch."; return 0; }
-
-    # Local ahead → push.
-    if git merge-base --is-ancestor "origin/$branch" HEAD; then
-        echo "gsync: pushing local commits…"
-        git push origin "$branch"
-        return $?
-    fi
-
-    # Local behind, clean follower → verify content matches origin, then move the
-    # pointer. Per-file content compare is the gate — NOT 'git diff --quiet origin',
-    # which false-reports for paths untracked in HEAD but tracked in origin.
-    if git merge-base --is-ancestor HEAD "origin/$branch"; then
-        local f mismatch=0
-        while IFS= read -r f; do
-            [ -n "$f" ] && [ -e "$f" ] || continue
-            git show "origin/$branch:$f" 2>/dev/null | cmp -s - "$f" || {
-                echo "gsync: differs from origin: $f" >&2; mismatch=1; }
-        done < <(git diff --name-only HEAD "origin/$branch")
-        if [ "$mismatch" -eq 0 ]; then
-            echo "gsync: clean follower — realigning pointer to origin/$branch."
-            git reset --hard "origin/$branch"
-            return $?
-        fi
-        echo "gsync: REFUSING — behind origin but working files differ. Resolve manually." >&2
-        return 1
-    fi
-
-    # Diverged: both sides hold unique commits.
-    echo "gsync: REFUSING — local and origin/$branch have diverged. Resolve manually." >&2
-    return 1
+    echo "gsync: pushing local commits…"
+    git push origin "$branch"
 }
 emacs-interrupt() {
     pkill -USR2 emacs
