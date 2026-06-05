@@ -2,3 +2,4 @@ docs/superpowers/
 *.fastq
 *.fastq.gz
 .claude/worktrees/
+data/garmin/

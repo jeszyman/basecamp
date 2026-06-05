@@ -14,9 +14,11 @@ apt_packages:
   - jq                        # JSON processor
   - pandoc                    # Document converter (Markdown, LaTeX, etc.)
   - parallel
+  - p7zip-full                # 7z archive support (x extractor)
   - rename
   - tmux                      # Terminal multiplexer
   - tree                      # Directory structure viewer
+  - unrar                     # RAR archive support (x extractor)
   - vim                       # Advanced text editor
   - poppler-utils             # PDF manipulation
   - bibtool

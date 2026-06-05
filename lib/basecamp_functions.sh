@@ -79,6 +79,35 @@ emacs () {
     emacsclient -c --no-wait --socket-name ~/.emacs.d/server/server & disown
     exit
 }
+# List every tmux session: attached (●) / detached (○), running command, and
+# context — claude panes show the task title, other panes show their cwd.
+tmux-ls() {
+    tmux list-panes -a -F \
+        '#{?session_attached,●,○} #{session_name}|#{pane_current_command}|#{?#{==:#{pane_current_command},claude},#{=50:pane_title},#{pane_current_path}}' \
+    | column -t -s '|'
+}
+# Pick a tmux session (fzf menu if installed, else list + prompt) and go to it;
+# used to reach a Claude session running in tmux, e.g. after ssh-ing into a host.
+tmux-attach() {
+    local sel sid
+    if command -v fzf >/dev/null; then
+        sel=$(tmux list-panes -a -F \
+              '#{session_name}  [#{pane_current_command}]  #{pane_title}  (#{pane_current_path})' \
+              | fzf --reverse --prompt='attach> ') || return
+        sid=${sel%% *}
+    else
+        tmux-ls
+        read -rp 'session> ' sid
+    fi
+    [ -z "$sid" ] && return
+    # Inside tmux (e.g. the ssh-autostart session) an attach can't nest, so
+    # switch the current client instead; a bare terminal attaches with -d.
+    if [ -n "$TMUX" ]; then
+        tmux switch-client -t "$sid"
+    else
+        tmux attach -d -t "$sid"
+    fi
+}
 emacs-interrupt() {
     pkill -USR2 emacs
     echo "Sent SIGUSR2 to Emacs"
@@ -429,7 +458,7 @@ EOF
     local file="$1"
     local id="$2"
 
-    /usr/local/bin/emacs --batch -l "${HOME}/repos/basecamp/emacs/latex_init.el" --eval "(progn
+    /usr/local/bin/emacs --batch -l "${HOME}/repos/latex/emacs/latex_init.el" --eval "(progn
                         (require 'org)
                         (require 'org-id)
                         (setq org-confirm-babel-evaluate nil)

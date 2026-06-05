@@ -2616,6 +2616,11 @@ rule align_reads:
         "{input.r1} {input.r2} | samtools sort -o {output.bam}"
 #+end_src
 
+***** Literate / org-babel authoring
+- Snakemake code is authored in org-babel =snakemake= blocks that tangle to =.smk= module files and the wrapper =Snakefile=. The blocks are tangle-only — there is no =ob-snakemake=, so org-babel never executes them.
+- Put =:tangle= (and related header-args) on the heading's PROPERTIES drawer, not on individual =#+begin_src= lines, so all blocks under the heading inherit it.
+- A no-op =org-babel-execute:snakemake= is defined in the Emacs config (see [[file:~/repos/emacs/emacs.org::*snakemake-mode][snakemake-mode]]) so exporting a file that contains snakemake blocks does not warn =No org-babel-execute function for snakemake=. A per-block =:eval no= does NOT suppress this — org's export-results path warns before honoring =:eval=.
+
 ***** References
 - [[https://snakemake.readthedocs.io/en/stable/][Snakemake documentation]]
 - [[id:dd9c7b11-7bb1-4a3d-8a40-b74ed0e2b55e][Python style guide]] (comments in .smk files follow Python conventions)
@@ -3414,9 +3419,11 @@ apt_packages:
   - mosh                      # Mobile shell - roaming/resumable SSH
   - pandoc                    # Document converter (Markdown, LaTeX, etc.)
   - parallel
+  - p7zip-full                # 7z archive support (x extractor)
   - rename
   - tmux                      # Terminal multiplexer
   - tree                      # Directory structure viewer
+  - unrar                     # RAR archive support (x extractor)
   - vim                       # Advanced text editor
   - poppler-utils             # PDF manipulation
   - bibtool
@@ -3890,13 +3897,38 @@ fn fn
             done
           fi
 
-    - name: Add GUI launcher function to bashrc
+    - name: Add shell shortcut functions to bashrc
       ansible.builtin.blockinfile:
         path: "{{ ansible_env.HOME }}/.bashrc"
-        marker: "# {mark} ANSIBLE MANAGED - GUI launcher function"
+        marker: "# {mark} ANSIBLE MANAGED - shell shortcut functions"
         block: |
-          o() { "$@" &>/dev/null & disown; }
-          complete -c o
+          o() { "$@" &>/dev/null & disown; exit; }   # launch GUI, detach, close shell
+          b() { "$@" &>/dev/null & disown; }         # launch, detach, keep shell open
+          s() { sudo "$@"; }                         # sudo prefix
+          complete -c o b s
+          e() { emacsclient -n --socket-name "$HOME/.emacs.d/server/server" "$@"; }  # open in running Emacs
+          x() {                                      # extract common archive types
+            local f
+            for f in "$@"; do
+              [ -f "$f" ] || { echo "x: not a file: $f" >&2; continue; }
+              case "$f" in
+                *.tar.bz2|*.tbz2) tar xjf "$f" ;;
+                *.tar.gz|*.tgz)   tar xzf "$f" ;;
+                *.tar.xz|*.txz)   tar xJf "$f" ;;
+                *.tar.zst)        tar --zstd -xf "$f" ;;
+                *.tar)            tar xf "$f" ;;
+                *.bz2)            bunzip2 "$f" ;;
+                *.gz)             gunzip "$f" ;;
+                *.xz)             unxz "$f" ;;
+                *.zst)            unzstd "$f" ;;
+                *.zip)            unzip "$f" ;;
+                *.7z)             7z x "$f" ;;
+                *.rar)            unrar x "$f" ;;
+                *.Z)              uncompress "$f" ;;
+                *) echo "x: unknown type: $f" >&2 ;;
+              esac
+            done
+          }
 #+end_src
 **** Terminal multiplexer auto-start
 #+begin_src yaml
@@ -8914,6 +8946,7 @@ dependencies:
   - parallel     # GNU parallel is a shell tool for executing jobs in parallel #
   - pyarrow=15.0                       # Provides bindings to the Apache Arrow #
   - python=3.10
+  - python-lsp-server                  # LSP server (pylsp) for eglot in Emacs #
   - scikit-learn=1.3                         # Python machine learning modules #
   - snakemake                              # Python workflow management system #
   - statsmodels                        # A stats package with causal inference #
