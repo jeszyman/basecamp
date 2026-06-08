@@ -1871,7 +1871,7 @@ Code files in this repository are managed through [[ https://orgmode.org/manual/
   - 2026-03-12 Replaced =sync-gitignore= with =git-hygiene= system: global =core.excludesFile= / =core.hooksPath= via ansible, detection script (=scripts/git-hygiene.sh=), Claude agent + skill for interactive scanning
   - 2026-02-23 Added GitHub Action to test =sync-gitignore.sh= (4 cases: help, missing args, successful sync, deduplication); workflow tangles to =.github/workflows/test-sync-gitignore.yml=
 - v1.3.0
-  - Updated [[id:146f3266-f634-4728-8172-9ae8b459d0c7][Snakemake Style Guide and Good Practices]], exported as markdown to [[file:docs/snakemake-style-guide.md]]
+  - Updated [[id:146f3266-f634-4728-8172-9ae8b459d0c7][Snakemake Style Guide and Good Practices]], exported as markdown to =docs/snakemake-style-guide.md= (retired 2026-06-05, superseded by the =:claudekb:= export to =~/.claude/kb/=)
 ** Documentation
 :properties:
 :export_date:
@@ -2028,13 +2028,12 @@ My public YASnippets are compiled from source code blocks across my Org-mode age
   - Can use more human-friendly title case and spaces with symlinks and shortcuts
 - Prefer single-word file and directory names
 - For multi-word file and directory names, prefer a dash (-) separator (/e.g./ a-longer-file-name.txt)
-*** Code Style Guide
+*** Code Style Guide                                               :claudekb:
 :PROPERTIES:
-:EXPORT_FILE_NAME: docs/code-style-guide
 :header-args: :exports code
 :ID:       0ccb6668-d5dd-4519-8e32-d8082d74e336
 :END:
-Consolidated code style guide covering commenting verbosity, comment formatting, and language-specific conventions. Exported to =docs/code-style-guide.md= for Claude and other tool consumption.
+Consolidated code style guide covering commenting verbosity, comment formatting, and language-specific conventions. Tagged =:claudekb:= and exported to =~/.claude/kb/0ccb6668-d5dd-4519-8e32-d8082d74e336.md= for Claude and other tool consumption (the manual =docs/code-style-guide.md= export was retired 2026-06-08).
 
 - [[id:8306ac91-52b6-4d23-8520-f5bb30dba293][Org-edit style guide]] — org structural conventions
 **** Commenting Verbosity
@@ -2221,7 +2220,7 @@ main "$@"
 ***** References
 - [[https://google.github.io/styleguide/shellguide.html][Google Shell Style Guide]]
 
-**** Python Style Guide
+**** Python Style Guide                                            :claudekb:
 :PROPERTIES:
 :ID:       dd9c7b11-7bb1-4a3d-8a40-b74ed0e2b55e
 :END:
@@ -2266,6 +2265,7 @@ def parse_args():
 
 ***** Scripts
 - Overall structure (top to bottom): shebang, module docstring, imports, module-level constants, ~parse_args()~, work functions, ~main()~, then the ~if __name__ == "__main__"~ guard. A constant consumed by exactly one function may instead be defined immediately above that consumer; the sibling-import shim (below) follows the stdlib/third-party import block.
+- Scope: this structure applies to executable scripts. Library modules under =scripts/= (imported helpers with no ~if __name__~ guard / not a CLI) are exempt from the ~parse_args → main → __name__~ structure.
 - Shebang: ~#!/usr/bin/env python3~ only for directly executed files
 - Top module docstring. REQUIRED: a one-line purpose summary and a Usage line showing argument order. RECOMMENDED, and required when the I/O schema is non-obvious: Inputs and Outputs sections; Assumptions when correctness depends on caller-guaranteed invariants.
 - Imports grouped: stdlib, then third-party, then local — each group separated by a blank line. Within a group, list plain ~import X~ statements first (alphabetized), then ~from Y import Z~ statements (alphabetized by module), per PEP 8 / Google §3.13.
@@ -2587,7 +2587,7 @@ Style conventions for Snakemake workflow files. For workflow architecture (wrapp
 - Do not comment individual =input:= / =output:= / =params:= lines unless non-obvious
 
 ***** Path and variable conventions
-- Hungarian notation prefixes: =D_= for data directories (absolute paths from config), =R_= for repository locations, =CONDA_= for conda environment YAML files
+- Hungarian notation prefixes: =D_= for data directories (absolute paths from config), =R_= for repository locations, =ENV_= for conda environment YAML files
 - Build paths using Python f-strings with explicit structure: ~f"{D_EMSEQ}/align/{{sample}}.bam"~
 - Escape wildcards in f-strings with double braces
 - Paths should be declarative and reflect intended output organization
@@ -6971,7 +6971,7 @@ https://github.com/axel-download-accelerator/axel
 :PROPERTIES:
 :ID:       670ed8f4-bb93-4d93-b9ea-a142a599169f
 :END:
-- Open to page via orgmode link, e.g. - [[cite:&ottolenghi2012jerusalem]]  [[shell:nohup okular --page 136 ~/library/ottolenghi2012jerusalem.pdf > /dev/null 2>&1 & disown][page 136]]
+- Open to page via orgmode link, e.g. - [cite:@ottolenghi2012jerusalem]  [[shell:nohup okular --page 136 ~/library/ottolenghi2012jerusalem.pdf > /dev/null 2>&1 & disown][page 136]]
 - https://askubuntu.com/questions/1163761/how-to-flatten-comments-using-okular
 - merge
   - e.g. pdftk file1.pdf file2.pdf cat output merged.pdf
@@ -7397,7 +7397,7 @@ https://github.com/WHOexcessc19/Codebase
 :PROPERTIES:
 :ID:       d043f43d-77cb-4afa-a798-4d5afb0692f5
 :END:
-- TRUST Principles for digital repositories [[cite:&lin2020]]
+- TRUST Principles for digital repositories [cite:@lin2020]
 *** Bibliometrics
 :PROPERTIES:
 :ID:       0d6e551d-4ff2-4d36-9006-fe7685c097a8
@@ -7441,7 +7441,7 @@ mkdir -p "${repo}/results/reports"
 mkdir -p "${repo}/src"
 mkdir -p "${repo}/workflow/scripts"
 #+end_src
-- cite:sarkar2014 Chapter 2
+- [cite:@sarkar2014] Chapter 2
   - Integration
     - Transformation
     - Understanding source data
@@ -7478,17 +7478,17 @@ mkdir -p "${repo}/workflow/scripts"
 - Data dictionary
   - [[id:10075da5-5535-4426-95d0-c0c53a2d1aae][Data dictionary mod]]
   - https://www.reddit.com/r/statistics/comments/b5sg97/what_makes_a_good_data_dictionary/
-  - cite:pedsnet
+  - [cite:@pedsnet]
 - [[id:d4c65ebf-8abd-4876-8b79-08ae9fcc50c2][Software engineering]]
 - Examples
-  - cite:waagmeester2020
+  - [cite:@waagmeester2020]
   - https://www.reddit.com/r/datascience/comments/8haezl/python_google_sheets_api_tableau_public_full/
 - Data science workflow
   - [[https://cacm.acm.org/blogs/blog-cacm/169199-data-science-workflow-overview-and-challenges/fulltext][Association for computing machinery: Data science workflow overview]]
   - Data preprocessing
     - https://www.cdc.gov/globalhealth/healthprotection/fetp/training_modules/10/managing-data_pw_final_09252013.pdf
     - http://www.comp.dit.ie/btierney/BSI/Han%20Book%20Ch3%20DataExploration.pdf
-    - cite:kotsiantis2006
+    - [cite:@kotsiantis2006]
 - https://www.reddit.com/r/datascience/comments/am2cep/guidelines_for_writing_data_analysis_reports/
 - [[id:1DA3ABC0-79B0-4CED-B926-22B37840379D][Data Visualization]]
 - [[id:20b10d38-1d24-4a0e-b9b8-d6f2b1394efe][Data pre-processing / data wrangling]]
@@ -7879,8 +7879,8 @@ CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
 - [[id:c7d8dd07-098e-4bc4-b008-5da0abcabb0d][The Missing Semester of Your CS Education]]
 - https://www.reddit.com/r/datascience/comments/fzweaf/my_giant_data_quality_checklist/
 - https://github.com/ben519/DataWrangling
-- cite:pedsnet
-- cite:press2016
+- [cite:@pedsnet]
+- [cite:@press2016]
 - https://en.wikipedia.org/wiki/OpenRefine
 - https://www.reddit.com/r/datascience/comments/fzweaf/my_giant_data_quality_checklist/
 - missing data imputation http://factominer.free.fr/missMDA/appendix_These_Audigier.pdf
@@ -7923,12 +7923,12 @@ https://rstudio-pubs-static.s3.amazonaws.com/1691_3c8dee811cf2497385cde81bd97f8e
 :PROPERTIES:
 :ID:       b8acbcc7-291b-4638-8952-74e63420d071
 :END:
-- cite:wilke2019
+- [cite:@wilke2019]
 - https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003833
 - https://www.datarevelations.com/resources/bans/
 - http://www.npr.org/2013/01/18/169708761/edward-tufte-wants-you-to-see-better
 - https://www.reddit.com/r/datascience/comments/diufp0/are_there_other_thinkers_with_different_ideas_in/
-- cite:rougier2014
+- [cite:@rougier2014]
 **** Platforms
 :PROPERTIES:
 :ID:       ac1dc15a-57dd-41ae-a117-14585efbe426
@@ -7991,8 +7991,8 @@ https://rstudio-pubs-static.s3.amazonaws.com/1691_3c8dee811cf2497385cde81bd97f8e
 :PROPERTIES:
 :ID:       f9288c30-9336-4297-8b42-231de3fb4f16
 :END:
-- cite:wilke2019
-- cite:liu2014
+- [cite:@wilke2019]
+- [cite:@liu2014]
 **** Specific types
 :PROPERTIES:
 :ID:       c50d8bb6-f9ee-4b5f-a613-92494f04e82b
@@ -8117,7 +8117,7 @@ https://stats.stackexchange.com/questions/51792/how-to-find-a-suitable-associati
 :PROPERTIES:
 :ID:       588f6536-9db9-4279-9e67-800890c2de23
 :END:
-- cite:buschmann2016 pg 6010
+- [cite:@buschmann2016] pg 6010
 - log transformation for skew
 - rlog
 - vst
@@ -8140,8 +8140,8 @@ https://towardsdatascience.com/discovering-the-treasures-of-22-r-exploratory-ana
 - https://github.com/norvig/paip-lisp
 - http://aima.cs.berkeley.edu/
 - [[https://www.reddit.com/r/science/comments/65gf8q/selftaught_artificial_intelligence_beats_doctors/][reddit- ai beats docs]]
-- cite:russell2010
-- cite:sankar2014
+- [cite:@russell2010]
+- [cite:@sarkar2014]
 - https://www.edx.org/course/artificial-intelligence-ai-columbiax-csmm-101x
 - [[https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-034-artificial-intelligence-fall-2010/][MIT Artificial intelligence 2010]]
 - http://simplystatistics.org/2017/01/19/what-is-artificial-intelligence/
@@ -8168,7 +8168,7 @@ CLOCK: [2017-05-02 Tue 10:35]--[2017-05-02 Tue 11:09] =>  0:34
     - https://www.crummy.com/software/BeautifulSoup/bs4/doc/
   - healthcare
     - [[http://clamp.uth.edu/][CLAMP Clinical Language Annotation, Modeling, and Processing Toolkit]]
-      - cite:soysal2017
+      - [cite:@soysal2017]
     - [[https://metamap.nlm.nih.gov/][metamap]]
     - https://github.com/ncbi-nlp
     - Linguamatics at WashU
@@ -8275,7 +8275,7 @@ algorithm properties
   -
   - Data lineage
   - https://www.scnsoft.com/blog/guide-to-data-quality-management
-- cite:janssens2021
+- [cite:@janssens2021]
 - General education https://www.rscreencasts.com/?ref=reddit
 - Best practices
   - https://www.reddit.com/r/datascience/comments/wcsx2n/data_science_best_practices/
@@ -8284,7 +8284,7 @@ algorithm properties
 - Reading suggestions
   - https://www.reddit.com/r/datascience/comments/so7l3n/must_reads/
   - https://www.reddit.com/r/datascience/comments/v6sv06/what_is_the_bible_of_data_science/
-- FAIR principles for scientific data management ans stewardship cite:wilkinson2016
+- FAIR principles for scientific data management ans stewardship [cite:@wilkinson2016]
 - https://cmap.ihmc.us/
 - https://github.com/UW-Madison-DataScience
 - Argdown and argumentation notation
@@ -9608,7 +9608,7 @@ y
 
 ***** MediaWiki
 :PROPERTIES:
-:ID:       4F02B352-1A93-4CF4-A386-2788387A18C0
+:ID:       838f4391-9206-4bd2-844c-72502a039cb1
 :END:
 
 ***** ncdu
@@ -10032,10 +10032,9 @@ singularity version
 :ID:       a8b27140-4b9e-40c5-86ab-ee5afeae723f
 :CREATED:  [2021-09-13 Mon 07:29]
 :END:
-******* Snakemake Style Guide and Good Practices
+******* Snakemake Style Guide and Good Practices                   :claudekb:
 :PROPERTIES:
 :ID:       146f3266-f634-4728-8172-9ae8b459d0c7
-:export_file_name: docs/snakemake-style-guide.md
 :END:
 
 no r""" for shell
@@ -10063,22 +10062,23 @@ bespoke concurrency setup
       - A directed acyclic graph image of the current workflow(s).
       - A changelog documenting workflow-level changes.
     - Include a repository-internal minimum working example that functions in continuous integration testing.
+    - README section order: Intro → Configuration (YAML config + wrapper Snakefile + resource management) → per-module sections → Testing → CI badges → Changelog.
   - Version Management
     - Manage workflow versions with Git tags using semantic versioning.
-    - Tag format: wf/<workflow>/vX.Y.Z (e.g., wf/cfdna-cna/v2.1.0, wf/emseq/v1.7.1).
+    - Tag format: plain repo-level =vX.Y.Z= (e.g., v2.1.0, v1.7.1). A tag is a whole-repo snapshot, so the repository is the unit it versions; for independent release cadence, split into separate repos rather than namespacing tags within one.
     - Document workflow versions in both the README changelog and the org-file changelog.
     - Org-file changelog
       - Each repository's main =.org= file contains a =**** Change Log= heading.
       - Entries are reverse chronological list items with org timestamps: =- [YYYY-MM-DD Day] Description=.
       - The top entry is always "Development since last tag" — a running accumulator for work not yet tagged to a version.
-      - When a version is tagged, the accumulator entries move under a =wf/<repo>/vX.Y.Z= bullet. The accumulator resets to empty.
+      - When a version is tagged, the accumulator entries move under a =vX.Y.Z= bullet. The accumulator resets to empty.
       - Entries describe functional changes (what was added, fixed, or changed), not commit-by-commit replay.
     - Minimum Git workflow:
       1. Create the updated workflow.
       2. When the workflow is ready for a version update, document changes in the README changelog and move org-file changelog accumulator entries under the new version bullet.
       3. Update the README DAGs
       4. Commit workflow and README updates: git add -A
-      5. Tag repository with workflow version: git tag -a wf/<WORKFLOW>/v<VERSION> -m "<MESSAGE>"
+      5. Tag the repository: git tag -a v<VERSION> -m "<MESSAGE>"
       6. Push tag: git push origin master --follow-tags
 - Workflow Architecture
   - Workflow Types
@@ -10118,7 +10118,7 @@ bespoke concurrency setup
   - Hungarian notation prefixes for defined classes:
     - D_ for data directories (absolute paths from config).
     - R_ for repository locations.
-    - CONDA_ for conda environment YAML files.
+    - ENV_ for conda environment YAML files.
   - Choose the path-construction style by whether the path carries Snakemake wildcards:
     - Wildcard paths -> f-strings with double-braced wildcards. This is the Snakemake idiom; os.path.join handles wildcard templates awkwardly. Escape every wildcard with double braces so Snakemake (not Python) resolves it.
       - Example: =output: f"{D_EMSEQ}/align/{{sample}}.bam"=
@@ -10227,6 +10227,8 @@ bespoke concurrency setup
     - Do not include threads in params.
   - Conda Environments
     - Each rule specifies its conda environment.
+    - Conda env YAML files must NOT set a =name:= field — it collides with existing system envs when =--use-conda= creates prefix-based envs.
+    - Tangle conda env YAML blocks with =:comments no= — tangle-header timestamps change the file hash, forcing Snakemake to rebuild the env on every tangle.
   - Logging and Output
     - A common D_LOG convention exists.
     - Every rule defines a log file.
@@ -10240,6 +10242,7 @@ bespoke concurrency setup
     - Keep log and workflow logic in the Snakefile, external to the script.
     - Redirect stdout and stderr explicitly (e.g., via exec > "{log}" 2>&1).
     - Avoid embedding complex logic in run or shell blocks.
+    - Scripts that parse Snakemake output filenames for metadata (library_id, length class) must match the rule's wildcard pattern exactly; prefer bash parameter expansion (=${base%%.*}=, =${base##*.prefix_}=) over fragile sed chains.
   - Resource Declaration
     - Declare threads, memory, and other resources in rules, not hidden in scripts.
   - Path References
@@ -12533,6 +12536,421 @@ cp /etc/skel/.bashrc ${HOME}/.bashrc
 When a machine becomes completely unresponsive (hard freeze, not thermal shutdown), work through
 these steps after reboot to diagnose the cause.
 
+****** UNIX-based                                             :software:career:
+:PROPERTIES:
+:ID:       d81d48a3-8cf8-4d73-90c6-08afe5d88cf8
+:CREATED:  [2019-08-15 Thu 16:17]
+:END:
+:LOGBOOK:
+CLOCK: [2020-06-25 Thu 07:47]--[2020-06-25 Thu 08:13] =>  0:26
+CLOCK: [2020-02-12 Wed 10:15]--[2020-02-12 Wed 10:19] =>  0:04
+CLOCK: [2019-09-18 Wed 14:02]--[2019-09-18 Wed 14:40] =>  0:38
+CLOCK: [2019-08-30 Fri 09:48]--[2019-08-30 Fri 09:53] =>  0:05
+CLOCK: [2019-08-15 Thu 16:15]--[2019-08-15 Thu 16:45] =>  0:30
+CLOCK: [2019-05-21 Tue 10:42]--[2019-05-21 Tue 11:04] =>  0:22
+CLOCK: [2019-05-15 Wed 16:15]--[2019-05-15 Wed 19:33] =>  3:18
+CLOCK: [2019-03-06 Wed 10:15]--[2019-03-06 Wed 12:14] =>  1:59
+CLOCK: [2019-03-06 Wed 09:30]--[2019-03-06 Wed 10:00] =>  0:30
+CLOCK: [2019-01-12 Sat 08:41]--[2019-01-12 Sat 08:51] =>  0:10
+CLOCK: [2018-09-10 Mon 14:04]--[2018-09-10 Mon 14:43] =>  0:39
+CLOCK: [2018-04-28 Sat 18:04]--[2018-04-28 Sat 18:05] =>  0:01
+CLOCK: [2018-04-28 Sat 17:43]--[2018-04-28 Sat 17:45] =>  0:02
+CLOCK: [2017-11-29 Wed 14:14]--[2017-11-29 Wed 15:00] =>  0:46
+CLOCK: [2017-10-25 Wed 10:37]--[2017-10-25 Wed 10:48] =>  0:11
+CLOCK: [2017-10-25 Wed 09:48]--[2017-10-25 Wed 10:23] =>  0:35
+CLOCK: [2017-10-12 Thu 13:37]--[2017-10-12 Thu 13:40] =>  0:03
+CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
+:END:
+- for config https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes
+- configuration management
+  - https://en.wikipedia.org/wiki/Ansible_(software)
+******* Processes and commands
+:PROPERTIES:
+:ID:       f6c816d4-6f1a-4954-bf90-ed90de4d0979
+:END:
+:LOGBOOK:
+CLOCK: [2021-08-25 Wed 08:33]--[2021-08-25 Wed 09:13] =>  0:40
+:END:
+  | du -shc . | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]]                       |
+  | l         | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\(' |
+
+  | change password                     | passwd                      |
+  | disk usage, top level               | du -h --summarize           |
+  | see total disk usage                | df -h                       |
+  | see files location on physical disk | df <PATH>                   |
+  | see distro                          | lsb_release -a              |
+  | see system disks                    | lsblk                       |
+  | add to path (temporary?)            | export PATH=$PATH:/new/path |
+
+- account management
+  - https://www.google.com/search?q=unix+create+user
+
+******* general
+:PROPERTIES:
+:ID:       b387cb19-73dd-4783-8e57-8da47837e129
+:END:
+- guides, tutorials, cheatsheets
+  - http://www.ee.surrey.ac.uk/Teaching/Unix/
+  - [[http://linuxcommand.org/][LinuxCommand.org]]
+  - [[http://korflab.ucdavis.edu/Unix_and_Perl/current.html][UC Davis Unix and Perl for biologists]]
+  - http://www.chm.bris.ac.uk/compres/unix/index.html
+  - http://www.commandlinefu.com/commands/browse
+  - [[http://catb.org/jargon/html/U/Unix.html][Unix name origin]]
+  - [[https://sanctum.geek.nz/arabesque/unix-as-ide-introduction/][Unix as IDE: Introduction]]
+  - [[http://cecs.wright.edu/~p/mateti/Courses/333/Top/index.html][Wright State CEG 333: Introduction to Unix]]
+  - [[http://www.commandlinefu.com/commands/browse/sort-by-votes][commandlinefu]]
+  - [[https://unix.stackexchange.com/questions/12762/how-do-i-temporarily-bypass-an-alias-in-tcsh][How do I temporarily bypass an alias in tcsh?]]
+  - [[https://unix.stackexchange.com/][stack: unix]]
+  - [[https://en.wikibooks.org/wiki/Guide_to_Unix][wikibooks: unix]]
+  - http://www.thegeekstuff.com/
+  - [[http://mywiki.wooledge.org/FullBashGuide][Full bash guide]]
+  - https://www.reddit.com/r/commandline/comments/9md3pp/a_very_useful_bashrc_file/
+  - https://sneak.berlin/20191011/stupid-unix-tricks/
+- standards and best practices
+  - POSIX
+  - naming conventions- [[https://unix.stackexchange.com/questions/49008/for-filenames-are-underscores-or-dashes-more-common-in-unix-file-names][stack: For filenames, are underscores or dashes more common in Unix file names? {closed}]]
+- file structure
+  - https://unix.stackexchange.com/questions/4186/what-is-usr-local-bin
+- POSIX
+  - [[https://github.com/dylanaraps/pure-sh-bible][pure sh bible]]
+******* Tools (software)
+:PROPERTIES:
+:ID:       7b10faa5-721d-48bb-aa15-26cd3d1143dd
+:END:
+PROPERTIES:
+:ID:       4a8bbace-0e0a-4eb2-92fd-03048d6f1ec5
+:END:
+:LOGBOOK:
+CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
+:END:
+- ifconfig
+  - [[file:/usr/share/man/man8/ifconfig.8.gz]]
+- https://github.com/denisidoro/navi
+- cron
+  - commands
+    | function                          | command                                   |
+    |-----------------------------------+-------------------------------------------|
+    | access user-specific crontab file | env EDITOR=nano sudo crontab -e -u <USER> |
+    | see jobs                          | sudo crontab -u <USER> -l                 |
+    | create job                        | sudo crontab -u <USER> -e                 |
+  - [[https://stackoverflow.com/questions/4984725/how-to-test-a-weekly-cron-job][Test]]
+  - [[https://askubuntu.com/questions/419548/how-to-set-up-a-root-cron-job-properly?noredirect=1&lq=1][Access root]]
+  - [[https://crontab.guru/every-week][Guide to times]]
+  - [[https://ole.michelsen.dk/blog/schedule-jobs-with-crontab-on-mac-osx.html][On macos]]
+  - https://opensource.com/article/17/11/how-use-cron-linux
+- curl
+  - https://www.reddit.com/r/commandline/comments/am28qh/try_curl_httpwttrin_image_of_a_shell/
+- cut
+- du
+  - - https://stackoverflow.com/questions/15141588/exclude-all-permission-denied-messages-from-du
+- grep
+  - https://www.thegeekstuff.com/2011/10/grep-or-and-not-operators/
+  - https://unix.stackexchange.com/questions/37313/how-do-i-grep-for-multiple-patterns-with-pattern-having-a-pipe-character/37316
+- head and tail
+  - to trim file header lines
+    - e.g.: tail -n +2 file.txt > file.stdout
+- https://github.com/tqdm/tqdm/blob/master/README.rst
+- https://www.reddit.com/r/commandline/comments/7ejk45/what_are_some_of_awesome_curl_web_commands/
+- https://www.reddit.com/r/commandline/comments/ad6ryp/10_tools_to_power_up_your_command_line_dev/
+- http://www.theunixschool.com/p/awk-sed.html
+- ls
+  - [[https://unix.stackexchange.com/questions/48492/list-only-regular-files-but-not-directories-in-current-directory][List only regular files (but not directories) in current directory]]
+  - file size w/ ls -l --block-size=M
+- [[https://askubuntu.com/questions/185661/hide-files-ending-in-tilde][ls- hide files ending in tilde]]
+- mail
+  -
+- make
+  - - https://stackoverflow.com/questions/3239343/make-install-but-not-to-default-directories
+- [[- https://www.xpdfreader.com/pdftotext-man.html][pdftotext]]
+- pigz
+  - https://zlib.net/pigz/
+- samba share
+  - - https://superuser.com/questions/1337257/clients-cant-create-symlinks-on-samba-share
+- rsync
+  - [[https://rsync.samba.org/]]
+  - commands
+    |----------+---------|
+    | function | command |
+    |----------+---------|
+    | <35>     | <35>    |
+    |          |         |
+  - processes
+  - standards and best practice
+  - [[https://rsync.samba.org/documentation.html][documentation]]
+  - applications
+  - reference
+    - [[file:~/.basecamp/emacs/public_yasnippets/org-mode/software]]
+- to concat csvs- https://www.quora.com/How-do-you-combine-multiple-csv-files-into-a-single-file-using-the-command-line
+- unzip - https://askubuntu.com/questions/994731/how-to-skip-unzipping-a-file-that-already-exists
+- Unison
+  - commands
+    |----------+---------|
+    | function | command |
+    |----------+---------|
+    | <35>     | <35>    |
+    |          |         |
+  - processes
+  - [[https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html][documentation]]
+  - applications
+- X11
+  - https://www.windowmaker.org/
+- GNU tools
+  - make
+    - tutorial https://github.com/kyclark/make-tutorial
+  - grep
+    - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
+  - nohup
+    - https://unix.stackexchange.com/questions/373461/open-less-scrolled-to-the-end
+  - grep
+    - [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
+******** GNU and GNU tools
+:PROPERTIES:
+:ID:       76c4836c-fe3f-4948-86dd-25d8df38d1af
+:END:
+- sort and uniq
+- gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
+- [[https://www.gnu.org/prep/standards/standards.html][GNU Coding Standards]]
+- diff
+  - https://stackoverflow.com/questions/4717250/extracting-unique-values-between-2-sets-files
+- echo
+  - https://www.google.com/search?q=gnu+echo+formatting+best+practices
+  - [[https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo][printf vs echo]]
+  - https://www.google.com/search?q=bash+echo+tab
+- find
+  - https://stackoverflow.com/questions/12522269/how-to-find-the-largest-file-in-a-directory-and-its-subdirectories
+  - https://unix.stackexchange.com/questions/140367/finding-all-large-files-in-the-root-filesystem
+  - https://www.google.com/search?q=bash+find+and+delete
+  - https://www.google.com/search?q=bash+find+by+date
+    - https://stackoverflow.com/questions/158044/how-to-use-find-to-search-for-files-created-on-a-specific-date
+- printf
+  - [[https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo][printf vs echo]]
+- coreutils
+  - sort
+    - https://unix.stackexchange.com/questions/76049/what-is-the-difference-between-sort-u-and-sort-uniq
+- nohup
+  - https://unix.stackexchange.com/questions/373461/open-less-scrolled-to-the-end
+********* gnu parallel
+:PROPERTIES:
+:ID:       e13df1a8-f5f1-4495-91a7-b33ff1c4ab84
+:END:
+  - - https://www.nas.nasa.gov/hecc/support/kb/using-gnu-parallel-to-package-multiple-jobs-in-a-single-pbs-job_303.html
+  - https://stackoverflow.com/questions/36042951/feed-gnu-parallel-with-an-array
+  - https://www.msi.umn.edu/support/faq/how-can-i-use-gnu-parallel-run-lot-commands-parallel
+  - https://www.biostars.org/p/63816/
+  - https://www.biostars.org/p/216905/
+  - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
+********* [[elisp:(with-minibuffer-input (call-interactively 'woman) "wget")][wget]]
+:PROPERTIES:
+:ID:       15b0cab6-1167-49f0-a5b2-6559c9e62251
+:END:
+#+begin_src bash :tangle ./src/gtac_wget.sh
+# Check for parameters, return usage if empty
+if [ $# -ne 2 ]; then
+    printf "\n usage: gtac_wget.sh <DIR PREFIX> <GTAC HTML>
+           \n wget wrapper for WUSTL GTAC downloads
+           \n"
+elif [[ ! -r $1 ]]; then
+    echo "Directory prefix at $1 is not readable."
+else
+    wget \
+        --continue \
+        --directory-prefix $1 \
+        --execute robots=off \
+        --force-directories \
+        --no-host-directories \
+        --no-parent \
+        --recursive \
+        --reject="index.html*" \
+        --timestamping \
+        $2
+fi
+#+end_src
+- [[https://www.google.com/search?q=wget+force+overwrite][google:wget force overwrite]]
+- [[id:a8415f7e-36e1-4641-b909-565b73f79e1b][Chaudhuri medgenome wget]]
+- [[https://www.tecmint.com/commandline-download-accelerators-for-linux/amp/][pass list to]]
+- [[https://superuser.com/questions/283481/how-do-i-properly-set-wget-to-download-only-new-files][download only on server side change]]
+  - AND SET -O !!
+- download in background & resume broke  wget -bqc <PATH>
+- https://www.google.com/search?q=wget+github+raw
+- clobber = overwrite
+********* make
+:PROPERTIES:
+:ID:       5b075f74-e2cf-4d2f-a8f7-db7c64080f47
+:END:
+- install
+  - configure, make, install
+    - https://www.tldp.org/HOWTO/Software-Building-HOWTO-3.html
+    - https://superuser.com/questions/360178/what-does-make-install-do
+  - https://stackoverflow.com/questions/10961439/why-always-configure-make-make-install-as-3-separate-steps
+- tutorial https://github.com/kyclark/make-tutorial
+- http://blog.byronjsmith.com/makefile-shortcuts.html
+- Processes
+  - Pass variables
+******** gawk
+:PROPERTIES:
+:ID:       ec6a8328-2003-48ce-b8d0-fd11252d75cd
+:END:
+- Add a column in middle
+  - https://stackoverflow.com/questions/11950641/add-column-to-middle-of-tab-delimited-file-sed-awk-whatever
+- output as tsv
+  awk -v FS='\t' -v OFS='\t' ...
+  - https://stackoverflow.com/questions/5374239/tab-separated-values-in-awk
+- https://www.google.com/search?q=awk+filter+duplicates+by+column&oq=awk+filter+duplicates+by+column&aqs=chrome..69i57.7808j0j1&sourceid=chrome&ie=UTF-8
+- commands
+  |----------------------+-----------------|
+  | function             | command         |
+  |----------------------+-----------------|
+  | <35>                 | <35>            |
+  | set delimiter        | -F<DELIM>       |
+  | set output delimiter | OFS = "<DELIM>" |
+  |                      |                 |
+- processes
+  - [[https://www.google.com/search?q=awk+filter+to+column+less+than][google:awk filter to column less than]]
+  - https://www.google.com/search?q=awk+filter+greater+than
+  - https://www.google.com/search?q=awk+pass+variable
+  - [[https://stackoverflow.com/questions/19149731/use-awk-to-find-average-of-a-column][find average]]
+  - https://www.google.com/search?q=awk+print+except+first
+  - sorting
+    - [[https://stackoverflow.com/questions/17048188/how-to-use-awk-sort-by-column-3][sort column]]
+    - [[https://stackoverflow.com/questions/5917576/sort-a-text-file-by-line-length-including-spaces][by line length]]
+  - variables
+    - [[https://stackoverflow.com/questions/19075671/how-do-i-use-shell-variables-in-an-awk-script][external from shell]]
+    - https://www.linuxnix.com/awk-scripting-learn-awk-built-in-variables-with-examples/
+  - [[https://stackoverflow.com/questions/17001849/awk-partly-string-match-if-column-word-partly-matches][stack: awk partly string match (if column/word partly matches)]]
+  - [[https://stackoverflow.com/questions/47091464/print-for-loop-input-filename-on-piped-awk-output][file name as variable]]
+- standards and best practice
+- documentation
+  - [[http://www.tutorialspoint.com/awk/awk_basic_examples.htm][AWK - Basic Examples]]
+- applications
+  - [[http://reasoniamhere.com/2013/09/16/awk-gtf-how-to-analyze-a-transcriptome-like-a-pro-part-1/][AWK GTF! How to Analyze a Transcriptome Like a Pro]]
+- reference
+  - [[file:~/.basecamp/emacs/public_yasnippets/org-mode/software]]
+******** grep
+:PROPERTIES:
+:ID:       024b269b-27ca-492d-981f-d8f9083a38d2
+:END:
+- Processes
+  - https://www.google.com/search?q=grep+or
+  - grep through subdirectories
+    grep -rl "string" /path
+    - https://askubuntu.com/questions/55325/how-to-use-grep-command-to-find-text-including-subdirectories
+  - https://www.google.com/search?q=grep+search+in+all+text+files+in+directory
+  - https://www.google.com/search?q=grep+phrase+with+space
+  - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
+  - grep -r --unclude \*.R "as.Date" ~/
+- [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
+******** [[https://www.gnu.org/software/sed/][sed]]
+:PROPERTIES:
+:ID:       69e65a70-878e-4f58-a1d1-14ca876a7c12
+:END:
+
+- https://www.reddit.com/r/commandline/comments/qsbmji/useful_sed_scripts_patterns/
+- https://www.google.com/search?q=sed+replace+space+with+tab
+- [[https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed][use shell variables]]
+- [[https://stackoverflow.com/questions/5410757/how-to-delete-from-a-text-file-all-lines-that-contain-a-specific-string][delete lines with pattern]]
+- [[https://unix.stackexchange.com/questions/99350/how-to-insert-text-before-the-first-line-of-a-file#:~:text=14%20Answers&text=Use%20sed%20's%20insert%20(%20i,text%20in%20the%20preceding%20line.&text=Also%20note%20that%20some%20non,effect%20as%20with%20GNU%20sed%20).&text=Echo%20is%20used%20to%20get%20the%20text.][insert before first line]]
+- https://www.google.com/search?q=sed+remove+first+line
+- https://www.google.com/search?q=sed+remove+lines+containting+string
+- [[https://www.youtube.com/watch?v=3cLbeYQ2Veg][youtube: sed commands in linux]]
+- [[http://www.brunolinux.com/02-The_Terminal/Find_and%2520Replace_with_Sed.html][Find and replace with SED]]
+- Then, using sed: sed -e '5,10d;12d' filename (deletes lines 5-10 and 12)
+- https://www.google.com/search?q=sed+add+above+first+line
+******** ssh
+:PROPERTIES:
+:ID:       054f0013-9355-4194-8fbd-646b54db2f70
+:END:
+- permissions setup
+  #+begin_src bash
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/id_rsa
+chmod 600 ~/.ssh/id_rsa.pub
+#+end_src
+- private key must be
+- computer https://dev.to/zduey/how-to-set-up-an-ssh-server-on-a-home-computer
+- http://www.linuxproblem.org/art_9.htm
+- multiplexing connections- https://www.techrepublic.com/article/how-to-use-multiplexing-to-speed-up-the-ssh/
+- https://stackoverflow.com/questions/12715233/why-can-i-ping-a-server-but-not-connect-via-ssh
+- https://serverfault.com/questions/334448/why-is-ssh-password-authentication-a-security-risk
+- https://dev.to/zduey/how-to-set-up-an-ssh-server-on-a-home-computer
+******* ideas
+:PROPERTIES:
+:ID:       bd78d1e4-cdac-4ccd-af57-e410e8c0cc23
+:END:
+- idea for citrix script- - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
+- ideas- check disk space https://www.cyberciti.biz/tips/shell-script-to-watch-the-disk-space.html
+- GNU - [[https://www.gnu.org/help/help.html][Helping GNU]]
+- [[https://www.reddit.com/r/commandline/comments/7d5fwa/jobson_automatically_turn_commandline/][reddit: automatically turn command-line applications into webapps]]
+******* MacOS
+:PROPERTIES:
+:ID:       80A0FABE-EB39-4BFC-8478-8044E6D84761
+:END:
+
+- http://www.theinstructional.com/guides/disk-management-from-the-command-line-part-2
+- https://www.howtogeek.com/312755/what-is-the-process-windowserver-and-why-is-it-running-on-my-mac/
+- [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][How to allow install of non app store or identified developers on MacOS Sierra]]
+- Command Table
+  | Function             | Command                   | Notes                                                                                                               |
+  |----------------------+---------------------------+---------------------------------------------------------------------------------------------------------------------|
+  |                      |                           | <20>                                                                                                                |
+  | List process to kill | ps -A\ grep -m1 <PROCESS> | https://stackoverflow.com/questions/11546765/how-to-get-the-pid-of-a-process-by-giving-the-process-name-in-mac-os-x |
+  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                                               |
+  |                      |                           |                                                                                                                     |
+- https://stackoverflow.com/questions/17935301/how-to-force-mac-os-to-open-search-with-google-in-chrome
+- Window management
+  - Default layouts
+    - https://github.com/jigish/slate
+    - http://autumnapps.com/breeze/
+    - https://apple.stackexchange.com/questions/3133/how-do-i-make-windows-save-their-position-on-screen-after-re-attaching-a-display
+- [[http://osxdaily.com/2010/06/09/screen-capture-in-mac-os-x/][Screen capture]]
+- https://apple.stackexchange.com/questions/55432/keyboard-shortcut-for-restoring-applications-from-the-mac-os-x-dock
+- hide dock: <CMD>+<ALT>+d
+- [[http://www.chriswrites.com/how-to-view-and-kill-processes-using-the-terminal-in-mac-os-x/][How to View and Kill Processes Using the Terminal in Mac OS X]]
+- Check out the brew edit command
+http://www.mitchchn.me/2014/os-x-terminal/
+
+  - osx
+    - [[http://apple.stackexchange.com/?tab=featured][mac stack exchange]]
+    - [[http://zmjones.com/mac-setup/][setting up osx for data analysis]]
+    - [[http://osxdaily.com/2009/02/25/show-hidden-files-in-os-x/][hidden files]]
+
+****** Android
+:PROPERTIES:
+:ID:       8773070e-c8d7-4edf-8ee7-e6de1aa6b1a3
+:END:
+- https://cellencooper.medium.com/how-to-change-ok-google-to-a-different-phrase-bd6ca322398#:~:text=After%20launching%20the%20app%2C%20tap,to%20call%20your%20Google%20Assistant.
+
+****** Android → Linux mirror
+- https://chatgpt.com/c/671b9551-ded0-8005-88f4-5569ab769f63
+- https://www.google.com/search?q=android+block+number
+- https://github.com/Genymobile/scrcpy
+  #+begin_src bash
+# for Debian/Ubuntu
+sudo apt install ffmpeg libsdl2-2.0-0 adb wget \
+                 gcc git pkg-config meson ninja-build libsdl2-dev \
+                 libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev \
+                 libswresample-dev libusb-1.0-0 libusb-1.0-0-dev
+
+mkdir /tmp/scrcpy
+cd /tmp/scrcpy
+git clone https://github.com/Genymobile/scrcpy
+
+cd scrcpy
+
+./install_release.sh
+
+
+
+sudo adb kill-server
+sudo adb start-server
+sudo adb devices
+
+adb tcpip 5555
+
+adb connect 192.168.1.12:5555
+
+
+#+end_src
+
 *** Programming languages                                            :career:
 :PROPERTIES:
 :ID:       CBD1C9BA-44CB-4510-8ACD-F12CEF7E3402
@@ -13118,7 +13536,7 @@ CLOCK: [2019-02-19 Tue 11:04]--[2019-02-19 Tue 11:25] =>  0:21
 - Learning resources
   - [[https://www.reddit.com/r/datascience/comments/7u4c05/python_tools_that_everyone_should_know_about/][reddit: data science python tools that everyone should know about]]
   - Python books
-    - cite:urban2016murachs
+    - [cite:@urban2016murachs]
     - [[http://openbookproject.net/thinkcs/python/english3e/][How to think like a computer scientist]]
   - courses
     - [[http://bafflednerd.com/category/learn-analytics/][Baffled Nerd: Online python courses]]
@@ -13129,7 +13547,7 @@ CLOCK: [2019-02-19 Tue 11:04]--[2019-02-19 Tue 11:25] =>  0:21
 - Rougier
   - [[https://www.labri.fr/perso/nrougier/from-python-to-numpy/][book- from python to numpy]] and associated [[https://github.com/rougier/from-python-to-numpy][github]]
   - [[http://www.labri.fr/perso/nrougier/teaching/matplotlib/matplotlib.html][matplotlib tutorial]]
-- cite:sweigart2015
+- [cite:@sweigart2015]
 - [[https://www.python.org/dev/peps/pep-0008/][PEP 8 -- Style Guide for Python Code]]
 - https://wiki.python.org/moin/BeginnersGuide/Programmers
 - [[https://github.com/JulianGaal/python-cheat-sheet][github: python cheatsheet]]
@@ -15111,7 +15529,7 @@ $0
   - https://devhints.io/bash
   - https://www.ibm.com/developerworks/aix/library/au-satbash.html
   - [[http://tldp.org/LDP/LG/issue18/bash.html][string manipulations]]
-  - cite:veeraraghavan2002
+  - [cite:@veeraraghavan2002]
   - http://tldp.org/LDP/abs/html/
   - https://github.com/onceupon/Bash-Oneliner
   - https://devhints.io/bash?source=post_page---------------------------
@@ -15154,7 +15572,7 @@ $0
     - https://devhints.io/bash
     - https://www.ibm.com/developerworks/aix/library/au-satbash.html
     - [[http://tldp.org/LDP/LG/issue18/bash.html][string manipulations]]
-    - cite:veeraraghavan2002
+    - [cite:@veeraraghavan2002]
     - http://tldp.org/LDP/abs/html/
     - https://github.com/onceupon/Bash-Oneliner
     - https://devhints.io/bash?source=post_page---------------------------
@@ -15168,7 +15586,7 @@ $0
   - [[http://mywiki.wooledge.org/FullBashGuide][Full bash guide]]
 - https://mywiki.wooledge.org/BashPitfalls
 - [[https://tldp.org/LDP/abs/html/][Advanced bash scripting guide]]
-- cite:greenberg2021
+- [cite:@greenberg2021]
 - Style and best practices
   - https://google.github.io/styleguide/shellguide.html
   - https://stackoverflow.com/questions/64786/error-handling-in-bash/13099228#13099228
@@ -15277,7 +15695,7 @@ nested_list:
 ******* Local YAS
 ******** 80
 :PROPERTIES:
-:ID:       1afd02e0-8fdf-4899-adb6-106d83152829
+:ID:       2bae3830-d4fe-4b3f-bac6-ec62de58a7eb
 :END:
 #+begin_src bash :comment no :tangle ~/repos/basecamp/emacs/public_yasnippets/yaml-mode/80
 # -*- mode: snippet -*-
@@ -15364,7 +15782,7 @@ Add a vertical line to the left:
 :ID:       06E539D4-B9EC-4D73-96FF-613D8CC51067
 :END:
 
-cite:yasini2012guideline
+[cite:@yasini2012guideline]
 - http://creately.com/blog/diagrams/part-2-what-type-of-uml-diagram-should-you-be-using/
 - http://creately.com/blog/diagrams/uml-diagram-types-examples/
 
@@ -15723,7 +16141,7 @@ https://www.reddit.com/r/emacs/comments/1802hag/how_can_i_become_a_more_proficie
 - [X] generate local byte-compiled elisp
   - if VC makes a newer .el, .elc will load, but with warning to recompile
   - http://ergoemacs.org/emacs/emacs_byte_compile.html
-- cite:monnier2020
+- [cite:@monnier2020]
 - https://bofh.org.uk/2019/02/25/baking-with-emacs/
 - https://github.com/sunnyhasija/DOOMEmacs
 
@@ -15745,7 +16163,7 @@ https://www.reddit.com/r/emacs/comments/1802hag/how_can_i_become_a_more_proficie
     - http://emacsrocks.com/
     - [[http://emacs.stackexchange.com/questions?sort=votes][emacs stack exchange questions by vote]]
     - [[https://pawelbx.github.io/emacs-theme-gallery/][nice emacs theme gallary]]
-    - cite:bingmann2015
+    - [cite:@bingmann2015]
     - not useful
       - [[http://david.rothlis.net/emacs/howtolearn.html][Rothlisberger How to Learn Emacs]]
 - config/init file examples
@@ -15845,7 +16263,7 @@ https://github.com/politza/pdf-tools
 (advice-remove 'yas--auto-fill-wrapper #'ignore)
 #+end_src
 *** Software engineering                                                :ref:
-**** Style Guide
+**** Style Guides
 :PROPERTIES:
 :ID:       593672e1-82b2-44e0-aa00-d28825860706
 :END:
@@ -15894,7 +16312,7 @@ https://abseil.io/resources/swe-book
   - [[https://www.reddit.com/r/IWantToLearn/comments/8o7uli/iwtl_how_to_design_and_create_mobile_apps_and/][Reddit: IWTL how to design and create mobile apps and games from scratch]]
   - General guides
     - [[https://www.reddit.com/r/IWantToLearn/comments/8o7uli/iwtl_how_to_design_and_create_mobile_apps_and/][Reddit: IWTL how to design and create mobile apps and games from scratch]]
-  - Open source software development for science- cite:nowogrodzki2019
+  - Open source software development for science- [cite:@nowogrodzki2019]
   - Continuous integration / continuous delivery (CI/CD)
     - https://github.blog/2019-08-08-github-actions-now-supports-ci-cd/?WT.mc_id=devto-blog-yolasors
   - [[id:0b4dfeac-fc55-47b1-956c-38fb19eba7ff][Data science project management]]
@@ -15920,453 +16338,6 @@ https://abseil.io/resources/swe-book
       - https://docs.python.org/3/library/unittest.html
 - https://codeutopia.net/blog/2015/03/01/unit-testing-tdd-and-bdd/
 - test-driven development :: requirements converted to test cases
-*** Operating systems
-:PROPERTIES:
-:ID:       16DB2FD8-1988-48E4-8D8D-E69398823A70
-:END:
-
-where are osx dameons?
-- Windows
-  - http://stackoverflow.com/questions/7195503/setting-up-a-cron-job-in-windows
-- Containers and virtual machines
-  - [[https://stackoverflow.com/questions/16047306/how-is-docker-different-from-a-normal-virtual-machine][Docker vs. virtual machine]]
-    - VMs have only virtual access to kernal through hypervisor
-    - containers run apps natively on real kernal
-    - Docker image contains only the differences from the base
-    - Docker shares the kernal, VM does not
-    - Containers have only libraries and settings to make software work
-    - https://github.com/wsargent/docker-cheat-sheet
-    - Containers can share kernal with other containers
-    - https://www.docker.com/what-container
-      - [[file:compend.org_imgs/20170828_091936_19148Pqg.png]]
-  - Virtual Box
-    - copying a VM- go to export appliance
-    - in VirtualBox, double-press <CMD> to tab out to mac programs
-
-**** image development
-:PROPERTIES:
-:CREATED:  [2019-05-29 Wed 14:47]
-:ID:       82b8ccaa-3bb3-4a71-8123-bce4f20c5242
-:END:
-:LOGBOOK:
-CLOCK: [2019-05-29 Wed 14:47]--[2019-05-29 Wed 15:05] =>  0:18
-:END:
-
-**** UNIX-based                                             :software:career:
-:PROPERTIES:
-:ID:       BDC42DA2-A632-4FB7-A586-E100B2A045DC
-:CREATED:  [2019-08-15 Thu 16:17]
-:END:
-:LOGBOOK:
-CLOCK: [2020-06-25 Thu 07:47]--[2020-06-25 Thu 08:13] =>  0:26
-CLOCK: [2020-02-12 Wed 10:15]--[2020-02-12 Wed 10:19] =>  0:04
-CLOCK: [2019-09-18 Wed 14:02]--[2019-09-18 Wed 14:40] =>  0:38
-CLOCK: [2019-08-30 Fri 09:48]--[2019-08-30 Fri 09:53] =>  0:05
-CLOCK: [2019-08-15 Thu 16:15]--[2019-08-15 Thu 16:45] =>  0:30
-CLOCK: [2019-05-21 Tue 10:42]--[2019-05-21 Tue 11:04] =>  0:22
-CLOCK: [2019-05-15 Wed 16:15]--[2019-05-15 Wed 19:33] =>  3:18
-CLOCK: [2019-03-06 Wed 10:15]--[2019-03-06 Wed 12:14] =>  1:59
-CLOCK: [2019-03-06 Wed 09:30]--[2019-03-06 Wed 10:00] =>  0:30
-CLOCK: [2019-01-12 Sat 08:41]--[2019-01-12 Sat 08:51] =>  0:10
-CLOCK: [2018-09-10 Mon 14:04]--[2018-09-10 Mon 14:43] =>  0:39
-CLOCK: [2018-04-28 Sat 18:04]--[2018-04-28 Sat 18:05] =>  0:01
-CLOCK: [2018-04-28 Sat 17:43]--[2018-04-28 Sat 17:45] =>  0:02
-CLOCK: [2017-11-29 Wed 14:14]--[2017-11-29 Wed 15:00] =>  0:46
-CLOCK: [2017-10-25 Wed 10:37]--[2017-10-25 Wed 10:48] =>  0:11
-CLOCK: [2017-10-25 Wed 09:48]--[2017-10-25 Wed 10:23] =>  0:35
-CLOCK: [2017-10-12 Thu 13:37]--[2017-10-12 Thu 13:40] =>  0:03
-CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
-:END:
-- for config https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes
-- configuration management
-  - https://en.wikipedia.org/wiki/Ansible_(software)
-***** Processes and commands
-:PROPERTIES:
-:ID:       f6c816d4-6f1a-4954-bf90-ed90de4d0979
-:END:
-:LOGBOOK:
-CLOCK: [2021-08-25 Wed 08:33]--[2021-08-25 Wed 09:13] =>  0:40
-:END:
-  | du -shc . | [[https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes][disk usage in current dir]]                       |
-  | l         | lscpu grep -E '^Thread  ^Core  ^Socket  ^CPU\(' |
-
-  | change password                     | passwd                      |
-  | disk usage, top level               | du -h --summarize           |
-  | see total disk usage                | df -h                       |
-  | see files location on physical disk | df <PATH>                   |
-  | see distro                          | lsb_release -a              |
-  | see system disks                    | lsblk                       |
-  | add to path (temporary?)            | export PATH=$PATH:/new/path |
-
-- account management
-  - https://www.google.com/search?q=unix+create+user
-
-***** general
-:PROPERTIES:
-:ID:       b387cb19-73dd-4783-8e57-8da47837e129
-:END:
-- guides, tutorials, cheatsheets
-  - http://www.ee.surrey.ac.uk/Teaching/Unix/
-  - [[http://linuxcommand.org/][LinuxCommand.org]]
-  - [[http://korflab.ucdavis.edu/Unix_and_Perl/current.html][UC Davis Unix and Perl for biologists]]
-  - http://www.chm.bris.ac.uk/compres/unix/index.html
-  - http://www.commandlinefu.com/commands/browse
-  - [[http://catb.org/jargon/html/U/Unix.html][Unix name origin]]
-  - [[https://sanctum.geek.nz/arabesque/unix-as-ide-introduction/][Unix as IDE: Introduction]]
-  - [[http://cecs.wright.edu/~p/mateti/Courses/333/Top/index.html][Wright State CEG 333: Introduction to Unix]]
-  - [[http://www.commandlinefu.com/commands/browse/sort-by-votes][commandlinefu]]
-  - [[https://unix.stackexchange.com/questions/12762/how-do-i-temporarily-bypass-an-alias-in-tcsh][How do I temporarily bypass an alias in tcsh?]]
-  - [[https://unix.stackexchange.com/][stack: unix]]
-  - [[https://en.wikibooks.org/wiki/Guide_to_Unix][wikibooks: unix]]
-  - http://www.thegeekstuff.com/
-  - [[http://mywiki.wooledge.org/FullBashGuide][Full bash guide]]
-  - https://www.reddit.com/r/commandline/comments/9md3pp/a_very_useful_bashrc_file/
-  - https://sneak.berlin/20191011/stupid-unix-tricks/
-- standards and best practices
-  - POSIX
-  - naming conventions- [[https://unix.stackexchange.com/questions/49008/for-filenames-are-underscores-or-dashes-more-common-in-unix-file-names][stack: For filenames, are underscores or dashes more common in Unix file names? {closed}]]
-- file structure
-  - https://unix.stackexchange.com/questions/4186/what-is-usr-local-bin
-- POSIX
-  - [[https://github.com/dylanaraps/pure-sh-bible][pure sh bible]]
-***** Tools (software)
-:PROPERTIES:
-:ID:       7b10faa5-721d-48bb-aa15-26cd3d1143dd
-:END:
-PROPERTIES:
-:ID:       4a8bbace-0e0a-4eb2-92fd-03048d6f1ec5
-:END:
-:LOGBOOK:
-CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
-:END:
-- ifconfig
-  - [[file:/usr/share/man/man8/ifconfig.8.gz]]
-- https://github.com/denisidoro/navi
-- cron
-  - commands
-    | function                          | command                                   |
-    |-----------------------------------+-------------------------------------------|
-    | access user-specific crontab file | env EDITOR=nano sudo crontab -e -u <USER> |
-    | see jobs                          | sudo crontab -u <USER> -l                 |
-    | create job                        | sudo crontab -u <USER> -e                 |
-  - [[https://stackoverflow.com/questions/4984725/how-to-test-a-weekly-cron-job][Test]]
-  - [[https://askubuntu.com/questions/419548/how-to-set-up-a-root-cron-job-properly?noredirect=1&lq=1][Access root]]
-  - [[https://crontab.guru/every-week][Guide to times]]
-  - [[https://ole.michelsen.dk/blog/schedule-jobs-with-crontab-on-mac-osx.html][On macos]]
-  - https://opensource.com/article/17/11/how-use-cron-linux
-- curl
-  - https://www.reddit.com/r/commandline/comments/am28qh/try_curl_httpwttrin_image_of_a_shell/
-- cut
-- du
-  - - https://stackoverflow.com/questions/15141588/exclude-all-permission-denied-messages-from-du
-- grep
-  - https://www.thegeekstuff.com/2011/10/grep-or-and-not-operators/
-  - https://unix.stackexchange.com/questions/37313/how-do-i-grep-for-multiple-patterns-with-pattern-having-a-pipe-character/37316
-- head and tail
-  - to trim file header lines
-    - e.g.: tail -n +2 file.txt > file.stdout
-- https://github.com/tqdm/tqdm/blob/master/README.rst
-- https://www.reddit.com/r/commandline/comments/7ejk45/what_are_some_of_awesome_curl_web_commands/
-- https://www.reddit.com/r/commandline/comments/ad6ryp/10_tools_to_power_up_your_command_line_dev/
-- http://www.theunixschool.com/p/awk-sed.html
-- ls
-  - [[https://unix.stackexchange.com/questions/48492/list-only-regular-files-but-not-directories-in-current-directory][List only regular files (but not directories) in current directory]]
-  - file size w/ ls -l --block-size=M
-- [[https://askubuntu.com/questions/185661/hide-files-ending-in-tilde][ls- hide files ending in tilde]]
-- mail
-  -
-- make
-  - - https://stackoverflow.com/questions/3239343/make-install-but-not-to-default-directories
-- [[- https://www.xpdfreader.com/pdftotext-man.html][pdftotext]]
-- pigz
-  - https://zlib.net/pigz/
-- samba share
-  - - https://superuser.com/questions/1337257/clients-cant-create-symlinks-on-samba-share
-- rsync
-  - [[https://rsync.samba.org/]]
-  - commands
-    |----------+---------|
-    | function | command |
-    |----------+---------|
-    | <35>     | <35>    |
-    |          |         |
-  - processes
-  - standards and best practice
-  - [[https://rsync.samba.org/documentation.html][documentation]]
-  - applications
-  - reference
-    - [[file:~/.basecamp/emacs/public_yasnippets/org-mode/software]]
-- to concat csvs- https://www.quora.com/How-do-you-combine-multiple-csv-files-into-a-single-file-using-the-command-line
-- unzip - https://askubuntu.com/questions/994731/how-to-skip-unzipping-a-file-that-already-exists
-- Unison
-  - commands
-    |----------+---------|
-    | function | command |
-    |----------+---------|
-    | <35>     | <35>    |
-    |          |         |
-  - processes
-  - [[https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html][documentation]]
-  - applications
-- X11
-  - https://www.windowmaker.org/
-- GNU tools
-  - make
-    - tutorial https://github.com/kyclark/make-tutorial
-  - grep
-    - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
-  - nohup
-    - https://unix.stackexchange.com/questions/373461/open-less-scrolled-to-the-end
-  - grep
-    - [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
-****** GNU and GNU tools
-:PROPERTIES:
-:ID:       76c4836c-fe3f-4948-86dd-25d8df38d1af
-:END:
-- sort and uniq
-- gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
-- [[https://www.gnu.org/prep/standards/standards.html][GNU Coding Standards]]
-- diff
-  - https://stackoverflow.com/questions/4717250/extracting-unique-values-between-2-sets-files
-- echo
-  - https://www.google.com/search?q=gnu+echo+formatting+best+practices
-  - [[https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo][printf vs echo]]
-  - https://www.google.com/search?q=bash+echo+tab
-- find
-  - https://stackoverflow.com/questions/12522269/how-to-find-the-largest-file-in-a-directory-and-its-subdirectories
-  - https://unix.stackexchange.com/questions/140367/finding-all-large-files-in-the-root-filesystem
-  - https://www.google.com/search?q=bash+find+and+delete
-  - https://www.google.com/search?q=bash+find+by+date
-    - https://stackoverflow.com/questions/158044/how-to-use-find-to-search-for-files-created-on-a-specific-date
-- printf
-  - [[https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo][printf vs echo]]
-- coreutils
-  - sort
-    - https://unix.stackexchange.com/questions/76049/what-is-the-difference-between-sort-u-and-sort-uniq
-- nohup
-  - https://unix.stackexchange.com/questions/373461/open-less-scrolled-to-the-end
-******* gnu parallel
-:PROPERTIES:
-:ID:       e13df1a8-f5f1-4495-91a7-b33ff1c4ab84
-:END:
-  - - https://www.nas.nasa.gov/hecc/support/kb/using-gnu-parallel-to-package-multiple-jobs-in-a-single-pbs-job_303.html
-  - https://stackoverflow.com/questions/36042951/feed-gnu-parallel-with-an-array
-  - https://www.msi.umn.edu/support/faq/how-can-i-use-gnu-parallel-run-lot-commands-parallel
-  - https://www.biostars.org/p/63816/
-  - https://www.biostars.org/p/216905/
-  - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
-******* [[elisp:(with-minibuffer-input (call-interactively 'woman) "wget")][wget]]
-:PROPERTIES:
-:ID:       15b0cab6-1167-49f0-a5b2-6559c9e62251
-:END:
-#+begin_src bash :tangle ./src/gtac_wget.sh
-# Check for parameters, return usage if empty
-if [ $# -ne 2 ]; then
-    printf "\n usage: gtac_wget.sh <DIR PREFIX> <GTAC HTML>
-           \n wget wrapper for WUSTL GTAC downloads
-           \n"
-elif [[ ! -r $1 ]]; then
-    echo "Directory prefix at $1 is not readable."
-else
-    wget \
-        --continue \
-        --directory-prefix $1 \
-        --execute robots=off \
-        --force-directories \
-        --no-host-directories \
-        --no-parent \
-        --recursive \
-        --reject="index.html*" \
-        --timestamping \
-        $2
-fi
-#+end_src
-- [[https://www.google.com/search?q=wget+force+overwrite][google:wget force overwrite]]
-- [[id:a8415f7e-36e1-4641-b909-565b73f79e1b][Chaudhuri medgenome wget]]
-- [[https://www.tecmint.com/commandline-download-accelerators-for-linux/amp/][pass list to]]
-- [[https://superuser.com/questions/283481/how-do-i-properly-set-wget-to-download-only-new-files][download only on server side change]]
-  - AND SET -O !!
-- download in background & resume broke  wget -bqc <PATH>
-- https://www.google.com/search?q=wget+github+raw
-- clobber = overwrite
-******* make
-:PROPERTIES:
-:ID:       5b075f74-e2cf-4d2f-a8f7-db7c64080f47
-:END:
-- install
-  - configure, make, install
-    - https://www.tldp.org/HOWTO/Software-Building-HOWTO-3.html
-    - https://superuser.com/questions/360178/what-does-make-install-do
-  - https://stackoverflow.com/questions/10961439/why-always-configure-make-make-install-as-3-separate-steps
-- tutorial https://github.com/kyclark/make-tutorial
-- http://blog.byronjsmith.com/makefile-shortcuts.html
-- Processes
-  - Pass variables
-****** gawk
-:PROPERTIES:
-:ID:       ec6a8328-2003-48ce-b8d0-fd11252d75cd
-:END:
-- Add a column in middle
-  - https://stackoverflow.com/questions/11950641/add-column-to-middle-of-tab-delimited-file-sed-awk-whatever
-- output as tsv
-  awk -v FS='\t' -v OFS='\t' ...
-  - https://stackoverflow.com/questions/5374239/tab-separated-values-in-awk
-- https://www.google.com/search?q=awk+filter+duplicates+by+column&oq=awk+filter+duplicates+by+column&aqs=chrome..69i57.7808j0j1&sourceid=chrome&ie=UTF-8
-- commands
-  |----------------------+-----------------|
-  | function             | command         |
-  |----------------------+-----------------|
-  | <35>                 | <35>            |
-  | set delimiter        | -F<DELIM>       |
-  | set output delimiter | OFS = "<DELIM>" |
-  |                      |                 |
-- processes
-  - [[https://www.google.com/search?q=awk+filter+to+column+less+than][google:awk filter to column less than]]
-  - https://www.google.com/search?q=awk+filter+greater+than
-  - https://www.google.com/search?q=awk+pass+variable
-  - [[https://stackoverflow.com/questions/19149731/use-awk-to-find-average-of-a-column][find average]]
-  - https://www.google.com/search?q=awk+print+except+first
-  - sorting
-    - [[https://stackoverflow.com/questions/17048188/how-to-use-awk-sort-by-column-3][sort column]]
-    - [[https://stackoverflow.com/questions/5917576/sort-a-text-file-by-line-length-including-spaces][by line length]]
-  - variables
-    - [[https://stackoverflow.com/questions/19075671/how-do-i-use-shell-variables-in-an-awk-script][external from shell]]
-    - https://www.linuxnix.com/awk-scripting-learn-awk-built-in-variables-with-examples/
-  - [[https://stackoverflow.com/questions/17001849/awk-partly-string-match-if-column-word-partly-matches][stack: awk partly string match (if column/word partly matches)]]
-  - [[https://stackoverflow.com/questions/47091464/print-for-loop-input-filename-on-piped-awk-output][file name as variable]]
-- standards and best practice
-- documentation
-  - [[http://www.tutorialspoint.com/awk/awk_basic_examples.htm][AWK - Basic Examples]]
-- applications
-  - [[http://reasoniamhere.com/2013/09/16/awk-gtf-how-to-analyze-a-transcriptome-like-a-pro-part-1/][AWK GTF! How to Analyze a Transcriptome Like a Pro]]
-- reference
-  - [[file:~/.basecamp/emacs/public_yasnippets/org-mode/software]]
-****** grep
-:PROPERTIES:
-:ID:       024b269b-27ca-492d-981f-d8f9083a38d2
-:END:
-- Processes
-  - https://www.google.com/search?q=grep+or
-  - grep through subdirectories
-    grep -rl "string" /path
-    - https://askubuntu.com/questions/55325/how-to-use-grep-command-to-find-text-including-subdirectories
-  - https://www.google.com/search?q=grep+search+in+all+text+files+in+directory
-  - https://www.google.com/search?q=grep+phrase+with+space
-  - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
-  - grep -r --unclude \*.R "as.Date" ~/
-- [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
-****** [[https://www.gnu.org/software/sed/][sed]]
-:PROPERTIES:
-:ID:       69e65a70-878e-4f58-a1d1-14ca876a7c12
-:END:
-
-- https://www.reddit.com/r/commandline/comments/qsbmji/useful_sed_scripts_patterns/
-- https://www.google.com/search?q=sed+replace+space+with+tab
-- [[https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed][use shell variables]]
-- [[https://stackoverflow.com/questions/5410757/how-to-delete-from-a-text-file-all-lines-that-contain-a-specific-string][delete lines with pattern]]
-- [[https://unix.stackexchange.com/questions/99350/how-to-insert-text-before-the-first-line-of-a-file#:~:text=14%20Answers&text=Use%20sed%20's%20insert%20(%20i,text%20in%20the%20preceding%20line.&text=Also%20note%20that%20some%20non,effect%20as%20with%20GNU%20sed%20).&text=Echo%20is%20used%20to%20get%20the%20text.][insert before first line]]
-- https://www.google.com/search?q=sed+remove+first+line
-- https://www.google.com/search?q=sed+remove+lines+containting+string
-- [[https://www.youtube.com/watch?v=3cLbeYQ2Veg][youtube: sed commands in linux]]
-- [[http://www.brunolinux.com/02-The_Terminal/Find_and%2520Replace_with_Sed.html][Find and replace with SED]]
-- Then, using sed: sed -e '5,10d;12d' filename (deletes lines 5-10 and 12)
-- https://www.google.com/search?q=sed+add+above+first+line
-****** ssh
-:PROPERTIES:
-:ID:       054f0013-9355-4194-8fbd-646b54db2f70
-:END:
-- permissions setup
-  #+begin_src bash
-chmod 700 ~/.ssh
-chmod 600 ~/.ssh/id_rsa
-chmod 600 ~/.ssh/id_rsa.pub
-#+end_src
-- private key must be
-- computer https://dev.to/zduey/how-to-set-up-an-ssh-server-on-a-home-computer
-- http://www.linuxproblem.org/art_9.htm
-- multiplexing connections- https://www.techrepublic.com/article/how-to-use-multiplexing-to-speed-up-the-ssh/
-- https://stackoverflow.com/questions/12715233/why-can-i-ping-a-server-but-not-connect-via-ssh
-- https://serverfault.com/questions/334448/why-is-ssh-password-authentication-a-security-risk
-- https://dev.to/zduey/how-to-set-up-an-ssh-server-on-a-home-computer
-***** ideas
-:PROPERTIES:
-:ID:       bd78d1e4-cdac-4ccd-af57-e410e8c0cc23
-:END:
-- idea for citrix script- - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
-- ideas- check disk space https://www.cyberciti.biz/tips/shell-script-to-watch-the-disk-space.html
-- GNU - [[https://www.gnu.org/help/help.html][Helping GNU]]
-- [[https://www.reddit.com/r/commandline/comments/7d5fwa/jobson_automatically_turn_commandline/][reddit: automatically turn command-line applications into webapps]]
-***** MacOS
-:PROPERTIES:
-:ID:       80A0FABE-EB39-4BFC-8478-8044E6D84761
-:END:
-
-- http://www.theinstructional.com/guides/disk-management-from-the-command-line-part-2
-- https://www.howtogeek.com/312755/what-is-the-process-windowserver-and-why-is-it-running-on-my-mac/
-- [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][How to allow install of non app store or identified developers on MacOS Sierra]]
-- Command Table
-  | Function             | Command                   | Notes                                                                                                               |
-  |----------------------+---------------------------+---------------------------------------------------------------------------------------------------------------------|
-  |                      |                           | <20>                                                                                                                |
-  | List process to kill | ps -A\ grep -m1 <PROCESS> | https://stackoverflow.com/questions/11546765/how-to-get-the-pid-of-a-process-by-giving-the-process-name-in-mac-os-x |
-  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                                               |
-  |                      |                           |                                                                                                                     |
-- https://stackoverflow.com/questions/17935301/how-to-force-mac-os-to-open-search-with-google-in-chrome
-- Window management
-  - Default layouts
-    - https://github.com/jigish/slate
-    - http://autumnapps.com/breeze/
-    - https://apple.stackexchange.com/questions/3133/how-do-i-make-windows-save-their-position-on-screen-after-re-attaching-a-display
-- [[http://osxdaily.com/2010/06/09/screen-capture-in-mac-os-x/][Screen capture]]
-- https://apple.stackexchange.com/questions/55432/keyboard-shortcut-for-restoring-applications-from-the-mac-os-x-dock
-- hide dock: <CMD>+<ALT>+d
-- [[http://www.chriswrites.com/how-to-view-and-kill-processes-using-the-terminal-in-mac-os-x/][How to View and Kill Processes Using the Terminal in Mac OS X]]
-- Check out the brew edit command
-http://www.mitchchn.me/2014/os-x-terminal/
-
-  - osx
-    - [[http://apple.stackexchange.com/?tab=featured][mac stack exchange]]
-    - [[http://zmjones.com/mac-setup/][setting up osx for data analysis]]
-    - [[http://osxdaily.com/2009/02/25/show-hidden-files-in-os-x/][hidden files]]
-
-**** Android
-:PROPERTIES:
-:ID:       8773070e-c8d7-4edf-8ee7-e6de1aa6b1a3
-:END:
-- https://cellencooper.medium.com/how-to-change-ok-google-to-a-different-phrase-bd6ca322398#:~:text=After%20launching%20the%20app%2C%20tap,to%20call%20your%20Google%20Assistant.
-
-**** Android → Linux mirror
-- https://chatgpt.com/c/671b9551-ded0-8005-88f4-5569ab769f63
-- https://www.google.com/search?q=android+block+number
-- https://github.com/Genymobile/scrcpy
-  #+begin_src bash
-# for Debian/Ubuntu
-sudo apt install ffmpeg libsdl2-2.0-0 adb wget \
-                 gcc git pkg-config meson ninja-build libsdl2-dev \
-                 libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev \
-                 libswresample-dev libusb-1.0-0 libusb-1.0-0-dev
-
-mkdir /tmp/scrcpy
-cd /tmp/scrcpy
-git clone https://github.com/Genymobile/scrcpy
-
-cd scrcpy
-
-./install_release.sh
-
-
-
-sudo adb kill-server
-sudo adb start-server
-sudo adb devices
-
-adb tcpip 5555
-
-adb connect 192.168.1.12:5555
-
-
-#+end_src
-
 *** Computer networks
 **** Web development
 :PROPERTIES:
@@ -16539,7 +16510,7 @@ https://emacs-lsp.github.io/lsp-mode/tutorials/reactjs-tutorial/
 
 ******** code.js
 :PROPERTIES:
-:ID:       5c2e54cf-797e-4ccb-b12e-2167d06ce7a4
+:ID:       467b54e8-971e-4f7a-a251-23bfe83aac1f
 :END:
 #+name: code.js
 #+begin_src bash :tangle ~/repos/basecamp/emacs/public_yasnippets/org-mode/code.js
@@ -16911,39 +16882,6 @@ CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
 - https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
 - [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
 - https://linustechtips.com/main/
-******* MacOS
-:PROPERTIES:
-:ID:       80A0FABE-EB39-4BFC-8478-8044E6D84761
-:END:
-
-- http://www.theinstructional.com/guides/disk-management-from-the-command-line-part-2
-- https://www.howtogeek.com/312755/what-is-the-process-windowserver-and-why-is-it-running-on-my-mac/
-- [[https://apple.stackexchange.com/questions/294013/how-to-allow-install-of-non-app-store-or-identified-developers-on-macos-sierra?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa][How to allow install of non app store or identified developers on MacOS Sierra]]
-- Command Table
-  | Function             | Command                   | Notes                                                                                                               |
-  |----------------------+---------------------------+---------------------------------------------------------------------------------------------------------------------|
-  |                      |                           | <20>                                                                                                                |
-  | List process to kill | ps -A\ grep -m1 <PROCESS> | https://stackoverflow.com/questions/11546765/how-to-get-the-pid-of-a-process-by-giving-the-process-name-in-mac-os-x |
-  | Kill process         | kill -9 <PROCESS ID>      | http://blog.houen.net/kill-program-mac-os-x-terminal/                                                               |
-  |                      |                           |                                                                                                                     |
-- https://stackoverflow.com/questions/17935301/how-to-force-mac-os-to-open-search-with-google-in-chrome
-- Window management
-  - Default layouts
-    - https://github.com/jigish/slate
-    - http://autumnapps.com/breeze/
-    - https://apple.stackexchange.com/questions/3133/how-do-i-make-windows-save-their-position-on-screen-after-re-attaching-a-display
-- [[http://osxdaily.com/2010/06/09/screen-capture-in-mac-os-x/][Screen capture]]
-- https://apple.stackexchange.com/questions/55432/keyboard-shortcut-for-restoring-applications-from-the-mac-os-x-dock
-- hide dock: <CMD>+<ALT>+d
-- [[http://www.chriswrites.com/how-to-view-and-kill-processes-using-the-terminal-in-mac-os-x/][How to View and Kill Processes Using the Terminal in Mac OS X]]
-- Check out the brew edit command
-http://www.mitchchn.me/2014/os-x-terminal/
-
-  - osx
-    - [[http://apple.stackexchange.com/?tab=featured][mac stack exchange]]
-    - [[http://zmjones.com/mac-setup/][setting up osx for data analysis]]
-    - [[http://osxdaily.com/2009/02/25/show-hidden-files-in-os-x/][hidden files]]
-
 ******* General reference
 :PROPERTIES:
 :ID:       234aa816-28c7-4a09-bdc0-0116322d0b9c
@@ -17164,7 +17102,7 @@ CLOCK: [2017-04-18 Tue 11:17]--[2017-04-18 Tue 11:28] =>  0:11
 - https://www.graphpad.com/guides/prism/7/statistics/index.htm?stat_howto_survival.htm
 - https://sctyner.github.io/OpenForSciR/
 - https://www.reddit.com/r/statistics/comments/bzrco1/introduction_to_statistical_learning_anything/
-- cite:downey2011
+- [cite:@downey2011]
 - [[https://www.lunametrics.com/blog/2018/04/20/data-studio-calculated-fields/][google data studio]]
 -
 ***** [[id:F9ACCF3D-896B-4FC4-92FD-31A2D6E977DD][LINK TO R Statistical Computing]]
@@ -17207,7 +17145,7 @@ CLOCK: [2017-04-18 Tue 11:17]--[2017-04-18 Tue 11:28] =>  0:11
 
  https://cran.r-project.org/web/views/ReproducibleResearch.html
 
- cite:schulte12_multi_languag_comput_envir_liter
+ [cite:@schulte12_multi_languag_comput_envir_liter]
 
  https://cran.r-project.org/doc/Sysmanuals/r-release/R-admin.html
 
@@ -17615,7 +17553,7 @@ CLOCK: [2017-10-19 Thu 14:01]--[2017-10-19 Thu 15:01] =>  1:00
     - [[https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-00sc-introduction-to-computer-science-and-programming-spring-2011/][MIT Intro to computer science and programming 2011]]
     - [[http://www.russpoldrack.org/2016/05/advice-for-learning-to-code-from-scratch.html?m=1][Poldrack learn to code]]
   - General and theory
-    - cite:abelson1996
+    - [cite:@abelson1996]
   - Literate programming
     - declare defaults when important for a process or workflow
 - [[https://ronjeffries.com/articles/016-0607/yaks/][Yaks]]
@@ -18279,7 +18217,7 @@ docker run jeszyman/test
 - https://pythonspeed.com/docker/
 - https://www.freecodecamp.org/news/the-docker-handbook/
 - https://stackoverflow.com/questions/29480099/whats-the-difference-between-docker-compose-vs-dockerfile
-- cite:boettiger2015
+- [cite:@boettiger2015]
 - [[https://stackoverflow.com/questions/23735149/what-is-the-difference-between-a-docker-image-and-a-container][stack: difference b/w image and container]]
 - [[https://hub.docker.com/?ref=login][Docker Hub]]
 - Components
@@ -18474,7 +18412,7 @@ These guides and tools offer a consensus on best practices for R coding, promoti
   - [[https://google.github.io/styleguide/Rguide.xml][Google]]
     - ideas
       - for naming, use ICANN convention  specific <- general
-  - [[http://adv-r.had.co.nz/Style.html][Advanced R]] cite:wickham2014
+  - [[http://adv-r.had.co.nz/Style.html][Advanced R]] [cite:@wickham2014]
   - [[https://style.tidyverse.org/documentation.html][Tidyverse]]
   - characters- "For portable R code (including that to be used in R packages) only A–Za–z0–9 should be used."
   - two-space indentation
@@ -18621,7 +18559,7 @@ CLOCK: [2019-03-19 Tue 14:35]--[2019-03-19 Tue 16:45] =>  2:10
 - missing values
   - https://stackoverflow.com/questions/4862178/remove-rows-with-all-or-some-nas-missing-values-in-data-frame
 - https://rafalab.github.io/dsbook/
-- cite:wickham2016
+- [cite:@wickham2016]
 - [[https://datascienceplus.com/clean-your-data-in-seconds-with-this-r-function/][Hmisc for data cleaning]]
 ***** [[id:0e6f856f-2079-42fc-92f0-5af3b292c516][LINK TO Data project management and data wrangling with R]]
 :PROPERTIES:
@@ -18661,7 +18599,7 @@ CLOCK: [2019-03-19 Tue 14:35]--[2019-03-19 Tue 16:45] =>  2:10
 - https://www.cyclismo.org/tutorial/R/confidence.html
 https://rpkgs.datanovia.com/rstatix/
 [[id:F80F3FAF-1D79-40F5-934B-F74D19143DBD][Probability and Statistics]]
-- For basic statistics, see cite:mangiafico2005 [[http://rcompanion.org/rcompanion/e_01.html][R Companion to Biostats Handbook]]
+- For basic statistics, see [cite:@mangiafico2005] [[http://rcompanion.org/rcompanion/e_01.html][R Companion to Biostats Handbook]]
 - https://cran.r-project.org/web/views/Econometrics.html
 - [[https://www.r-bloggers.com/bayesian-network-in-r-introduction/][Bayesian network in R: Introduction]]
   #+BEGIN_SRC R
@@ -18788,7 +18726,7 @@ CLOCK: [2017-09-14 Thu 11:18]--[2017-09-14 Thu 11:44] =>  0:26
   - [[https://www.r-bloggers.com/how-to-perform-a-logistic-regression-in-r/][rblogger: logistic regression]]
     - Data cleaning
 - glm for multiple logistic regression
-  - cite:mangiafico2005 @ 242
+  - [cite:@mangiafico2005] @ 242
 #+BEGIN_SRC R
 # Load data:
 
@@ -18955,7 +18893,7 @@ https://crumplab.com/psyc7709_2019/book/docs/how-to-annotate-a-graph-using-gg-si
 :ID:       b9191c77-247b-4cd9-b991-601100fac75c
 :END:
 - [[https://stackoverflow.com/questions/8713994/venn-diagram-proportional-and-color-shading-with-semi-transparency][venn R packages]]
-- [[cite:&jia2021]]
+- [cite:@jia2021]
 ******** Pie
 :PROPERTIES:
 :ID:       45663216-ea79-49d2-91a6-3c1376160374
@@ -19088,7 +19026,7 @@ runif(3, min=0, max=100)
 :ID:       246e1239-f53d-4cb3-a8e9-dc75f6da321e
 :END:
 - http://www.rforecasting.com/
-- cite:wertheim2014 R used in JMD!
+- [cite:@wertheim2014] R used in JMD!
 ***** Test data examples
 :PROPERTIES:
 :ID:       ab5228c6-6792-47f2-b348-8cdecd709cfb
@@ -19511,10 +19449,10 @@ ip = as.data.frame(installed.packages()[,c(1,3:4)])
 ip = ip[is.na(ip$Priority),1:2,drop=FALSE]
 ip
   #+END_SRC
-- cite:xtable2016
+- [cite:@xtable2016]
 - data.table
   - [[https://rstudio-pubs-static.s3.amazonaws.com/52230_5ae0d25125b544caab32f75f0360e775.html][joining with data.table]]
-- cite:googlesheets2017
+- [cite:@googlesheets2017]
 - [[http://stackoverflow.com/questions/25672974/caught-segfault-error-in-r][uninstall/install for seg faults]]
 - reshape2
   - http://seananderson.ca/2013/10/19/reshape.html
@@ -19805,11 +19743,11 @@ https://stat.ethz.ch/pipermail/ess-help/2015-July/010628.html
 :ID:       707e5032-ae3d-4f3e-86eb-46917bec88f8
 :END:
 - https://www.reddit.com/r/Rlanguage/comments/1ksy3c4/the_8020_guide_to_r_you_wish_you_read_years_ago/
-- [[cite:&venables2018]]
+- [cite:@venables2018]
 - https://www.reddit.com/r/Rlanguage/comments/17yg8hx/what_are_some_aspects_you_dislike_about_r/
 - https://rdrr.io/cran/styler/man/tidyverse_style.html
 - https://little-books-of-r.readthedocs.io/en/latest/
-- cite:lewis2010 http://proquest.safaribooksonline.com/9780763758080
+- [cite:@lewis2010] http://proquest.safaribooksonline.com/9780763758080
 - https://www.r-bloggers.com/blogging-with-rmarkdown-knitr-and-jekyll/
 - https://adv-r.hadley.nz/
 **** R Training
@@ -19820,8 +19758,8 @@ https://stat.ethz.ch/pipermail/ess-help/2015-July/010628.html
 - [[http://ww2.coastal.edu/kingw/statistics/R-tutorials/text/quick&dirty_R.txt][Quick and Dirty R Guide]]
 - [[https://www.r-bloggers.com/package-party-conditional-inference-trees/][inference trees with party]]
 - [[https://www.edx.org/course/statistics-r-harvardx-ph525-1x][EdX: Statisitcs and R]]
-- cite:YaRrr_Book
-  cite:muenchen2011r
+- [cite:@YaRrr_Book]
+  [cite:@muenchen2011]
  [[https://cran.r-project.org/doc/manuals/R-intro.html][cran r intro]]
 - http://stats.stackexchange.com/questions/138/free-resources-for-learning-r
 [[https://www.bioconductor.org/help/course-materials/][Bioconductor courses and conferences]]
@@ -19836,8 +19774,8 @@ https://stat.ethz.ch/pipermail/ess-help/2015-July/010628.html
     -
       - 3
         - 3.4 The class of an object
-  - cite:r_core_team2018
-  - cite:venables2018
+  - [cite:@r_core_team2018]
+  - [cite:@venables2018]
   - [[https://www.rdocumentation.org/][all package documentation]]
   - [[https://www.rdocumentation.org/][RDocumentation]]
 **** Variable types
@@ -19893,7 +19831,7 @@ myft
       - [[http://www.r-tutor.com/elementary-statistics/non-parametric-methods/kruskal-wallis-test][rTutorial Kruskal-Wallis]]
     - https://www.coursera.org/learn/r-data-visualization/supplement/Ma3Bj/introduction
   - https://www.reddit.com/r/statistics/comments/afp83l/r_and_how_to_get_started/
-  - cite:wickham2014
+  - [cite:@wickham2014]
   - https://user2020.r-project.org/program/contributed/
 - miscellaneous
   - [[https://www.reddit.com/r/datascience/comments/8dpkih/my_favorite_function_in_r_is/?st=jgkzwj8p&sh=45b024c6][reddit: my favorite function in R is _]]
@@ -19986,6 +19924,41 @@ Basecamp snakefile md5s, aymlinks,
 - http://nengo.ca/build-a-brain/spaunvideos
 - [[https://aws.amazon.com/websites/?sc_channel=PS&sc_campaign=acquisition_US&sc_publisher=google&sc_medium=websites_webapps_nb&sc_content=web_hosting_e&sc_detail=free%20web%20hosting&sc_category=websites_webapps&sc_segment=96578640642&sc_matchtype=e&sc_country=US&s_kwcid=AL!4422!3!96578640642!e!!g!!free%20web%20hosting&ef_id=WENUqgAAAV2Dp9Ql:20170209002051:s][Amazon web hosting]]
 - https://aws.amazon.com/getting-started/tutorials/launch-a-virtual-machine/
+*** Singularity/Docker containers for biopipe workflow reproducibility [#Y]
+:PROPERTIES:
+:ID:       AFC736E4-54F4-4090-B90F-19860D16B785
+:END:
+Conda envs decay — recreating an env from a years-old =environment.yml= often fails (dropped channels, unpinned transitive deps). Move reproducibility-critical pipelines to containers: build Docker images locally (where admin rights exist), =STORE= the built images, run on HPC/VM via Singularity.
+- Granularity: one container per tool / tool-group (per-tool Dockerfiles in a toolkit repo, tagged) + one per biopipe project.
+- Extends the docker dev-workflow note already in [[id:58cecae5-0126-4608-b079-c0cb5c1835c8][Ideas]] below (docker tool build -> dockerhub -> snakemake/nextflow params).
+- Pilot on one biopipe repo before any fleet adoption.
+- Reproducibility cluster: [[id:CC8CCE37-3B27-41EE-967A-B879832A1C74][run-output provenance manifest]], [[id:E129AA3C-8725-4455-82E8-E0D4D2E9A1DB][sha256 integrity column]].
+- Source: r/bioinformatics organization thread (bukaro, Blaze9), 2026-06-06.
+
+*** Run-output provenance manifest (sidecar per published artifact) [#Y]
+:PROPERTIES:
+:ID:       CC8CCE37-3B27-41EE-967A-B879832A1C74
+:END:
+Input-side provenance is already solid (Frictionless data model + =input_data_validator.py= + =sources= registry with =superseded_by=), but nothing makes an OUTPUT traceable — no =git rev-parse=, env capture, or manifest anywhere in =workflows/= or =scripts/= (grep-confirmed 2026-06-06). Gap: given a figure / derived table, can't recover which code + env + input versions + params produced it.
+- Emit a sidecar =<artifact>.prov.json= as an ADDITIONAL Snakemake rule output, so it lives in the dependency graph and can't drift from the artifact.
+- Captures: artifact sha256, =git rev-parse HEAD= + dirty flag, container tag, conda env, rule name, params/wildcards, and the list of input =source_id=s with their sha256.
+- Helper =write_manifest()= in =scripts/<proj>_checks=, called once per published rule.
+- Uses: (1) reproduce a figure exactly (checkout SHA + pull container tag + feed source_ids); (2) staleness check — recompute input hashes, flag stale outputs; (3) auto-build the methods/supplement provenance table at submission.
+- Container-tag field links to [[id:AFC736E4-54F4-4090-B90F-19860D16B785][Singularity/Docker containers]]: code SHA + container tag + input hashes = full reproducibility triple, captured automatically.
+- Pairs with [[id:E129AA3C-8725-4455-82E8-E0D4D2E9A1DB][sha256 integrity column]] (shared hashing).
+- Source: r/bioinformatics organization thread (Bach4Ants), 2026-06-06.
+
+*** sha256 integrity column in the sources registry [#Y]
+:PROPERTIES:
+:ID:       E129AA3C-8725-4455-82E8-E0D4D2E9A1DB
+:END:
+The =sources= sheet + =superseded_by= chain versions INTENT (new row, mark prior superseded) but does not verify BYTES — a registered chmod-444 source could drift or corrupt silently and the registry would not catch it.
+- Add a =sha256= column per =source_id=, recorded at registration time.
+- Extend =input_data_validator.py= to also assert each registered source's current hash matches its recorded value (byte-integrity, alongside the existing schema validation).
+- Cheap: one column, reuses the validator already in =scripts/=. (md5 would technically suffice for drift detection, but use sha256 for consistency with the output manifest.)
+- Pairs with [[id:CC8CCE37-3B27-41EE-967A-B879832A1C74][run-output provenance manifest]] and [[id:AFC736E4-54F4-4090-B90F-19860D16B785][Singularity/Docker containers]].
+- Source: extension of the mpnst Frictionless data model, 2026-06-06.
+
 *** Build linters
 - linting like https://github.com/loeffel-io/ls-lint
 
