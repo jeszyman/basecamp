@@ -10227,20 +10227,24 @@ bespoke concurrency setup
     - Do not include threads in params.
   - Conda Environments
     - Each rule specifies its conda environment.
-    - Conda env YAML files must NOT set a =name:= field — it collides with existing system envs when =--use-conda= creates prefix-based envs.
+    - Conda env YAML files should not set a =name:= field. Under =--use-conda= the env is built at a content-hash prefix and =name:= is ignored (it does not break =--use-conda=); the real risk is collision in the named-env namespace when envs are created manually or the workflow is reused as a module in another repo. Either omit =name:= or prefix it with the repo stem (e.g. =emseq_methylkit=).
     - Tangle conda env YAML blocks with =:comments no= — tangle-header timestamps change the file hash, forcing Snakemake to rebuild the env on every tangle.
+    - Rule conda envs are tools-only; do not list =snakemake= as a dependency. The orchestrator runs Snakemake; a rule env needs only the tools its shell calls. (With =script:= rules a mismatched env Snakemake also breaks object unpickling — see Shell Blocks and Scripts.)
   - Logging and Output
     - A common D_LOG convention exists.
     - Every rule defines a log file.
     - Redirect tool stdout and stderr explicitly so logs land in D_LOG.
+    - The =log:= directive never auto-captures output — it only names the file (and preserves it on failure). Redirection is manual: =shell:= uses => {log} 2>&1=; =script:=/=run:= must redirect inside the code (Python: =sys.stderr = sys.stdout = open(snakemake.log[0], "w")=; R: =sink(file(snakemake@log[[1]]))=).
     - Emit useful execution messages for traceability.
     - Example: echo "[fastp] $(date) lib={wildcards.library_id}"
   - Shell Blocks and Scripts
     - Echo an execution-specific message:
       - Example: echo "[mosdepth] $(date) lib={wildcards.library_id} ref={wildcards.emseq_ref_name} aln={wildcards.align_method} threads={threads}"
     - Prefer external scripts over inline shell; scripts should be runnable outside Snakemake with explicit arguments.
+    - Prefer =shell:= calling a standalone CLI script over the =script:= directive when rules use isolated conda envs. =script:= pickles the =snakemake= object in the orchestrator env and unpickles it inside the rule's conda env, so that env must hold a Snakemake compatible with the orchestrator (a tools-only env raises =Can't get attribute 'InputFiles' on snakemake.io=). =shell:= + a CLI script has no such version coupling.
     - Keep log and workflow logic in the Snakefile, external to the script.
     - Redirect stdout and stderr explicitly (e.g., via exec > "{log}" 2>&1).
+    - Snakemake runs shell directives in bash strict mode (=set -euo pipefail=) by default — rely on it; do not add a workflow =shell.prefix=. =shell.prefix(...)= REPLACES the default string (see =snakemake/shell.py= =_get_process_prefix=), so =shell.prefix("set -e; ")= silently drops pipefail and nounset workflow-wide and weakens error detection. If one =samtools= command legitimately needs to ignore SIGPIPE (exit 141), scope =set +o pipefail= to that command only.
     - Avoid embedding complex logic in run or shell blocks.
     - Scripts that parse Snakemake output filenames for metadata (library_id, length class) must match the rule's wildcard pattern exactly; prefer bash parameter expansion (=${base%%.*}=, =${base##*.prefix_}=) over fragile sed chains.
   - Resource Declaration
@@ -12064,6 +12068,10 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 
   - general education- https://www.reddit.com/r/linux4noobs/comments/fntvl7/between_linux_essentials_linux_and_lpic1_which/
   - https://refspecs.linuxfoundation.org/
+- [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
+- https://linustechtips.com/main/
+- https://www.kernel.org/doc/html/latest/admin-guide/index.html
+
 ******* interfaces
 :PROPERTIES:
 :ID:       48801280-4d0f-4da3-a5da-6c661add36cd
@@ -12112,15 +12120,6 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 :ID:       bc5ab32a-387d-400a-b72c-ac29d743493f
 :END:
 - https://unix.stackexchange.com/questions/227876/how-to-set-custom-resolution-using-xrandr-when-the-resolution-is-not-available-i
-******* documentation and general education
-:PROPERTIES:
-:ID:       ec0fbb20-4909-4ab7-8ba2-c48836743d01
-:END:
-- [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
-- https://linustechtips.com/main/
-- https://www.kernel.org/doc/html/latest/admin-guide/index.html
-- general education- https://www.reddit.com/r/linux4noobs/comments/fntvl7/between_linux_essentials_linux_and_lpic1_which/
-- https://refspecs.linuxfoundation.org/
 ******* Tools
 :PROPERTIES:
 :ID:       6057b49e-f8d4-42fb-8fec-5a80a802dd92
@@ -12304,6 +12303,17 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - https://www.thegeekstuff.com/2011/10/grep-or-and-not-operators/
 - https://unix.stackexchange.com/questions/37313/how-do-i-grep-for-multiple-patterns-with-pattern-having-a-pipe-character/37316
 -
+- Processes
+  - https://www.google.com/search?q=grep+or
+  - grep through subdirectories
+    grep -rl "string" /path
+    - https://askubuntu.com/questions/55325/how-to-use-grep-command-to-find-text-including-subdirectories
+  - https://www.google.com/search?q=grep+search+in+all+text+files+in+directory
+  - https://www.google.com/search?q=grep+phrase+with+space
+  - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
+  - grep -r --unclude \*.R "as.Date" ~/
+- [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
+
 ******** gunzip / gzip
 :PROPERTIES:
 :ID:       ac06809f-10b9-4b79-98f6-7ed6fb5f9232
@@ -12828,20 +12838,6 @@ fi
   - [[http://reasoniamhere.com/2013/09/16/awk-gtf-how-to-analyze-a-transcriptome-like-a-pro-part-1/][AWK GTF! How to Analyze a Transcriptome Like a Pro]]
 - reference
   - [[file:~/.basecamp/emacs/public_yasnippets/org-mode/software]]
-******** grep
-:PROPERTIES:
-:ID:       024b269b-27ca-492d-981f-d8f9083a38d2
-:END:
-- Processes
-  - https://www.google.com/search?q=grep+or
-  - grep through subdirectories
-    grep -rl "string" /path
-    - https://askubuntu.com/questions/55325/how-to-use-grep-command-to-find-text-including-subdirectories
-  - https://www.google.com/search?q=grep+search+in+all+text+files+in+directory
-  - https://www.google.com/search?q=grep+phrase+with+space
-  - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
-  - grep -r --unclude \*.R "as.Date" ~/
-- [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
 ******** [[https://www.gnu.org/software/sed/][sed]]
 :PROPERTIES:
 :ID:       69e65a70-878e-4f58-a1d1-14ca876a7c12
