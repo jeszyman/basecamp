@@ -11995,6 +11995,29 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 - https://www.freecodecamp.org/news/linux-server-course-system-configuration-and-operation/
 - https://stackoverflow.com/questions/49598797/remove-pdf-annotations-via-command-line
 
+:LOGBOOK:
+CLOCK: [2020-06-25 Thu 07:47]--[2020-06-25 Thu 08:13] =>  0:26
+CLOCK: [2020-02-12 Wed 10:15]--[2020-02-12 Wed 10:19] =>  0:04
+CLOCK: [2019-09-18 Wed 14:02]--[2019-09-18 Wed 14:40] =>  0:38
+CLOCK: [2019-08-30 Fri 09:48]--[2019-08-30 Fri 09:53] =>  0:05
+CLOCK: [2019-08-15 Thu 16:15]--[2019-08-15 Thu 16:45] =>  0:30
+CLOCK: [2019-05-21 Tue 10:42]--[2019-05-21 Tue 11:04] =>  0:22
+CLOCK: [2019-05-15 Wed 16:15]--[2019-05-15 Wed 19:33] =>  3:18
+CLOCK: [2019-03-06 Wed 10:15]--[2019-03-06 Wed 12:14] =>  1:59
+CLOCK: [2019-03-06 Wed 09:30]--[2019-03-06 Wed 10:00] =>  0:30
+CLOCK: [2019-01-12 Sat 08:41]--[2019-01-12 Sat 08:51] =>  0:10
+CLOCK: [2018-09-10 Mon 14:04]--[2018-09-10 Mon 14:43] =>  0:39
+CLOCK: [2018-04-28 Sat 18:04]--[2018-04-28 Sat 18:05] =>  0:01
+CLOCK: [2018-04-28 Sat 17:43]--[2018-04-28 Sat 17:45] =>  0:02
+CLOCK: [2017-11-29 Wed 14:14]--[2017-11-29 Wed 15:00] =>  0:46
+CLOCK: [2017-10-25 Wed 10:37]--[2017-10-25 Wed 10:48] =>  0:11
+CLOCK: [2017-10-25 Wed 09:48]--[2017-10-25 Wed 10:23] =>  0:35
+CLOCK: [2017-10-12 Thu 13:37]--[2017-10-12 Thu 13:40] =>  0:03
+CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
+:END:
+- for config https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes
+- configuration management
+  - https://en.wikipedia.org/wiki/Ansible_(software)
 ******* Processes
 :PROPERTIES:
 :ID:       0f7af99f-aee7-4572-97cb-2ab0a6adcfbd
@@ -12117,6 +12140,14 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 - linux it certification
   - https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
 - https://github.com/Fmstrat/winapps
+:PROPERTIES:
+:ID:       bd78d1e4-cdac-4ccd-af57-e410e8c0cc23
+:END:
+- idea for citrix script- - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
+- ideas- check disk space https://www.cyberciti.biz/tips/shell-script-to-watch-the-disk-space.html
+- GNU - [[https://www.gnu.org/help/help.html][Helping GNU]]
+- [[https://www.reddit.com/r/commandline/comments/7d5fwa/jobson_automatically_turn_commandline/][reddit: automatically turn command-line applications into webapps]]
+
 ******* processes
 :PROPERTIES:
 :ID:       3973f50f-db8f-4a82-8a8e-212d3e0b03af
@@ -12536,34 +12567,6 @@ cp /etc/skel/.bashrc ${HOME}/.bashrc
 When a machine becomes completely unresponsive (hard freeze, not thermal shutdown), work through
 these steps after reboot to diagnose the cause.
 
-****** UNIX-based                                             :software:career:
-:PROPERTIES:
-:ID:       d81d48a3-8cf8-4d73-90c6-08afe5d88cf8
-:CREATED:  [2019-08-15 Thu 16:17]
-:END:
-:LOGBOOK:
-CLOCK: [2020-06-25 Thu 07:47]--[2020-06-25 Thu 08:13] =>  0:26
-CLOCK: [2020-02-12 Wed 10:15]--[2020-02-12 Wed 10:19] =>  0:04
-CLOCK: [2019-09-18 Wed 14:02]--[2019-09-18 Wed 14:40] =>  0:38
-CLOCK: [2019-08-30 Fri 09:48]--[2019-08-30 Fri 09:53] =>  0:05
-CLOCK: [2019-08-15 Thu 16:15]--[2019-08-15 Thu 16:45] =>  0:30
-CLOCK: [2019-05-21 Tue 10:42]--[2019-05-21 Tue 11:04] =>  0:22
-CLOCK: [2019-05-15 Wed 16:15]--[2019-05-15 Wed 19:33] =>  3:18
-CLOCK: [2019-03-06 Wed 10:15]--[2019-03-06 Wed 12:14] =>  1:59
-CLOCK: [2019-03-06 Wed 09:30]--[2019-03-06 Wed 10:00] =>  0:30
-CLOCK: [2019-01-12 Sat 08:41]--[2019-01-12 Sat 08:51] =>  0:10
-CLOCK: [2018-09-10 Mon 14:04]--[2018-09-10 Mon 14:43] =>  0:39
-CLOCK: [2018-04-28 Sat 18:04]--[2018-04-28 Sat 18:05] =>  0:01
-CLOCK: [2018-04-28 Sat 17:43]--[2018-04-28 Sat 17:45] =>  0:02
-CLOCK: [2017-11-29 Wed 14:14]--[2017-11-29 Wed 15:00] =>  0:46
-CLOCK: [2017-10-25 Wed 10:37]--[2017-10-25 Wed 10:48] =>  0:11
-CLOCK: [2017-10-25 Wed 09:48]--[2017-10-25 Wed 10:23] =>  0:35
-CLOCK: [2017-10-12 Thu 13:37]--[2017-10-12 Thu 13:40] =>  0:03
-CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
-:END:
-- for config https://stackoverflow.com/questions/1019116/using-ls-to-list-directories-and-their-total-sizes
-- configuration management
-  - https://en.wikipedia.org/wiki/Ansible_(software)
 ******* Processes and commands
 :PROPERTIES:
 :ID:       f6c816d4-6f1a-4954-bf90-ed90de4d0979
@@ -12872,14 +12875,6 @@ chmod 600 ~/.ssh/id_rsa.pub
 - https://stackoverflow.com/questions/12715233/why-can-i-ping-a-server-but-not-connect-via-ssh
 - https://serverfault.com/questions/334448/why-is-ssh-password-authentication-a-security-risk
 - https://dev.to/zduey/how-to-set-up-an-ssh-server-on-a-home-computer
-******* ideas
-:PROPERTIES:
-:ID:       bd78d1e4-cdac-4ccd-af57-e410e8c0cc23
-:END:
-- idea for citrix script- - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
-- ideas- check disk space https://www.cyberciti.biz/tips/shell-script-to-watch-the-disk-space.html
-- GNU - [[https://www.gnu.org/help/help.html][Helping GNU]]
-- [[https://www.reddit.com/r/commandline/comments/7d5fwa/jobson_automatically_turn_commandline/][reddit: automatically turn command-line applications into webapps]]
 ******* MacOS
 :PROPERTIES:
 :ID:       80A0FABE-EB39-4BFC-8478-8044E6D84761
