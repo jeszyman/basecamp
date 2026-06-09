@@ -1399,6 +1399,7 @@ main "$@"
 #+begin_src bash
 ###   Claude Code   ###
 docs/superpowers/
+**/.claude/settings.local.json
 #+end_src
 ****** Elisp
 :PROPERTIES:
@@ -1478,6 +1479,12 @@ venv.bak/
 #+begin_src bash
 ###   Shell and miscellaneous   ###
 nohup.out
+
+# Syncthing sync artifacts
+.syncthing.*.tmp
+~syncthing~*.tmp
+.stversions/
+.stfolder/
 #+end_src
 ****** Snakemake
 :PROPERTIES:
