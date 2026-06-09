@@ -268,6 +268,7 @@ Registered in =~/.claude/settings.json=. Full inventory with descriptions in [[f
 - =PreToolUse= (Edit|Write): [[file:~/.claude/hooks/protect-cal.sh][protect-cal.sh]] — blocks =cal.org= edits
 - =PreToolUse= (Edit|Write|Bash): [[file:~/.claude/hooks/protect-shared-mounts.sh][protect-shared-mounts.sh]] — blocks writes to Box/GCS
 - =PreToolUse= (Bash): [[file:~/.claude/hooks/git-dirty-guard.sh][git-dirty-guard.sh]] — prevents destructive git ops with uncommitted changes
+- =PreToolUse= (Bash): [[file:~/.claude/hooks/git-syncthing-guard.sh][git-syncthing-guard.sh]] — in Syncthing-synced repos not ahead of origin, blocks pull/merge/rebase of the remote and returns the realign (=git reset --mixed origin/master=) recipe; working files already converge via Syncthing so "behind" is history lag, not missing files. Detects synced repos by a =.stfolder= marker up-tree; allows realign, local-branch ops, and full reconciliation when the repo has unpushed commits.
 - Git pre-commit hooks: [[id:669a5d96-0bea-4d56-ae7e-11151fbfe4a4][pre-commit dispatcher]] (filesize, conflict markers, org deletion guard, lint, quality gates)
 ****** Data loss pattern: Syncthing + Emacs + Claude
 Documented incidents: career.org (2026-02-09, 2026-01-24, 2026-03-06), private.org (2026-03-23). Root cause chain:
