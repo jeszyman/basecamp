@@ -1459,6 +1459,8 @@ def get_ds_candidates(wildcards):
 
 #+begin_src bash
 ###   Python   ###
+__pycache__/
+*.pyc
 .pybuilder/
 target/
 .env
