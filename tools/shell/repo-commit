@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# repo-commit — surgical, Syncthing-safe commit for the beast+pad repos.
+# Usage: repo-commit [--dry-run] [--force-delete] "<message>" <file>...
+#
+# Stages ONLY the named files (never -A / -a), realigns this machine's branch
+# pointer with origin the way `gsync` does (follower-safe `reset --mixed`,
+# never --hard; refuses on true divergence), runs a truncation guard on
+# personal.org / career.org, then commits the named files and pushes.
+#   --dry-run       show what would happen; change nothing
+#   --force-delete  allow a flagged large net deletion (commits --no-verify)
+set -euo pipefail
+
+dry=0; force=0
+while :; do
+  case "${1:-}" in
+    --dry-run)      dry=1; shift;;
+    --force-delete) force=1; shift;;
+    *) break;;
+  esac
+done
+
+msg="${1:-}"; shift || true
+if [ -z "$msg" ] || [ "$#" -eq 0 ]; then
+  echo "usage: repo-commit [--dry-run] [--force-delete] \"<message>\" <file>..." >&2
+  exit 2
+fi
+
+# Resolve repo root + branch from the first file's directory.
+first_dir=$(cd "$(dirname "$1")" && pwd)
+root=$(git -C "$first_dir" rev-parse --show-toplevel) \
+  || { echo "repo-commit: $first_dir is not in a git repo." >&2; exit 1; }
+branch=$(git -C "$root" symbolic-ref --quiet --short HEAD) \
+  || { echo "repo-commit: detached HEAD in $root — refusing." >&2; exit 1; }
+
+# Make every file argument relative to the repo root.
+rel=()
+for f in "$@"; do
+  rel+=("$(realpath --relative-to="$root" "$f")")
+done
+cd "$root"
+
+# 1. Realign with origin/$branch (mirrors gsync; .git is per-machine, not synced).
+git fetch --quiet origin "$branch" || { echo "repo-commit: fetch failed." >&2; exit 1; }
+head=$(git rev-parse HEAD); remote=$(git rev-parse "origin/$branch")
+if [ "$head" != "$remote" ]; then
+  if git merge-base --is-ancestor "$head" "$remote"; then
+    echo "repo-commit: behind origin/$branch — realigning pointer (working files untouched)."
+    if [ "$dry" -eq 0 ]; then git reset --mixed "origin/$branch" >/dev/null; fi
+  elif git merge-base --is-ancestor "$remote" "$head"; then
+    echo "repo-commit: ahead of origin/$branch — local commits will push with this one."
+  else
+    echo "repo-commit: REFUSING — local and origin/$branch have diverged. Resolve manually." >&2
+    exit 1
+  fi
+fi
+
+# 2. Stage ONLY the named files.
+if [ "$dry" -eq 0 ]; then git add -- "${rel[@]}"; diffbase="--staged"; else diffbase="HEAD"; fi
+
+# 3. Truncation guard for personal.org / career.org (large net deletion).
+guard_tripped=0
+for f in "${rel[@]}"; do
+  case "$(basename "$f")" in
+    personal.org|career.org)
+      read -r add del < <(git diff "$diffbase" --numstat -- "$f" \
+        | awk '{a+=$1; d+=$2} END {print (a+0), (d+0)}')
+      if [ "$((del - add))" -gt 200 ]; then
+        echo "repo-commit: TRUNCATION GUARD — $f nets $((del - add)) deleted lines (+$add / -$del)." >&2
+        guard_tripped=1
+      fi ;;
+  esac
+done
+if [ "$guard_tripped" -eq 1 ] && [ "$force" -eq 0 ]; then
+  echo "repo-commit: aborting on truncation guard. If intentional and verified, re-run with --force-delete." >&2
+  if [ "$dry" -eq 0 ]; then git reset --quiet -- "${rel[@]}"; fi
+  exit 1
+fi
+
+# 4. Dry-run preview, or real commit + push.
+if [ "$dry" -eq 1 ]; then
+  echo "repo-commit: --dry-run on $branch — would stage + commit:"
+  git diff HEAD --stat -- "${rel[@]}" || true
+  exit 0
+fi
+if [ "$force" -eq 1 ]; then git commit --no-verify -m "$msg" -- "${rel[@]}"; else git commit -m "$msg" -- "${rel[@]}"; fi
+git push
+echo "repo-commit: committed ${#rel[@]} file(s); pushed to origin/$branch."
