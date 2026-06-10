@@ -2033,11 +2033,6 @@ At the file level, tangled code should reference it's location in orgmode files.
 tangle defaults to ./
 ******* Templating with YASnippets
 My public YASnippets are compiled from source code blocks across my Org-mode agenda files. These tangle into appropriate subdirectories of [[file:emacs/public_yasnippets/][./emacs/public_yasnippets]]. Private snippets are tangled into appropriate subdirectories of [[file:~/repos/org/emacs/private_yasnippets][org/emacs/private_yasnippets]].
-*** Pan-computing Good Practive and General Style Guide
-- Directory names should be in hyphen-case, using only lowercase letters (a-z), digits (0-9), and hyphens (-) as separators. Use as few words as possible
-  - Can use more human-friendly title case and spaces with symlinks and shortcuts
-- Prefer single-word file and directory names
-- For multi-word file and directory names, prefer a dash (-) separator (/e.g./ a-longer-file-name.txt)
 *** Code Style Guide                                               :claudekb:
 :PROPERTIES:
 :header-args: :exports code
@@ -2046,6 +2041,38 @@ My public YASnippets are compiled from source code blocks across my Org-mode age
 Consolidated code style guide covering commenting verbosity, comment formatting, and language-specific conventions. Tagged =:claudekb:= and exported to =~/.claude/kb/0ccb6668-d5dd-4519-8e32-d8082d74e336.md= for Claude and other tool consumption (the manual =docs/code-style-guide.md= export was retired 2026-06-08).
 
 - [[id:8306ac91-52b6-4d23-8520-f5bb30dba293][Org-edit style guide]] — org structural conventions
+**** General / Cross-Language Conventions
+:PROPERTIES:
+:ID:       1626b712-2dae-4ed0-9461-5031b43da0d1
+:END:
+Conventions that apply across all languages, before any language-specific rules.
+
+***** Naming
+- Directory names should be in hyphen-case, using only lowercase letters (a-z), digits (0-9), and hyphens (-) as separators. Use as few words as possible
+  - Can use more human-friendly title case and spaces with symlinks and shortcuts
+- Prefer single-word file and directory names
+- For multi-word file and directory names, prefer a dash (-) separator (/e.g./ a-longer-file-name.txt)
+
+***** Repository layout
+A project repo follows a consistent top-level structure (not every repo has every directory):
+- =config/= — configuration and conda-env YAML
+- =workflows/= (or =workflow/=) — Snakemake =.smk= files
+- =scripts/= — standalone analysis/utility scripts
+- =data/= — input data
+- =resources/= — reference files and static assets
+- =results/= — pipeline outputs
+- =docs/= — documentation
+- =tests/= — test inputs and harnesses
+- =tools/= — wrapper and helper executables
+- =<project>.org= — the single literate source file (/e.g./ =emseq.org=, =rna-seq.org=)
+
+***** Literate programming
+- Code lives in org-babel source blocks in the project =.org= file and is tangled to its repo location. The =.org= file is canonical; do not hand-edit tangled outputs.
+- Tangled files carry an AUTO-GENERATED preamble (auto-inserted by the tangle advice, with language-aware comment syntax) marking the file as generated and naming the source =.org=. For example:
+
+#+begin_src text
+# AUTO-GENERATED — DO NOT EDIT DIRECTLY (tangled from rna-seq.org)
+#+end_src
 **** Commenting Verbosity
 Match commenting density to context. When the context is ambiguous, ask the user.
 
@@ -2671,475 +2698,6 @@ rule align_reads:
 - Ansible tasks: the =name:= field IS the comment; add =#= only for non-obvious =when:= conditions
 
 *** Bash and shell
-**** Scripts
-My common Bash script style follows a main-first structure with modular components as functions. A generalized format is:
-
-#+begin_src bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-print_usage() {
-    cat <<EOF
-USAGE: script_name <REQUIRED_ARG> [OPTIONAL_ARG]
-
-DESCRIPTION:
-  A brief description of what the script does.
-
-REQUIRED ARGUMENTS:
-  <REQUIRED_ARG>   Explanation of the required argument.
-
-OPTIONAL ARGUMENTS:
-  [OPTIONAL_ARG]   Explanation of the optional argument (default: $default_dir).
-
-OPTIONS:
-  -h, --help       Show this help message.
-
-EXAMPLES:
-  script_name value1
-  script_name value1 /path/to/directory
-
-EOF
-}
-
-main() {
-    parse_args "$@"
-    echo "Processing with: $required_arg1, $optional_arg"
-    some_helper_function
-}
-
-parse_args() {
-    if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-        print_usage
-        exit 0
-    fi
-
-    if [[ $# -lt 1 ]]; then
-        echo "Error: Missing required argument."
-        print_usage
-        exit 1
-    fi
-
-    declare -g required_arg1="$1"
-    declare -g optional_arg="${2:-$default_dir}"
-}
-
-some_helper_function() {
-    echo "This is a supporting function."
-}
-
-# Main guard
-main "$@"
-
-#+end_src
-
-Components in order of appearance
-- Shebang
-  #+begin_src bash
-#!/usr/bin/env bash
-#+end_src
-  Uses env to locate Bash in the user's PATH environment variable helping to ensure compatibility across different systems.
-- Strict Mode
-  #+begin_src bash
-set -euo pipefail
-#+end_src
-  set -e: Exits the script immediately if any command fails (non-zero exit status).
-  set -u: Treats the use of unset variables as an error and exits the script.
-  set -o pipefail: Ensures the script fails if any command in a pipeline fails (not just the last one).
-- Usage Function
-  #+begin_src bash
-print_usage() {
-    cat <<EOF
-USAGE: script_name <REQUIRED_ARG> [OPTIONAL_ARG]
-
-DESCRIPTION:
-  A brief description of what the script does.
-
-REQUIRED ARGUMENTS:
-  <REQUIRED_ARG>   Explanation of the first required argument.
-
-OPTIONAL ARGUMENTS:
-  [OPTIONAL_ARG]   Explanation of the optional argument (default: $default_dir).
-
-OPTIONS:
-  -h, --help       Show this help message.
-
-EXAMPLES:
-  script_name value1
-  script_name value1 /path/to/directory
-
-EOF
-}
-#+end_src
-  Because Bash lacks robust and simple argument parsing, I prefer a set order of:
-    Required arguments first.
-    Optional arguments second.
-  For common scripts for simplicity, I do not use getopts.
-  I prefer using a here-document (cat <<EOF) structure for the usage statement because it improves readability.
-- Main Function
-  #+begin_src bash
-main() {
-    parse_args "$@"
-    echo "Processing with: $required_arg1, $optional_arg"
-    some_helper_function
-}
-#+end_src
-  main defines the overall script logic and execution order.
-  It always starts by calling parse_args "$@" to process command-line arguments. Main will be executed below the main guard.
-- Argument Parsing
-  #+begin_src bash
-parse_args() {
-    if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-        print_usage
-        exit 0
-    fi
-
-    if [[ $# -lt 1 ]]; then
-        echo "Error: Missing required argument."
-        print_usage
-        exit 1
-    fi
-
-    declare -g required_arg1="$1"
-    declare -g optional_arg="${2:-$default_dir}"
-}
-#+end_src
-  arg_parse handles input argument parsing, triggers usage, performs any argument checks, and
-
-Handles -h / --help first to ensure help is displayed before checking for missing arguments.
-Ensures at least one required argument (required_arg1).
-Uses default values (optional_arg="${2:-$default_dir}") for optional parameters.
-Supporting Functions
-javascript
-Copy
-Edit
-some_helper_function() {
-    echo "This is a supporting function."
-}
-Supporting functions are defined below parse_args and main to keep the script structured.
-
-Main Guard
-bash
-Copy
-Edit
-# Main guard
-main "$@"
-Ensures the script starts execution from main.
-Allows sourcing (source script.sh) without running main immediately.
-Keeps execution explicit and structured.
-
-Scripts
-
-My common bash script style follows a main-first structure with several common modular components as functions. A generalized format is:
-
-,#+begin_src bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-print_usage() {
-    cat <<EOF
-USAGE: script_name <REQUIRED_ARG> [OPTIONAL_ARG]
-
-DESCRIPTION:
-  A brief description of what the script does.
-
-REQUIRED ARGUMENTS:
-  <REQUIRED_ARG>   Explanation of the required argument
-
-OPTIONAL ARGUMENTS:
-  [OPTIONAL_ARG]   Explanation of the optional argument (default: $default_dir)
-
-OPTIONS:
-  -h, --help       Show this help message
-
-EXAMPLES:
-  script_name value1
-  script_name value1 /path/to/directory
-
-EOF
-}
-
-parse_args() {
-    if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-        print_usage
-        exit 0
-    fi
-
-    if [[ $# -lt 1 ]]; then
-        echo "Error: Missing required argument."
-        print_usage
-        exit 1
-    fi
-
-    declare -g required_arg1="$1"
-    declare -g optional_arg="${2:-$default_dir}"
-}
-
-some_helper_function() {
-    echo "This is a supporting function."
-}
-
-main() {
-    parse_args "$@"
-    echo "Processing with: $required_arg1, $optional_arg"
-    some_helper_function
-}
-
-# Start the script
-main "$@"
-
-#+end_src
-
-Components
-Shebang
-#+begin_src bash
-#!/usr/bin/env bash
-#+end_src
-Uses env to locate bash in the user's PATH environment variable.
-
-
-#+begin_src bash
-set -euo pipefail
-
-#+end_src
-set -e: Exits the script immediately if any command fails (non-zero exit status).
-set -u: Treats the use of unset variables as an error and exits the script.
-set -o: Ensures the script fails if any command in a pipeline fails (not just the last one).
-
-#+begin_src bash
-print_usage() {
-    cat <<EOF
-USAGE: script_name <REQUIRED_ARG> [OPTIONAL_ARG]
-
-DESCRIPTION:
-  A brief description of what the script does.
-
-REQUIRED ARGUMENTS:
-  <REQUIRED_ARG>   Explanation of the required argument
-
-OPTIONAL ARGUMENTS:
-  [OPTIONAL_ARG]   Explanation of the optional argument (default: $default_dir)
-
-OPTIONS:
-  -h, --help       Show this help message
-
-EXAMPLES:
-  script_name value1
-  script_name value1 /path/to/directory
-
-EOF
-}
-#+end_src
-Usage
-for input arguements and usage statements,
-bash lacks robust input arguement parsing, so I prefer a set order of required followed by optional arguements. (no getopts).  I prefer heredoc structure for the usage staetmetn.
-
-#+begin_src bash
-main() {
-    parse_args "$@"
-    echo "Processing with: $required_arg1, $optional_arg"
-    some_helper_function
-}
-
-#+end_src
-main shows the overall script logic and order. main is the wrapper function for the entire script. always starts with parse_args "$@"
-
-#+begin_src bash
-parse_args() {
-    if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-        print_usage
-        exit 0
-    fi
-
-    if [[ $# -lt 1 ]]; then
-        echo "Error: Missing required argument."
-        print_usage
-        exit 1
-    fi
-
-    declare -g required_arg1="$1"
-    declare -g optional_arg="${2:-$default_dir}"
-}
-
-some_helper_function() {
-    echo "This is a supporting function."
-}
-
-main() {
-    parse_args "$@"
-    echo "Processing with: $required_arg1, $optional_arg"
-    some_helper_function
-}
-
-# Start the script
-main "$@"
-
-#+end_src
-In parse_args usage is checked and returned and input arguments are parsed in parse_args
-
-#+begin_src bash
-some_helper_function() {
-    echo "This is a supporting function."
-}
-
-#+end_src
-Additional functions
-
-#+begin_src bash
-
-# Main guard
-main "$@"
-
-#+end_src
-Main guard calls main.
-
-#+begin_src bash
-print_usage() {
-    cat <<EOF
-USAGE: script_name <REQUIRED_ARG1> [OPTIONAL_ARG]
-
-DESCRIPTION:
-  Briefly describe what the script does.
-
-REQUIRED ARGUMENTS:
-  <REQUIRED_ARG1>  Description of the first required argument
-
-OPTIONAL ARGUMENTS:
-  [OPTIONAL_ARG]   Description of the optional argument (default: current directory)
-
-OPTIONS:
-  -h, --help       Show this help message
-
-EXAMPLES:
-  script_name value1
-  script_name value1 /path/to/directory
-
-EOF
-}
-
-#+end_src
-
-
-#+begin_src bash
-parse_args() {
-    if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-        print_usage
-        exit 0
-    fi
-
-    if [[ $# -lt 1 ]]; then
-        echo "Error: Missing required argument <REQUIRED_ARG1>."
-        print_usage
-        exit 1
-    fi
-
-    declare -g required_arg1="$1"       # Required
-    declare -g optional_arg="${2:-.}"   # Optional (defaults to current directory)
-}
-
-
-#+end_src
-
-main() {
-    parse_args "$@"
-    echo "Processing with: $required_arg1, $optional_arg"
-
-    # Example command using the parsed arguments
-    grep -r --color=auto "$required_arg1" "$optional_arg"
-}
-
-main "$@"
-
-
-
-
-#+begin_src bash
-#!/usr/bin/env bash
-set -o errexit
-set -o nounset
-set -o pipefail
-
-# Default values (if any)
-default_dir="."
-required_arg1=""
-optional_arg=""
-
-main() {
-    parse_args "$@"
-    echo "Processing with: $required_arg1, $optional_arg"
-    some_helper_function
-}
-
-parse_args() {
-    if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-        print_usage
-        exit 0
-    fi
-
-    if [[ $# -lt 1 ]]; then
-        echo "Error: Missing required argument."
-        print_usage
-        exit 1
-    fi
-
-    declare -g required_arg1="$1"
-    declare -g optional_arg="${2:-$default_dir}"
-}
-
-print_usage() {
-    cat <<EOF
-USAGE: script_name <REQUIRED_ARG> [OPTIONAL_ARG]
-
-DESCRIPTION:
-  A brief description of what the script does.
-
-REQUIRED ARGUMENTS:
-  <REQUIRED_ARG>   Explanation of the required argument
-
-OPTIONAL ARGUMENTS:
-  [OPTIONAL_ARG]   Explanation of the optional argument (default: $default_dir)
-
-OPTIONS:
-  -h, --help       Show this help message
-
-EXAMPLES:
-  script_name value1
-  script_name value1 /path/to/directory
-
-EOF
-}
-
-some_helper_function() {
-    echo "This is a supporting function."
-}
-
-# Start the script
-main "$@"
-
-#+end_src
-
-
-
-#+begin_src bash
-#!/bin/bash
-
-main() {
-    greet
-    farewell
-}
-
-greet() {
-    echo "Hello!"
-}
-
-farewell() {
-    echo "Goodbye!"
-}
-
-if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
-    main
-fi
-#+end_src
-
 **** Bash Cookbook                                                 :cookbook:
 ***** Help flag checking
 Help flag checking in shell functions must use exact string comparison, not regex matching. The regex pattern =[[ "$@" =~ (-h|--help) ]]= matches =-h= as a substring anywhere in the arguments — so a filename like =pdx-read-handling.pdf= triggers the help message.
@@ -13988,8 +13546,6 @@ done
 :ID:       89576FD2-F863-4220-BAD7-D4E179AEA644
 :END:
 ****** [[id:f2557e40-0d81-438a-93e9-6917a40c1d8e][Emacs as a bash IDE]]
-****** Style guide
-Moved to [[file:basecamp.org::*Bash][Code Style Guide → Bash]].
 ****** Processes
 :PROPERTIES:
 :ID:       c3e424cd-7191-423e-815b-7e7fcb770100
