@@ -2196,15 +2196,27 @@ EOF
 - Final line: ~main "$@"~
 - Error policy: stdout for machine-consumable output; stderr for all diagnostics
 
+***** Safety rules
+- ~set -euo pipefail~ immediately after the shebang: ~-e~ exits on any command failure, ~-u~ errors on unset variables, ~pipefail~ propagates a failure from any stage of a pipeline (not just the last). This "strict mode" makes scripts fail fast and loudly instead of limping on after an error.
+- Quote every variable and command substitution (~"$var"~, ~"$(cmd)"~) unless word-splitting or globbing is explicitly intended; this keeps paths with spaces and shell metacharacters from being mangled.
+- Run ~shellcheck script.sh~ before committing; keep scripts ShellCheck-clean. ShellCheck catches unquoted expansions, unset-var hazards, and the empty-function-body / dangling-comment parse errors that ~bash -n~ alone may not make obvious.
+
 ***** Script template
+This template is proven to parse (~bash -n~) and run as written. Functions are first, ~main~ last, ~main "$@"~ gated behind a sourcing guard. Configuration globals are set only by ~parse_args~; work functions declare temporaries ~local~. Note: do NOT use ~declare -g~ — set globals by plain assignment inside ~parse_args~ and keep all per-function temporaries ~local~/~readonly~.
 
 #+begin_src bash
 #!/usr/bin/env bash
-
+#
 # -----------------------------------------------------------------------------
 # Script name
 # Purpose, inputs, outputs, assumptions, etc.
 # -----------------------------------------------------------------------------
+
+# Fail fast: -e exit on error, -u error on unset var, pipefail propagate
+# pipeline failures. ShellCheck-clean: run `shellcheck script.sh` before commit.
+set -euo pipefail
+
+readonly DEFAULT_OUTPUT_DIR="."
 
 print_usage() {
   cat <<EOF
@@ -2214,7 +2226,7 @@ Short description of what the command does.
 
 Options:
   -h, --help        Show this help message and exit
-  -o, --output DIR  Write output to DIR
+  -o, --output DIR  Write output to DIR (default: ${DEFAULT_OUTPUT_DIR})
 
 Arguments:
   REQUIRED_ARG      Description
@@ -2226,27 +2238,55 @@ Examples:
 EOF
 }
 
+# parse_args is the only function that reads positional parameters. It sets the
+# script configuration globals (input_file, output_dir) consumed downstream.
 parse_args() {
-  # 1) Check help first,
-  #    exit 0 to stdout
-  # 2) Check command line misuse (command invoked incorrectly),
-  #    exit 2 to stderr
-  # 3) Make input argument declarations
-  # 4) Perform variable-specific runtime validations as needed,
-  #    These exit 1 to stderr with variable-specific message
-  # 5) Compute derived variables as needed
+  # 1) Help first: print usage to stdout, exit 0.
+  if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    print_usage
+    exit 0
+  fi
+
+  # 2) Misuse (wrong number of args): message to stderr, exit 2.
+  if [[ $# -lt 1 ]]; then
+    echo "Error: missing required argument" >&2
+    print_usage >&2
+    exit 2
+  fi
+
+  # 3) Declare configuration globals from positional args. Quote every
+  #    expansion to keep word-splitting and globbing from mangling paths.
+  input_file="$1"
+  output_dir="${2:-$DEFAULT_OUTPUT_DIR}"
+
+  # 4) Variable-specific runtime validation: exit 1 to stderr on failure.
+  if [[ ! -f "$input_file" ]]; then
+    echo "Error: input file not found: $input_file" >&2
+    exit 1
+  fi
+
+  # 5) Compute derived globals as needed.
+  output_dir="${output_dir%/}"
 }
 
-function_1() {}
-function_2() {}
+# Work functions consume the named globals only; they take no positional args,
+# create no new globals, and declare every temporary `local`.
+run_tool() {
+  local src="$input_file"
+  local dst="$output_dir"
+  echo "[INFO] processing ${src} -> ${dst}" >&2
+}
 
 main() {
   parse_args "$@"
-  function_1
-  function_2
+  run_tool
 }
 
-main "$@"
+# Sourcing guard: run main only when executed directly, not when sourced
+# (e.g. for unit-testing individual functions).
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  main "$@"
+fi
 #+end_src
 
 ***** Functions
@@ -2305,7 +2345,7 @@ def parse_args():
 - Scope: this structure applies to executable scripts. Library modules under =scripts/= (imported helpers with no ~if __name__~ guard / not a CLI) are exempt from the ~parse_args → main → __name__~ structure.
 - Shebang: ~#!/usr/bin/env python3~ only for directly executed files
 - Top module docstring. REQUIRED: a one-line purpose summary and a Usage line showing argument order. RECOMMENDED, and required when the I/O schema is non-obvious: Inputs and Outputs sections; Assumptions when correctness depends on caller-guaranteed invariants.
-- Imports grouped: stdlib, then third-party, then local — each group separated by a blank line. Within a group, list plain ~import X~ statements first (alphabetized), then ~from Y import Z~ statements (alphabetized by module), per PEP 8 / Google §3.13.
+- Imports grouped: stdlib, then third-party, then local — each group separated by a blank line (PEP 8). Within a group, sort imports lexicographically, ignoring case, by the module's full package path (Google §3.13); ~import X~ and ~from Y import Z~ lines interleave by package name rather than being segregated by statement form. (The alternative "all plain ~import X~ first, then all ~from Y import Z~" layout is the default of the ~isort~ tool, not a PEP 8 or Google rule — pick one convention per repo and let the formatter enforce it.)
 - Sibling-module imports (scripts run as a file, not an installed package): after the other import groups, add ~sys.path.insert(0, str(Path(__file__).resolve().parent))~ on the line immediately preceding the sibling import, and annotate that import ~# noqa: E402~. Keep the shim and its import together as the final import block; an explanatory comment naming the sibling is optional.
 - Module-level constants are UPPER_SNAKE_CASE — including computed constants (numpy lookup tables / power vectors, e.g. POWERS) and fixed column-name lists (e.g. METRIC_COLUMNS), not just literal strings/Paths. Place them after imports, or immediately above the single function that uses them — whichever keeps the definition near its use. Give computed arrays an explicit dtype and a one-line comment explaining non-obvious math.
 - ~argparse~ for CLI parsing in ~parse_args()~
@@ -2316,7 +2356,7 @@ def parse_args():
 - File handles: open files in a ~with~ statement so they close on every exit path, including exceptions. For a fixed small count, chain them in one ~with~. For a variable number, use ~contextlib.ExitStack~ rather than storing raw handles and closing them in a loop. A factory that returns a handle is fine if the caller wraps the returned handle in ~with~.
 - Blank lines: two between top-level defs/classes (and before the ~if __name__~ guard); one between methods inside a class (PEP 8 / Google Python Style Guide).
 - Entry point: ~if __name__ == "__main__": raise SystemExit(main())~. ~main()~ returns the process exit code: ~0~ success, ~1~ for a runtime/checked-input failure; argparse itself exits ~0~ on ~-h/--help~ and ~2~ on CLI misuse. Prefer ~parser.error()~ (exit 2) for problems detectable from the arguments alone; a ~return 1~ from ~main()~ for a checked-but-failing input (e.g. missing directory) is also acceptable.
-- Error policy: stdout is reserved for machine-consumable output; all diagnostics, progress, and summaries go to stderr. Emit diagnostics with ~print(..., file=sys.stderr)~; the ~logging~ module is not used in these scripts.
+- Error policy: stdout is reserved for machine-consumable output; all diagnostics, progress, and summaries go to stderr. Emit diagnostics with ~print(..., file=sys.stderr)~. Do NOT use the ~logging~ module or a module-level ~logger = logging.getLogger(__name__)~ in these standalone scripts — repo practice is overwhelmingly ~print(..., file=sys.stderr)~ (dozens of scripts use it; only a handful import ~logging~, and none define a module-level logger), and logging belongs in long-lived services rather than one-shot pipeline scripts.
 - Long-running scripts emit a final stderr summary (counts/timing) and may stream incremental progress (per-record or every N records). Pass ~flush=True~ on progress prints when output must stay visible under nohup / GNU parallel (optional — short scripts do not need it).
 
 ***** Script template
@@ -2423,17 +2463,19 @@ default_chroms <- paste0("chr", 1:22)
 # Subsection: Argument parsing
 # -----------------------------------------------------------------------------
 
-#' Parse command-line options via optparse.
+# Positional args (repo convention): Snakemake passes inputs then outputs.
+args <- commandArgs(trailingOnly = TRUE)
+input <- args[1]   # input file path
+output <- args[2]  # output file path
+
+#' Read input data and return a tibble.
 #'
-#' @return Named list of parsed options.
+#' @param path Path to input file.
+#' @return Tibble of input data.
 #' @examples
-#' opts <- parse_options()
-parse_options <- function() {
-  option_list <- list(
-    make_option(c("-i", "--input"), type = "character", help = "Input file"),
-    make_option(c("-o", "--output"), type = "character", help = "Output file")
-  )
-  parse_args(OptionParser(option_list = option_list))
+#' df <- read_input("in.tsv")
+read_input <- function(path) {
+  read_tsv(path, show_col_types = FALSE)
 }
 
 # -----------------------------------------------------------------------------
@@ -2444,8 +2486,8 @@ parse_options <- function() {
 # Fail fast with a targeted message if a required input is missing.
 # -----------------------------------------------------------------------------
 
-if (!file.exists(opts$input)) {
-  stop("Input file not found: ", opts$input)
+if (!file.exists(input)) {
+  stop("Input file not found: ", input)
 }
 
 n_threads <- 8  # keep low for interactive nodes
@@ -2486,15 +2528,14 @@ ggplot(filtered, aes(x = treatment, y = outcome)) +
 - Follow tidyverse style (dplyr, ggplot2, readxl); ~<-~ for assignment
 - =variable_names_with_underscore=
 - Spaces before and after ~=~, ~+~, ~-~, ~<-~, etc.; after comma
-- Overall structure: packages → option parsing → work functions → ~main()~ → entry guard
+- Overall structure: packages → argument parsing → work functions → flat top-level body
 - Shebang: ~#!/usr/bin/env Rscript~
 - Top block comment describing purpose, inputs, outputs, assumptions
-- Use =optparse= for CLI parsing in a wrapper function (e.g., ~parse_options()~) to avoid shadowing optparse's own ~parse_args~
-- ~main()~: orchestrate; call ~parse_options()~ then work functions; return an integer-like exit code (~invisible(0)~ on success)
+- CLI parsing: read positional arguments with ~commandArgs(trailingOnly = TRUE)~ and bind them to named variables in order — repo convention, since Snakemake passes inputs then outputs positionally. For interactive testing, comment out the ~commandArgs~ block and hard-code the paths just below it. (=optparse= is acceptable for a hand-run script with many optional flags, but positional ~commandArgs~ is the dominant repo idiom; do not mix the two in one script.)
+- Body: orchestrate at the top level — validate inputs, call work functions, write outputs — rather than wrapping in a ~main()~ + ~if (!interactive())~ entry guard. These scripts run start-to-finish under ~Rscript~; reserve ~main()~/entry-guard only if a file must double as a sourceable library.
 - Work functions: consume named values, return objects rather than mutate globals; avoid ~print()~ / ~cat()~ side effects in reusable code
-- Entry guard: wrap the ~main()~ call in ~if (!interactive()) { ... }~ so the file can be sourced for interactive testing without re-running
-- Error policy: ~stop()~ for fatal errors, ~warning()~ for non-fatal; let ~main()~ convert exceptions to exit codes
-- For Snakemake =script:= files: use =snakemake@input=, =snakemake@output=, =snakemake@log=; no =parse_options=, no entry guard
+- Error policy: ~stop()~ for fatal errors, ~warning()~ for non-fatal; an uncaught ~stop()~ yields a non-zero ~Rscript~ exit automatically
+- For Snakemake =script:= files: use =snakemake@input=, =snakemake@output=, =snakemake@log=; no argument parsing, no entry guard
 - Save R-native outputs as =.rds= via ~saveRDS()~; use ~readr::write_tsv()~ for portable cross-tool output
 
 ***** Script template
@@ -2511,7 +2552,7 @@ ggplot(filtered, aes(x = treatment, y = outcome)) +
 # SECTION: PACKAGES
 # =============================================================================
 
-packages <- c("optparse", "tidyverse")
+packages <- c("tidyverse")
 suppressPackageStartupMessages(
   invisible(lapply(packages, require, character.only = TRUE))
 )
@@ -2520,15 +2561,14 @@ suppressPackageStartupMessages(
 # SECTION: ARGUMENT PARSING
 # =============================================================================
 
-parse_options <- function() {
-  option_list <- list(
-    make_option(c("-i", "--input"), type = "character",
-                help = "Input file path"),
-    make_option(c("-o", "--output"), type = "character",
-                help = "Output file path")
-  )
-  parse_args(OptionParser(option_list = option_list))
-}
+# Positional args (repo convention). Snakemake passes inputs/outputs in order.
+args <- commandArgs(trailingOnly = TRUE)
+input <- args[1]
+output <- args[2]
+
+# Interactive testing: comment out the block above and hard-code paths here.
+# input <- "test/input.tsv"
+# output <- "test/output.rds"
 
 # =============================================================================
 # SECTION: WORK FUNCTIONS
@@ -2543,20 +2583,15 @@ read_input <- function(path) {
 }
 
 # =============================================================================
-# SECTION: MAIN
+# SECTION: BODY
 # =============================================================================
 
-main <- function() {
-  opts <- parse_options()
-  data <- read_input(opts$input)
-  saveRDS(data, opts$output)
-  invisible(0)
+if (!file.exists(input)) {
+  stop("Input file not found: ", input)
 }
 
-# Run main() only when executed via Rscript, not when sourced interactively.
-if (!interactive()) {
-  main()
-}
+data <- read_input(input)
+saveRDS(data, output)
 #+end_src
 
 ***** Functions
@@ -2593,10 +2628,11 @@ compute_mean_length <- function(frag_df) {
 
 **** Emacs Lisp
 ***** Comment format
-- =;= — inline (end of line), rare
-- =;;= — standalone comment preceding code (most common)
-- =;;;= — section header
-- =;;;;= — top-level file section header
+Semicolon count follows the GNU Emacs Lisp Reference Manual "Comment Tips" convention ([[https://www.gnu.org/software/emacs/manual/html_node/elisp/Comment-Tips.html][elisp manual: Comment Tips]]). Two axes: =;= and =;;= track the code's indentation, while =;;;= and deeper sit at the left margin; among left-margin comments, *more* semicolons mean a *deeper* section level.
+- =;= — margin/inline comment on the *same line as code*, aligned to =comment-column= (rare)
+- =;;= — comment on its *own line*, aligned to the indentation of the code it precedes (most common)
+- =;;;= — *left-margin* top-level section heading / outermost commentary (this is also the form of the =;;;###autoload= magic cookie)
+- =;;;;= — *left-margin* sub-section heading (the manual continues =;;;;;= for sub-sub-sections, and so on)
 
 ***** Verbosity by context
 - *Config functions* (tangled from emacs.org/private.org): one-liner =;;= above the function. The org prose is the documentation; the tangled file just needs enough to grep.
@@ -2608,10 +2644,12 @@ compute_mean_length <- function(frag_df) {
 #+begin_example emacs-lisp
 ;;;; Navigation utilities
 
-;;; Filter helm results to exclude structural headings
+;;; Helm filtering helpers
+
+;; Filter helm results to exclude structural headings
 (defun jg/helm-filter-example (candidate)
   "Return non-nil if CANDIDATE should be shown in helm."
-  (not (string-match-p ":nohelm:" candidate)))  ; tag-based exclusion
+  (not (string-match-p ":nohelm:" candidate)))     ; tag-based exclusion
 #+end_example
 
 **** Snakemake
@@ -2645,7 +2683,7 @@ Style conventions for Snakemake workflow files. For workflow architecture (wrapp
   8. output
 - Always parameterize threads as a directive; never hard-code thread counts in shell or scripts
 - Each rule specifies its conda environment
-- Every rule defines a log file; redirect stdout/stderr explicitly so logs land in =D_LOG=
+- Every rule defines a log file; redirect stdout/stderr explicitly so logs land in =D_LOGS=
 
 ***** Shell blocks and scripts
 - Prefer external scripts over inline shell; scripts should be runnable outside Snakemake with explicit arguments
@@ -2668,18 +2706,27 @@ Style conventions for Snakemake workflow files. For workflow architecture (wrapp
 # =============================================================================
 
 # Align reads to reference genome using bwa-mem2.
-# Input: trimmed FASTQs; Output: sorted BAM + index.
-rule align_reads:
-    input:
-        r1 = rules.trim.output.r1,
-        r2 = rules.trim.output.r2,
-    output:
-        bam = D_ALIGNED / "{sample}.bam",
-    threads: 8
+# Input: trimmed FASTQs; Output: sorted BAM.
+rule emseq_align:
+    message: "[bwa-mem2] {wildcards.sample} threads={threads}"
     conda: ENV_BIOTOOLS
+    input:
+        r1 = rules.emseq_trim.output.r1,
+        r2 = rules.emseq_trim.output.r2,
+    log:
+        f"{D_LOGS}/emseq_align/{{sample}}.log",
+    params:
+        genome = R_REF_GENOME,
+    threads: 8
+    output:
+        bam = f"{D_ALIGNED}/{{sample}}.bam",
     shell:
-        "bwa-mem2 mem -t {threads} {config[ref_genome]} "
-        "{input.r1} {input.r2} | samtools sort -o {output.bam}"
+        """
+        echo "[bwa-mem2] $(date) sample={wildcards.sample} threads={threads}" > {log}
+        bwa-mem2 mem -t {threads} {params.genome} \
+            {input.r1} {input.r2} \
+            | samtools sort -o {output.bam} >> {log} 2>&1
+        """
 #+end_src
 
 ***** Literate / org-babel authoring
@@ -2695,7 +2742,51 @@ rule align_reads:
 - Minimal commenting — the structure is self-documenting
 - Comment version pins: =# pinned for compat with X=
 - Comment workarounds: =# workaround for bug in Y=
-- Ansible tasks: the =name:= field IS the comment; add =#= only for non-obvious =when:= conditions
+
+***** Ansible
+- Tasks: the =name:= field IS the comment; add =#= only for non-obvious =when:= conditions
+- *Use the fully-qualified collection name (FQCN)* for every module — =ansible.builtin.apt=, =ansible.builtin.file=, =ansible.builtin.systemd=, =ansible.builtin.command=, etc. — never the bare short name (=apt=, =file=). FQCN is the upstream-recommended form and is what =ansible-lint= enforces (=fqcn-builtins=); it removes ambiguity when a short name collides across installed collections. (Some older tasks still use bare names — migrate to FQCN when you touch them.)
+- *Always set =state:= explicitly* rather than relying on the module default. State semantics by module class:
+  - package (=apt=): =present= = idempotent install / "ensure exists", =latest= = upgrade to newest, =absent= = remove. Use =present= for normal installs; reserve =latest= for things you deliberately keep current.
+  - file (=file=): =directory=, =link=, =touch=, =absent=, =file=.
+  - service (=systemd=): =started= / =stopped= (plus =enabled:= for boot-time).
+- Simple apt-only packages go in the =apt_packages= list (=config/config.yaml=), installed by a single looped =ansible.builtin.apt= task — kept *alphabetically sorted*, one entry per line, so additions are diff-clean and dedup is obvious. A package gets its own task heading only when it needs more than =apt install= (config or service enablement); see the project =CLAUDE.md= Ansible conventions.
+
+***** References
+- [[https://docs.ansible.com/ansible/latest/tips_tricks/ansible_tips_tricks.html][Ansible — Tips and tricks (best practices)]]
+- [[https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html][Ansible — ansible.builtin module index (FQCN)]]
+- [[https://ansible.readthedocs.io/projects/lint/rules/fqcn/][ansible-lint — fqcn rule]]
+
+**** Secrets and credentials
+Cross-cutting rule — applies to Ansible YAML, Python, and shell alike.
+- Never commit plaintext secrets, tokens, passwords, or private keys to any repo (this one is public). The =git-hygiene.sh= scan flags =*secret*=, =token*.json=, =credentials.json=, =.netrc=, =*.pem=, =*.p12= and similar — treat a hit as a stop.
+- Ansible secrets live in files encrypted with =ansible-vault= (=$ANSIBLE_VAULT= header), never in plaintext vars or playbooks. =ansible_local= auto-detects vault files and adds =--ask-vault-pass=.
+- Reference secrets indirectly: read from environment variables (e.g. =os.environ["GARMIN_PASSWORD"]=) or vault-decrypted Ansible vars — never hardcode the literal value in source.
+- Set =no_log: true= on any Ansible task whose args, loop items, or registered result could expose a secret, so it is redacted from playbook output and logs.
+
+**** LaTeX
+***** Comments
+- =%= leading character; one space after for readability (=% note=)
+- Section banners follow the bash/R style: ~%~ then a rule of ~=~ characters for a major section, ~-~ characters for a minor one
+
+***** Line length
+- Wrap source lines at 80 columns when practical; allow exceptions for unbreakable tokens (long macro names, paths, package-option lines clearer on one line)
+- Block comments: multi-line explanatory =%= paragraphs, not indented
+
+***** Indentation
+- Indent the body of every environment by 2 spaces; align =\begin{env}= and =\end{env}= at the same column
+- Nest indentation for nested environments
+
+***** Labels and refs
+- =\label{type:name}= with a type prefix: =sec:=, =fig:=, =tab:=, =eq:=
+- Name in lowercase with hyphens (=tab:meth-simple-tbl=); reference with =\ref{...}= / =\eqref{...}=, never bare numbers
+
+**** Markdown
+- Headings: ATX style only (=#=, =##=, ...); one space after the hashes, blank line above and below. No closing hashes, no Setext (~===~ / ~---~) underlines.
+- Code blocks: fenced with triple backticks and a language tag (e.g. =```bash=); never indented code blocks.
+- Links: inline =[text](url)= for one-off references; reference-style =[text][ref]= with a definition block at section/document end when a URL is reused or the inline form would clutter the prose.
+- Line wrapping: one sentence per line (eases diffs and review); hard-wrap at 80 columns is an acceptable alternative — pick one per file, do not mix.
+- Lists: =-= for bullets (consistent throughout a file); =1.= for ordered lists; two-space indent per nesting level.
 
 *** Bash and shell
 **** Bash Cookbook                                                 :cookbook:
