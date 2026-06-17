@@ -655,7 +655,11 @@ soft_limit=$(git config hooks.filesizesoftlimit)
 
 list_new_or_modified_files()
 {
-    git diff --staged --name-status|sed -e '/^D/ d; /^D/! s/.\s\+//'
+    # --name-only emits the (destination) path for renames/copies and one
+    # clean path per line; --diff-filter=d drops deletions. Avoids the old
+    # --name-status sed, which mangled "R100<TAB>old<TAB>new" rename lines
+    # into bogus paths -> empty size -> "[: Illegal number".
+    git diff --staged --diff-filter=d --name-only
 }
 
 unmunge()
@@ -673,6 +677,7 @@ check_file_size()
         f="$(unmunge "$munged_filename")"
         h=$(git ls-files -s "$f"|cut -d' ' -f 2)
         s=$(git cat-file -s "$h")
+        [ -z "$s" ] && continue
         if [ "$s" -gt $hard_limit ]
         then
             env echo -E 1>&2 "ERROR: hard size limit ($hard_limit) exceeded: $munged_filename ($s)"
