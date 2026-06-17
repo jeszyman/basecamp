@@ -2202,7 +2202,10 @@ Match commenting density to context. When the context is ambiguous, ask the user
 - Do not add =TODO= comments without a corresponding task/ticket
 - Do not add comments that will immediately go stale (e.g. "this list has 5 items")
 
-**** Bash
+**** Bash Style Guide
+:PROPERTIES:
+:ID:       081ce5b6-0f52-4616-a91a-2d22952c9b14
+:END:
 Consolidated from [[id:89576FD2-F863-4220-BAD7-D4E179AEA644][Bash and shell]] (under Programming languages).
 
 ***** Indentation
@@ -2537,12 +2540,17 @@ if __name__ == "__main__":
 ***** References
 - [[https://google.github.io/styleguide/pyguide.html][Google Python Style Guide]]
 
-**** R
+**** R Style Guide
+:PROPERTIES:
+:ID:       f6e32bb0-2ce2-402e-9ec6-5cad076c7762
+:END:
 ***** Indentation
 - 2 spaces, no tabs
 
 ***** Comments
-- Wrap comments at 80 columns when practical; allow exceptions for unbreakable tokens (paths, URLs)
+- Code: format with ~styler~ (tidyverse style, 2-space indent); lint with ~lintr~. ~styler~ is the source of truth for code-line indentation and spacing — it does not rewrap comment text, so the wrap convention below is manual.
+- Comments and roxygen prose: wrap at 80 columns when practical; allow exceptions for unbreakable tokens (paths, URLs).
+- Section banners (the Comment-template ~# ===~ / ~# ---~ style) are OPTIONAL and scaled to the file: short single-purpose scripts may omit them; multi-section scripts should use them to mark major phases. Label wording is free-form.
 - Comment types
   - Sectioning comments: same banner style as bash/Python (=# ====== for major, =# ----= for minor)
   - Roxygen docstrings: =#'= lines as the first form before a function (=#' @param=, =#' @return=, =#' @examples=)
@@ -2728,20 +2736,27 @@ compute_mean_length <- function(frag_df) {
 - [[https://google.github.io/styleguide/Rguide.html][Google R style guide]]
 - [[https://contributions.bioconductor.org/r-code.html][Bioconductor coding style]]
 
-**** Emacs Lisp
-***** Comment format
+**** Emacs Lisp Style Guide
+:PROPERTIES:
+:ID:       a6c8dcee-df05-493f-b494-fa5e081075c7
+:END:
+Emacs Lisp here is configuration and tooling authored in org-babel =emacs-lisp= blocks and tangled to =.el= files (=public_config.el=, =load-first.el=, etc.); the =.org= source is canonical (see [[id:1626b712-2dae-4ed0-9461-5031b43da0d1][General / Cross-Language Conventions]] > Literate programming). There is no standalone-CLI ~parse_args~ → ~main~ paradigm, so the Bash/Python/R Scripts and Script-template subsections do not apply.
+
+***** Indentation
+- Standard Emacs Lisp indentation; let Emacs indent (=lisp-indent-function=). Spaces, no tabs.
+
+***** Comments
 Semicolon count follows the GNU Emacs Lisp Reference Manual "Comment Tips" convention ([[https://www.gnu.org/software/emacs/manual/html_node/elisp/Comment-Tips.html][elisp manual: Comment Tips]]). Two axes: =;= and =;;= track the code's indentation, while =;;;= and deeper sit at the left margin; among left-margin comments, *more* semicolons mean a *deeper* section level.
 - =;= — margin/inline comment on the *same line as code*, aligned to =comment-column= (rare)
 - =;;= — comment on its *own line*, aligned to the indentation of the code it precedes (most common)
 - =;;;= — *left-margin* top-level section heading / outermost commentary (this is also the form of the =;;;###autoload= magic cookie)
 - =;;;;= — *left-margin* sub-section heading (the manual continues =;;;;;= for sub-sub-sections, and so on)
+- Verbosity by context:
+  - *Config functions* (tangled from emacs.org/private.org): one-liner =;;= above the function. The org prose is the documentation; the tangled file just needs enough to grep.
+  - *Infrastructure defuns* (called from many places, hooks, capture templates): full docstring as first form in the function body, plus =;;= for non-obvious logic.
+  - *Use-package blocks*: generally no comments needed; the package name and =:config= are self-documenting.
 
-***** Verbosity by context
-- *Config functions* (tangled from emacs.org/private.org): one-liner =;;= above the function. The org prose is the documentation; the tangled file just needs enough to grep.
-- *Infrastructure defuns* (called from many places, hooks, capture templates): full docstring as first form in the function body, plus =;;= for non-obvious logic.
-- *Use-package blocks*: generally no comments needed; the package name and =:config= are self-documenting.
-
-***** Template
+***** Comment template
 
 #+begin_example emacs-lisp
 ;;;; Navigation utilities
@@ -2754,7 +2769,21 @@ Semicolon count follows the GNU Emacs Lisp Reference Manual "Comment Tips" conve
   (not (string-match-p ":nohelm:" candidate)))     ; tag-based exclusion
 #+end_example
 
-**** Snakemake
+***** Functions
+- Namespace every custom function with the =jg/= prefix (=jg/org-marks-reveal=). Mark internal helpers not meant to be called directly with a double dash: =jg/feature--helper= (e.g. =jg/org-marks--mark-at-point=).
+- Docstring as the first form for any infrastructure defun (called from multiple places, hooks, capture templates); a one-liner =;;= above suffices for a simple config function, since the org source is the canonical documentation.
+- Interactive commands declare =(interactive)= and take input via =interactive= rather than positional globals.
+- Single-purpose, explicit parameters; prefer helpers that return values over ones that mutate global state.
+- Package configuration goes in =use-package= blocks (see the emacs.org Package configuration section), not bare =setq= / =require=.
+
+***** References
+- [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Tips.html][GNU Emacs Lisp Reference Manual — Tips and Conventions]]
+- [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Coding-Conventions.html][elisp manual: Coding Conventions]]
+
+**** Snakemake Style Guide
+:PROPERTIES:
+:ID:       849e9b6e-4fa5-4c1f-bcd5-06738e001b66
+:END:
 Style conventions for Snakemake workflow files. For workflow architecture (wrapper vs module types, experiment grouping), see the full [[id:146f3266-f634-4728-8172-9ae8b459d0c7][Snakemake Style Guide and Good Practices]].
 
 ***** Comments
@@ -2840,7 +2869,10 @@ rule emseq_align:
 - [[https://snakemake.readthedocs.io/en/stable/][Snakemake documentation]]
 - [[id:dd9c7b11-7bb1-4a3d-8a40-b74ed0e2b55e][Python style guide]] (comments in .smk files follow Python conventions)
 
-**** YAML / Config
+**** YAML / Config Style Guide
+:PROPERTIES:
+:ID:       6df6504f-b556-417e-acf2-2a169af52e65
+:END:
 - Minimal commenting — the structure is self-documenting
 - Comment version pins: =# pinned for compat with X=
 - Comment workarounds: =# workaround for bug in Y=
@@ -2866,7 +2898,10 @@ Cross-cutting rule — applies to Ansible YAML, Python, and shell alike.
 - Reference secrets indirectly: read from environment variables (e.g. =os.environ["GARMIN_PASSWORD"]=) or vault-decrypted Ansible vars — never hardcode the literal value in source.
 - Set =no_log: true= on any Ansible task whose args, loop items, or registered result could expose a secret, so it is redacted from playbook output and logs.
 
-**** LaTeX
+**** LaTeX Style Guide
+:PROPERTIES:
+:ID:       576eac23-7097-441c-b39b-cd828ff9a00b
+:END:
 ***** Comments
 - =%= leading character; one space after for readability (=% note=)
 - Section banners follow the bash/R style: ~%~ then a rule of ~=~ characters for a major section, ~-~ characters for a minor one
@@ -2883,7 +2918,10 @@ Cross-cutting rule — applies to Ansible YAML, Python, and shell alike.
 - =\label{type:name}= with a type prefix: =sec:=, =fig:=, =tab:=, =eq:=
 - Name in lowercase with hyphens (=tab:meth-simple-tbl=); reference with =\ref{...}= / =\eqref{...}=, never bare numbers
 
-**** Markdown
+**** Markdown Style Guide
+:PROPERTIES:
+:ID:       7e4f784b-6349-4823-9d89-3b40ab08751e
+:END:
 - Headings: ATX style only (=#=, =##=, ...); one space after the hashes, blank line above and below. No closing hashes, no Setext (~===~ / ~---~) underlines.
 - Code blocks: fenced with triple backticks and a language tag (e.g. =```bash=); never indented code blocks.
 - Links: inline =[text](url)= for one-off references; reference-style =[text][ref]= with a definition block at section/document end when a URL is reused or the inline form would clutter the prose.
