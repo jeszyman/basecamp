@@ -6,6 +6,7 @@
 :END:
 - [ ] migrate [[id:2fc1a6f1-093c-4250-a905-1bf42b7b9eee][Lisp functions]] to [[file:~/repos/emacs/emacs.org]]
 ** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
+** [[id:0ccb6668-d5dd-4519-8e32-d8082d74e336][Code Style Guide]]
 ** Change log
 
 - [2026-03-22 Sun] Enhanced git-hygiene.sh: raised size limits to 50MB/100MB (GitHub thresholds), added .git-hygiene-allow per-repo allowlist support, public-repo sensitive file detection via gh API, and conflict-markers check. Cleaned stale conflict markers across chaudhuri-lab, rna-seq, gastronomy. Untracked derived/stale large files in basecamp, meth, mpnst. Created allowlists in emseq, frag, meth for intentional test fixtures.
@@ -2100,39 +2101,15 @@ The init.el file is compiled from the Org-mode header a simple wrapper for other
 My public customized Emacs initialization is compiled from the Org-mode header [[id:28ed3017-eedb-4a6c-94e5-f477353170c8][basecamp.org::Public configuration]] and tangles to [[file:config/public_emacs_config.el][./config/public_emacs_config.el]].
 
 ******** Style and good practice
-
-Use-package is my preferred package management system. By default, use-package loads are structured as:
-
-(use-package package2
-  :ensure t
-  :init
-  :config
-)
-
-Each use-package keyword will expect a list or needs to be removed. Other keywords exist (see [[https://www.gnu.org/software/emacs/manual/html_node/use-package/index.html#SEC_Contents][documentation]]).
-
-- :ensure t will install any missing package
-- :init is evaluated before package loading
-- :config is evaluated after package loading
+use-package conventions (=:ensure= / =:init= / =:config= structure) are consolidated in the [[id:a6c8dcee-df05-493f-b494-fa5e081075c7][Emacs Lisp Style Guide]] > Package configuration.
 
 ******* Org-mode
 ******** Policy, style, and good practice
 ********* Block structures, source code, and tangling
 
-Lowercase is preferred for all block notation, /e.g./
-
-#+begin_src emacs-lisp
-#+end_src
-
-instead of
-
-#+BEGIN_SRC
-#+END_SRC
-
-At the file level, tangled code should reference it's location in orgmode files.
-tangle defaults to ./
+Org-babel block and tangle conventions (lowercase =#+begin_src= / =#+end_src=; header-arg =:tangle=; tangled files carry an AUTO-GENERATED preamble naming the source) live in the [[id:8306ac91-52b6-4d23-8520-f5bb30dba293][Org-edit style guide]].
 ******* Templating with YASnippets
-My public YASnippets are compiled from source code blocks across my Org-mode agenda files. These tangle into appropriate subdirectories of [[file:emacs/public_yasnippets/][./emacs/public_yasnippets]]. Private snippets are tangled into appropriate subdirectories of [[file:~/repos/org/emacs/private_yasnippets][org/emacs/private_yasnippets]].
+YASnippet authoring, naming, and storage conventions are consolidated in the [[id:4b92c28a-e78a-4589-b5e9-37aabdad0d94][YASnippets Style Guide]].
 *** Code Style Guide                                               :claudekb:
 :PROPERTIES:
 :header-args: :exports code
@@ -2774,100 +2751,31 @@ Semicolon count follows the GNU Emacs Lisp Reference Manual "Comment Tips" conve
 - Docstring as the first form for any infrastructure defun (called from multiple places, hooks, capture templates); a one-liner =;;= above suffices for a simple config function, since the org source is the canonical documentation.
 - Interactive commands declare =(interactive)= and take input via =interactive= rather than positional globals.
 - Single-purpose, explicit parameters; prefer helpers that return values over ones that mutate global state.
-- Package configuration goes in =use-package= blocks (see the emacs.org Package configuration section), not bare =setq= / =require=.
+- Package configuration goes in =use-package= blocks (see Package configuration below), not bare =setq= / =require=.
+
+***** Package configuration (use-package)
+=use-package= is the preferred package-management/configuration macro. Default block shape:
+
+#+begin_src emacs-lisp
+(use-package package-name
+  :ensure t          ; install the package if missing
+  :init  ...         ; evaluated BEFORE the package loads
+  :config ...)       ; evaluated AFTER the package loads
+#+end_src
+
+- Each keyword takes forms/a list, or omit the keyword entirely — an empty keyword errors.
+- Other keywords exist; see the [[https://www.gnu.org/software/emacs/manual/html_node/use-package/index.html#SEC_Contents][use-package manual]].
+- The package configs themselves live in =emacs.org= (Package configuration, alphabetical), tangled to =public_config.el=; this section is the style, not the configs.
 
 ***** References
 - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Tips.html][GNU Emacs Lisp Reference Manual — Tips and Conventions]]
 - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Coding-Conventions.html][elisp manual: Coding Conventions]]
 
-**** Snakemake Style Guide
+**** Snakemake
 :PROPERTIES:
 :ID:       849e9b6e-4fa5-4c1f-bcd5-06738e001b66
 :END:
-Style conventions for Snakemake workflow files. For workflow architecture (wrapper vs module types, experiment grouping), see the full [[id:146f3266-f634-4728-8172-9ae8b459d0c7][Snakemake Style Guide and Good Practices]].
-
-***** Comments
-- =#= comments follow Python conventions
-- Rule-level: brief docstring comment immediately after =rule name:= explaining purpose and key I/O
-- Workflow-level: section banners between logical groups of rules
-- Do not comment individual =input:= / =output:= / =params:= lines unless non-obvious
-
-***** Path and variable conventions
-- Hungarian notation prefixes: =D_= for data directories (absolute paths from config), =R_= for repository locations, =ENV_= for conda environment YAML files
-- Build paths using Python f-strings with explicit structure: ~f"{D_EMSEQ}/align/{{sample}}.bam"~
-- Escape wildcards in f-strings with double braces
-- Paths should be declarative and reflect intended output organization
-- Avoid ~os.path.join~ unless necessary for cross-platform compatibility
-- Avoid encoding workflow logic or conditionals inside path expressions
-
-***** Rule construction
-- Rules describe what is produced, not how it is computed
-- Prefix modular workflow rules with the workflow ID (e.g., =rule emseq_align=)
-- Standard directive order:
-  1. message
-  2. conda
-  3. input
-  4. log
-  5. benchmark
-  6. params
-  7. threads
-  8. output
-- Always parameterize threads as a directive; never hard-code thread counts in shell or scripts
-- Each rule specifies its conda environment
-- Every rule defines a log file; redirect stdout/stderr explicitly so logs land in =D_LOGS=
-
-***** Shell blocks and scripts
-- Prefer external scripts over inline shell; scripts should be runnable outside Snakemake with explicit arguments
-- Keep log and workflow logic in the Snakefile, external to the script
-- Echo an execution-specific message: ~echo "[tool] $(date) lib={wildcards.library_id} threads={threads}"~
-- Redirect stdout/stderr explicitly (e.g., ~exec > "{log}" 2>&1~)
-- Avoid embedding complex logic in =run= or =shell= blocks
-
-***** Configuration
-- Prefer structured (nested) YAML over flat keys: ~config["ref"]["index"]~ not ~config["ref_index"]~
-- Two-layer config: base (committed to repo) + override (runtime via =--configfile=)
-- Use booleans for conditional execution; express conditional branches in =rule all=
-- Use tabular configuration (TSV/CSV) for sample/unit metadata; load once in the preamble
-
-***** Rule template
-
-#+begin_src snakemake
-# =============================================================================
-# SECTION: ALIGNMENT
-# =============================================================================
-
-# Align reads to reference genome using bwa-mem2.
-# Input: trimmed FASTQs; Output: sorted BAM.
-rule emseq_align:
-    message: "[bwa-mem2] {wildcards.sample} threads={threads}"
-    conda: ENV_BIOTOOLS
-    input:
-        r1 = rules.emseq_trim.output.r1,
-        r2 = rules.emseq_trim.output.r2,
-    log:
-        f"{D_LOGS}/emseq_align/{{sample}}.log",
-    params:
-        genome = R_REF_GENOME,
-    threads: 8
-    output:
-        bam = f"{D_ALIGNED}/{{sample}}.bam",
-    shell:
-        """
-        echo "[bwa-mem2] $(date) sample={wildcards.sample} threads={threads}" > {log}
-        bwa-mem2 mem -t {threads} {params.genome} \
-            {input.r1} {input.r2} \
-            | samtools sort -o {output.bam} >> {log} 2>&1
-        """
-#+end_src
-
-***** Literate / org-babel authoring
-- Snakemake code is authored in org-babel =snakemake= blocks that tangle to =.smk= module files and the wrapper =Snakefile=. The blocks are tangle-only — there is no =ob-snakemake=, so org-babel never executes them.
-- Put =:tangle= (and related header-args) on the heading's PROPERTIES drawer, not on individual =#+begin_src= lines, so all blocks under the heading inherit it.
-- A no-op =org-babel-execute:snakemake= is defined in the Emacs config (see [[file:~/repos/emacs/emacs.org::*snakemake-mode][snakemake-mode]]) so exporting a file that contains snakemake blocks does not warn =No org-babel-execute function for snakemake=. A per-block =:eval no= does NOT suppress this — org's export-results path warns before honoring =:eval=.
-
-***** References
-- [[https://snakemake.readthedocs.io/en/stable/][Snakemake documentation]]
-- [[id:dd9c7b11-7bb1-4a3d-8a40-b74ed0e2b55e][Python style guide]] (comments in .smk files follow Python conventions)
+Snakemake style and good practice — comments, paths, rule construction, config, the rule template, and literate authoring — live in the full [[id:146f3266-f634-4728-8172-9ae8b459d0c7][Snakemake Style Guide and Good Practices]] (its own =:claudekb:= export, read by the biopipe skill). Snakemake =#= comments follow the [[id:dd9c7b11-7bb1-4a3d-8a40-b74ed0e2b55e][Python style guide]].
 
 **** YAML / Config Style Guide
 :PROPERTIES:
@@ -3061,6 +2969,9 @@ This comment will not appear in the tangled code
 ls
 
 **** YASnippets Style Guide and Good Practice
+:PROPERTIES:
+:ID:       4b92c28a-e78a-4589-b5e9-37aabdad0d94
+:END:
   -
     - snippets are associated with a specific major mode, use of bash mode is discouraged
     - As snippets are associated with major modes, single word keywords are encouraged (e.g. function instead of bash.function)
@@ -3071,7 +2982,7 @@ ls
       - Snippets are created in org mode bash source code blocks with formatting as in the [[yas.block]] snippet
 	- Each snippet resides under it's own terminal org mode header. The header consists of only the snippet keyword and tags including the :yas: tag (i.e. * <SNIPPET KEYWORD> :yas: )
 	- The :yas: tag is reserved exclusively for yas block headers and does not have tag inheritance.
-      - Snippets are stored in the main org repository under the directory./snippets which is symlinked to .emacs.d. Snippets are therefore under org version control.
+      - Public snippets tangle to =~/repos/basecamp/emacs/public_yasnippets/<mode>/=; private snippets to =~/repos/org/emacs/private_yasnippets/<mode>/=; both are surfaced to YASnippet via =~/.emacs.d/snippets/= (see =yas-snippet-dirs=), so snippets stay under git version control.
 **** Notes
 See also Emacs and Org-mode use in my LaTeX repository ([[https://github.com/jeszyman/latex][GitHub]], [[plain:7F54F016-934E-45AA-BABF-B640464BDEF1][local buffer]]).
 *** Appendices
@@ -7731,16 +7642,20 @@ https://rstudio-pubs-static.s3.amazonaws.com/1691_3c8dee811cf2497385cde81bd97f8e
 - [[https://vega.github.io/vega/docs/schemes/][dark2 scheme]]
     - nice color scheme https://stackoverflow.com/questions/9563711/r-color-palettes-for-many-data-classes
 - [[id:31d52adc-0c06-4d7f-a41e-e1c965aa76c9][Color - value associations]]
-***** Style
+- https://bookdown.org/rdpeng/exdata/plotting-and-color-in-r.html
+- https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
+- [[http://sape.inf.usi.ch/quick-reference/ggplot2/colour][ggplot2 color scheme]]
+***** Visualization Style
 :PROPERTIES:
 :ID:       b8acbcc7-291b-4638-8952-74e63420d071
 :END:
-- [cite:@wilke2019]
-- https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003833
-- https://www.datarevelations.com/resources/bans/
-- http://www.npr.org/2013/01/18/169708761/edward-tufte-wants-you-to-see-better
-- https://www.reddit.com/r/datascience/comments/diufp0/are_there_other_thinkers_with_different_ideas_in/
-- [cite:@rougier2014]
+Figure/data-viz *style* references are consolidated in the [[id:cfa2883f-4d98-43c5-b125-274cfd95a22b][Scientific figure (scifig) module]] in science.org (Resources): Wilke, Rougier "Ten Simple Rules for Better Figures", Tufte, BANs, and color guidance.
+
+***** Legend
+:PROPERTIES:
+:ID:       cbefb626-a723-44ee-9947-0288dbc66dca
+:END:
+- http://www.sthda.com/english/wiki/ggplot2-legend-easy-steps-to-change-the-position-and-the-appearance-of-a-graph-legend-in-r-software
 **** Platforms
 :PROPERTIES:
 :ID:       ac1dc15a-57dd-41ae-a117-14585efbe426
@@ -7882,6 +7797,119 @@ https://www.reddit.com/r/learnjavascript/comments/vnbpxt/any_clue_how_can_i_go_a
 :ID:       31d52adc-0c06-4d7f-a41e-e1c965aa76c9
 :END:
 https://stats.stackexchange.com/questions/51792/how-to-find-a-suitable-association-of-color-with-data-value-in-a-visualization
+
+**** Visualizations in R including ggplot2
+:PROPERTIES:
+:ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
+:END:
+https://r-graphics.org/
+https://github.com/thomasp85/patchwork/issues/136
+- - [[https://stackoverflow.com/questions/37140266/how-to-merge-color-line-style-and-shape-legends-in-ggplot][merge legends]]
+
+[[id:C85F831E-4285-42D0-ABAB-96696D026671][Visualization mod]]
+- https://beep-boopr.github.io/ubcBIOL548L/articles/group-03_Using-cowplot-multi-panel.html
+- https://www.geeksforgeeks.org/how-to-add-image-to-ggplot2-in-r/
+- https://stackoverflow.com/questions/67459955/ggplot-font-size-and-plot-size
+- https://patchwork.data-imaginist.com/articles/guides/assembly.html
+- https://cran.r-project.org/web/packages/ggfun/vignettes/ggfun.html
+- http://rich-iannone.github.io/DiagrammeR/docs.html
+- https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html
+- [[https://gist.github.com/Rekyt/a7846af7c4c5fb5a48ea][ggplots over multiple pdf pages]]
+- https://bookdown.org/ndphillips/YaRrr/saving-plots-to-a-file-with-pdf-jpeg-and-png.html
+- tikz as graphics device for R: https://cran.r-project.org/web/packages/tikzDevice/vignettes/tikzDevice.pdf
+- https://r-graphics.org/recipe-facet-label-appearance
+- saving - use - better than ggsave: - https://rdrr.io/cran/cowplot/man/save_plot.html
+- https://www.reddit.com/r/rstats/comments/b4ol4z/unbin_data_to_make_histogram/
+- [[http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/][histogram]]
+- [[http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/#modifying-the-text-of-legend-titles-and-labels][modify ggplot2 legend text]]
+***** Processes                                                   :hierarchy:
+:PROPERTIES:
+:ID:       7b47a4fa-5c0e-4e36-9d88-61593540215b
+:END:
+****** geoms
+:PROPERTIES:
+:ID:       411d2d7e-cb97-4e7c-a7b1-bacd3eb8504f
+:END:
+****** Processes                                                       :flat:
+:PROPERTIES:
+:ID:       85475db1-b795-4db1-af67-fa0de3f87fab
+:END:
+
+
+******* 0 Flat
+:PROPERTIES:
+:ID:       740df023-2211-4f3b-ac5c-265f4f99a132
+:END:
+******** - [[https://gist.github.com/Rekyt/a7846af7c4c5fb5a48ea][ggplots over multiple pdf pages]]
+:PROPERTIES:
+:ID:       5cce518a-ffc7-499e-b716-b1067bf49113
+:END:
+******** Interactive
+:PROPERTIES:
+:ID:       67ca5a25-5ade-41bf-84ba-17e48cf34b74
+:END:
+- [[https://www.youtube.com/watch?feature=youtu.be&v=rBp3eYHrsfo&app=desktop&t=0s][plotly interactive graphs]]
+******** Theme
+:PROPERTIES:
+:ID:       6e585060-1fe9-47c0-97bb-b4f32cd69115
+:END:
+https://wilkelab.org/cowplot/articles/themes.html
+******** Facets
+:PROPERTIES:
+:ID:       26b04605-e83f-473e-8483-82717b71131e
+:END:
+- https://r-graphics.org/recipe-facet-label-appearance
+******** Significance annotations
+:PROPERTIES:
+:ID:       bda8de09-cae8-4324-83a1-3ccee8193aa7
+:END:
+https://www.datanovia.com/en/blog/how-to-add-p-values-onto-a-grouped-ggplot-using-the-ggpubr-r-package/#pairwise-comparisons-against-a-reference-group
+https://www.datanovia.com/en/blog/how-to-add-p-values-onto-a-grouped-ggplot-using-the-ggpubr-r-package/#pairwise-comparisons-against-a-reference-group
+https://cran.r-project.org/web/packages/ggsignif/vignettes/intro.html
+https://crumplab.com/psyc7709_2019/book/docs/how-to-annotate-a-graph-using-gg-signif.html
+******** Labeling
+:PROPERTIES:
+:ID:       f3ac9b40-baff-4e48-af39-123460b86a93
+:END:
+- https://r-graphics.org/recipe-facet-label-appearance
+- https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html
+- https://ggrepel.slowkow.com/articles/examples.html
+******** ER
+:PROPERTIES:
+:ID:       83e0ec45-2dcf-49dd-af5e-1badf7fed790
+:END:
+- er diagrams - https://rich-iannone.github.io/DiagrammeR/index.html
+******** Venn
+:PROPERTIES:
+:ID:       b9191c77-247b-4cd9-b991-601100fac75c
+:END:
+- [[https://stackoverflow.com/questions/8713994/venn-diagram-proportional-and-color-shading-with-semi-transparency][venn R packages]]
+- [cite:@jia2021]
+******** Pie
+:PROPERTIES:
+:ID:       45663216-ea79-49d2-91a6-3c1376160374
+:END:
+- [[https://stackoverflow.com/questions/33594642/beautiful-pie-charts-with-r/33594843][pie charts]]
+******** Multi-panel
+:PROPERTIES:
+:ID:       2b2154cf-b61c-4287-b5dd-93d85c93ac63
+:END:
+- https://github.com/thomasp85/patchwork
+- [[http://statisticalrecipes.blogspot.com/2015/07/cowplot-arrange-ggplot2-figures-in-grid.html][Cowplot]]
+- [[https://cran.r-project.org/web/packages/cowplot/vignettes/plot_grid.html][another cowplot vignette]]
+
+- https://www.google.com/search?q=cowplot+make+inset
+***** General reference
+:PROPERTIES:
+:ID:       c09e8fb3-68b3-4169-bd28-a2d768266509
+:END:
+- Interfaces
+  - TiKZ - https://cran.r-project.org/web/packages/tikzDevice/vignettes/tikzDevice.pdf
+- https://r-charts.com/
+- https://ggplot2-book.org/index.html
+- https://www.r-graph-gallery.com/all-graphs.html
+- [[http://minimaxir.com/2017/08/ggplot2-web/][How to Make High Quality Data Visualizations for Websites With R and ggplot2]]
+- http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/
 *** Ontologies
 :PROPERTIES:
 :ID:       9240c334-e533-4a72-b2a8-26da6fa453ec
@@ -10064,6 +10092,44 @@ bespoke concurrency setup
   - Path References
     - Prefer paths relative to a master data directory or repository.
     - Avoid hard-coded absolute paths.
+- Comments
+  - =#= comments follow Python conventions; see the [[id:dd9c7b11-7bb1-4a3d-8a40-b74ed0e2b55e][Python style guide]].
+  - Rule-level: a brief docstring comment immediately after =rule name:= explaining purpose and key I/O.
+  - Workflow-level: section banners between logical groups of rules.
+  - Do not comment individual =input:= / =output:= / =params:= lines unless non-obvious.
+- Literate / org-babel authoring
+  - Snakemake code is authored in org-babel =snakemake= blocks that tangle to =.smk= module files and the wrapper =Snakefile=. The blocks are tangle-only — there is no =ob-snakemake=, so org-babel never executes them.
+  - Put =:tangle= (and related header-args) on the heading's PROPERTIES drawer, not on individual =#+begin_src= lines, so all blocks under the heading inherit it.
+  - A no-op =org-babel-execute:snakemake= is defined in the Emacs config (see [[file:~/repos/emacs/emacs.org::*snakemake-mode][snakemake-mode]]) so exporting a file that contains snakemake blocks does not warn =No org-babel-execute function for snakemake=. A per-block =:eval no= does NOT suppress this — org's export-results path warns before honoring =:eval=.
+- Rule template
+  #+begin_src snakemake
+  # =============================================================================
+  # SECTION: ALIGNMENT
+  # =============================================================================
+
+  # Align reads to reference genome using bwa-mem2.
+  # Input: trimmed FASTQs; Output: sorted BAM.
+  rule emseq_align:
+      message: "[bwa-mem2] {wildcards.sample} threads={threads}"
+      conda: ENV_BIOTOOLS
+      input:
+          r1 = rules.emseq_trim.output.r1,
+          r2 = rules.emseq_trim.output.r2,
+      log:
+          f"{D_LOGS}/emseq_align/{{sample}}.log",
+      params:
+          genome = R_REF_GENOME,
+      threads: 8
+      output:
+          bam = f"{D_ALIGNED}/{{sample}}.bam",
+      shell:
+          """
+          echo "[bwa-mem2] $(date) sample={wildcards.sample} threads={threads}" > {log}
+          bwa-mem2 mem -t {threads} {params.genome} \
+              {input.r1} {input.r2} \
+              | samtools sort -o {output.bam} >> {log} 2>&1
+          """
+  #+end_src
 - Known Issues
   - Snakemake + mamba prefix collision: =mamba env create= fails with "Non-conda folder exists at prefix" when Snakemake manages per-rule conda environments via =--use-conda=. Mamba refuses to create an env if the target prefix directory exists but is not a valid conda environment (no =conda-meta/= inside). Snakemake does not clean up partial directories on failure, so subsequent attempts fail repeatedly. Observed 2026-03 with Snakemake 7.x + mamba. Workarounds:
     - Use =--conda-frontend conda= flag (slower but avoids the mamba bug)
@@ -18176,8 +18242,7 @@ Sys.info()["nodename"]
 :PROPERTIES:
 :ID:       54c85192-d02e-4919-b38e-a14c10fcb5c6
 :END:
-**** Style
-R coding-style conventions are consolidated in the [[id:0ccb6668-d5dd-4519-8e32-d8082d74e336][Code Style Guide]] (R section: indentation, comments, scripts, functions, references). This node's earlier notes were folded there.
+**** [[id:f6e32bb0-2ce2-402e-9ec6-5cad076c7762][R Style Guide]]
 **** R Processes                                                       :flat:
 :PROPERTIES:
 :ID:       d96c05c0-838a-45ec-b7c6-a8a7e5b3e71d
@@ -18545,131 +18610,6 @@ library(ROCR)
   - Referring to other packages: https://stackoverflow.com/questions/36874904/r-how-do-i-make-my-package-use-another-package
 
 
-**** Visualizations in R including ggplot2
-:PROPERTIES:
-:ID:       19d01dcc-8fef-4c07-952a-da918b3dc775
-:END:
-https://r-graphics.org/
-https://github.com/thomasp85/patchwork/issues/136
-- - [[https://stackoverflow.com/questions/37140266/how-to-merge-color-line-style-and-shape-legends-in-ggplot][merge legends]]
-
-[[id:C85F831E-4285-42D0-ABAB-96696D026671][Visualization mod]]
-- https://beep-boopr.github.io/ubcBIOL548L/articles/group-03_Using-cowplot-multi-panel.html
-- https://www.geeksforgeeks.org/how-to-add-image-to-ggplot2-in-r/
-- https://stackoverflow.com/questions/67459955/ggplot-font-size-and-plot-size
-- https://patchwork.data-imaginist.com/articles/guides/assembly.html
-- https://cran.r-project.org/web/packages/ggfun/vignettes/ggfun.html
-- http://rich-iannone.github.io/DiagrammeR/docs.html
-- https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html
-- [[https://gist.github.com/Rekyt/a7846af7c4c5fb5a48ea][ggplots over multiple pdf pages]]
-- https://bookdown.org/ndphillips/YaRrr/saving-plots-to-a-file-with-pdf-jpeg-and-png.html
-- tikz as graphics device for R: https://cran.r-project.org/web/packages/tikzDevice/vignettes/tikzDevice.pdf
-- https://r-graphics.org/recipe-facet-label-appearance
-- saving - use - better than ggsave: - https://rdrr.io/cran/cowplot/man/save_plot.html
-- https://www.reddit.com/r/rstats/comments/b4ol4z/unbin_data_to_make_histogram/
-- [[http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/][histogram]]
-- [[http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/#modifying-the-text-of-legend-titles-and-labels][modify ggplot2 legend text]]
-***** Processes                                                   :hierarchy:
-:PROPERTIES:
-:ID:       7b47a4fa-5c0e-4e36-9d88-61593540215b
-:END:
-****** geoms
-:PROPERTIES:
-:ID:       411d2d7e-cb97-4e7c-a7b1-bacd3eb8504f
-:END:
-****** Processes                                                       :flat:
-:PROPERTIES:
-:ID:       85475db1-b795-4db1-af67-fa0de3f87fab
-:END:
-
-
-******* 0 Flat
-:PROPERTIES:
-:ID:       740df023-2211-4f3b-ac5c-265f4f99a132
-:END:
-******** - [[https://gist.github.com/Rekyt/a7846af7c4c5fb5a48ea][ggplots over multiple pdf pages]]
-:PROPERTIES:
-:ID:       5cce518a-ffc7-499e-b716-b1067bf49113
-:END:
-******** Interactive
-:PROPERTIES:
-:ID:       67ca5a25-5ade-41bf-84ba-17e48cf34b74
-:END:
-- [[https://www.youtube.com/watch?feature=youtu.be&v=rBp3eYHrsfo&app=desktop&t=0s][plotly interactive graphs]]
-******** Theme
-:PROPERTIES:
-:ID:       6e585060-1fe9-47c0-97bb-b4f32cd69115
-:END:
-https://wilkelab.org/cowplot/articles/themes.html
-******** Facets
-:PROPERTIES:
-:ID:       26b04605-e83f-473e-8483-82717b71131e
-:END:
-- https://r-graphics.org/recipe-facet-label-appearance
-******** Significance annotations
-:PROPERTIES:
-:ID:       bda8de09-cae8-4324-83a1-3ccee8193aa7
-:END:
-https://www.datanovia.com/en/blog/how-to-add-p-values-onto-a-grouped-ggplot-using-the-ggpubr-r-package/#pairwise-comparisons-against-a-reference-group
-https://www.datanovia.com/en/blog/how-to-add-p-values-onto-a-grouped-ggplot-using-the-ggpubr-r-package/#pairwise-comparisons-against-a-reference-group
-https://cran.r-project.org/web/packages/ggsignif/vignettes/intro.html
-https://crumplab.com/psyc7709_2019/book/docs/how-to-annotate-a-graph-using-gg-signif.html
-******** Labeling
-:PROPERTIES:
-:ID:       f3ac9b40-baff-4e48-af39-123460b86a93
-:END:
-- https://r-graphics.org/recipe-facet-label-appearance
-- https://wilkelab.org/cowplot/articles/drawing_with_on_plots.html
-- https://ggrepel.slowkow.com/articles/examples.html
-******** ER
-:PROPERTIES:
-:ID:       83e0ec45-2dcf-49dd-af5e-1badf7fed790
-:END:
-- er diagrams - https://rich-iannone.github.io/DiagrammeR/index.html
-******** Legend style
-:PROPERTIES:
-:ID:       cbefb626-a723-44ee-9947-0288dbc66dca
-:END:
-- http://www.sthda.com/english/wiki/ggplot2-legend-easy-steps-to-change-the-position-and-the-appearance-of-a-graph-legend-in-r-software
-******** Venn
-:PROPERTIES:
-:ID:       b9191c77-247b-4cd9-b991-601100fac75c
-:END:
-- [[https://stackoverflow.com/questions/8713994/venn-diagram-proportional-and-color-shading-with-semi-transparency][venn R packages]]
-- [cite:@jia2021]
-******** Pie
-:PROPERTIES:
-:ID:       45663216-ea79-49d2-91a6-3c1376160374
-:END:
-- [[https://stackoverflow.com/questions/33594642/beautiful-pie-charts-with-r/33594843][pie charts]]
-******** Multi-panel
-:PROPERTIES:
-:ID:       2b2154cf-b61c-4287-b5dd-93d85c93ac63
-:END:
-- https://github.com/thomasp85/patchwork
-- [[http://statisticalrecipes.blogspot.com/2015/07/cowplot-arrange-ggplot2-figures-in-grid.html][Cowplot]]
-- [[https://cran.r-project.org/web/packages/cowplot/vignettes/plot_grid.html][another cowplot vignette]]
-
-- https://www.google.com/search?q=cowplot+make+inset
-******** Color scales and schemes
-:PROPERTIES:
-:ID:       f75e785a-381c-4865-91c3-65f61476ea89
-:END:
-- https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html
-- https://bookdown.org/rdpeng/exdata/plotting-and-color-in-r.html
-- https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
-- [[http://sape.inf.usi.ch/quick-reference/ggplot2/colour][ggplot2 color scheme]]
-***** General reference
-:PROPERTIES:
-:ID:       c09e8fb3-68b3-4169-bd28-a2d768266509
-:END:
-- Interfaces
-  - TiKZ - https://cran.r-project.org/web/packages/tikzDevice/vignettes/tikzDevice.pdf
-- https://r-charts.com/
-- https://ggplot2-book.org/index.html
-- https://www.r-graph-gallery.com/all-graphs.html
-- [[http://minimaxir.com/2017/08/ggplot2-web/][How to Make High Quality Data Visualizations for Websites With R and ggplot2]]
-- http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/
 **** Functions and programming
 :PROPERTIES:
 :ID:       479569fe-229d-4d2f-ba08-b871d3ad64ac
