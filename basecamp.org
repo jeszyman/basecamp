@@ -4076,6 +4076,7 @@ Server socket dir and server-start are configured in emacs.org (load-first.el). 
     - [[id:61072582-fc7d-4a89-a513-d6319dd55c97][emacs-start()]]
     - [[id:6963f124-8e97-4d9c-a3e2-aae62cdc4837][emacs-stop()]]
     - [[id:eb42ff61-b8db-45b6-ac8d-1cb0f8b83458][emacs-save()]]
+    - [[id:cb3709d5-3747-494d-8bd0-a9fc178dfc40][emacs-term()]]
     - [[id:9dca8884-6100-4ea1-ac60-10e88d442238][emacs()]]
 **** Preamble
 #+begin_src yaml
@@ -4937,6 +4938,35 @@ EOF
     SOCKET="$HOME/.emacs.d/server/server"
     if [ -S "$SOCKET" ]; then
         emacsclient --socket-name "$SOCKET" --eval '(save-some-buffers t)'
+    else
+        echo "Emacs daemon socket not found at $SOCKET"
+        return 1
+    fi
+}
+
+#+end_src
+***** emacs-term()
+:PROPERTIES:
+:ID:       cb3709d5-3747-494d-8bd0-a9fc178dfc40
+:END:
+#+begin_src bash
+emacs-term ()
+{
+    [[ "$1" == "-h" || "$1" == "--help" ]] && {
+        cat <<EOF
+Usage: emacs-term [FILE...]
+
+Opens a terminal (TTY) frame on the running Emacs systemd daemon
+(emacsclient -t against the user socket). Optional FILE args open in
+that frame. C-x C-c closes just this frame, leaving the daemon up.
+
+EOF
+        return
+    }
+
+    SOCKET="$HOME/.emacs.d/server/server"
+    if [ -S "$SOCKET" ]; then
+        emacsclient -t --socket-name "$SOCKET" "$@"
     else
         echo "Emacs daemon socket not found at $SOCKET"
         return 1

@@ -364,6 +364,28 @@ EOF
         return 1
     fi
 }
+emacs-term ()
+{
+    [[ "$1" == "-h" || "$1" == "--help" ]] && {
+        cat <<EOF
+Usage: emacs-term [FILE...]
+
+Opens a terminal (TTY) frame on the running Emacs systemd daemon
+(emacsclient -t against the user socket). Optional FILE args open in
+that frame. C-x C-c closes just this frame, leaving the daemon up.
+
+EOF
+        return
+    }
+
+    SOCKET="$HOME/.emacs.d/server/server"
+    if [ -S "$SOCKET" ]; then
+        emacsclient -t --socket-name "$SOCKET" "$@"
+    else
+        echo "Emacs daemon socket not found at $SOCKET"
+        return 1
+    fi
+}
 ubuntu-settings(){
     env XDG_CURRENT_DESKTOP=GNOME gnome-control-center sound & exit
 }
