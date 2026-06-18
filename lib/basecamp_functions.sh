@@ -79,27 +79,38 @@ emacs () {
     emacsclient -c --no-wait --socket-name ~/.emacs.d/server/server & disown
     exit
 }
-# List every tmux session: attached (●) / detached (○), running command, and
-# context — claude panes show the task title, other panes show their cwd.
-tmux-ls() {
-    tmux list-panes -a -F \
-        '#{?session_attached,●,○} #{session_name}|#{pane_current_command}|#{?#{==:#{pane_current_command},claude},#{=50:pane_title},#{pane_current_path}}' \
-    | column -t -s '|'
-}
-# Pick a tmux session (fzf menu if installed, else list + prompt) and go to it;
-# used to reach a Claude session running in tmux, e.g. after ssh-ing into a host.
-tmux-attach() {
-    local sel sid
-    if command -v fzf >/dev/null; then
-        sel=$(tmux list-panes -a -F \
-              '#{session_name}  [#{pane_current_command}]  #{pane_title}  (#{pane_current_path})' \
-              | fzf --reverse --prompt='attach> ') || return
-        sid=${sel%% *}
-    else
-        tmux-ls
-        read -rp 'session> ' sid
+# tx — tmux session picker. ENTER attaches/switches; Tab marks; Ctrl-K kills
+# the marked (or highlighted) session(s). `tx -h` prints usage.
+tx() {
+    case $1 in
+        -h|--help)
+            cat <<'EOF'
+tx — tmux session picker (fzf)
+  ENTER   attach / switch-client to the highlighted session
+  Tab     mark several (for kill)
+  Ctrl-K  kill the marked (or highlighted) session(s)
+Columns: ●attached/○detached  name  [windows]  active-cmd  claude-title-or-cwd
+EOF
+            return 0 ;;
+    esac
+    local fmt out key sel sid
+    command -v fzf >/dev/null || { echo "tx: needs fzf" >&2; return 1; }
+    # Session-level view: the active pane's command (claude vs bash, etc.); for a
+    # claude pane show its 50-char task title, otherwise the working directory.
+    fmt='#{?session_attached,●,○}|#{session_name}|[#{session_windows}w]|#{pane_current_command}|#{?#{==:#{pane_current_command},claude},#{=50:pane_title},#{pane_current_path}}'
+    out=$(tmux list-sessions -F "$fmt" | column -t -s '|' \
+          | fzf --reverse --multi --expect=ctrl-k --prompt='tmux> ' \
+                --header='ENTER attach · Tab mark · Ctrl-K kill') || return
+    key=$(sed -n 1p <<<"$out")     # pressed key (empty = ENTER)
+    sel=$(sed '1d' <<<"$out")      # selected line(s)
+    [ -z "$sel" ] && return
+    if [ "$key" = ctrl-k ]; then
+        awk '{print $2}' <<<"$sel" | while read -r s; do
+            tmux kill-session -t "$s" && echo "killed: $s"
+        done
+        return
     fi
-    [ -z "$sid" ] && return
+    sid=$(awk 'NR==1{print $2}' <<<"$sel")
     # Inside tmux (e.g. the ssh-autostart session) an attach can't nest, so
     # switch the current client instead; a bare terminal attaches with -d.
     if [ -n "$TMUX" ]; then
