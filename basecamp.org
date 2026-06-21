@@ -4,7 +4,6 @@
 :RESET_CHECK_BOXES: t
 :header-args:yaml: :eval never
 :END:
-- [ ] migrate [[id:2fc1a6f1-093c-4250-a905-1bf42b7b9eee][Lisp functions]] to [[file:~/repos/emacs/emacs.org]]
 ** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
 ** [[id:0ccb6668-d5dd-4519-8e32-d8082d74e336][Code Style Guide]]
 ** Change log
@@ -3190,8 +3189,6 @@ public_symlinks:
     dest: "${HOME}/.emacs.d/load-last.el"
   - src: "${HOME}/repos/basecamp/emacs/public_yasnippets"
     dest: "${HOME}/.emacs.d/snippets/public_yasnippets"
-  - src: "${HOME}/repos/basecamp/lib/lisp_functions.el"
-    dest: "${HOME}/.emacs.d/lisp/lisp_functions.el"
   - src: "${HOME}/repos/emacs/emacs/public_config.el"
     dest: "${HOME}/.emacs.d/config/public_config.el"
   - src: "${HOME}/repos/emacs/emacs/essh.el"
@@ -6389,110 +6386,6 @@ EOF
 
 
 **** [[id:a9f97cde-27bc-4777-bb12-164ac4cb421d][Shell functions in basecamp-private]] more_bashrc
-*** Lisp functions
-:PROPERTIES:
-:header-args: :tangle ./lib/lisp_functions.el :mkdirp yes :noweb yes :comments org
-:ID:       2fc1a6f1-093c-4250-a905-1bf42b7b9eee
-:END:
-[[file:lib/lisp_functions.el]]
-- Emacs
-  - Custom functions with names that would clash with existing function names from base emacs or packages shall be prefixed with "custom-"
-  - Referencing external variables https://chatgpt.com/c/c9789fc7-81f8-4af4-96a2-82ffd94db68c
-**** defun org-execute-named-block-anywhere
-:PROPERTIES:
-:ID:       5ace2dd4-9dfb-41b9-a7ec-5ca32aaf94ae
-:END:
-https://claude.ai/chat/c12f61f1-0d93-4658-8d52-be64f45a12e0
-#+begin_src emacs-lisp
-(defun org-execute-named-block-anywhere (file block-name)
-  "Execute a named source block from specified org file.
-FILE is the path to the org file containing the block.
-BLOCK-NAME is the name of the block to execute."
-  (interactive "fFile: \nsBlock name: ")
-  (let* ((original-buffer (current-buffer))
-         (target-buffer (or (get-file-buffer file)
-                           (find-file-noselect file)))
-         info)
-    (with-current-buffer target-buffer
-      (save-excursion
-        (goto-char (point-min))
-        (if (re-search-forward (concat "^[ \t]*#\\+name:[ \t]*"
-                                      (regexp-quote block-name) "[ \t]*$") nil t)
-            (progn
-              (setq info (org-babel-get-src-block-info t))
-              (org-babel-execute-src-block nil info))
-          (error "Named block %s not found" block-name))))
-    (when (and (not (eq target-buffer original-buffer))
-               (not (buffer-modified-p target-buffer))
-               (not (get-file-buffer file)))
-      (kill-buffer target-buffer))))
-#+end_src
-
-**** find-duplicate-lines
-
-#+begin_src emacs-lisp
-(defun find-duplicate-lines ()
-  "Find and list all duplicate lines in the current buffer."
-  (interactive)
-  (let ((lines (make-hash-table :test 'equal))
-        duplicates)
-    (save-excursion
-      (goto-char (point-min))
-      (while (not (eobp))
-        (let ((line (buffer-substring-no-properties
-                     (line-beginning-position) (line-end-position))))
-          (if (gethash line lines)
-              (push line duplicates)
-            (puthash line t lines)))
-        (forward-line 1)))
-    (if duplicates
-        (progn
-          (with-output-to-temp-buffer "*Duplicate Lines*"
-            (dolist (line (delete-dups duplicates))
-              (princ line)
-              (terpri)))
-          (message "Duplicate lines found and listed in *Duplicate Lines* buffer."))
-      (message "No duplicate lines found."))))
-
-#+end_src
-
-**** run-latex-at-point
-:PROPERTIES:
-:ID:       3975a173-ac71-4c02-b032-ef215329ca59
-:END:
-- https://chatgpt.com/c/66f5c68c-8c4c-8005-b7c6-14665eadb848
-- https://chatgpt.com/c/66f95df4-0dfc-8005-9e7b-c3f15c1ca924
-- [[id:9fa465f4-68f7-45c5-966e-80084e2c8a05][emacs_export_header_to_latex.py]]
-#+begin_src emacs-lisp
-(defun run-latex-at-point ()
-  "Extract the ID from the Org properties and run emacs-save and emacs-latex for the current file."
-  (interactive)
-  (let* ((id (org-entry-get (point) "ID"))
-         (current-file (buffer-file-name))
-         (output-buffer "*Latex Output*"))
-    (if (not id)
-        (message "No ID property found!")
-      (with-current-buffer (get-buffer-create output-buffer)
-        (erase-buffer))
-      (let ((command (concat "source ~/repos/basecamp/lib/basecamp_function.sh && emacs-save && /usr/bin/python3 ~/repos/latex/scripts/emacs_export_header_to_latex.py --org_file \""
-                             current-file "\" --node_id \"" id "\"")))
-        ;; Start the process without a process name
-        (start-process-shell-command "latex-process" output-buffer command)
-        ;; Display the output buffer
-        (pop-to-buffer output-buffer)))))
-
-#+end_src
-
-**** export-org-table-by-name-to-csv
-#+begin_src emacs-lisp
-(defun export-org-table-by-name-to-csv (org-file table-name csv-file)
-  "Export an org table with TABLE-NAME in ORG-FILE to CSV-FILE."
-  (with-current-buffer (find-file-noselect org-file)
-    (goto-char (point-min))
-    (when (re-search-forward (concat "^#\\+NAME: " (regexp-quote table-name)) nil t)
-      (forward-line)
-      (org-table-export csv-file "orgtbl-to-csv"))))
-#+end_src
 *** Ideas                                                             :ideas:
 :PROPERTIES:
 :ID:       9c34cb75-23a9-44bf-be39-c878d7221bb8
@@ -13595,43 +13488,6 @@ https://chatgpt.com/c/68b84c54-4d80-8331-9277-0347bd3ce460
 :PROPERTIES:
 :ID:       f61ca67d-403a-4eda-8de0-12a414a8bba3
 :END:
-******** Open a vterm window
-:PROPERTIES:
-:ID:       9f26ec4d-88b8-4184-93c4-9385f3a65782
-:END:
-
-#+begin_src emacs-lisp :tangle ./lib/lisp_functions.el
-(defun open-vterm-in-new-frame ()
-  "Open a new vterm buffer in a new frame."
-  (interactive)
-  (let* ((current-prefix-arg '(4))  ; simulate pressing C-u
-         (timestamp (format-time-string "%Y%m%d%H%M%S")) ; timestamp generated
-         (buffer-name (concat "TEST-" timestamp)) ; buffer-name created
-         (new-frame (make-frame))) ; create new frame
-    (select-frame-set-input-focus new-frame) ; focus the new frame
-    (call-interactively 'vterm)    ; execute M-x vterm
-    ;; Rename the buffer.
-    (rename-buffer buffer-name t)))  ; The t parameter forces the renaming even if a buffer named "TEST-<timestamp>" already exists.
-
-#+end_src
-
-******** Reset vterm display
-:PROPERTIES:
-:ID:       a3f2b1c0-8e5d-4f9a-b6d7-2e4c8a1f3b7e
-:END:
-
-#+begin_src emacs-lisp :tangle ./lib/lisp_functions.el
-;; Reset garbled vterm display (narrow columns, corrupted output, drifted TUI)
-(defun jg/vterm-reset-display ()
-  (interactive)
-  (vterm-clear-scrollback)
-  (vterm-send-string "reset\n"))
-
-(with-eval-after-load 'vterm
-  (define-key vterm-mode-map (kbd "C-c C-r") #'jg/vterm-reset-display))
-
-#+end_src
-
 ******* Launch program
 :PROPERTIES:
 :ID:       305dcf2f-3103-41d3-9216-e7cb18bece49

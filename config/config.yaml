@@ -61,8 +61,6 @@ public_symlinks:
     dest: "${HOME}/.emacs.d/load-last.el"
   - src: "${HOME}/repos/basecamp/emacs/public_yasnippets"
     dest: "${HOME}/.emacs.d/snippets/public_yasnippets"
-  - src: "${HOME}/repos/basecamp/lib/lisp_functions.el"
-    dest: "${HOME}/.emacs.d/lisp/lisp_functions.el"
   - src: "${HOME}/repos/emacs/emacs/public_config.el"
     dest: "${HOME}/.emacs.d/config/public_config.el"
   - src: "${HOME}/repos/emacs/emacs/essh.el"
