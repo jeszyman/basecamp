@@ -132,6 +132,31 @@
       loop: "{{ apt_packages_desktop }}"
       ignore_errors: true
       when: ansible_virtualization_role != "guest"
+    # onlyoffice-desktopeditors — MS-Office-fidelity suite for .docx/.xlsx
+    # track-changes round-trips. Third-party apt repo, desktop machines only.
+    - name: Add OnlyOffice GPG key
+      ansible.builtin.get_url:
+        url: https://download.onlyoffice.com/GPG-KEY-ONLYOFFICE
+        dest: /usr/share/keyrings/onlyoffice.asc
+        mode: "0644"
+      become: true
+      when: ansible_virtualization_role != "guest"
+
+    - name: Add OnlyOffice apt repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/onlyoffice.asc] https://download.onlyoffice.com/repo/debian squeeze main"
+        filename: onlyoffice
+        state: present
+        update_cache: yes
+      become: true
+      when: ansible_virtualization_role != "guest"
+
+    - name: Install OnlyOffice desktop editors
+      ansible.builtin.apt:
+        name: onlyoffice-desktopeditors
+        state: present
+      become: true
+      when: ansible_virtualization_role != "guest"
     # rasdaemon — records hardware errors (MCE, ECC memory) persistently to SQLite.
     # Query with: sudo ras-mc-ctl --summary
     - name: Install rasdaemon
@@ -323,6 +348,290 @@
               esac
             done
           }
+    - name: Auto-start tmux for interactive terminal sessions
+      ansible.builtin.copy:
+        dest: "{{ ansible_env.HOME }}/.bashrc.d/tmux-autostart.sh"
+        mode: '0644'
+        content: |
+          # Auto-start tmux for interactive terminal sessions
+          if command -v tmux &>/dev/null \
+              && [[ $- == *i* ]] \
+              && [[ -z "$TMUX" ]] \
+              && [[ -z "$INSIDE_EMACS" ]] \
+              && [[ -z "$EMACS" ]]; then
+              tmux new-session && exit
+              # tmux failed (e.g. client/server version mismatch): stay in plain bash
+          fi
+    - name: Pin yazi/zoxide/kitty versions
+      ansible.builtin.set_fact:
+        yazi_version: "26.5.6"
+        zoxide_version: "0.9.9"
+        kitty_version: "0.47.4"
+        resvg_version: "0.47.0"
+
+    - name: Ensure ~/.local + extract dirs exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - "{{ ansible_env.HOME }}/.local/bin"
+        - "{{ ansible_env.HOME }}/.local/kitty.app"
+        - "{{ ansible_env.HOME }}/.config/yazi"
+        - "/tmp/yazi-{{ yazi_version }}"
+        - "/tmp/zoxide-{{ zoxide_version }}"
+        - "/tmp/resvg-{{ resvg_version }}"
+
+    # Ubuntu's fd-find ships the binary as 'fdfind' (/usr/bin/fd is the
+    # unrelated fdclone). ~/.local/bin precedes /usr/bin on PATH.
+    - name: Symlink fd -> fdfind for yazi
+      ansible.builtin.file:
+        src: /usr/bin/fdfind
+        dest: "{{ ansible_env.HOME }}/.local/bin/fd"
+        state: link
+        force: true
+
+    # yazi musl zip extracts to yazi-x86_64-unknown-linux-musl/{yazi,ya}
+    - name: Download yazi {{ yazi_version }}
+      ansible.builtin.get_url:
+        url: "https://github.com/sxyazi/yazi/releases/download/v{{ yazi_version }}/yazi-x86_64-unknown-linux-musl.zip"
+        dest: "/tmp/yazi-{{ yazi_version }}.zip"
+        mode: "0644"
+
+    - name: Extract yazi {{ yazi_version }}
+      ansible.builtin.unarchive:
+        src: "/tmp/yazi-{{ yazi_version }}.zip"
+        dest: "/tmp/yazi-{{ yazi_version }}"
+        remote_src: true
+        creates: "/tmp/yazi-{{ yazi_version }}/yazi-x86_64-unknown-linux-musl/yazi"
+
+    - name: Install yazi + ya binaries
+      ansible.builtin.copy:
+        src: "/tmp/yazi-{{ yazi_version }}/yazi-x86_64-unknown-linux-musl/{{ item }}"
+        dest: "{{ ansible_env.HOME }}/.local/bin/{{ item }}"
+        remote_src: true
+        mode: "0755"
+      loop:
+        - yazi
+        - ya
+
+    # zoxide tarball has the binary at the archive root
+    - name: Download zoxide {{ zoxide_version }}
+      ansible.builtin.get_url:
+        url: "https://github.com/ajeetdsouza/zoxide/releases/download/v{{ zoxide_version }}/zoxide-{{ zoxide_version }}-x86_64-unknown-linux-musl.tar.gz"
+        dest: "/tmp/zoxide-{{ zoxide_version }}.tar.gz"
+        mode: "0644"
+
+    - name: Extract zoxide {{ zoxide_version }}
+      ansible.builtin.unarchive:
+        src: "/tmp/zoxide-{{ zoxide_version }}.tar.gz"
+        dest: "/tmp/zoxide-{{ zoxide_version }}"
+        remote_src: true
+        creates: "/tmp/zoxide-{{ zoxide_version }}/zoxide"
+
+    - name: Install zoxide binary
+      ansible.builtin.copy:
+        src: "/tmp/zoxide-{{ zoxide_version }}/zoxide"
+        dest: "{{ ansible_env.HOME }}/.local/bin/zoxide"
+        remote_src: true
+        mode: "0755"
+
+    # resvg renders SVG previews for yazi. Ubuntu's apt resvg is 0.8.0 (2019)
+    # and ships the binary as 'rendersvg'; yazi invokes 'resvg'. The upstream
+    # prebuilt tarball has a current 'resvg' binary at the archive root.
+    - name: Download resvg {{ resvg_version }}
+      ansible.builtin.get_url:
+        url: "https://github.com/linebender/resvg/releases/download/v{{ resvg_version }}/resvg-linux-x86_64.tar.gz"
+        dest: "/tmp/resvg-{{ resvg_version }}.tar.gz"
+        mode: "0644"
+
+    - name: Extract resvg {{ resvg_version }}
+      ansible.builtin.unarchive:
+        src: "/tmp/resvg-{{ resvg_version }}.tar.gz"
+        dest: "/tmp/resvg-{{ resvg_version }}"
+        remote_src: true
+        creates: "/tmp/resvg-{{ resvg_version }}/resvg"
+
+    - name: Install resvg binary
+      ansible.builtin.copy:
+        src: "/tmp/resvg-{{ resvg_version }}/resvg"
+        dest: "{{ ansible_env.HOME }}/.local/bin/resvg"
+        remote_src: true
+        mode: "0755"
+
+    # kitty txz extracts to the kitty.app tree (bin/ lib/ share/); version is
+    # not in any path, so gate install on a version-string check.
+    - name: Check installed kitty version
+      ansible.builtin.command: "{{ ansible_env.HOME }}/.local/bin/kitty --version"
+      register: kitty_installed
+      changed_when: false
+      failed_when: false
+
+    - name: Download kitty {{ kitty_version }}
+      ansible.builtin.get_url:
+        url: "https://github.com/kovidgoyal/kitty/releases/download/v{{ kitty_version }}/kitty-{{ kitty_version }}-x86_64.txz"
+        dest: "/tmp/kitty-{{ kitty_version }}.txz"
+        mode: "0644"
+      when: kitty_version not in kitty_installed.stdout
+
+    - name: Install kitty into ~/.local/kitty.app
+      ansible.builtin.unarchive:
+        src: "/tmp/kitty-{{ kitty_version }}.txz"
+        dest: "{{ ansible_env.HOME }}/.local/kitty.app"
+        remote_src: true
+      when: kitty_version not in kitty_installed.stdout
+
+    - name: Symlink kitty + kitten into ~/.local/bin
+      ansible.builtin.file:
+        src: "{{ ansible_env.HOME }}/.local/kitty.app/bin/{{ item }}"
+        dest: "{{ ansible_env.HOME }}/.local/bin/{{ item }}"
+        state: link
+        force: true
+      loop:
+        - kitty
+        - kitten
+
+    - name: Deploy yazi config
+      ansible.builtin.copy:
+        dest: "{{ ansible_env.HOME }}/.config/yazi/yazi.toml"
+        mode: "0644"
+        content: |
+          # Yazi configuration (managed; source of truth is basecamp.org).
+          # Companion tools resolved from PATH: fd (->fdfind), rg, fzf, poppler,
+          # 7z, imagemagick, ffmpegthumbnailer, zoxide.
+
+          [mgr]
+          ratio          = [1, 3, 4]   # parent : current : preview column widths
+          show_hidden    = false       # hide dotfiles on launch (toggle live with  .  )
+          sort_by        = "natural"   # natural order: file2 before file10
+          sort_dir_first = true        # directories above files
+          linemode       = "size"      # show file-size column (cycle with  m  )
+
+          [preview]
+          tab_size   = 2
+          max_width  = 1000
+          max_height = 1000
+
+          # Override only the `edit` opener (text files route here). The preset
+          # default `${EDITOR:-vi} %s` runs emacsclient with no frame, which fails
+          # (exit 1) under a daemon that has no current frame to reuse. `-c` opens a
+          # NEW frame; `-n` returns immediately; orphan detaches it from yazi.
+          [opener]
+          edit = [
+            { run = 'emacsclient --socket-name ~/.emacs.d/server/server -c -n %s', orphan = true, desc = "Emacs (new frame)" },
+          ]
+          inkscape = [
+            { run = 'inkscape "%s"', orphan = true, desc = "Edit in Inkscape" },
+          ]
+          brave = [
+            { run = 'brave-browser --new-tab "%s"', orphan = true, desc = "Open in Brave" },
+          ]
+
+          # Extend (not replace) the preset open-rule map. `open` is the
+          # default-opener alias, kept in each list so the normal default app
+          # stays as the other interactive-open (O) choice.
+          #
+          # Scope note: yazi's interactive picker (O) reads ONLY these rules;
+          # it ignores XDG. The single default app per type (fired by o/Enter,
+          # via the `open` alias which calls xdg-open) lives in XDG, not here.
+          # Set that default once with `xdg-mime default <app.desktop> <mime>`.
+          # So put per-type DEFAULTS in XDG (shared by every app), and reserve
+          # the entries below only for the extra alternates you want offered in
+          # yazi's O menu.
+          [open]
+          prepend_rules = [
+            { mime = "application/pdf", use = [ "inkscape", "open" ] },
+            { mime = "text/html", use = [ "brave", "open" ] },
+          ]
+
+    - name: Deploy yazi theme
+      ansible.builtin.copy:
+        dest: "{{ ansible_env.HOME }}/.config/yazi/theme.toml"
+        mode: "0644"
+        content: |
+          # Yazi theme (managed; source of truth is basecamp.org).
+          # Overrides the default [filetype] rules solely to brighten directory blue.
+          # NOTE: this array REPLACES yazi's built-in rules entirely, so keep all rows.
+          [filetype]
+          rules = [
+            { mime = "image/*", fg = "yellow" },
+            { mime = "{audio,video}/*", fg = "magenta" },
+            { mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "red" },
+            { mime = "application/{pdf,doc,rtf}", fg = "cyan" },
+            { mime = "vfs/{absent,stale}", fg = "gray" },
+            { url = "*", is = "orphan", bg = "red" },
+            { url = "*", is = "exec", fg = "green" },
+            { url = "*", is = "dummy", bg = "red" },
+            { url = "*/", is = "dummy", bg = "red" },
+            { url = "*/", fg = "#5f87ff" },  # directories: bright blue, was dark ANSI "blue"
+          ]
+
+    - name: Deploy zoxide shell init
+      ansible.builtin.copy:
+        dest: "{{ ansible_env.HOME }}/.bashrc.d/zoxide.sh"
+        mode: "0644"
+        content: |
+          # zoxide — smarter `cd` (frecency jump). Adds `z`/`zi`; also backs yazi's
+          # `Z` jump, which queries the same database. (Managed; source: basecamp.org.)
+          if command -v zoxide >/dev/null 2>&1; then
+              eval "$(zoxide init bash)"
+          fi
+
+    - name: Deploy yz launcher (yazi in a kitty window)
+      ansible.builtin.copy:
+        dest: "{{ ansible_env.HOME }}/.bashrc.d/yazi.sh"
+        mode: "0644"
+        content: |
+          # yz / yazi — open yazi in a kitty window (sharp previews), then close this terminal.
+          #
+          # kitty --detach spawns an independent window (survives this shell exiting).
+          # Then close the *launching* terminal window:
+          #   - inside tmux: `tmux detach-client` exits the tmux client that owns this
+          #     gnome-terminal window, so the window closes (exit-action=close) while the
+          #     tmux session keeps running, detached. Plain `exit` would only close the
+          #     pane, leaving the multi-window session — and the window — alive.
+          #   - not in tmux: `exit` ends the shell; gnome-terminal closes the window.
+          # The `|| return` guard keeps the terminal open if kitty failed (errors visible).
+          #
+          # `yazi` is shadowed by this function so the bare name also gets sharp previews;
+          # no recursion because kitty execs the binary directly, not via this shell. The
+          # inner call is pinned to the absolute path to make that explicit. To run yazi
+          # in-pane without the kitty pop-out, use `command yazi` or the full binary path.
+          yazi() {
+              kitty --detach "$HOME/.local/bin/yazi" "${@:-$PWD}" || return
+              if [ -n "$TMUX" ]; then
+                  tmux detach-client
+              else
+                  exit
+              fi
+          }
+          alias yz=yazi
+
+    - name: Verify yazi runs (musl binary, GLIBC-independent)
+      ansible.builtin.command: "{{ ansible_env.HOME }}/.local/bin/yazi --version"
+      register: yazi_check
+      changed_when: false
+      failed_when: "'Yazi' not in yazi_check.stdout"
+
+    - name: Verify zoxide runs
+      ansible.builtin.command: "{{ ansible_env.HOME }}/.local/bin/zoxide --version"
+      register: zoxide_check
+      changed_when: false
+      failed_when: "'zoxide' not in zoxide_check.stdout"
+
+    # resvg --version prints only the bare version (no program name), so
+    # assert on the pinned version string rather than a name substring.
+    - name: Verify resvg runs
+      ansible.builtin.command: "{{ ansible_env.HOME }}/.local/bin/resvg --version"
+      register: resvg_check
+      changed_when: false
+      failed_when: "resvg_version not in resvg_check.stdout"
+
+    - name: Verify kitty runs
+      ansible.builtin.command: "{{ ansible_env.HOME }}/.local/bin/kitty --version"
+      register: kitty_check
+      changed_when: false
+      failed_when: "'kitty' not in kitty_check.stdout"
     - name: Set global core.excludesFile for gitignore template
       community.general.git_config:
         name: core.excludesFile
