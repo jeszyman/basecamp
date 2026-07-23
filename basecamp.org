@@ -9581,6 +9581,10 @@ i3-msg '[class=".*"] move to workspace current'
 - https://stackoverflow.com/questions/15710673/inkscape-too-slow-when-importing-r-plots
 - https://inkscape.org/forums/questions/line-spacing/
 - Fully ungroup a nested group: select it and press =Ctrl+Shift+G= repeatedly (freed children stay selected, so it cascades one level per press) until the status bar no longer says "Group". No single "ungroup all" command.
+- Import mode =Internal import= (not =Poppler/Cairo=): keeps labels editable =<text>=; Cairo converts text to paths.
+- =Replace PDF fonts by closest-named= + =Embed images= on; =Clip to media box= off (no effect on a single figure).
+- Only =Embed images= persists across sessions (v1.1.2); to pin the rest bypass the dialog: =inkscape --pdf-poppler --pdf-page=N paper.pdf=.
+- Flattened-bitmap figures import as raster regardless; knock out white bg with =convert in.png -alpha set -bordercolor white -border 1 -fuzz 8% -fill none -draw 'matte 0,0 floodfill' -shave 1x1 out.png=.
 ****** Processes
 :PROPERTIES:
 :ID:       5e2b7ecf-2674-47f8-ac19-7a0c4b08c2d1
