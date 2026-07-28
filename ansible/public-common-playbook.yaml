@@ -348,6 +348,21 @@
               esac
             done
           }
+          t() {                                      # open newest /tmp file; t 2 = second-newest, t l = list
+            local n=${1:-1} f
+            local -a skip=( -name '.*' -o -name 'cc-chat-window-*.json' -o -name 'okular.*' \
+                            -o -name 'i3-weather-cache' -o -name 'org.ics' )   # machinery, not saved files
+            if [ "$n" = l ]; then
+              find /tmp -maxdepth 1 -type f -user "$USER" ! \( "${skip[@]}" \) -printf '%T@ %p\n' |
+                sort -rn | head -10 | cut -d' ' -f2- | nl
+              return
+            fi
+            f=$(find /tmp -maxdepth 1 -type f -user "$USER" ! \( "${skip[@]}" \) -printf '%T@ %p\n' |
+                sort -rn | sed -n "${n}p" | cut -d' ' -f2-)
+            [ -n "$f" ] || { echo "t: nothing at /tmp[$n]" >&2; return 1; }
+            echo "$f"
+            xdg-open "$f" &>/dev/null & disown
+          }
     - name: Auto-start tmux for interactive terminal sessions
       ansible.builtin.copy:
         dest: "{{ ansible_env.HOME }}/.bashrc.d/tmux-autostart.sh"
@@ -528,20 +543,20 @@
           ]
 
           # Extend (not replace) the preset open-rule map. `open` is the
-          # default-opener alias, kept in each list so the normal default app
-          # stays as the other interactive-open (O) choice.
+          # default-opener alias, which shells out to xdg-open.
           #
-          # Scope note: yazi's interactive picker (O) reads ONLY these rules;
-          # it ignores XDG. The single default app per type (fired by o/Enter,
-          # via the `open` alias which calls xdg-open) lives in XDG, not here.
-          # Set that default once with `xdg-mime default <app.desktop> <mime>`.
-          # So put per-type DEFAULTS in XDG (shared by every app), and reserve
-          # the entries below only for the extra alternates you want offered in
-          # yazi's O menu.
+          # Scope note: both o/Enter and the O picker read ONLY these rules.
+          # o/Enter fires the FIRST opener in the matched rule's `use` list;
+          # O offers the whole list. A `prepend_rules` entry therefore
+          # overrides the XDG default for that mime type unless `open` is
+          # listed first. Keep `open` in position 1 so the system default
+          # (set with `xdg-mime default <app.desktop> <mime>`, shared by
+          # every app) stays the default here too, and list the alternates
+          # after it as extra O-menu choices.
           [open]
           prepend_rules = [
-            { mime = "application/pdf", use = [ "inkscape", "open" ] },
-            { mime = "text/html", use = [ "brave", "open" ] },
+            { mime = "application/pdf", use = [ "open", "inkscape" ] },
+            { mime = "text/html", use = [ "open", "brave" ] },
           ]
 
     - name: Deploy yazi theme
