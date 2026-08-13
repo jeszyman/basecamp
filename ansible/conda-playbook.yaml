@@ -52,7 +52,7 @@
         PATH: "{{ miniconda_prefix }}/bin:{{ ansible_env.PATH }}"
 
     - name: Install mamba
-      shell: "{{ miniconda_prefix }}/bin/conda install -y mamba -c conda-forge"
+      shell: "{{ miniconda_prefix }}/bin/conda install -y 'mamba<2' -c conda-forge"
       args:
         executable: /bin/bash
       environment:
