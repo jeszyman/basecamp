@@ -772,8 +772,9 @@ staged_files=$(git diff --cached --name-only --diff-filter=ACM)
 
 status=0
 
-# Python / Snakemake
-py_files=$(echo "$staged_files" | grep -E '\.(py|smk)$' || true)
+# Python only: ruff cannot parse Snakemake rule syntax, so .smk files are
+# excluded (a .smk in this list fails on hundreds of phantom syntax errors).
+py_files=$(echo "$staged_files" | grep -E '\.py$' || true)
 if [ -n "$py_files" ]; then
     if command -v ruff >/dev/null 2>&1; then
         echo "$py_files" | xargs ruff check --force-exclude --no-fix 2>&1
@@ -816,11 +817,11 @@ exit $status
 :END:
 Enforces structural code quality limits on staged files. Defaults are hardcoded; override per-repo via =git config=. Skip with =git config hooks.skip-quality-gates true=.
 
-| Metric                | git config key        | Default | Applies to       | Tool         |
-|-----------------------+-----------------------+---------+------------------+--------------|
-| File length           | =hooks.max-file-length= |     350 | all code files   | =wc -l=        |
-| Cyclomatic complexity | =hooks.max-complexity=  |      10 | Python/Snakemake | =ruff= C901    |
-| Parameter count       | =hooks.max-params=      |       4 | Python/Snakemake | =ruff= PLR0913 |
+| Metric                | git config key        | Default | Applies to     | Tool         |
+|-----------------------+-----------------------+---------+----------------+--------------|
+| File length           | =hooks.max-file-length= |     350 | all code files | =wc -l=        |
+| Cyclomatic complexity | =hooks.max-complexity=  |      10 | Python         | =ruff= C901    |
+| Parameter count       | =hooks.max-params=      |       4 | Python         | =ruff= PLR0913 |
 
 Cyclomatic complexity ≤ 10 is the most evidence-backed threshold (McCabe 1976, NIST SP 500-235). File length and parameter count are conventions. Skips gracefully when tools are absent.
 
@@ -849,8 +850,9 @@ if [ -n "$code_files" ]; then
     done
 fi
 
-# --- Python / Snakemake: complexity + param count via ruff ---
-py_files=$(echo "$staged_files" | grep -E '\.(py|smk)$' || true)
+# --- Python: complexity + param count via ruff (.smk excluded: ruff cannot
+# parse Snakemake rule syntax; .smk stays in the file-length check above) ---
+py_files=$(echo "$staged_files" | grep -E '\.py$' || true)
 if [ -n "$py_files" ]; then
     RUFF=""
     if command -v ruff >/dev/null 2>&1; then
@@ -915,6 +917,18 @@ cat >&2 <<EOF
   ##############################################################
 EOF
 exit 0
+#+end_src
+
+***** Commit-msg hook
+:PROPERTIES:
+:header-args:bash: :tangle ./tools/git/commit-msg :tangle-mode (identity #o755)
+:END:
+Deletes AI-attribution lines (=Claude-Session:=, =Co-Authored-By: ... Claude=, =Generated with=) from every commit message before it is recorded. Runs from the global =core.hooksPath=, so it covers every repo and every tool that commits. The instruction in =~/.claude/CLAUDE.md= not to write these trailers is the first layer; this hook is the guarantee.
+
+#+begin_src bash
+#!/bin/sh
+# Commit-msg hook: drop AI-attribution lines from the message file ($1).
+sed -i -E '/^(Claude-Session:|Co-Authored-By:.*[Cc]laude|🤖 Generated with)/d' "$1"
 #+end_src
 
 ***** git-hygiene detection script
@@ -3861,6 +3875,7 @@ fn fn
           # 7z, imagemagick, ffmpegthumbnailer, zoxide.
 
           [mgr]
+          confirm_quit   = false       # skip "are you sure?" on quit
           ratio          = [1, 3, 4]   # parent : current : preview column widths
           show_hidden    = false       # hide dotfiles on launch (toggle live with  .  )
           sort_by        = "natural"   # natural order: file2 before file10

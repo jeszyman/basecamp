@@ -22,8 +22,9 @@ if [ -n "$code_files" ]; then
     done
 fi
 
-# --- Python / Snakemake: complexity + param count via ruff ---
-py_files=$(echo "$staged_files" | grep -E '\.(py|smk)$' || true)
+# --- Python: complexity + param count via ruff (.smk excluded: ruff cannot
+# parse Snakemake rule syntax; .smk stays in the file-length check above) ---
+py_files=$(echo "$staged_files" | grep -E '\.py$' || true)
 if [ -n "$py_files" ]; then
     RUFF=""
     if command -v ruff >/dev/null 2>&1; then

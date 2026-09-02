@@ -4,8 +4,9 @@ staged_files=$(git diff --cached --name-only --diff-filter=ACM)
 
 status=0
 
-# Python / Snakemake
-py_files=$(echo "$staged_files" | grep -E '\.(py|smk)$' || true)
+# Python only: ruff cannot parse Snakemake rule syntax, so .smk files are
+# excluded (a .smk in this list fails on hundreds of phantom syntax errors).
+py_files=$(echo "$staged_files" | grep -E '\.py$' || true)
 if [ -n "$py_files" ]; then
     if command -v ruff >/dev/null 2>&1; then
         echo "$py_files" | xargs ruff check --force-exclude --no-fix 2>&1
