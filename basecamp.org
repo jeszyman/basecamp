@@ -8,6 +8,7 @@
 ** [[id:0ccb6668-d5dd-4519-8e32-d8082d74e336][Code Style Guide]]
 ** Change log
 
+- [2026-09-07 Sun] Added to [[id:be76a873-d2fe-447f-a43c-b84c52a8e77b][rclone]]: personal Google OAuth client setup, consent-screen publishing requirements, and headless token transfer; added to [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]] Processes: switching a stalled legacy GitHub Pages site to an Actions deploy.
 - [2026-07-13 Mon] Added =resvg= (SVG preview renderer) as a fourth prebuilt =~/.local/bin= binary in the [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]] =Terminal file manager (yazi)= capability, installed from the upstream 0.47.0 tarball. Apt's =resvg= is 0.8.0 (2019) and ships the binary as =rendersvg=, which yazi does not find.
 - [2026-06-22 Mon] Added [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]] capability =Terminal file manager (yazi)= — installs musl =yazi=/=zoxide= + =kitty= tarball to =~/.local=, =fd= → =fdfind= symlink, deploys =yazi.toml= and =zoxide.sh=/=yz= bashrc.d drop-ins; added =ripgrep=/=fzf=/=fd-find= to =apt_packages= and =ffmpegthumbnailer= to =apt_packages_desktop=.
 - [2026-06-21 Sun] Added [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]] capability =OnlyOffice desktop editors= (third-party apt repo + GPG key via signed-by keyring, desktop-only =when= guard) for MS-Office .docx/.xlsx track-changes fidelity.
@@ -1942,6 +1943,7 @@ TSWLatexianTemp*
 - [[https://stackoverflow.com/questions/8588768/how-do-i-avoid-the-specification-of-the-username-and-password-at-every-git-push][stack: avoid specification of user name and password]]
 - https://www.google.com/search?q=github+leave+a+repo+closed+notice
 - https://www.google.com/search?q=github+new+repository
+- GitHub Pages on an old repo: the legacy build pipeline (=build_type: legacy=) produced no build for =jeszyman.github.io= on push, on an API build request, or on a Pages config re-save (2026-09-07; last legacy build 2018). Fix was =gh api -X PUT repos/<owner>/<repo>/pages -f build_type=workflow= plus a =.github/workflows/pages.yml= using =actions/checkout=, =actions/configure-pages=, =actions/upload-pages-artifact= with =path: .=, and =actions/deploy-pages=; the first run published within a minute.
 ****** Create a remote
 - e.g.
   #+begin_src bash
@@ -9832,6 +9834,7 @@ q
 - no option to work by path ID [2022-11-28 Mon]
 - GDrive API rate limiting: bulk operations (copy, sync) hit per-minute quotas quickly. Use =--tpslimit 2 --drive-pacer-min-sleep 1s= for sustained transfers. Without these, rclone burns through the quota in ~300 API calls and gets 403 =RATE_LIMIT_EXCEEDED= for minutes.
 - =rclone cleanup box:= fails with JSON unmarshalling error (rclone 1.x vs Box trash API). Empty Box trash via web UI instead.
+- Google Drive needs a personal OAuth client. rclone's built-in client ID is shared by every rclone user, is metered as one app by Google, and is being retired in 2026; on it a 3.8 GB upload stalled repeatedly below 1 KB/s, and on a personal client the same upload ran at 10 MB/s (2026-09-07). Setup: a Google Cloud project, Drive API enabled, an OAuth client of type Desktop app, then =rclone config update <remote> client_id <id> client_secret <secret>= and =rclone config reconnect <remote>:=. Stop every rclone mount service first, because a running rclone that refreshes its token rewrites the whole config file. Publishing the consent screen matters: while it is in Testing, Google expires the refresh token after 7 days; since 2026 publishing requires a homepage URL, a privacy policy URL, and an authorized domain on the Branding page (GitHub Pages pages satisfy it). A token issued in Testing keeps the 7-day limit, so reconnect once more after publishing. A headless host gets its token by running =rclone authorize drive <id> <secret>= on a machine with a browser and pasting the result into =rclone config update <remote> token '<json>'=. Full record: [[id:fe330f60-4204-48f0-a523-383c7fc3a17e][Storage authority model]] in private.org.
 - [[https://rclone.org/][rclone]]
 #+begin_src bash
 rclone config
@@ -9849,6 +9852,7 @@ y
 y
 q
 #+end_src
+- See also: [[id:d5b355c6-643d-4912-8f8d-81f90f0efbfa][Digital photo workflow]]
 ***** Reference
 :PROPERTIES:
 :ID:       652d9dde-b9b7-4703-9877-b9c2a3ec199d
