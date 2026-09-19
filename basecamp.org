@@ -16382,6 +16382,7 @@ https://abseil.io/resources/swe-book
 :ID:       c99a9302-4af9-480a-8314-5938cc0f2454
 :END:
 [[id:4e160919-3df9-4a0e-afb0-66d2f1828fd4][Org-mode literate programming for devops]]
+- Unattended automation that drives an agent (cron + =claude -p=, CI bots): judge success by validating the artifact the run was supposed to produce, never by the process exit status. Claude Code's headless exit is unreliable (hitting the turn cap after the deliverable is already written is common), and any tool whose exit code reports its last step rather than the deliverable behaves the same. Precedent: [[id:0564ddd1-e5a0-4a63-83ab-e1bba4fb27e5][Headless maintenance runner]] validates the report header first and consults the exit status only when no valid report exists.
 ***** General reference
 :PROPERTIES:
 :ID:       e3b5ab14-c098-495f-89e7-3f02a02799d6
