@@ -274,7 +274,7 @@ Registered in =~/.claude/settings.json=. Full inventory with descriptions in [[f
 - =PreToolUse= (Edit|Write|Bash): [[file:~/.claude/hooks/protect-shared-mounts.sh][protect-shared-mounts.sh]] — blocks writes to Box/GCS
 - =PreToolUse= (Edit|Write|Bash): [[file:~/.claude/hooks/protect-ssh-keys.py][protect-ssh-keys.py]]: refuses any tool call that deletes, moves, overwrites, or regenerates key material under =~/.ssh= on any host. It scans the whole command, so chained and remote commands are caught. Reading and using keys, and edits to the regenerable =config=, =config.d/*=, and =known_hosts= files, stay allowed. Added [2026-09-11 Thu] after the laptop's only private key vanished.
 - =PreToolUse= (Bash): [[file:~/.claude/hooks/git-dirty-guard.sh][git-dirty-guard.sh]] — prevents destructive git ops with uncommitted changes
-- =PreToolUse= (Bash): [[file:~/.claude/hooks/git-syncthing-guard.sh][git-syncthing-guard.sh]] — in Syncthing-synced repos not ahead of origin, blocks pull/merge/rebase of the remote and returns the realign (=git reset --mixed origin/master=) recipe; working files already converge via Syncthing so "behind" is history lag, not missing files. Detects synced repos by a =.stfolder= marker up-tree; allows realign, local-branch ops, and full reconciliation when the repo has unpushed commits.
+- =PreToolUse= (Bash): [[file:~/.claude/hooks/git-syncthing-guard.sh][git-syncthing-guard.sh]] — in Syncthing-synced repos not ahead of origin, blocks pull/merge/rebase of the remote and returns the realign (=git reset --mixed origin/master=) recipe; working files already converge via Syncthing so "behind" is history lag, not missing files. Detects synced repos by a =.stfolder= marker up-tree, then stands down when that folder's =.stignore= lists the repo (GIT-ONLY repos such as =chaudhuri-lab=, whose files do not converge, so pull is correct there); allows realign, local-branch ops, and full reconciliation when the repo has unpushed commits.
 - Git pre-commit hooks: [[id:669a5d96-0bea-4d56-ae7e-11151fbfe4a4][pre-commit dispatcher]] (filesize, conflict markers, org deletion guard, lint, quality gates)
 ****** Data loss pattern: Syncthing + Emacs + Claude
 Documented incidents: career.org (2026-02-09, 2026-01-24, 2026-03-06), private.org (2026-03-23). Root cause chain:
@@ -1518,7 +1518,10 @@ main "$@"
 :END:
 #+begin_src bash
 ###   Claude Code   ###
+docs/
 docs/superpowers/
+CLAUDE.md
+AGENTS.md
 **/.claude/settings.local.json
 #+end_src
 ****** Elisp
@@ -2127,7 +2130,7 @@ use-package conventions (=:ensure= / =:init= / =:config= structure) are consolid
 ******** Policy, style, and good practice
 ********* Block structures, source code, and tangling
 
-Org-babel block and tangle conventions (lowercase =#+begin_src= / =#+end_src=; header-arg =:tangle=; tangled files carry an AUTO-GENERATED preamble naming the source) live in the [[id:8306ac91-52b6-4d23-8520-f5bb30dba293][Org Style Guide]].
+Org-babel block and tangle conventions (lowercase =#+begin_src= / =#+end_src=; header-arg =:tangle=) live in the [[id:8306ac91-52b6-4d23-8520-f5bb30dba293][Org Style Guide]].
 ******* Templating with YASnippets
 YASnippet authoring, naming, and storage conventions are consolidated in the [[id:4b92c28a-e78a-4589-b5e9-37aabdad0d94][YASnippets Style Guide]].
 *** Code Style Guide                                               :claudekb:
@@ -2153,24 +2156,33 @@ Conventions that apply across all languages, before any language-specific rules.
 
 ***** Repository layout
 A project repo follows a consistent top-level structure (not every repo has every directory):
-- =config/= — configuration and conda-env YAML
+- =config/=: run settings a user edits (config YAMLs, the config schema, sample sheets)
+- =envs/=: conda environment YAMLs
 - =workflows/= (or =workflow/=) — Snakemake =.smk= files
 - =scripts/= — standalone analysis/utility scripts
 - =data/= — input data
-- =resources/= — reference files and static assets
+- =resources/=: static files shipped with the repo, in =data/= (small inputs rules read), =external/= (pinned third-party tools) and =figures/= (renders for the README)
 - =results/= — pipeline outputs
-- =docs/= — documentation
+- =docs/=: working documents (plans, specs, AI-generated notes); git-ignored everywhere, never repo documentation
 - =tests/= — test inputs and harnesses
 - =tools/= — wrapper and helper executables
 - =<project>.org= — the single literate source file (/e.g./ =emseq.org=, =rna-seq.org=)
 
 ***** Literate programming
 - Code lives in org-babel source blocks in the project =.org= file and is tangled to its repo location. The =.org= file is canonical; do not hand-edit tangled outputs.
-- Tangled files carry an AUTO-GENERATED preamble (auto-inserted by the tangle advice, with language-aware comment syntax) marking the file as generated and naming the source =.org=. For example:
+- Tangled files carry no generated header (the preamble inserter was retired in 2026-06). Each repository's README, under "Working in this repo", states that the =.org= file is the source of truth and that the next tangle overwrites the tangled files.
 
-#+begin_src text
-# AUTO-GENERATED — DO NOT EDIT DIRECTLY (tangled from rna-seq.org)
-#+end_src
+- Prose in code and READMEs: Simplified Technical English (decided 2026-09-18)
+
+  Comments, docstrings, help text, config key descriptions, error messages and README text follow the writing rules of ASD-STE100 (Simplified Technical English). Method prose (the Method section, results records) follows the same rules without the sentence-length limit. The rules that matter most:
+  - One instruction or one fact per sentence. Descriptive sentences at most 25 words; instructions at most 20.
+  - Active voice. Present tense for what code does; imperative for what the reader does ("Run", "Set", "Copy").
+  - Every noun explicit: name the file, the rule, the column. Do not start a sentence with "It", "This" or "These" when the referent is not the previous sentence's subject.
+  - No noun strings longer than three words; put the noun first and qualify it ("the sample sheet for the fixture run", not "fixture run sample sheet").
+  - One word, one meaning: pick a single term for each thing and keep it (for example "sample sheet", never also "sample table" or "manifest").
+  - A warning or caution comes before the step it applies to, on its own line.
+  - Domain terms (k-mer, CpG, FASTQ, rule, wrapper) are technical names and are allowed; figurative words, idioms and hedges ("basically", "essentially", "leverages") are not.
+  - Comments say what the code does now and why; they do not narrate the change history or the conversation that produced them.
 **** Commenting Verbosity
 Match commenting density to context. When the context is ambiguous, ask the user.
 
@@ -2294,12 +2306,14 @@ EOF
   - ~-h|--help~ prints usage and exits 0; misuse exits 2; runtime errors exit 1
 - ~main()~: entry point; calls ~parse_args "$@"~, then work functions in order
 - Work functions: consume named variables only, no CLI parsing, no new globals, assume preconditions satisfied
-- Final line: ~main "$@"~
+- Final lines: the guarded =main= call (=if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then main "$@"; fi=), so =main= runs only when the file is executed and not when it is sourced for testing or reuse; see the Script template
 - Error policy: stdout for machine-consumable output; stderr for all diagnostics
 
 ***** Safety rules
 - ~set -euo pipefail~ immediately after the shebang: ~-e~ exits on any command failure, ~-u~ errors on unset variables, ~pipefail~ propagates a failure from any stage of a pipeline (not just the last). This "strict mode" makes scripts fail fast and loudly instead of limping on after an error.
 - Quote every variable and command substitution (~"$var"~, ~"$(cmd)"~) unless word-splitting or globbing is explicitly intended; this keeps paths with spaces and shell metacharacters from being mangled.
+- A script-wide lock (~exec 9>lockfile; flock -n 9~) is inherited by every child process. Any child that outlives the script (a backgrounded recorder, ~xclip~ serving the clipboard) keeps the lock held until it exits, so start such children with ~9>&-~.
+- A background job (~cmd &~) started by a non-interactive shell ignores SIGINT; stop it with SIGTERM (~kill -TERM~), not ~kill -INT~.
 - Run ~shellcheck script.sh~ before committing; keep scripts ShellCheck-clean. ShellCheck catches unquoted expansions, unset-var hazards, and the empty-function-body / dangling-comment parse errors that ~bash -n~ alone may not make obvious.
 
 ***** Script template
@@ -2407,8 +2421,8 @@ fi
 - 4 spaces, no tabs
 
 ***** Comments
-- Code: format with Black (88-column target). Black is the source of truth for code-line wrapping; Black-unsplittable tokens (file paths, URLs, single long string/f-string literals) may exceed 88 — do not hand-wrap them.
-- Comments and docstring prose: wrap at 80 columns; allow exceptions for unbreakable tokens (paths, URLs). Black does not rewrap comment text, so this is a manual convention.
+- Code: format with =ruff format= and lint with =ruff check= (ruff is the one Python tool of record, decided 2026-09-18; its output is Black-compatible, 88-column target, verified byte-identical to Black on the rmeth scripts). ruff is the source of truth for code-line wrapping; tokens it cannot split (file paths, URLs, single long string/f-string literals) may exceed 88, do not hand-wrap them. The pre-commit lint runs =ruff check=.
+- Comments and docstring prose: wrap at 80 columns; allow exceptions for unbreakable tokens (paths, URLs). ruff does not rewrap comment text, so this is a manual convention.
 - Section banners (the Comment-template ~# ===~ / ~# ---~ style) are OPTIONAL and scaled to the file: short single-purpose scripts may omit them; multi-section scripts should use them to mark major phases (e.g. CONFIGURATION, PARSE/CLI, WORK, MAIN). Label wording is free-form.
 - Comment types
   - Sectioning comments: a three-line banner — a rule line, a ~# TITLE~ line, then a rule line. Major sections use ~#~ + space + 77 ~=~ (79 cols) with an UPPERCASE title; subsections use ~#~ + space + 77 ~-~ with a Mixed-case title. See the Comment template.
@@ -2450,7 +2464,7 @@ def parse_args():
 - Imports grouped: stdlib, then third-party, then local — each group separated by a blank line (PEP 8). Within a group, sort imports lexicographically, ignoring case, by the module's full package path (Google §3.13); ~import X~ and ~from Y import Z~ lines interleave by package name rather than being segregated by statement form. (The alternative "all plain ~import X~ first, then all ~from Y import Z~" layout is the default of the ~isort~ tool, not a PEP 8 or Google rule — pick one convention per repo and let the formatter enforce it.)
 - Sibling-module imports (scripts run as a file, not an installed package): after the other import groups, add ~sys.path.insert(0, str(Path(__file__).resolve().parent))~ on the line immediately preceding the sibling import, and annotate that import ~# noqa: E402~. Keep the shim and its import together as the final import block; an explanatory comment naming the sibling is optional.
 - Module-level constants are UPPER_SNAKE_CASE — including computed constants (numpy lookup tables / power vectors, e.g. POWERS) and fixed column-name lists (e.g. METRIC_COLUMNS), not just literal strings/Paths. Place them after imports, or immediately above the single function that uses them — whichever keeps the definition near its use. Give computed arrays an explicit dtype and a one-line comment explaining non-obvious math.
-- ~argparse~ for CLI parsing in ~parse_args()~
+- ~argparse~ for CLI parsing in ~parse_args()~; indexing ~sys.argv~ by hand is not allowed. A script called by a Snakemake rule declares its inputs and outputs as argparse positionals in the order the rule passes them (so the rule's call stays positional and a wrong count fails with exit 2), and uses named options only for optional parameters; a script run by hand may be all named options.
 - ~parse_args()~: only function that reads raw CLI args; ends with ~return parser.parse_args()~ and yields the argparse Namespace by default. Wrap the Namespace in a frozen dataclass ONLY when you need typed/validated/derived fields or immutability, and say why in a comment.
 - Help text: for scripts run by hand, give each ~add_argument~ a ~help=~ string and the parser a ~description=~ so ~-h~ is self-documenting; optionals taking a value MAY add ~metavar=~. Strong recommendation, not a conformance gate — internal/pipeline-only scripts may omit it.
 - ~main()~: top-level driver, short linear orchestration, calls ~parse_args()~ then work functions
@@ -2774,6 +2788,7 @@ Semicolon count follows the GNU Emacs Lisp Reference Manual "Comment Tips" conve
 - Interactive commands declare =(interactive)= and take input via =interactive= rather than positional globals.
 - Single-purpose, explicit parameters; prefer helpers that return values over ones that mutate global state.
 - Package configuration goes in =use-package= blocks (see Package configuration below), not bare =setq= / =require=.
+- After a =string-match=, read every =match-string= you need into variables before calling any other string function: =split-string=, =string-trim=, =replace-regexp-in-string= and most helpers run their own =string-match= and overwrite the match data, so a later =(match-string 2 s)= returns nil or the wrong group (bit the deadline-window parser in work.org, 2026-09-16).
 
 ***** Package configuration (use-package)
 =use-package= is the preferred package-management/configuration macro. Default block shape:
@@ -10173,7 +10188,7 @@ bespoke concurrency setup
       1. Create the updated workflow.
       2. When the workflow is ready for a version update, document changes in the README changelog and move org-file changelog accumulator entries under the new version bullet.
       3. Update the README DAGs
-      4. Commit workflow and README updates: git add -A
+      4. Commit the workflow and README updates, staging the changed files by name (never =git add -A=)
       5. Tag the repository: git tag -a v<VERSION> -m "<MESSAGE>"
       6. Push tag: git push origin master --follow-tags
 - Workflow Architecture
@@ -10323,9 +10338,9 @@ bespoke concurrency setup
     - Do not include threads in params.
   - Conda Environments
     - Each rule specifies its conda environment.
-    - Conda env YAML files should not set a =name:= field. Under =--use-conda= the env is built at a content-hash prefix and =name:= is ignored (it does not break =--use-conda=); the real risk is collision in the named-env namespace when envs are created manually or the workflow is reused as a module in another repo. Either omit =name:= or prefix it with the repo stem (e.g. =emseq_methylkit=).
+    - A =name:= field in an env YAML is allowed. Snakemake ignores it: under =--use-conda= the env is built at a content-hash prefix, and a rule's =conda:= directive references the YAML by file path. It only names the env when someone runs =conda env create -f= by hand. Prefix it with the repo stem (e.g. =emseq_methylkit=) when the workflow may be reused as a module in another repo, so hand-created envs do not collide.
     - Tangle conda env YAML blocks with =:comments no= — tangle-header timestamps change the file hash, forcing Snakemake to rebuild the env on every tangle.
-    - Rule conda envs are tools-only; do not list =snakemake= as a dependency. The orchestrator runs Snakemake; a rule env needs only the tools its shell calls. (With =script:= rules a mismatched env Snakemake also breaks object unpickling — see Shell Blocks and Scripts.)
+    - Envs used only by rules are tools-only; do not list =snakemake= in them. The exception is the one-env design (rmeth, frag): a single YAML is both the orchestrator env that CI builds and runs Snakemake from and every rule's =conda:= target, so it lists =snakemake= pinned. (With =script:= rules a mismatched env Snakemake also breaks object unpickling — see Shell Blocks and Scripts.)
   - Logging and Output
     - A common D_LOG convention exists.
     - Every rule defines a log file.
@@ -11656,6 +11671,7 @@ https://carpentries-incubator.github.io/workflows-snakemake/
 :ID:       813113ec-e094-4557-9bad-5bacc8d9df84
 :END:
 - ip is http://127.0.0.1:8384
+- Sync status is decided per path by the folder's =.stignore=, not by being under a synced folder root. =~/repos/.stignore= lists GIT-ONLY repos (third-party forks, single-machine dev, archival) that Syncthing skips, so for those repos files and history move only through the git remote and the follower realign (=reset --mixed=) is wrong: =pull --ff-only= or =merge= is correct. Every tool that branches on "is this repo synced" must read that list; the =git-syncthing-guard= hook does (see the hooks inventory), while [[id:1a721287-9e29-41e9-aafb-c9cbc1ea4457][repo-commit]], =org-sync-doctor=, =gsync=, and closeout Phase 2 still treat the whole folder as synced. Recorded [2026-09-19 Sat] after the guard blocked a legitimate chaudhuri-lab merge.
 ****** Processes
 - Ignore lists https://chatgpt.com/c/68b9e47d-4278-832e-91ac-09289456ffb9
 ***** Timeshift
