@@ -7868,6 +7868,7 @@ CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
 - https://en.wikipedia.org/wiki/OpenRefine
 - https://www.reddit.com/r/datascience/comments/fzweaf/my_giant_data_quality_checklist/
 - missing data imputation http://factominer.free.fr/missMDA/appendix_These_Audigier.pdf
+- A parser written against a sample of an export format is verified only when its counts reconcile against a full real export: parsed record count equals raw record count, and unresolved or orphaned references are zero. The Google Voice loader passed its synthetic-fixture tests and still missed four media layouts that only the full-export reconciliation exposed ([[id:ea7b50dc-6ff6-440a-af48-60ba300ea598][Google Voice export loader]], [2026-09-24 Thu]).
 *** [[id:F80F3FAF-1D79-40F5-934B-F74D19143DBD][LINK TO Probability and Statistics]]
 :PROPERTIES:
 :ID:       e2b15a0d-bc6d-48d6-9ea2-d7f6be07af31
