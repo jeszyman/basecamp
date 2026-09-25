@@ -19921,6 +19921,7 @@ https://community.openai.com/t/please-widen-the-code-block-style-element-in-chat
 :ID:       69fa7015-0407-4413-a38d-e9d3d87e4e31
 :END:
 - https://chat.openai.com/c/b911ebfa-9d2c-42d7-bdc5-7df22ecbffc9
+- A README's install-and-run commands are tested by CI straight from the exported README (extract the command block, run it as written), so the documentation and a working install cannot drift apart. The usual fixture job does not catch this: it checks out with credentials and builds the environment its own way. Example, rmeth [2026-09-25 Fri]: the Markdown export silently dropped the Quickstart's source block (fixed with =:exports code=), and a clean-container run found the README's =git clone= fails on a private repository; the =quickstart= workflow now redirects the clone to the checkout under test ([[file:~/repos/rmeth/rmeth.org::*GitHub tests][rmeth GitHub tests]]).
 *** App development
 :PROPERTIES:
 :ID:       DFF98A32-3864-46E0-AF88-BC3105D8A8D5
