@@ -9612,6 +9612,7 @@ i3-msg '[class=".*"] move to workspace current'
 - https://www.reddit.com/r/i3wm/comments/8hpjb6/i3_lock_screen/
 - lock screen
   - https://www.reddit.com/r/i3wm/comments/8hpjb6/i3_lock_screen/
+- Screen never blanks: measure before changing settings. Sample the XScreenSaver idle counter (XScreenSaverQueryInfo) once a second; resets with no input events mean a program is resetting it. Record core request 115 (ForceScreenSaver) with the X RECORD extension to get the sending client's id_base, then watch new processes at that cadence. Any GUI program a systemd =Restart== loop relaunches (SDL apps such as scrcpy) resets idle on each start, and a timer that runs =systemctl reset-failed= also defeats =StartLimitBurst=. [2026-09-25 Fri] jeff-pad: failing scrcpy-mirror.service restarted every 30 s and kept the docked screens on.
 ******* make empty container "i3-msg open"
 :PROPERTIES:
 :ID:       037971c2-a6d2-4fda-a01b-b0e16a44a11e
