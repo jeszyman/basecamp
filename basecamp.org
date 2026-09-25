@@ -2991,6 +2991,8 @@ C-c a s
 Generally comments should reside within the Org-mode structure and outside of code blocks. Tangling with a header argument :comments org will include both the header text and text between the header and code block. For example:
 
 (property drawers are excluded from tangling with custom-org-remove-properties-drawer)
+
+A link in an org section that is exported to Markdown is correct only where it is read: check it in the exported file as GitHub renders it, not in Emacs, since a heading link can resolve in Emacs and export to nothing (heading outside the exported subtree, a fifth-level heading exported as a list item, a =.org= target rewritten as =.md=). Bulk edits to a file open in Emacs go through the Emacs buffer as one step that either finishes or restores the buffer, never through a script that writes the file. The crosslink skill (=~/.claude/skills/crosslink=) does both: it adds links, loads them through the buffer, and checks the export.
 ***** For example:
 ****** This header will be a comment
 :properties:
