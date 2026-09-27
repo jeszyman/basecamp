@@ -12695,6 +12695,7 @@ https://www.reddit.com/r/linux4noobs/comments/zdjqc9/battery_life_on_linux_sucks
   - general
     - https://www.tutorialdocs.com/article/learn-systemd-commands-in-20-minutes.html
     - https://www.linode.com/docs/quick-answers/linux/start-service-at-boot/
+    - A =Type=oneshot= unit's cgroup is cleaned up when its script exits, which kills every process the script started, including daemons a command forks on its own (=adb connect= starting the adb server; ssh-agent, gpg-agent). A helper that must outlive the oneshot gets its own =Type=simple= service that the oneshot =Requires=, not =KillMode=process= on the oneshot. Example: adb-server.service in the jeff-pad playbook, private.org "Phone mirroring via scrcpy".
 
 
 *********** Connections
