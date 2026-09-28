@@ -8588,6 +8588,8 @@ https://chatgpt.com/c/670c0b1f-11a4-8005-baa2-71f9d595d568
 - [[https://www.google.com/search?q=brave+hide+bookmarks+bar][google:brave hide bookmarks bar]]
 - [[https://www.google.com/search?q=open+chrome+to+specific+page+from+command+line][google:open chrome to specific page from command line]]
 - https://community.brave.com/t/how-to-block-specific-websites/55961/8
+- [2026-09-28 Mon] jeff-pad: Brave 1.96.59, apt version hold removed. The [2026-09-15 Tue] rollback to 1.93.138 (i3 resize black-area bug) left the saved-card and address file =~/.config/BraveSoftware/Brave-Browser/Default/Web Data= in a newer format 1.93 cannot open, so saved cards disappeared; 1.96.59 reads it, and the resize bug did not recur. Pre-upgrade copy: =~/.config/BraveSoftware/backup-2026-09-28/=.
+- Payment cards live in Brave autofill (=brave://settings/payments=), never in org files.
 ***** byzanz
 :PROPERTIES:
 :ID:       65e67524-2812-482f-8d06-58d8aa3bce6d
