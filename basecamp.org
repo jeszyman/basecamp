@@ -2809,6 +2809,7 @@ Semicolon count follows the GNU Emacs Lisp Reference Manual "Comment Tips" conve
 - Single-purpose, explicit parameters; prefer helpers that return values over ones that mutate global state.
 - Package configuration goes in =use-package= blocks (see Package configuration below), not bare =setq= / =require=.
 - After a =string-match=, read every =match-string= you need into variables before calling any other string function: =split-string=, =string-trim=, =replace-regexp-in-string= and most helpers run their own =string-match= and overwrite the match data, so a later =(match-string 2 s)= returns nil or the wrong group (bit the deadline-window parser in work.org, 2026-09-16).
+- Code that runs inside an agenda build, a skip or prefix function, or any other synchronous pass in the live Emacs reaches an org file through its visiting buffer (=org-find-base-buffer-visiting=, falling back to =find-file-noselect= only for a file not yet visited), as =org-get-agenda-file-buffer= does. =find-file-noselect= on a visited file that Syncthing changed on disk asks to reread it, or to discard unsaved edits, on every call; the first maintenance view asked 56 times in one build over two test files [2026-10-01 Thu].
 
 ***** Package configuration (use-package)
 =use-package= is the preferred package-management/configuration macro. Default block shape:
