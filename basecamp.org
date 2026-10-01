@@ -16761,6 +16761,7 @@ gcloud compute ssh jeszyman@instance-20240601-125838 --zone us-central1-a
 - gsutil is python app to access cloud storage
   - gsutil cp - use for single files. it will always overwrite
   - gsutil rsync - use for dirs
+- Storage kept after a delete keeps costing money. In a versioned bucket whose lifecycle rule deletes only versions that have a newer version, the last version of every deleted object is kept forever. A snapshot schedule with =onSourceDiskDelete: KEEP_AUTO_SNAPSHOTS= keeps a deleted disk's last snapshots forever. In the Chaudhuri lab project on [2026-10-01 Thu] these were 1,337 TB of noncurrent bucket data (about $9,000 a month) and 174,437 GiB of snapshots of deleted disks (about $7,000 a month), as the cost assessment in the [[file:~/repos/chaudhuri-lab/README.md][chaudhuri-lab README]] records. When reviewing a cloud bill, measure what is stored for deleted things, using Monitoring's =noncurrent-object= bytes per bucket and the snapshots whose source disk no longer exists.
 
 
 
