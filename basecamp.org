@@ -821,7 +821,7 @@ r_files=$(echo "$staged_files" | grep -E '\.[rR]$' || true)
 if [ -n "$r_files" ]; then
     if command -v Rscript >/dev/null 2>&1 && Rscript -e 'library(lintr)' 2>/dev/null; then
         for f in $r_files; do
-            errors=$(Rscript -e "cat(length(lintr::lint('$f', linters=lintr::linters_with_defaults(line_length_linter=NULL, object_name_linter=NULL)))")
+            errors=$(Rscript -e "cat(length(lintr::lint('$f', linters=lintr::linters_with_defaults(line_length_linter=NULL, object_name_linter=NULL))))")
             if [ "$errors" != "0" ]; then
                 Rscript -e "lintr::lint('$f', linters=lintr::linters_with_defaults(line_length_linter=NULL, object_name_linter=NULL))" >&2
                 status=1
@@ -8045,6 +8045,8 @@ https://www.reddit.com/r/dataisbeautiful/comments/vy38rz/oc_apple_income_stateme
 :END:
 https://streamlit.io/
 - https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
+- [2026-10-01 Thu] For a personal longitudinal dashboard, a Quarto dashboard in R, re-rendered hourly to static HTML, was chosen over Grafana: one tool gives an always-current page plus dated review pages that stay viewable, in R; Grafana handles narrative text and lists of specific items poorly, stores dashboards as JSON, and adds an always-on service with its own login. [[id:2e6236e9-b096-4a91-a3e0-3f1e0eb5408f][Longitudinal performance dashboard]]
+- [2026-10-02 Fri] Interactive plotly charts made that dashboard's rendered HTML 11.9 MB; with static chart images it is 4.4 MB, so it ships static images (build report, =~/repos/dashboard=).
 
 ***** Dynamics
 :PROPERTIES:
