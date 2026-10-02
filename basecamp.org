@@ -1626,6 +1626,7 @@ nohup.out
 # Syncthing sync artifacts
 .syncthing.*.tmp
 ~syncthing~*.tmp
+*.sync-conflict-*
 .stversions/
 .stfolder/
 #+end_src
