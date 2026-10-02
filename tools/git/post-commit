@@ -4,6 +4,15 @@
 
 branch=$(git symbolic-ref --quiet --short HEAD) || exit 0   # detached HEAD: skip
 
+# Push only the default branch (origin/HEAD, else main or master); feature,
+# worktree and agent branches stay local until merged.
+default=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's|^origin/||')
+if [ -n "$default" ]; then
+  [ "$branch" = "$default" ] || exit 0
+else
+  case "$branch" in main|master) ;; *) exit 0 ;; esac
+fi
+
 git push origin "$branch" && exit 0
 
 # Push failed. The commit already succeeded and must not be aborted — fail LOUD.
