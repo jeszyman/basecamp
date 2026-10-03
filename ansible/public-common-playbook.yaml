@@ -516,6 +516,7 @@
           # 7z, imagemagick, ffmpegthumbnailer, zoxide.
 
           [mgr]
+          confirm_quit   = false       # skip "are you sure?" on quit
           ratio          = [1, 3, 4]   # parent : current : preview column widths
           show_hidden    = false       # hide dotfiles on launch (toggle live with  .  )
           sort_by        = "natural"   # natural order: file2 before file10
