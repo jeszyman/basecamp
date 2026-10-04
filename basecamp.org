@@ -9292,6 +9292,7 @@ https://askubuntu.com/questions/1196914/gnome-screenshot-cant-copy-to-clipboard-
 :END:
 - [[https://www.google.com/search?q=gnome-termial+default+text+size][google:gnome-termial default text size]]
 - gnome-terminal geometry https://www.reddit.com/r/bash/comments/imn867/setting_window_size_for_script/
+- [2026-10-04 Sun] On jeff-pad, gnome-terminal started from a non-interactive shell (a Claude Code Bash call, directly or through =launch-beside-chat=) fails with "Error creating terminal: Failed to get screen from object path /org/gnome/Terminal/screen/..."; =xterm -fa Monospace -fs 11 -e <cmd>= from the same shell opens its window normally. Cause not investigated.
 ***** Google chrome
 :PROPERTIES:
 :ID:       eb9edbdb-b989-4cb3-8373-fd2603303f3a
