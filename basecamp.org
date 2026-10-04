@@ -3765,6 +3765,11 @@ fn fn
           }
 #+end_src
 **** Terminal multiplexer auto-start
+:PROPERTIES:
+:ID:       5f57c925-9721-4c31-aace-5c3a2c58a4b6
+:END:
+
+Any interactive bash started outside tmux and outside Emacs replaces itself with a new tmux session, and exits when that session ends. So a command launched as =<terminal> -e bash -ic '<cmd>'= never runs: the window shows a bare tmux session. Launched as =<terminal> -e tmux new-session bash -ic '<cmd>'=, the command runs, because tmux sets =$TMUX= before the inner shell starts and the auto-start check skips. gnome-terminal's =-e= passes the words after it straight through as the command's arguments, so no extra quoting is needed. Example: [[id:592766ff-f1dc-4f23-b347-338649910628][Camera import prompt on USB connect]] (2026-10-04).
 #+begin_src yaml
 
     - name: Auto-start tmux for interactive terminal sessions
