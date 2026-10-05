@@ -5731,6 +5731,7 @@ EOF
 }
 
 #+end_src
+- Writes no timestamped copy, so =/screenshot= in Claude does not see its captures: [[id:edd3bf04-9077-447d-8c58-09484ca4d598][Screenshot context for Claude]].
 
 ***** debug()
 :PROPERTIES:
