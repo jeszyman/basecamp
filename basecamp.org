@@ -11757,6 +11757,8 @@ set -g mode-keys emacs                              # explicit (already the defa
 set -g mouse on                                     # wheel scrolls into copy mode; drag selects
 set -g copy-command 'xclip -selection clipboard -i' # M-w / drag-copy -> X11 clipboard
 set -g history-limit 50000                          # deep scrollback
+set -g set-titles on                                # write a title to the outer terminal window
+set -g set-titles-string 'tmux:#{session_name}'     # e.g. "tmux:35"; record-chat-window.sh finds the chat window by this title
 
 # vterm-parity copy/paste keys
 bind-key -T copy-mode C-c send-keys -X copy-pipe-and-cancel                              # C-c = copy + exit (CUA), inside copy mode
