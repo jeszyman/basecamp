@@ -9736,6 +9736,7 @@ libreoffice --headless --convert-to pdf /tmp/GAiN_Cover_Letter.docx --outdir /tm
 - https://ask.libreoffice.org/en/question/157807/set-memory-settings-in-version-6042/
 - https://www.reddit.com/r/libreoffice/comments/7umifb/has_libreoffice_6_just_killed_the_indispensable/
 - https://www.google.com/search?q=libreoffice+escape+comment
+- LibreOffice Writer 7.3 does not keep all tracked changes when it saves a Word .docx. Before 7.4.0, DOCX export dropped the tracking of the paragraph mark of an inserted list item ([[https://bugs.documentfoundation.org/show_bug.cgi?id=149708][tdf#149708]], verified fixed in 7.4.0.0.beta2), and 7.3.0.3 was reported to lose some tracked changes on .docx save ([[https://bugs.documentfoundation.org/show_bug.cgi?id=147655][tdf#147655]]). [2026-10-07 Wed] In a collaborator's tracked-changes protocol, a plain headless re-save of the original in 7.3 dropped the tracking on 2 of 6 inserted paragraphs, and a copy edited in the GUI lost it on 5 of 6; the cause of the extra loss was not isolated.
 
 ***** libreoffice impress
 :PROPERTIES:
