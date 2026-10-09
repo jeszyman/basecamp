@@ -15854,6 +15854,7 @@ nested_list:
 - Cannot do string concatenation
   - https://stackoverflow.com/questions/5484016/how-can-i-do-string-concatenation-or-string-replacement-in-yaml
 - https://www.google.com/search?q=yaml+make+value+from+other+values
+- PyYAML (YAML 1.1; Snakemake's loader) and yaml.el (the Emacs =yaml= package) read the same unquoted values differently (tested 2026-10-09): =1e-5= is the string "1e-5" in PyYAML and 1e-05 in yaml.el; =no= is False in PyYAML and the string "no" in yaml.el; =0012= is 10 (octal) in PyYAML and 12 in yaml.el. Writing =1.0e-5=, quoting strings, or using JSON gives the same value in both. Used by [[id:277ae535-55ce-4d04-b6d5-0f9feb6623e4][Org macros that read a project file]].
 ******* General reference
 :PROPERTIES:
 :ID:       7e4af24b-2b05-44bc-b87c-a16393f1e9dc
