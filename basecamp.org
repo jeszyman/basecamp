@@ -28,6 +28,7 @@
 ** [[id:0ccb6668-d5dd-4519-8e32-d8082d74e336][Code Style Guide]]
 ** Change log
 
+- [2026-10-11 Sun] Added [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]] capability =Claude desktop app with Cowork virtual machine= (Anthropic apt repo + signed-by keyring, =claude-desktop= with its QEMU dependencies, user added to the =kvm= group; tasks tagged =claude-desktop=, desktop-only). Applied on jeff-pad: claude-desktop 2.31226.1, key fingerprint 31DD DE24 DDFA B679 F42D 7BD2 BAA9 29FF 1A7E CACE. Cowork also needs VT-x enabled in firmware, which was off on jeff-pad.
 - [2026-09-07 Sun] Added to [[id:be76a873-d2fe-447f-a43c-b84c52a8e77b][rclone]]: personal Google OAuth client setup, consent-screen publishing requirements, and headless token transfer; added to [[id:e1bbc57a-0660-4ccf-a7e7-9870b3afbff7][github]] Processes: switching a stalled legacy GitHub Pages site to an Actions deploy.
 - [2026-07-13 Mon] Added =resvg= (SVG preview renderer) as a fourth prebuilt =~/.local/bin= binary in the [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]] =Terminal file manager (yazi)= capability, installed from the upstream 0.47.0 tarball. Apt's =resvg= is 0.8.0 (2019) and ships the binary as =rendersvg=, which yazi does not find.
 - [2026-06-22 Mon] Added [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]] capability =Terminal file manager (yazi)= — installs musl =yazi=/=zoxide= + =kitty= tarball to =~/.local=, =fd= → =fdfind= symlink, deploys =yazi.toml= and =zoxide.sh=/=yz= bashrc.d drop-ins; added =ripgrep=/=fzf=/=fd-find= to =apt_packages= and =ffmpegthumbnailer= to =apt_packages_desktop=.
@@ -3467,6 +3468,51 @@ fn fn
         state: present
       become: true
       when: ansible_virtualization_role != "guest"
+#+end_src
+
+**** Claude desktop app with Cowork virtual machine
+#+begin_src yaml
+    # claude-desktop: Anthropic's desktop client (Linux beta). Cowork runs its
+    # tasks in a local QEMU/KVM virtual machine; the package pulls in
+    # qemu-system-x86, ovmf and virtiofsd. Cowork also needs VT-x enabled in
+    # firmware and the user in the kvm group (takes effect at next login).
+    # The app does not update itself; apt upgrades it. Desktop machines only.
+    # Source: https://support.claude.com/en/articles/10065433-install-claude-desktop
+    - name: Add Claude Desktop GPG key
+      ansible.builtin.get_url:
+        url: https://downloads.claude.ai/claude-desktop/key.asc
+        dest: /usr/share/keyrings/claude-desktop-archive-keyring.asc
+        mode: "0644"
+      become: true
+      when: ansible_virtualization_role != "guest"
+      tags: claude-desktop
+
+    - name: Add Claude Desktop apt repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/claude-desktop-archive-keyring.asc] https://downloads.claude.ai/claude-desktop/apt/stable stable main"
+        filename: claude-desktop
+        state: present
+        update_cache: yes
+      become: true
+      when: ansible_virtualization_role != "guest"
+      tags: claude-desktop
+
+    - name: Install Claude Desktop
+      ansible.builtin.apt:
+        name: claude-desktop
+        state: present
+      become: true
+      when: ansible_virtualization_role != "guest"
+      tags: claude-desktop
+
+    - name: Add user to the kvm group for the Cowork virtual machine
+      ansible.builtin.user:
+        name: "{{ ansible_env.USER }}"
+        groups: kvm
+        append: true
+      become: true
+      when: ansible_virtualization_role != "guest"
+      tags: claude-desktop
 #+end_src
 
 **** Hardware error logging
