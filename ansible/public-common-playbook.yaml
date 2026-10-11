@@ -157,6 +157,47 @@
         state: present
       become: true
       when: ansible_virtualization_role != "guest"
+    # claude-desktop: Anthropic's desktop client (Linux beta). Cowork runs its
+    # tasks in a local QEMU/KVM virtual machine; the package pulls in
+    # qemu-system-x86, ovmf and virtiofsd. Cowork also needs VT-x enabled in
+    # firmware and the user in the kvm group (takes effect at next login).
+    # The app does not update itself; apt upgrades it. Desktop machines only.
+    # Source: https://support.claude.com/en/articles/10065433-install-claude-desktop
+    - name: Add Claude Desktop GPG key
+      ansible.builtin.get_url:
+        url: https://downloads.claude.ai/claude-desktop/key.asc
+        dest: /usr/share/keyrings/claude-desktop-archive-keyring.asc
+        mode: "0644"
+      become: true
+      when: ansible_virtualization_role != "guest"
+      tags: claude-desktop
+
+    - name: Add Claude Desktop apt repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/claude-desktop-archive-keyring.asc] https://downloads.claude.ai/claude-desktop/apt/stable stable main"
+        filename: claude-desktop
+        state: present
+        update_cache: yes
+      become: true
+      when: ansible_virtualization_role != "guest"
+      tags: claude-desktop
+
+    - name: Install Claude Desktop
+      ansible.builtin.apt:
+        name: claude-desktop
+        state: present
+      become: true
+      when: ansible_virtualization_role != "guest"
+      tags: claude-desktop
+
+    - name: Add user to the kvm group for the Cowork virtual machine
+      ansible.builtin.user:
+        name: "{{ ansible_env.USER }}"
+        groups: kvm
+        append: true
+      become: true
+      when: ansible_virtualization_role != "guest"
+      tags: claude-desktop
     # rasdaemon — records hardware errors (MCE, ECC memory) persistently to SQLite.
     # Query with: sudo ras-mc-ctl --summary
     - name: Install rasdaemon

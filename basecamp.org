@@ -3471,6 +3471,12 @@ fn fn
 #+end_src
 
 **** Claude desktop app with Cowork virtual machine
+:PROPERTIES:
+:ID:       5c2e8a41-7d3f-4b9e-a1c6-2f8e0d4b7a93
+:END:
+
+Cowork in a claude.ai browser tab (Max beta since July 2026) still needs this desktop app running for browser use, computer use and local files ([[https://www.thurrott.com/a-i/338528/claude-cowork-is-now-available-on-mobile-and-web-for-max-subscribers][Thurrott, 2026-07-07]]). jeff-pad firmware setting: [[id:433bf0a9-4d56-44f5-932e-e3dbabee6497][jeff-pad]].
+
 #+begin_src yaml
     # claude-desktop: Anthropic's desktop client (Linux beta). Cowork runs its
     # tasks in a local QEMU/KVM virtual machine; the package pulls in
