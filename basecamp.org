@@ -8281,6 +8281,7 @@ ShowMenubar=true
 ShowSidebar=false
 
 #+end_src
+- The Annotation Toolbar layout is stored in =~/.local/share/kxmlgui5/okular/part.rc=, not in =okularrc=. The line =<Action name="annotation_favorites"/>= in its "Annotation Toolbar" block adds the quick-annotations button, which holds the "Green Highlighter" quick tool (colour =#00ff00=, set in =~/.config/okularpartrc=). The button appears after Okular restarts. [2026-10-15 Thu]
 
 ** Development                                                          :dev:
 :PROPERTIES:
