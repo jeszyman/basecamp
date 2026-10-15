@@ -8943,6 +8943,8 @@ dependencies:
   - snakemake                              # Python workflow management system #
   - statsmodels                        # A stats package with causal inference #
   - pdfplumber                                     # PDF to tabular conversion #
+  - google-api-python-client      # Gmail API client (org scripts/gmail-fetch.py) #
+  - google-auth-oauthlib                # OAuth login for the Google API clients #
 #+end_src
 
 

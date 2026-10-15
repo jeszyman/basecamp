@@ -21,10 +21,13 @@ dependencies:
   - parallel     # GNU parallel is a shell tool for executing jobs in parallel #
   - pyarrow=15.0                       # Provides bindings to the Apache Arrow #
   - python=3.10
+  - python-lsp-server                  # LSP server (pylsp) for eglot in Emacs #
   - scikit-learn=1.3                         # Python machine learning modules #
   - snakemake                              # Python workflow management system #
   - statsmodels                        # A stats package with causal inference #
   - pdfplumber                                     # PDF to tabular conversion #
+  - google-api-python-client      # Gmail API client (org scripts/gmail-fetch.py) #
+  - google-auth-oauthlib                # OAuth login for the Google API clients #
 # ---   R   --- #
 # ------------- #
 
@@ -56,6 +59,7 @@ dependencies:
   - r-rlang             # Toolbox for working with base types, core R features #
   - r-rstatix            # Pipe-friendly framework for basic statistical tests #
   - r-rtsne  # t-distributed stochastic neighbor embedding dimension reduction #
+  - r-survival
   - r-svglite                                   # Provides svg graphics output #
   - r-tidyverse                    # Collection of R packages for data science #
   - r-upsetr       # Visualizations of intersecting sets using a matrix design #
