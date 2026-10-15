@@ -7557,7 +7557,7 @@ mkdir -p "${repo}/workflow/scripts"
   - [cite:@pedsnet]
 - [[id:d4c65ebf-8abd-4876-8b79-08ae9fcc50c2][Software engineering]]
 - Examples
-  - [cite:@waagmeester2020]
+  - Wikidata as a FAIR, community-maintained knowledge graph for the life sciences: genes, proteins, variants, pathways, compounds and diseases synced from source databases by open-source bots, with use cases in ontology curation, phenotype-based diagnosis and drug repurposing [cite:@waagmeester2020]
   - https://www.reddit.com/r/datascience/comments/8haezl/python_google_sheets_api_tableau_public_full/
 - Data science workflow
   - [[https://cacm.acm.org/blogs/blog-cacm/169199-data-science-workflow-overview-and-challenges/fulltext][Association for computing machinery: Data science workflow overview]]
@@ -15991,6 +15991,7 @@ https://abseil.io/resources/swe-book
   - General guides
     - [[https://www.reddit.com/r/IWantToLearn/comments/8o7uli/iwtl_how_to_design_and_create_mobile_apps_and/][Reddit: IWTL how to design and create mobile apps and games from scratch]]
   - Open source software development for science- [cite:@nowogrodzki2019]
+    - Releasing lab-built open-source software brings unplanned support work (users, bug reports, documentation) that often falls on graduate students and postdocs and is rarely funded; the piece collects tips for keeping support sustainable [cite:@nowogrodzki2019]
   - Continuous integration / continuous delivery (CI/CD)
     - https://github.blog/2019-08-08-github-actions-now-supports-ci-cd/?WT.mc_id=devto-blog-yolasors
   - [[id:0b4dfeac-fc55-47b1-956c-38fb19eba7ff][Data science project management]]
