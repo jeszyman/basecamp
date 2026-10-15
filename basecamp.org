@@ -2054,8 +2054,8 @@ Code files in this repository are managed through [[ https://orgmode.org/manual/
  [[elisp:(run-latex-at-point)][compile]] using [[id:3975a173-ac71-4c02-b032-ef215329ca59][_run-latex-at-point]]_
 :end:
 *** LaTeX Reference                                                :noexport:
-- [[file:basecamp-documentation.tex][TeX]]
-- [[file:basecamp-documentation.pdf][pdf]]
+- [[file:docs/basecamp-documentation.tex][TeX]]
+- [[file:docs/basecamp-documentation.pdf][pdf]]
 - [[id:f453bd37-55e8-46ee-9cf5-c499d7e7c5d9][Documentation style]]
 *** Preamble                                                         :ignore:
 
@@ -2153,7 +2153,7 @@ These are loaded as optional files and if not found, they will throw a warning o
 
 The init.el file is compiled from the Org-mode header a simple wrapper for other Elisp files.
 
-My public customized Emacs initialization is compiled from the Org-mode header [[id:28ed3017-eedb-4a6c-94e5-f477353170c8][basecamp.org::Public configuration]] and tangles to [[file:config/public_emacs_config.el][./config/public_emacs_config.el]].
+My public customized Emacs initialization is compiled from the Org-mode header [[id:28ed3017-eedb-4a6c-94e5-f477353170c8][basecamp.org::Public configuration]] and tangles to [[file:~/repos/emacs/emacs/public_config.el][./config/public_emacs_config.el]].
 
 ******** Style and good practice
 use-package conventions (=:ensure= / =:init= / =:config= structure) are consolidated in the [[id:a6c8dcee-df05-493f-b494-fa5e081075c7][Emacs Lisp Style Guide]] > Package configuration.
@@ -4894,8 +4894,8 @@ open "$(find /tmp -type f -printf '%T@ %p\n' 2>/dev/null | sort -n | tail -1 | c
 
 Each function has it's own Org-mode header.
 
-***** INPROCESS Move  [[file:lib/basecamp_function.sh]]
-***** [[file:lib/basecamp_function.sh]]
+***** INPROCESS Move  =lib/basecamp_function.sh=
+***** =lib/basecamp_function.sh=
 ***** Preamble
 #+begin_src bash :comments no
 # Basecamp General Shell Functions
@@ -7454,7 +7454,7 @@ docker_interactive() {
 :PROPERTIES:
 :ID:       e04ad9da-1aa6-4f66-9659-34e9c9634eae
 :END:
-  - [[file:~/repos/basecamp/Dockerfile]]
+  - =~/repos/basecamp/Dockerfile=
 ** Information Science / Data Science                      :career:hierarchy:
 :PROPERTIES:
 :ID:       39F11977-BE11-47CF-98B1-14CE6D9B97C4
@@ -7811,7 +7811,6 @@ CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
       - remove AS
       - remove INNER
   - other JOINs
-    - [[file:career.org_imgs/20170612_203746_66395j6p.png]]
     - outer
       - SELECT film.film_id,film.title,inventory_id FROM film LEFT OUTER JOIN inventory ON inventory.film_id = film.film_id;
     - right
@@ -7969,7 +7968,7 @@ CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
 :PROPERTIES:
 :ID:       532fe01c-7768-4e6d-b405-aea381eb0692
 :END:
-*** Machine Learning
+*** [[id:c013714a-c4f5-4c3b-9eac-94bfc3ded1ab][LINK TO Machine Learning]]
 :PROPERTIES:
 :ID:       eca4f279-86ee-40ea-a78b-3cddb00b6c67
 :END:
@@ -8126,7 +8125,7 @@ https://courses.edx.org/courses/course-v1:ColumbiaX+CSMM.101x+1T2017/courseware/
 :ID:       27F2848A-ADB4-45E2-BBC5-8F91C2A0EDEE
 :END:
 
-- Intelligent agent, perception-action cycle: [[file:org.org_imgs/20170206_122258_95886o5b.png]]
+- Intelligent agent, perception-action cycle: =org.org_imgs/20170206_122258_95886o5b.png=
 
 - AI- a solution to uncertainty
 - environment classifications
@@ -8170,51 +8169,52 @@ algorithm properties
 :PROPERTIES:
 :ID:       08762066-018f-4d6f-bb42-03b37b526814
 :END:
-- https://data36.com/
-- Standards
+- Standards and data management
   - Date and time
     - https://en.wikipedia.org/wiki/ISO_8601
-- Data management
-  -
-  - Data lineage
-  - https://www.scnsoft.com/blog/guide-to-data-quality-management
-- [cite:@janssens2021]
-- General education https://www.rscreencasts.com/?ref=reddit
-- Best practices
-  - https://www.reddit.com/r/datascience/comments/wcsx2n/data_science_best_practices/
+  - Data management
+    -
+    - Data lineage
+    - https://www.scnsoft.com/blog/guide-to-data-quality-management
+  - FAIR principles for scientific data management ans stewardship [cite:@wilkinson2016]
+  - repositories - https://zenodo.org/
+  - http://openmetric.org/
+  - Business rules engines- drools https://www.drools.org/
 - Principles
   -
-- Reading suggestions
-  - https://www.reddit.com/r/datascience/comments/so7l3n/must_reads/
-  - https://www.reddit.com/r/datascience/comments/v6sv06/what_is_the_bible_of_data_science/
-- FAIR principles for scientific data management ans stewardship [cite:@wilkinson2016]
-- https://cmap.ihmc.us/
-- https://github.com/UW-Madison-DataScience
+  - Quantity has a quality all its own
+- Best practices
+  - https://www.reddit.com/r/datascience/comments/wcsx2n/data_science_best_practices/
 - Argdown and argumentation notation
   - http://aifdb.org/argview/4
-  - http://aifdb.org/argview/4
   - https://argdown.org/sandbox/map
-- https://github.com/UW-Madison-DataScience
-- https://www.freecodecamp.org/news/teach-yourself-data-analytics-in-30-days/
-- https://www.classcentral.com/report/best-data-science-curriculum/
-- https://www.reddit.com/r/datascience/comments/qore0i/what_is_something_you_took_the_time_to_learn_that/
-- https://www.dataquest.io/
-- https://www.reddit.com/r/datascience/comments/bo2p99/is_java_c_or_c_necessary/
-- http://www.datasciencecourse.org/lectures/
-- https://www.reddit.com/r/datascience/comments/c66buk/top_github_data_science_project/
-- http://openmetric.org/
-- https://bookriot.com/2019/09/20/data-science-books/amp/
-- https://www.reddit.com/r/datascience/comments/lrkob9/interview_question_i_generally_ask_applicants/
-- https://old.reddit.com/r/datascience/comments/libpdr/any_fun_easy_to_read_scientific_papers_youd/
-- https://www.reddit.com/r/datascience/comments/m6lssy/what_are_the_best_intro_classes_to_python_r_and/
-- repositories - https://zenodo.org/
-- https://www.reddit.com/r/datascience/comments/ae4fc3/best_data_science_talk_one_can_watch/
-- https://www.reddit.com/r/datascience/comments/aczhjc/what_is_something_in_ds_that_has_blown_your_mind/
-- https://towardsdatascience.com/a-long-term-data-science-roadmap-which-wont-help-you-become-an-expert-in-only-several-months-4436733e63ff
-- [[https://slu-dss.github.io/news/][SLU DATA SCIENCE SEMINAR]]
-- Quantity has a quality all its own
-- Business rules engines- drools https://www.drools.org/
+  - https://cmap.ihmc.us/
+- Reading suggestions
+  - [cite:@janssens2021]
+  - https://www.reddit.com/r/datascience/comments/so7l3n/must_reads/
+  - https://www.reddit.com/r/datascience/comments/v6sv06/what_is_the_bible_of_data_science/
+  - https://bookriot.com/2019/09/20/data-science-books/amp/
+  - https://old.reddit.com/r/datascience/comments/libpdr/any_fun_easy_to_read_scientific_papers_youd/
+  - https://towardsdatascience.com/a-long-term-data-science-roadmap-which-wont-help-you-become-an-expert-in-only-several-months-4436733e63ff
+  - http://courses.csail.mit.edu/18.337/2015/docs/50YearsDataScience.pdf
+- Discussions
+  - https://www.reddit.com/r/datascience/comments/qore0i/what_is_something_you_took_the_time_to_learn_that/
+  - https://www.reddit.com/r/datascience/comments/bo2p99/is_java_c_or_c_necessary/
+  - https://www.reddit.com/r/datascience/comments/c66buk/top_github_data_science_project/
+  - https://www.reddit.com/r/datascience/comments/lrkob9/interview_question_i_generally_ask_applicants/
+  - https://www.reddit.com/r/datascience/comments/m6lssy/what_are_the_best_intro_classes_to_python_r_and/
+  - https://www.reddit.com/r/datascience/comments/ae4fc3/best_data_science_talk_one_can_watch/
+  - https://www.reddit.com/r/datascience/comments/aczhjc/what_is_something_in_ds_that_has_blown_your_mind/
 - Online Educational Resources
+  - https://data36.com/
+  - General education https://www.rscreencasts.com/?ref=reddit
+  - https://github.com/UW-Madison-DataScience
+  - https://www.freecodecamp.org/news/teach-yourself-data-analytics-in-30-days/
+  - https://www.classcentral.com/report/best-data-science-curriculum/
+  - https://www.dataquest.io/
+  - http://www.datasciencecourse.org/lectures/
+  - [[https://slu-dss.github.io/news/][SLU DATA SCIENCE SEMINAR]]
+  - http://www.datacarpentry.org/
   - https://www.kaggle.com/
   - [[https://www.edx.org/course/statistical-thinking-data-science-columbiax-ds101x-0?utm_medium=paid-social&utm_source=facebook&utm_campaign=fb-us-pc-cs-msft-dsc-stats-verla-feed&utm_content=fb-us-pc-cs-msft-dsc-stats-solidtextlogo][self-paced Columbia stat thinking for data science]]
   - [[https://www.youtube.com/c/thesemicolon?app=desktop][youtube: the semicolon data science]]
@@ -8222,10 +8222,7 @@ algorithm properties
   - https://www.kaggle.com/learn/overview
   - http://www.inference.phy.cam.ac.uk/itprnn_lectures/
   - http://mlwhiz.com/blog/2017/03/26/top_data_science_resources_on_the_internet_right_now/
-- http://www.datacarpentry.org/
-- http://courses.csail.mit.edu/18.337/2015/docs/50YearsDataScience.pdf
 ** [[id:4a5444c9-918d-4651-9def-bbcc26f9016e][Graph theory tools]]
-** [[id:c013714a-c4f5-4c3b-9eac-94bfc3ded1ab][Machine Learning]]
 ** Public configuration files
 *** Ubuntu
 #+begin_src bash
@@ -8274,7 +8271,7 @@ done < "$csv_file"
 :PROPERTIES:
 :header-args:bash: :tangle ~/.config/okularrc
 :END:
-[[file:~/.config/okulararrc]]
+=~/.config/okulararrc=
 #+begin_src bash
 [MainWindow]
 State=@ByteArray(...)  # Preserve other window state settings here
@@ -8310,7 +8307,7 @@ git_setup:
 :PROPERTIES:
 :ID:       3eb81250-e885-4941-a559-997381abc196
 :END:
-- https://missing.csail.mit.edu/
+- [[id:c7d8dd07-098e-4bc4-b008-5da0abcabb0d][The Missing Semester of Your CS Education]]
 - https://www.reddit.com/r/bioinformatics/comments/1krwcgp/how_does_your_lab_store_ngs_sequencing_data_in/
 - https://www.reddit.com/r/ChatGPT/comments/13r3v36/i_run_an_ai_tools_directory_here_are_some_top_ai/
 - https://dev.to/devdefinitive/33-github-projects-i-have-bookmarked-and-you-should-298o
@@ -9040,7 +9037,7 @@ https://tomd.xyz/diagrams-as-code-drawio/
 - documentation
 - applications
 - reference
-  - [[file:~/.basecamp/emacs/public_yasnippets/org-mode/software]]
+  - =~/.basecamp/emacs/public_yasnippets/org-mode/software=
 ***** gnome-screenshot
 :PROPERTIES:
 :ID:       7215e666-f5cb-42cf-a8ba-c7dedd6cc38e
@@ -9103,7 +9100,7 @@ CLOCK: [2017-11-10 Fri 10:45]--[2017-11-10 Fri 11:31] =>  0:46
   - attributes
     - [[http://www.graphviz.org/doc/info/attrs.html#a:rankdir][Node, Edge and Graph Attributes]]
     - [[https://hackage.haskell.org/package/graphviz-2999.19.0.0/docs/Data-GraphViz-Attributes.html][attributes and values from the haskell graphviz package]]
-- [[file:~/repos/mpnst/imgs/pipeline.pdf][pipeline graphic]]
+- pipeline graphic
   #+BEGIN_SRC dot :file ./imgs/pipeline.pdf :cmdline -Tpdf
 digraph {
 // syntax notes
@@ -9187,7 +9184,7 @@ multiplexFastq,extractedFastq,nciFastq,cfdnaWESBam,cfdnaWGSBam,tumorWGSBam,leuko
 }
 #+END_SRC
 - applications
-  [[file:/tmp/entity-relationship-diagram.pdf]]
+  =/tmp/entity-relationship-diagram.pdf=
   #+BEGIN_SRC dot :dir ~/data/imgs/graphviz-examples :file /tmp/entity-relationship-diagram.pdf :cmdline -Tpdf
 // https://mamchenkov.net/wordpress/2015/08/20/graphviz-dot-erds-network-diagrams/
 digraph entityRelationshipDiagram {
@@ -9269,7 +9266,6 @@ subjects:a -> diagnostics:b [arrowhead=crow, arrowtail=none, dir=both]
 specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]
 }
 #+END_SRC
-  [[file:/tmp/dot-example.png]]
   #+BEGIN_SRC dot :results replace :file /tmp/dot-example.png :cmdline -Tpng
   digraph graphName{
   // syntax
@@ -9296,7 +9292,7 @@ specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]
       - [[http://correl.phoenixinquis.net/2015/07/12/git-graphs.html][Drawing git graphs with graphviz and org mode]]
       - Advanced- [[http://orgmode.org/worg/org-tutorials/org-dot-diagrams.html][Worg for dot]]
       - graphviz in Org-mode
-        - [[file:~/.basecamp/emacs/public_yasnippets/org-mode/code.dot][yas template]]
+        - =~/.basecamp/emacs/public_yasnippets/org-mode/code.dot=
         - dot header is #+BEGIN_SRC dot :file ./<FILE_NAME>.png :cmdline -Tpng
         - Simple- [[http://tonyballantyne.com/graphs.html][Drawing Graphs using Dot and Graphviz]]
     - Run through python
@@ -9312,7 +9308,7 @@ specimens:a -> libraries:b [arrowhead=crow, arrowtail=none, dir=both]
   - [[http://graphviz.it/#/gallery/states.gv][live editor]]
   - [[https://stackoverflow.com/questions/14662092/does-the-dot-language-support-variables-aliases][stack: dot does not directly support aliases]]
   - https://www.google.com/search?q=graphviz+database
-  - [[file:~/.basecamp/emacs/public_yasnippets/org-mode/software]]
+  - =~/.basecamp/emacs/public_yasnippets/org-mode/software=
 - standards and best practice
 - Cisco AnyConect
   - [[https://superuser.com/questions/932650/cisco-anyconnect-secure-mobility-client-multiple-profiles][Cisco AnyConnect Secure Mobility Client - Multiple Profiles]]
@@ -9374,7 +9370,7 @@ i3-msg 'resize set 66 ppt'
 - https://faq.i3wm.org/question/1730/warning-popup-when-battery-very-low.1.html
 ****** Ideas
 - show every second, not every 5
-****** [[file:~/repos/basecamp-private/basecamp-private.org::*My i3 configuration][My i3 configuration in basecamp-private]]
+****** My i3 configuration in basecamp-private
 :PROPERTIES:
 :ID:       e2b3a949-7809-486f-b8b1-c443b069b7dd
 :END:
@@ -9636,7 +9632,7 @@ rclone lsd box:
   - [2019-06-20 Thu]
     - works
     - enabled at startup
-  - [[file:/etc/systemd/system/rclone.service]]
+  - =/etc/systemd/system/rclone.service=
   - cannot get linux webdav working
 - Setup rclone config
   #+begin_src bash
@@ -11143,7 +11139,6 @@ $0
 - https://github.com/aomlomics/tourmaline
 - https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
 - https://swcarpentry.github.io/r-novice-inflammation/05-cmdline/index.html
-- https://carpentries-incubator.github.io/snakemake-novice-bioinformatics/
 - #+PROPERTY: header-args:bash :tangle-mode (identity #o777)
 - ideas
   `(make-string (+ 2 (org-current-level)) ?*)` Run commands
@@ -11157,6 +11152,8 @@ $0
   ,#+end_src
 - Standards and best practice
   - https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html#snakefiles-best-practices
+- Wildcards
+  - https://edwards.flinders.edu.au/wildcards-in-snakemake/
 - https://endrebak.gitbooks.io/the-snakemake-book/content/
 - https://academic.oup.com/bioinformatics/article/28/19/2520/290322
 - https://www.biostars.org/p/9469533/
@@ -11180,6 +11177,73 @@ $0
 :ID:       a9d1e5dd-f707-4ab8-ae32-934f9d647fd7
 :END:
 - https://reproducibility.sschmeier.com/index.html
+- a tutorial
+  #+begin_src bash
+source ~/repos/biotools/src/functions.sh
+docker_interactive
+biotools
+
+#
+mkdir -p /tmp/snakemake-tutorial
+cd /tmp/snakemake-tutorial
+#
+wget https://github.com/snakemake/snakemake-tutorial-data/archive/v5.24.1.tar.gz
+#
+tar --wildcards -xf v5.24.1.tar.gz --strip 1 "*/data" "*/environment.yaml"
+ls
+
+#
+snakemake --help
+
+snakemake -np mapped_reads/A.bam
+#+end_src
+- another tutorial
+  #+begin_src bash
+sudo apt-get install singularity-container
+
+cd ~/snakemake-tutorial/
+
+conda activate snakemake-tutorial
+
+
+snakemake -p --cores 2 sorted_reads/{A,B}.bam
+#    --dry-run \
+
+snakemake --dag calls/all.vcf | dot -Tsvg > dag.svg
+
+expand("sorted_reads/{sample}.bam", sample=SAMPLES)
+
+snakemake -p --cores 2 plots/quals.svg
+
+snakemake --cores 2 -p --dag | dot -Tsvg > dag.svg
+
+snakemake --cores 20 --forceall --summary
+
+snakemake --cores 20 --forceall
+
+conda install pygraphviz
+
+snakemake --report report.html
+
+open report.html
+
+snakemake --cores 20 --forceall
+#+end_src
+- https://snakemake.readthedocs.io/en/stable/executor_tutorial/google_lifesciences.html
+******* Examples
+:PROPERTIES:
+:ID:       e1899211-f480-44e1-8fea-235e06a6ee53
+:END:
+
+- https://github.com/vari-bbc/rnaseq_workflow/blob/master/Snakefile
+- https://github.com/ohsu-cedar-comp-hub/cfRNA-seq-pipeline-Ngo-manuscript-2019
+- https://github.com/yztxwd/rna-seq-standard-pipeline/tree/c19a9e27216b86d3dbfdaed7228aeff59f869383
+- https://github.com/porchard/ATACseq-Snakemake/blob/master/src/Snakefile
+- https://github.com/zhxiaokang/RASflow
+- https://github.com/EthanHolleman
+- https://www.biostars.org/p/406385/
+- https://github.com/chrishah/samtools-docker/blob/master/Dockerfile
+- https://github.com/lachlandeer/snakemake-econ-r
 ******* Ideas
 :PROPERTIES:
 :ID:       1854dffb-e8db-4c8d-8138-99a92aff98bd
@@ -11631,12 +11695,12 @@ CLOCK: [2019-03-04 Mon 14:59]--[2019-03-04 Mon 15:17] =>  0:18
 - https://www.google.com/search?q=zotfile+sync+files&oq=zotfile+sync+files&aqs=chrome..69i57.4295j0j4&client=ubuntu&sourceid=chrome&ie=UTF-8
 - Add-ons
   - Better BibTex
-    - auto-exports to [[file:~/data/library/bib.bib]]
+    - auto-exports to [[file:~/repos/org/bib.bib]]
     - [[https://retorque.re/zotero-better-bibtex/][documentation]]
     - [[https://github.com/retorquere/zotero-better-bibtex][repo]]
   - [[http://zotfile.com/][ZotFile]]
     - Renames files
-    - Allows custom file location at [[file:~/data/library/]]
+    - Allows custom file location at [[file:~/library/]]
 - Performance- manual entry lag
   - [[https://forums.zotero.org/discussion/16733/manual-citation-entry-clunky][No answers, but question asked]]
 ****** Ansible install zotero
@@ -11716,7 +11780,6 @@ flowchart TD
 #+END_SRC
 
 #+RESULTS:
-[[file:/tmp/output.png]]
 
 #+begin_src emacs-lisp
 (use-package exec-path-from-shell
@@ -11921,7 +11984,6 @@ where are osx dameons?
     - https://github.com/wsargent/docker-cheat-sheet
     - Containers can share kernal with other containers
     - https://www.docker.com/what-container
-      - [[file:compend.org_imgs/20170828_091936_19148Pqg.png]]
   - Virtual Box
     - copying a VM- go to export appliance
     - in VirtualBox, double-press <CMD> to tab out to mac programs
@@ -12037,9 +12099,6 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 
   - general education- https://www.reddit.com/r/linux4noobs/comments/fntvl7/between_linux_essentials_linux_and_lpic1_which/
   - https://refspecs.linuxfoundation.org/
-- [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
-- https://linustechtips.com/main/
-- https://www.kernel.org/doc/html/latest/admin-guide/index.html
 
 ******* interfaces
 :PROPERTIES:
@@ -12089,206 +12148,18 @@ CLOCK: [2017-08-07 Mon 08:42]--[2017-08-07 Mon 09:14] =>  0:32
 :ID:       bc5ab32a-387d-400a-b72c-ac29d743493f
 :END:
 - https://unix.stackexchange.com/questions/227876/how-to-set-custom-resolution-using-xrandr-when-the-resolution-is-not-available-i
-******* Tools
-:PROPERTIES:
-:ID:       6057b49e-f8d4-42fb-8fec-5a80a802dd92
-:END:
-- tail - https://blog.robertelder.org/intro-to-tail-command/
-- ifconfig
-  - [[file:/usr/share/man/man8/ifconfig.8.gz]]
-- gnu parallel
-  - https://www.msi.umn.edu/support/faq/how-can-i-use-gnu-parallel-run-lot-commands-parallel
-  - https://www.biostars.org/p/63816/
-  - https://www.biostars.org/p/216905/
-  - https://www.gnu.org/software/parallel/man.html#EXAMPLE:-Working-as-xargs--n1.-Argument-appending
-******* ideas
+******* Ideas
 :PROPERTIES:
 :ID:       51710d48-bcbb-4709-bd5e-9774546bbbda
 :END:
 - linux it certification
   - https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
 - https://github.com/Fmstrat/winapps
-:PROPERTIES:
-:ID:       bd78d1e4-cdac-4ccd-af57-e410e8c0cc23
-:END:
 - idea for citrix script- - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
 - ideas- check disk space https://www.cyberciti.biz/tips/shell-script-to-watch-the-disk-space.html
 - GNU - [[https://www.gnu.org/help/help.html][Helping GNU]]
 - [[https://www.reddit.com/r/commandline/comments/7d5fwa/jobson_automatically_turn_commandline/][reddit: automatically turn command-line applications into webapps]]
 
-******* processes
-:PROPERTIES:
-:ID:       3973f50f-db8f-4a82-8a8e-212d3e0b03af
-:END:
-- account management
-  - https://www.google.com/search?q=unix+create+user
-******* UNIX tools
-:PROPERTIES:
-:ID:       ca6d1cc3-2489-4616-8125-3ed27a3c3740
-:END:
-:LOGBOOK:
-CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
-:END:
-- execute interactive woman calls
-  #+begin_src emacs-lisp
-(defmacro with-minibuffer-input (form &rest inputs)
-  (declare (indent 1))
-  `(minibuffer-with-setup-hook
-       (lambda ()
-         (minibuffer-input-provider ',inputs))
-     ,form))
-
-(defun minibuffer-input-provider (inputs)
-  (let ((hook (make-symbol "hook")))
-    (fset hook (lambda ()
-                 (remove-hook 'post-command-hook hook)
-                 (when inputs
-                   (when (= 0 (minibuffer-depth))
-                     (error "Too many inputs"))
-                   (when (cdr inputs)
-                     (add-hook 'post-command-hook hook))
-                   (insert (pop inputs))
-                   (exit-minibuffer))))
-    (add-hook 'post-command-hook hook)))
-#+end_src
-- https://github.com/denisidoro/navi
-- awk
-  - [[https://stackoverflow.com/questions/47091464/print-for-loop-input-filename-on-piped-awk-output][file name as variable]]
-  - commands
-    |----------------+------------------------------------|
-    | function       | command                            |
-    |----------------+------------------------------------|
-    | <35>           | <35>                               |
-    | set delimiters | 'BEGIN {FS="<DELIM>";OFS="<DELIM>" |
-    |                |                                    |
-  - processes
-    - https://www.google.com/search?q=awk+pass+variable
-    - [[https://stackoverflow.com/questions/19149731/use-awk-to-find-average-of-a-column][find average]]
-    - https://www.google.com/search?q=awk+print+except+first
-    - sorting
-      - [[https://stackoverflow.com/questions/17048188/how-to-use-awk-sort-by-column-3][sort column]]
-      - [[https://stackoverflow.com/questions/5917576/sort-a-text-file-by-line-length-including-spaces][by line length]]
-    - variables
-      - [[https://stackoverflow.com/questions/19075671/how-do-i-use-shell-variables-in-an-awk-script][external from shell]]
-      - https://www.linuxnix.com/awk-scripting-learn-awk-built-in-variables-with-examples/
-    - [[https://stackoverflow.com/questions/17001849/awk-partly-string-match-if-column-word-partly-matches][stack: awk partly string match (if column/word partly matches)]]
-  - standards and best practice
-  - documentation
-    - [[http://www.tutorialspoint.com/awk/awk_basic_examples.htm][AWK - Basic Examples]]
-  - applications
-    - [[http://reasoniamhere.com/2013/09/16/awk-gtf-how-to-analyze-a-transcriptome-like-a-pro-part-1/][AWK GTF! How to Analyze a Transcriptome Like a Pro]]
-  - reference
-    - [[file:~/.basecamp/emacs/public_yasnippets/org-mode/software]]
-- cron
-  - commands
-    | function                          | command                                   |
-    |-----------------------------------+-------------------------------------------|
-    | access user-specific crontab file | env EDITOR=nano sudo crontab -e -u <USER> |
-    | see jobs                          | sudo crontab -u <USER> -l                 |
-    | create job                        | sudo crontab -u <USER> -e                 |
-  - [[https://stackoverflow.com/questions/4984725/how-to-test-a-weekly-cron-job][Test]]
-  - [[https://askubuntu.com/questions/419548/how-to-set-up-a-root-cron-job-properly?noredirect=1&lq=1][Access root]]
-  - [[https://crontab.guru/every-week][Guide to times]]
-  - [[https://ole.michelsen.dk/blog/schedule-jobs-with-crontab-on-mac-osx.html][On macos]]
-  - https://opensource.com/article/17/11/how-use-cron-linux
-- curl
-  - https://www.reddit.com/r/commandline/comments/am28qh/try_curl_httpwttrin_image_of_a_shell/
-- cut
-- du
-  - - https://stackoverflow.com/questions/15141588/exclude-all-permission-denied-messages-from-du
-- head and tail
-  - to trim file header lines
-    - e.g.: tail -n +2 file.txt > file.stdout
-- https://github.com/tqdm/tqdm/blob/master/README.rst
-- https://www.reddit.com/r/commandline/comments/7ejk45/what_are_some_of_awesome_curl_web_commands/
-- https://www.reddit.com/r/commandline/comments/ad6ryp/10_tools_to_power_up_your_command_line_dev/
-- http://www.theunixschool.com/p/awk-sed.html
-- ls
-  - [[https://unix.stackexchange.com/questions/48492/list-only-regular-files-but-not-directories-in-current-directory][List only regular files (but not directories) in current directory]]
-  - file size w/ ls -l --block-size=M
-- [[https://askubuntu.com/questions/185661/hide-files-ending-in-tilde][ls- hide files ending in tilde]]
-- mail
-  -
-- make
-  - - https://stackoverflow.com/questions/3239343/make-install-but-not-to-default-directories
-- [[- https://www.xpdfreader.com/pdftotext-man.html][pdftotext]]
-- pigz
-  - https://zlib.net/pigz/
-- rsync
-  - [[https://rsync.samba.org/]]
-  - commands
-    |----------+---------|
-    | function | command |
-    |----------+---------|
-    | <35>     | <35>    |
-    |          |         |
-  - processes
-  - standards and best practice
-  - [[https://rsync.samba.org/documentation.html][documentation]]
-  - applications
-  - reference
-    - [[file:~/.basecamp/emacs/public_yasnippets/org-mode/software]]
-- [[https://www.gnu.org/software/sed/][sed]]
-  - https://www.google.com/search?q=sed+replace+space+with+tab
-  - [[https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed][use shell variables]]
-  - [[https://stackoverflow.com/questions/5410757/how-to-delete-from-a-text-file-all-lines-that-contain-a-specific-string][delete lines with pattern]]
-  - [[https://unix.stackexchange.com/questions/99350/how-to-insert-text-before-the-first-line-of-a-file#:~:text=14%20Answers&text=Use%20sed%20's%20insert%20(%20i,text%20in%20the%20preceding%20line.&text=Also%20note%20that%20some%20non,effect%20as%20with%20GNU%20sed%20).&text=Echo%20is%20used%20to%20get%20the%20text.][insert before first line]]
-  - https://www.google.com/search?q=sed+remove+first+line
-  - https://www.google.com/search?q=sed+remove+lines+containting+string
-  - [[https://www.youtube.com/watch?v=3cLbeYQ2Veg][youtube: sed commands in linux]]
-  - [[http://www.brunolinux.com/02-The_Terminal/Find_and%2520Replace_with_Sed.html][Find and replace with SED]]
-  - Then, using sed: sed -e '5,10d;12d' filename (deletes lines 5-10 and 12)
-  - https://www.google.com/search?q=sed+add+above+first+line
-- ssh
-  - https://superuser.com/questions/8077/how-do-i-set-up-ssh-so-i-dont-have-to-type-my-password
-  - https://stackoverflow.com/questions/12715233/why-can-i-ping-a-server-but-not-connect-via-ssh
-  - https://serverfault.com/questions/334448/why-is-ssh-password-authentication-a-security-risk
-  - https://dev.to/zduey/how-to-set-up-an-ssh-server-on-a-home-computer
-- to concat csvs- https://www.quora.com/How-do-you-combine-multiple-csv-files-into-a-single-file-using-the-command-line
-- unzip - https://askubuntu.com/questions/994731/how-to-skip-unzipping-a-file-that-already-exists
-- Unison
-  - commands
-    |----------+---------|
-    | function | command |
-    |----------+---------|
-    | <35>     | <35>    |
-    |          |         |
-  - processes
-  - [[https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html][documentation]]
-  - applications
-- X11
-  - https://www.windowmaker.org/
-******** grep
-:PROPERTIES:
-:ID:       e4cb764e-f58e-42e7-bf0a-1b2c033a97af
-:END:
-- grep
--
-********* Processes
-:PROPERTIES:
-:ID:       ef591f16-12ea-4249-af54-61f348e1c919
-:END:
-- [[https://www.google.com/search?q=grep+through+multiple+files+in+a+directory][google:grep through multiple files in a directory]]
-- https://www.thegeekstuff.com/2011/10/grep-or-and-not-operators/
-- https://unix.stackexchange.com/questions/37313/how-do-i-grep-for-multiple-patterns-with-pattern-having-a-pipe-character/37316
--
-- Processes
-  - https://www.google.com/search?q=grep+or
-  - grep through subdirectories
-    grep -rl "string" /path
-    - https://askubuntu.com/questions/55325/how-to-use-grep-command-to-find-text-including-subdirectories
-  - https://www.google.com/search?q=grep+search+in+all+text+files+in+directory
-  - https://www.google.com/search?q=grep+phrase+with+space
-  - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
-  - grep -r --unclude \*.R "as.Date" ~/
-- [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
-
-******** gunzip / gzip
-:PROPERTIES:
-:ID:       ac06809f-10b9-4b79-98f6-7ed6fb5f9232
-:END:
-- https://www.google.com/search?q=gzip+force
-- https://www.google.com/search?q=gunzip+keep+source
 ******* Linux                                               :software:career:
 :PROPERTIES:
 :CREATED:  [2020-01-09 Thu 15:46]
@@ -12336,7 +12207,7 @@ https://www.reddit.com/r/linux4noobs/comments/114w615/tutorial_creating_quick_an
 :PROPERTIES:
 :ID:       b33a7727-70b2-4743-a8cf-025a0803c3cc
 :END:
-- make remap caps and alt permanent ([[file:~/.xmodmap]])
+- make remap caps and alt permanent (=~/.xmodmap=)
   - https://superuser.com/questions/277990/how-do-i-swap-alt-and-windows-keys-with-xmodmap
   - https://unix.stackexchange.com/questions/107566/how-to-swap-ctrl-and-capslock-using-xmodmap
 ********** 0 Flat
@@ -12474,8 +12345,8 @@ https://www.reddit.com/r/linux4noobs/comments/zdjqc9/battery_life_on_linux_sucks
     - https://www.emacswiki.org/emacs/EmacsAsDaemon#toc2
   - box rclone mount
     - https://www.jamescoyle.net/how-to/3116-rclone-systemd-startup-mount-script
-    - [[file:/usr/share/man/man1/fusermount]]
-    - [[file:/etc/systemd/system/rclone.service]]
+    - =/usr/share/man/man1/fusermount=
+    - =/etc/systemd/system/rclone.service=
     - https://www.google.com/search?q="rclone"+"box"+"systemd"+"daemon"+"mount"
   - Google drive sync via insync
     - [ ] document start process, systemd
@@ -12548,6 +12419,207 @@ cp /etc/skel/.bashrc ${HOME}/.bashrc
 When a machine becomes completely unresponsive (hard freeze, not thermal shutdown), work through
 these steps after reboot to diagnose the cause.
 
+*********** users and groups
+:PROPERTIES:
+:ID:       2c0b0cef-7551-4e6b-b7a6-1ad9d80460a1
+:END:
+    | function                  | command                   |
+    |---------------------------+---------------------------|
+    | list users                |                           |
+    | list groups               |                           |
+    | list group members        | getent group <GROUPNAME>  |
+    | add user                  | useradd <USERNAME>        |
+    | set password              | passwd <USERNAME>         |
+    | add group                 | groupadd <GROUPNAME>      |
+    | add user to group         | usermod -g <GROUP> <USER> |
+    | change user primary group |                           |
+
+*********** System description queries
+:PROPERTIES:
+:ID:       f3db8e59-cdc9-4f17-8e35-1c0c5f5b2626
+:END:
+- https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux
+
+- https://www.google.com/search?q=ubuntu+see+disk+space
+********* General reference
+:PROPERTIES:
+:ID:       ea015c16-b999-4079-8cc9-eb98c694ed25
+:END:
+- https://support.displaylink.com/knowledgebase/articles/675136-how-to-configure-displaylink-displays-on-ubuntu
+
+- structure
+  - df disks
+    - spaces for RAM
+      - /run
+      - /run/shm
+********* [[id:1628b46e-4838-4f11-bc85-cb4d757e96f6][My computer setup]]
+:PROPERTIES:
+:ID:       85b23b2f-5635-4e17-9a69-0d978d394994
+:END:
+********* Server build
+:PROPERTIES:
+:ID:       BCD2D984-7185-47C0-9ECB-B1F40314595C
+:END:
+
+- [ ] server-linux build
+  - https://www.reddit.com/r/IWantToLearn/comments/87brq8/iwtl_how_to_build_a_home_server/?st=jfjrnjjw&sh=775fb75f
+  - https://www.reddit.com/r/buildapc/comments/6g40g4/i_dedicated_my_last_3_years_to_buildapc/
+  - hackintosh-compatible hardware? https://www.google.com/search?q=cheapest+hackintosh+hardware&rlz=1CDGOYI_enUS769US769&oq=cheapest+hackintosh+hardware&aqs=chrome..69i57.20469j0j4&hl=en-US&sourceid=chrome-mobile&ie=UTF-8
+    - - https://www.reddit.com/r/buildapc/comments/2lhvjr/build_complete_hackintosh_with_a_side_of_gaming/
+  - [[https://askubuntu.com/questions/647495/which-is-most-timemachine-like-backup-program-for-ubuntu][stack:Which is Most TimeMachine-like Backup Program for Ubuntu?]]
+  - https://askubuntu.com/questions/308897/convert-ubuntu-physical-machine-to-virtual-machine
+  - https://askubuntu.com/questions/32499/migrate-from-a-virtual-machine-vm-to-a-physical-system?rq=1
+
+********** Work build
+:PROPERTIES:
+:ID:       6C960771-38BB-4A48-95ED-576D79547489
+:END:
+:LOGBOOK:
+CLOCK: [2018-11-25 Sun 11:39]--[2018-11-25 Sun 13:37] =>  1:58
+CLOCK: [2018-11-16 Fri 08:26]--[2018-11-16 Fri 11:24] =>  2:58
+CLOCK: [2018-11-15 Thu 15:00]--[2018-11-15 Thu 15:34] =>  0:34
+CLOCK: [2018-10-29 Mon 15:17]--[2018-10-29 Mon 16:43] =>  1:26
+CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
+:END:
+- WebDAV setup
+  - https://linuxize.com/post/how-to-set-up-apache-virtual-hosts-on-ubuntu-18-04/
+  - https://linuxconfig.org/webdav-server-setup-on-ubuntu-linux
+  - http://10.21.36.114/index.html
+  - Process
+    - Designate location
+    - Enable modules
+    - Configure
+  - stack
+    - apache2
+  - https://www.digitalocean.com/community/tutorials/how-to-configure-webdav-access-with-apache-on-ubuntu-14-04
+    - Glossary
+      - Apache is a web server
+      - "WebDAV is an extension of the HTTP protocol that allows users to manage files on servers"
+    -
+- hardware
+- stack
+  - ubuntu 18.04 LTS
+    - [[https://help.ubuntu.com/lts/serverguide/index.html.en][Documentation]]
+      - [[https://help.ubuntu.com/lts/serverguide/openssh-server.html.en][OpenSSH Server]]
+- [ ] connection
+  - remote desktop
+  - ssh jeff@10.21.36.114
+  - keys?
+  - stack
+    - [[https://www.openssh.com/manual.html][openssh]]
+- [ ] data synchronization
+  - stack
+    - [[https://rclone.org/box/][rclone]]
+    - [[https://wustl.app.box.com/folder/0][wustl box]]
+  - [ ] sync library box storage with rclone
+  - [ ] sync project work with github
+    - - https://pages.github.com/
+    - limit project directories to 1 gig https://help.github.com/articles/what-is-my-disk-quota/
+  - chron sync wrapper
+- [ ] os maintenance
+  - daemons
+    - cron work see ~/cron
+      - [ ] scheduled reports
+        - https://www.linux.com/blog/linux-101-check-disk-space-command
+      - notes and resources
+        - [[https://help.ubuntu.com/community/CronHowto][Ubuntu documentation CronHowto]]
+      - ideas
+        - https://www.google.com/search?q=best+cron+job+examples&oq=best+cron+job+examples&aqs=chrome..69i57.11620j1j9&sourceid=chrome&ie=UTF-8
+  - [ ] keyboard layout control
+  - [ ] directory management
+    - see Information Maintenance
+    - [[http://www.pathname.com/fhs/pub/fhs-2.3.pdf][file system hierarchy standard]]
+    - https://unix.stackexchange.com/questions/15230/file-and-directory-naming-conventions
+      - "remember as you think up a structure that permissions are hierarchical. In order for somebody to have permissions on a given folder, they need to have at least execute permissions on every folder ABOVE that folder. If you have anything in your home directory that you share, it needs to be near the top"
+    - https://unix.stackexchange.com/questions/201768/storing-shell-scripts
+  - RESUME w/ weekly system report script- exit code 2
+- [ ] work-linux time machine and portability
+- [ ] export
+- [ ] backup work machine
+- ideas
+  - [ ] change rm to direct to del folder
+- [X] past work
+  - [X] setup key pair with macos
+    - see https://www.thegeekstuff.com/2008/11/3-steps-to-perform-ssh-login-without-password-using-ssh-keygen-ssh-copy-id
+    - also alias to work-linux =~/.bash_profile=
+
+*********** update
+:PROPERTIES:
+:ID:       66803E55-A70F-4D49-A4D6-31520A3617DC
+:END:
+
+*********** Connections
+:PROPERTIES:
+:ID:       449D6647-FF79-48FE-8649-DD2DEF23FB93
+:CREATED:  [2019-03-17 Sun 15:46]
+:END:
+
+- [ ] connections
+  - [ ] remote desktop or ssh gui
+    - https://www.makeuseof.com/tag/ubuntu-remote-desktop-builtin-vnc-compatible-dead-easy/
+  - [ ] wine windows
+
+********* Ideas
+:PROPERTIES:
+:ID:       c8c52c75-195d-48dd-85ff-0ca43524dd7f
+:END:
+- [ ] setup printer interface
+  - https://ubuntuforums.org/showthread.php?t=1900967
+- [ ] setup terminal emulator mouseless copy
+  - https://stackoverflow.com/questions/3348800/gnome-terminal-how-to-copy-selection-to-clipboard-automatically/3432302
+  - https://www.google.com/search?q=gnome-terminal+vim+copy+paste&oq=gnome-terminal+vim+copy&aqs=chrome.1.69i57j0.5563j0j7&client=ubuntu&sourceid=chrome&ie=UTF-8
+  - https://www.google.com/search?q=tmux+mouseless+vim+copy&oq=tmux+mouseless+vim+copy&aqs=chrome..69i57j69i64.21772j0j7&client=ubuntu&sourceid=chrome&ie=UTF-8
+  - need copy paste out of gnome terminal into X clipboard
+    - https://askubuntu.com/questions/413436/copy-current-terminal-prompt-to-clipboard
+  - https://wiki.termux.com/wiki/Main_Page
+  - https://unix.stackexchange.com/questions/91863/terminal-copy-from-cli-without-using-mouse
+
+- [ ] setup low power procedure for macbook linux
+- https://www.google.com/search?q=libreoffice+save+new+slide+layout
+- get better highlightin on ubuntu menus
+- linux portable OS
+  - through git repo calls
+    - ~/.emacs.d
+    - ~/org
+    -
+- I3 control panel?
+- https://www.reddit.com/r/i3wm/comments/a00s8p/made_myself_a_pretty_popup_cheat_sheet/
+- how to vc and sync config files
+- https://www.reddit.com/r/commandline/comments/ceo8lt/ideas_for_good_use_of_the_caps_lock_key/
+- http://n-o-d-e.net/post/141489192021/how-to-create-a-handheld-linux-terminal-v2
+- linux external brain project
+
+********** USB build
+:PROPERTIES:
+:ID:       D367D5DD-4E6E-43EC-A1FF-F3F14B24D2D9
+:END:
+
+- porteus
+  - [[http://porteus.org/][hoempage]]
+- - linux
+  - toolbox
+    - OS with apps
+    - 7zip
+    - gparted
+    - emacs for all OS
+  - show battery life
+
+
+
+******** General and miscellaneous
+:PROPERTIES:
+:ID:       4eb4af79-483e-40d4-92e6-5c52b5aeabca
+:END:
+- https://www.reddit.com/r/commandline/comments/wwib48/good_alternatives_to_man_pages_to_learn_concise/
+- https://www.ventoy.net/en/index.html
+- https://linuxjourney.com/
+- https://www.reddit.com/r/linux4noobs/comments/qwp95g/most_noobs_would_benefit_from_reading_the_linux/
+- https://www.kernel.org/doc/html/latest/admin-guide/index.html
+- https://www.reddit.com/r/linux4noobs/comments/p4198y/i_recently_find_out_this_command_line_tool_called/
+- https://github.com/cheesecakeufo/komorebi#what-is-komorebi
+- [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
+- https://linustechtips.com/main/
+
 ******* Processes and commands
 :PROPERTIES:
 :ID:       f6c816d4-6f1a-4954-bf90-ed90de4d0979
@@ -12569,10 +12641,12 @@ CLOCK: [2021-08-25 Wed 08:33]--[2021-08-25 Wed 09:13] =>  0:40
 - account management
   - https://www.google.com/search?q=unix+create+user
 
-******* general
+******* General reference
 :PROPERTIES:
-:ID:       b387cb19-73dd-4783-8e57-8da47837e129
+:ID:       234aa816-28c7-4a09-bdc0-0116322d0b9c
 :END:
+- https://www.reddit.com/r/commandline/comments/ka6izh/open_book_study_group_for_the_linux_command_line/
+- https://blog.robertelder.org/commandline
 - guides, tutorials, cheatsheets
   - http://www.ee.surrey.ac.uk/Teaching/Unix/
   - [[http://linuxcommand.org/][LinuxCommand.org]]
@@ -12597,16 +12671,36 @@ CLOCK: [2021-08-25 Wed 08:33]--[2021-08-25 Wed 09:13] =>  0:40
   - https://unix.stackexchange.com/questions/4186/what-is-usr-local-bin
 - POSIX
   - [[https://github.com/dylanaraps/pure-sh-bible][pure sh bible]]
+
 ******* Tools (software)
 :PROPERTIES:
 :ID:       7b10faa5-721d-48bb-aa15-26cd3d1143dd
 :END:
-PROPERTIES:
-:ID:       4a8bbace-0e0a-4eb2-92fd-03048d6f1ec5
-:END:
 :LOGBOOK:
 CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 :END:
+- execute interactive woman calls
+  #+begin_src emacs-lisp
+(defmacro with-minibuffer-input (form &rest inputs)
+  (declare (indent 1))
+  `(minibuffer-with-setup-hook
+       (lambda ()
+         (minibuffer-input-provider ',inputs))
+     ,form))
+
+(defun minibuffer-input-provider (inputs)
+  (let ((hook (make-symbol "hook")))
+    (fset hook (lambda ()
+                 (remove-hook 'post-command-hook hook)
+                 (when inputs
+                   (when (= 0 (minibuffer-depth))
+                     (error "Too many inputs"))
+                   (when (cdr inputs)
+                     (add-hook 'post-command-hook hook))
+                   (insert (pop inputs))
+                   (exit-minibuffer))))
+    (add-hook 'post-command-hook hook)))
+#+end_src
 - ifconfig
   - [[file:/usr/share/man/man8/ifconfig.8.gz]]
 - https://github.com/denisidoro/navi
@@ -12627,12 +12721,10 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
 - cut
 - du
   - - https://stackoverflow.com/questions/15141588/exclude-all-permission-denied-messages-from-du
-- grep
-  - https://www.thegeekstuff.com/2011/10/grep-or-and-not-operators/
-  - https://unix.stackexchange.com/questions/37313/how-do-i-grep-for-multiple-patterns-with-pattern-having-a-pipe-character/37316
 - head and tail
   - to trim file header lines
     - e.g.: tail -n +2 file.txt > file.stdout
+  - tail - https://blog.robertelder.org/intro-to-tail-command/
 - https://github.com/tqdm/tqdm/blob/master/README.rst
 - https://www.reddit.com/r/commandline/comments/7ejk45/what_are_some_of_awesome_curl_web_commands/
 - https://www.reddit.com/r/commandline/comments/ad6ryp/10_tools_to_power_up_your_command_line_dev/
@@ -12662,8 +12754,6 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
   - standards and best practice
   - [[https://rsync.samba.org/documentation.html][documentation]]
   - applications
-  - reference
-    - [[file:~/.basecamp/emacs/public_yasnippets/org-mode/software]]
 - to concat csvs- https://www.quora.com/How-do-you-combine-multiple-csv-files-into-a-single-file-using-the-command-line
 - unzip - https://askubuntu.com/questions/994731/how-to-skip-unzipping-a-file-that-already-exists
 - Unison
@@ -12678,15 +12768,37 @@ CLOCK: [2020-06-25 Thu 08:25]--[2020-06-25 Thu 08:30] =>  0:05
   - applications
 - X11
   - https://www.windowmaker.org/
-- GNU tools
-  - make
-    - tutorial https://github.com/kyclark/make-tutorial
-  - grep
-    - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
-  - nohup
-    - https://unix.stackexchange.com/questions/373461/open-less-scrolled-to-the-end
-  - grep
-    - [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
+******** grep
+:PROPERTIES:
+:ID:       e4cb764e-f58e-42e7-bf0a-1b2c033a97af
+:END:
+- grep
+-
+********* Processes
+:PROPERTIES:
+:ID:       ef591f16-12ea-4249-af54-61f348e1c919
+:END:
+- [[https://www.google.com/search?q=grep+through+multiple+files+in+a+directory][google:grep through multiple files in a directory]]
+- https://www.thegeekstuff.com/2011/10/grep-or-and-not-operators/
+- https://unix.stackexchange.com/questions/37313/how-do-i-grep-for-multiple-patterns-with-pattern-having-a-pipe-character/37316
+-
+- Processes
+  - https://www.google.com/search?q=grep+or
+  - grep through subdirectories
+    grep -rl "string" /path
+    - https://askubuntu.com/questions/55325/how-to-use-grep-command-to-find-text-including-subdirectories
+  - https://www.google.com/search?q=grep+search+in+all+text+files+in+directory
+  - https://www.google.com/search?q=grep+phrase+with+space
+  - https://stackoverflow.com/questions/19380925/grep-a-large-list-against-a-large-file
+  - grep -r --unclude \*.R "as.Date" ~/
+- [[https://www.macworld.com/article/1041504/software-development/jangeekfactor.html][Macworld: Find anything with grep]]
+
+******** gunzip / gzip
+:PROPERTIES:
+:ID:       ac06809f-10b9-4b79-98f6-7ed6fb5f9232
+:END:
+- https://www.google.com/search?q=gzip+force
+- https://www.google.com/search?q=gunzip+keep+source
 ******** GNU and GNU tools
 :PROPERTIES:
 :ID:       76c4836c-fe3f-4948-86dd-25d8df38d1af
@@ -12781,13 +12893,14 @@ fi
   - https://stackoverflow.com/questions/5374239/tab-separated-values-in-awk
 - https://www.google.com/search?q=awk+filter+duplicates+by+column&oq=awk+filter+duplicates+by+column&aqs=chrome..69i57.7808j0j1&sourceid=chrome&ie=UTF-8
 - commands
-  |----------------------+-----------------|
-  | function             | command         |
-  |----------------------+-----------------|
-  | <35>                 | <35>            |
-  | set delimiter        | -F<DELIM>       |
-  | set output delimiter | OFS = "<DELIM>" |
-  |                      |                 |
+  |----------------------+------------------------------------|
+  | function             | command                            |
+  |----------------------+------------------------------------|
+  | <35>                 | <35>                               |
+  | set delimiter        | -F<DELIM>                          |
+  | set output delimiter | OFS = "<DELIM>"                    |
+  | set delimiters       | 'BEGIN {FS="<DELIM>";OFS="<DELIM>" |
+  |                      |                                    |
 - processes
   - [[https://www.google.com/search?q=awk+filter+to+column+less+than][google:awk filter to column less than]]
   - https://www.google.com/search?q=awk+filter+greater+than
@@ -12807,8 +12920,6 @@ fi
   - [[http://www.tutorialspoint.com/awk/awk_basic_examples.htm][AWK - Basic Examples]]
 - applications
   - [[http://reasoniamhere.com/2013/09/16/awk-gtf-how-to-analyze-a-transcriptome-like-a-pro-part-1/][AWK GTF! How to Analyze a Transcriptome Like a Pro]]
-- reference
-  - [[file:~/.basecamp/emacs/public_yasnippets/org-mode/software]]
 ******** [[https://www.gnu.org/software/sed/][sed]]
 :PROPERTIES:
 :ID:       69e65a70-878e-4f58-a1d1-14ca876a7c12
@@ -12842,6 +12953,7 @@ chmod 600 ~/.ssh/id_rsa.pub
 - https://stackoverflow.com/questions/12715233/why-can-i-ping-a-server-but-not-connect-via-ssh
 - https://serverfault.com/questions/334448/why-is-ssh-password-authentication-a-security-risk
 - https://dev.to/zduey/how-to-set-up-an-ssh-server-on-a-home-computer
+- https://superuser.com/questions/8077/how-do-i-set-up-ssh-so-i-dont-have-to-type-my-password
 ******* MacOS
 :PROPERTIES:
 :ID:       80A0FABE-EB39-4BFC-8478-8044E6D84761
@@ -14207,7 +14319,7 @@ docker_interactive() {
 :ID:       569d1afa-e991-47b7-be15-3dd6364f5258
 :END:
 - http://mywiki.wooledge.org/BashGuide
-- [[file:~/repos/dotfiles/bashrc]]
+- =~/repos/dotfiles/bashrc=
 - Git pull all repos
   #+name: git_pull_all
   #+begin_src bash :tangle ./src/git_pull_all.sh :dir ~/repos/basecamp
@@ -14494,7 +14606,7 @@ open
 okular ~/library/allen2015.pdf
 #+end_src
 
-********* [[file:~/repos/basecamp/src/shell/functions.sh][Common Process Functions]]
+********* [[file:~/repos/basecamp/bin/shell/functions.sh][Common Process Functions]]
 :PROPERTIES:
 :CREATED:  [2020-04-14 Tue 09:05]
 :ID:       15071151-f519-4c7f-b21f-997d6d7b6bc5
@@ -15442,7 +15554,7 @@ $0
 - [[https://bash.cyberciti.biz/guide/Main_Page][nixCraft linux tutorial]]
 - http://bash3boilerplate.sh/
 - a -c flag essentially adds an extra shell around multi-part command, see https://superuser.com/questions/1214597/calling-a-script-with-bash-c-option
-- [[id:07b8634c-70a6-4a99-90b5-0f5083ccaf04][Emacs shell IDE]]
+- [[id:f2557e40-0d81-438a-93e9-6917a40c1d8e][Emacs shell IDE]]
 - Guides, tutorials, cheatsheets, books
   - http://ryanstutorials.net/bash-scripting-tutorial/
   - http://linuxcommand.org/lc3_writing_shell_scripts.php
@@ -15468,7 +15580,7 @@ $0
     - include usage example
     - a -c flag essentially adds an extra shell around multi-part command, see https://superuser.com/questions/1214597/calling-a-script-with-bash-c-option
     - ideas
-    - [[file:~/.basecamp/emacs/public_yasnippets/sh-mode/write.bash]]
+    - =~/.basecamp/emacs/public_yasnippets/sh-mode/write.bash=
     - https://stackoverflow.com/questions/33297857/how-to-check-dependency-in-bash-script
   - https://unix.stackexchange.com/questions/42728/what-does-31-12-23-do-in-a-script
   - http://tldp.org/LDP/abs/html/index.html
@@ -15832,364 +15944,7 @@ $0
 
 
 
-***** Emacs Scripts and Commands
-:PROPERTIES:
-:ID:       bdb71fd7-ac1b-47b0-b883-dd79f7104395
-:END:
-#+begin_src emacs-lisp
-(buffer-file-name)
-#+end_src
-- reference snippet to install snapshot on ubunut
-  #+begin_src bash :tangle no
-sudo add-apt-repository ppa:ubuntu-elisp/ppa
-sudo apt-get update
-sudo apt-get install emacs-snapshot
-#+end_src
-***** Emacs [[https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html#SEC_Contents][Documentation]]
-:PROPERTIES:
-:ID:       6a66a393-75c0-4576-b77d-e259dbd5d252
-:END:
-- Local with C-h r
-  - Navigating documentation
-    - C-h i g
-    - [[http://stackoverflow.com/questions/14915572/how-do-i-get-started-using-emacs-documentation][intro to documentation]]
-- 8
-  - 8.4 Completion
-    - Minibuffer - https://www.reddit.com/r/emacs/comments/rxa29k/is_it_possible_to_have_a_window_which_is_just_the/
-- 5
-  - 5.24  - [[https://www.gnu.org/software/emacs/manual/html_mono/efaq.html#Turning-off-beeping][stop emacs beeps]]
-  - [[https://www.gnu.org/software/emacs/manual/html_mono/efaq.html#Matching-parentheses][5.27 Parenthesis matching]]
-  - 5.33 How do I insert <some text> at the beginning of every line?
-- 12 Hippie Expansion
-  - 12.5 Rectangles
-    - add leading comment symbol with string-input-rectangle
-- 13
-  - 13.8 Bookmarks
-    - prototypical use of bookmarks is to record where you were reading in various files
-    - https://wooww.emacswiki.org/emacs/BookMarks
-- [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Display.html#Display][14 Controlling the Display]]
-  - https://github.com/joostkremers/visual-fill-column
-  - http://ergoemacs.org/emacs/emacs_playing_with_color_theme.html
-- 17 Keyboard Macros
-  - https://emacsnotes.wordpress.com/2018/05/27/keyboard-macros-build-custom-commands-with-the-emacs-command-language/
-  - 17.5
-    - Troubleshooting- M-x profiler-start / profiler-report
-- 18 File handling
-  - https://old.reddit.com/r/orgmode/comments/p1raro/executable_org_file_bootstrapping/
-- 10 Help
-  | type    | action         | command |
-  | help    | info program   | C-h i   |
-  | help    | function doc   | C-h f   |
-  | help    | variable doc   | C-h v   |
-  | help    | key combo      | C-h k   |
-  | help    | curr buff mode | C-h m   |
-  |         |                |         |
-  | help    | list all cmmds | C-h m   |
-  |         |                |         |
-  | display | all key bind   | X-b     |
-  |         |                |         |
-  | help    | info directory | C-h i d |
-  |         |                |         |
-  |         | show mode info | C-h m   |
-- [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Windows.html#Windows][20 Multiple Windows]]
-  - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Split-Window.html#Split-Window][20.2 Splitting Windows]]
-- 21 Frames and Graphical Displays
-  | type   | action       | command     |
-  | resize | shrink h     | S-C-<left>  |
-  |        | enlarge h    | S-C-<right> |
-  |        | shrink v     | S-C-<down>  |
-  |        | enlarge v    | S-C-<up>    |
-  |        |              |             |
-  | buffer | kill current | C-x k       |
-  |        |              |             |
-  | Text   | Larger/small | C-x-+/-     |
-  - ;; Prevents local frame splitting  (set-frame-parameter nil 'unsplittable t)
-  - - Frames
-    - https://www.emacswiki.org/emacs/OneOnOneEmacs
-- 22 input methods
-  - [[https://stackoverflow.com/a/10197062/6106936][input greek characters]]
-- 23 Major and Minor Modes
-  - https://www.reddit.com/r/emacs/comments/mqtwzx/creating_custom_minor_modes_learning_emacs_lisp_7/
-  - [[https://www.gnu.org/software/emacs/manual/html_mono/forms.html#Forms-Example][forms mode]]
-  - [[https://www.gnu.org/software/tramp/][Tramp mode]]
-  - Minor Modes
-    - Flyspell
-      - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Spelling.html][Flyspell]]
-      - also [[https://www.emacswiki.org/emacs/FlySpell][see these]] which are added to init
-      - https://www-sop.inria.fr/members/Manuel.Serrano/flyspell/flyspell.html
-      - Commands
-        | type       | function        | command |
-        |------------+-----------------+---------|
-        |            | suggest words   | M-$     |
-        |            | add word        | i       |
-        |            | check next word | M-s M-n |
-        | minibuffer | add to dict     | i       |
-      - Personal dictionary sync (aspell → LibreOffice)
-
-#+begin_src bash
-ASPELL_DICT=~/repos/org/resources/aspell.en.pws
-LO_DICT=~/.config/libreoffice/4/user/wordbook/standard.dic
-
-aspell_words=$(tail -n +2 "$ASPELL_DICT" | sort)
-lo_words=$(awk '/^---$/{found=1; next} found{print}' "$LO_DICT" | sort)
-
-new_words=$(comm -23 <(echo "$aspell_words") <(echo "$lo_words"))
-
-if [ -z "$new_words" ]; then
-  echo "No new words to add."
-  exit 0
-fi
-
-echo "Adding:"
-echo "$new_words"
-echo "$new_words" >> "$LO_DICT"
-#+end_src
-    - next
-
-    | type    | action            | command        |
-    | frames  | new window        | C-x 5 2        |
-    |         |                   |                |
-    | windows | new below         | C-x 2          |
-    |         | new side          | C-x 3          |
-    |         | max current       | C-x 1          |
-    |         |                   |                |
-    | buffer  | list              | C-x C-b        |
-    |         | switch            | C-x <l/r>      |
-    |         | name switch       | C-x b          |
-    | text    | increase/decrease | C-x C+/C-      |
-    |         | color them        | M-x load-theme |
-    |         |                   |                |
-- 24.1 [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Indentation-Commands.html][Indentation Commands]]
-- 25. Commands for human languages
-  -
-  - https://kitchingroup.cheme.cmu.edu/blog/2014/09/13/Make-some-org-sections-read-only/
-  - 25.15 [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Text-Based-Tables.html#Text-Based-Tables][Editing Text-based Tables]]
-    - https://stackoverflow.com/questions/22837229/how-to-compute-the-dot-product-of-two-column-think-full-column-as-a-vector
-- 26
-  - eldoc
-    - https://www.gnu.org/software/emacs/manual/html_node/emacs/Lisp-Doc.html
-    - - http://elpa.gnu.org/packages/eldoc.html
-- 27 Compiling and Testing Programs
-  - 27.6 Running Debuggers
-    - Debugging
-      - - https://www.reddit.com/r/emacs/comments/6uc7g5/just_figured_out_why_emacs_pauses_sometimes/
-      - - M-x toggle-debug-on-error
-      - https://www.reddit.com/r/emacs/comments/2dmv85/invalid_search_bound_wrong_side_of_point_whenever/
-    - bactrace with (setq debug-on-error t)
-  - 27.8 Libraries of Lisp Code for Emacs
-    - variables
-      - load-path
-- 28
-  - https://emacs.stackexchange.com/questions/293/what-should-shouldnt-i-do-when-keeping-emacs-and-emacs-d-in-version-control
-- 29. Abbrevs
-  - http://pragmaticemacs.com/emacs/use-abbreviations-to-expand-text/#:~:text=Emacs%20has%20the%20ability%20to,teh%E2%80%9D%20for%20%E2%80%9Cthe%E2%80%9D.
-- 39. [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Emacs-Server.html][Using Emacs as a Server]]
-- 40. Operating system interface
-  - Batch Mode
-    - https://www.google.com/search?q=emacs+batch+bash+variable+in+command
-
-- 41. [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Sorting.html][to auto-sort a region]]
-- 44 [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html][Saving Emacs Sessions]]
-  - Don't! takes incredibly long to load
-    #+begin_src emacs-lisp
-  ;;(desktop-save-mode 1)
-    #+end_src
-***** General reference
-:PROPERTIES:
-:ID:       4cb5f373-3d0a-41fe-b2f4-5de8c835ab51
-:END:
-- https://github.com/MiniApollo/kickstart.emacs/blob/main/config.org#language-support--lsp
-- https://www.reddit.com/r/emacs/comments/18frlq4/packages_that_you_would_like_to_be_in_emacs_core/
-- https://www.reddit.com/r/emacs/comments/18ian37/my_modern_emacs_ui_setup/
-- https://github.com/rougier
-https://www.reddit.com/r/emacs/comments/1802hag/how_can_i_become_a_more_proficient_emacs_user_esp/
-- https://rebeja.eu/posts/python-ide-with-emacs-and-docker/
-- https://www.reddit.com/r/datascience/comments/13wkkdv/which_is_the_best_editor_for_python_in_your/jmcj7f1/
-- Emacs from scratch
-  - https://www.youtube.com/watch?app=desktop&time_continue=781&v=JkI-sdgpOoA&embeds_euri=https%3A%2F%2Fwww.reddit.com%2F&source_ve_path=MjM4NTE&feature=emb_title&ab_channel=lxsameer&themeRefresh=1
-  -
-- https://github.com/ahendriksen/ob-tmux
-- https://www.reddit.com/r/emacs/comments/zxetet/i_made_a_chatgpt_client_for_emacs_and_so_can_you/
-- skeletons
-  ;;;;;;;;;;;;;;;;;
-  ;;; SKELETONS ;;;
-  ;;;;;;;;;;;;;;;;;
-
-  (define-skeleton meeting-skeleton
-    "meeting skeleton" nil
-    \n >
-    "date"
-    \n >
-    "recording"
-    \n >
-    "sox -d PATH/FILENAME.wav rate 5k"
-    )
-
-  (define-skeleton fuckwork-skeleton
-    "Write a greeting"
-    "Type nmae of user: "
-    "hello, " str "!")
-  (define-skeleton vote
-        "Electoral motion results"
-        nil
-        > "|----------------+----------+--------------|" \n
-        > "|Vote:           |For: "
-        (setq v1 (skeleton-read "How many for? "))
-        "    |Against: "
-        (setq v2 (skeleton-read "How many against? "))
-        "    |" \n
-        > "|----------------+----------+--------------|" \n
-        "|" (if (< (string-to-number v1)(string-to-number v2))
-                "Not Carried                               |"
-              "Carried                                    |")
-        \n
-        > "|------------------------------------------|" \n)
-
-  (global-set-key (kbd "\C-c v") 'vote)
-- General education
-  - [[https://www.youtube.com/c/SystemCrafters/videos?app=desktop&view=0&sort=p&flow=list][system crafters youtube]]
-  - - https://www.reddit.com/r/emacs/comments/ta6s74/steveys_tech_talk_e39_a_guided_tour_of_emacs/
-- https://sheer.tj/the_way_of_emacs.html
-- Miscellaneous
-  - - https://www.reddit.com/r/emacs/comments/y0i0wz/shortdoc_is_fantasti/
-  - - https://www.reddit.com/user/mickeyp/submitted/
-  - - https://emacsconf.org/2021/all/
-  - - https://www.reddit.com/r/emacs/comments/ucldkz/are_we_living_in_the_golden_age_of_emacs/
-  - - https://www.reddit.com/r/emacs/comments/f2c99b/you_can_play_doom_inside_emacs_using_eaf/
-  - - [[https://www.reddit.com/r/emacs/comments/60nb8b/favorite_builtin_emacs_commands/][reddit: favorite emacs command]]
-- https://depp.brause.cc/shackle/
-- Appearance- [[https://www.reddit.com/r/emacs/comments/8nzbvj/how_your_emacs_looks_like/][reddit: How your "emacs" looks like?]]
-- [[https://www.reddit.com/r/emacs/comments/ba9j65/what_plugins_do_you_use_to_make_emacs_like_other/][What plugins do you use to make Emacs like other higher level editors? (VSCode, Sublime, etc)]]
-- ;;https://superuser.com/questions/602510/how-to-insert-tab-character-in-text-mode
-- name shell by starting with C-u M-x
-- https://github.com/manateelazycat/aweshell/blob/master/README.md
-- [[http://ergoemacs.org/emacs/emacs_shell_vs_terminal.html][Why Run Shell in Emacs?]]
-
-- https://github.com/c02y/dotemacs.d/blob/81153dcce335b0d2ef4b2416eae6e1ca3c70cd76/init.el#L2955-L3098
-- [X] generate local byte-compiled elisp
-  - if VC makes a newer .el, .elc will load, but with warning to recompile
-  - http://ergoemacs.org/emacs/emacs_byte_compile.html
-- [cite:@monnier2020]
-- https://bofh.org.uk/2019/02/25/baking-with-emacs/
-- https://github.com/sunnyhasija/DOOMEmacs
-
-- https://karthinks.com/software/batteries-included-with-emacs/
-- https://www.reddit.com/user/publicvoit/
-- https://github.com/alphapapa/unpackaged.el
-- https://dougie.io/emacs/indentation/
-- Tutorials and Challenges
-  - [[https://blog.markhepburn.com/2013/12/07/andrew-hyatts-emacs-calc-tutorials][Andrew Hyatt's emacs calc tutorials]]
-  - [[https://vimeo.com/search/sort:latest?q=vimgolf+in+emacs][golf in emacs]]
-  - http://cestlaz.github.io/stories/emacs/
-  - https://sachachua.com/blog/2019/06/2019-06-10-emacs-news/
-  - guides
-    - https://www.reddit.com/r/emacs/comments/bbb42t/whats_your_job_whats_your_daily_emacs_workflow/
-    - [-] tuhdo
-      - [X] https://tuhdo.github.io/emacs-tutor.html
-      - [ ] https://tuhdo.github.io/emacs-tutor2.html
-    - http://emacslife.com/
-    - http://emacsrocks.com/
-    - [[http://emacs.stackexchange.com/questions?sort=votes][emacs stack exchange questions by vote]]
-    - [[https://pawelbx.github.io/emacs-theme-gallery/][nice emacs theme gallary]]
-    - [cite:@bingmann2015]
-    - not useful
-      - [[http://david.rothlis.net/emacs/howtolearn.html][Rothlisberger How to Learn Emacs]]
-- config/init file examples
-  - https://shreyas.ragavan.co/docs/emacs-config/
-  - https://github.com/jzohrab/emacs.d/blob/master/init.el#L31
-  - https://emacs.christianbaeuerlein.com/#org7a4a164
-  - https://www.reddit.com/r/emacs/comments/eewwyh/officially_introducing_memacs/
-  - https://jmonlong.github.io/Hippocamplus/emacs/
-  - https://github.com/0pendev/dotfiles/blob/master/emacs/config.org
-  - [[https://github.com/xgarrido/emacs-starter-kit/blob/master/starter-kit.org][github: xgarrido emacs starter kit]]
-- Emacs from Scratch
-  -
-  - https://www.reddit.com/r/emacs/comments/k5cqwb/emacs_ide_python_development_configuration_live/
-
-https://kitchingroup.cheme.cmu.edu/blog/2017/04/07/Object-oriented-font-locking-in-emacs-lisp/
-https://www.reddit.com/r/emacs/comments/pk5ad6/draw_and_scribble_in_gnu_emacs/
-- https://www.google.com/search?q="emacs"+"shell"+tab+complete+slow+lag+freeze
-- https://www.google.com/search?client=ubuntu&hs=MjH&sxsrf=ALeKk00pCsDFnS4Sdtxwh9bZU8HhLT0sJw%3A1613614369863&ei=Ic0tYPqPLu-E9PwPkOC1iAc&q=emacs+remote+bash+completion+slow&oq=emacs+remote+bash+completion+slow&gs_lcp=Cgdnd3Mtd2l6EAMyBQghEKABOgcIABBHELADOgQIABBDOgUIABCRAjoICAAQsQMQgwE6BQgAELEDOgIIADoICC4QsQMQgwE6BQguELEDOggIABCxAxCRAjoHCAAQsQMQCjoGCAAQFhAeOggIABAWEAoQHjoFCCEQqwI6CAghEBYQHRAeOgcIIRAKEKABUPxUWIx-YPqAAWgBcAJ4AIABmQGIAcEUkgEEMjMuNpgBAKABAaoBB2d3cy13aXrIAQLAAQE&sclient=gws-wiz&ved=0ahUKEwi6pMH6rfLuAhVvAp0JHRBwDXEQ4dUDCA0&uact=5
-- https://www.google.com/search?q=emacs+paste+without+line+breaks&oq=emacs+paste+without+line+breaks&aqs=chrome..69i57.9783j0j7&client=ubuntu&sourceid=chrome&ie=UTF-8
-- https://stackoverflow.com/questions/14760567/emacs-auto-load-color-theme-by-time
-- https://karl-voit.at/2020/01/01/appendorgheading/
-- https://www.reddit.com/r/emacs/comments/gmsc2o/best_way_to_learn_enough_to_contribute_to_emacs/
-- https://www.reddit.com/r/emacs/comments/gumld3/svg_rounded_box_experiment/
-- https://emacs.stackexchange.com/questions/3105/how-to-use-an-external-program-as-the-default-way-to-open-pdfs-from-emacs
-- http://ergoemacs.org/emacs/elisp_compact_empty_lines.html
-https://github.com/politza/pdf-tools
-- https://www.reddit.com/r/emacs/comments/ajwtcb/emacs_on_the_go/
-- https://github.com/JAremko/docker-emacs
-- [[http://ergoemacs.org/emacs/emacs_shell_vs_terminal.html][Why Run Shell in Emacs?]]
-- [[https://www.emacswiki.org/emacs/TabCompletion][tab complete]]
-- [ ] [[https://emacs.stackexchange.com/questions/14833/debugging-warning-reference-to-free-variable][stack:emacs: Debugging “Warning: Reference to free variable”]]
-- https://github.com/Fuco1/smartparens
-- [[https://github.com/emacs-evil/evil/blob/master/README.md][EVIL mode]]
-- https://github.com/emacs-tw/awesome-emacs
-- Ideas
-  - Fix Warning (bytecomp): reference to free variable ‘oauth--token-data’ type warnings
-  - Load org-mode buffers at startup
-  - [[http://orgmode.org/worg/org-hacks.html][cool hacks]]
-  - font lock mods for highlighting text
-    - http://emacs.stackexchange.com/questions/5889/how-to-highlight-text-permanently-in-org-mode
-    - http://emacs.stackexchange.com/questions/12814/extending-org-mode-with-more-markups
-    - https://www.gnu.org/software/emacs/manual/html_node/emacs/Highlight-Interactively.html#Highlight-Interactively
-    - http://stackoverflow.com/questions/3579895/whats-the-font-lock-mode-for-in-emacs
-    - https://www.emacswiki.org/emacs/FontLockMode
-    - http://emacs.stackexchange.com/questions/9840/how-to-use-font-lock-to-highlight-end-of-line-comments
-    - http://stackoverflow.com/questions/20016634/highlight-selected-text-in-emacs-org-mode
-  - https://www.reddit.com/r/emacs/comments/5oo51r/wolframalpha_integration_with_emacs/
-  - [[http://emacs.stackexchange.com/questions/28772/manage-same-init-file-for-linux-and-windows][same init for multiple platforms]]
-- how to autoupdate packages?
-- https://github.com/emacs-tw/awesome-emacs
-- https://tuhdo.github.io/emacs-tutor3.html
-****** init file examples
-:PROPERTIES:
-:ID:       bdec9869-38cf-4f00-aead-3fb0821c64a8
-:END:
-- https://github.com/Izder456/Emacs-Config
-- https://randomgeekery.org/config/emacs/nano/
-***** Development
-:PROPERTIES:
-:ID:       664ce557-00df-4121-ad62-99b0d7631509
-:END:
-***** Ideas
-:PROPERTIES:
-:ID:       ea022e58-f02d-4f37-831f-59bc0fb9957f
-:END:
-- custom send to shell functions https://emacs.stackexchange.com/questions/37887/send-region-to-shell-in-another-buffer
-- libvterm https://github.com/akermu/emacs-libvterm
-- isend mode
-  - https://github.com/ffevotte/isend-mode.el/blob/master/isend-mode.el
-  - https://stat.ethz.ch/pipermail/ess-help/2015-July/010628.html
-  - https://github.com/ffevotte/isend-mode.el
-
-****** Don't tangle Property drawers
-:PROPERTIES:
-:ID:       4fc29cfc-0064-47f5-99b1-e35e80fa246d
-:END:
-#+begin_src emacs-lisp
-(defun suppress-file-are-same-warning (orig-fun &rest args)
-  "Suppress warnings when `file-truename' identifies files as the same."
-  (let ((warning-minimum-level :error))
-    (apply orig-fun args)))
-
-(advice-add 'file-truename :around #'suppress-file-are-same-warning)
-
-#+end_src
-#+begin_src emacs-lisp
-(with-eval-after-load 'files
-  (setq find-file-suppress-same-file-warnings t))
-
-#+end_src
-#+begin_src emacs-lisp
-(setq text-scale-mode-step 1.01)
-
-#+end_src
-#+begin_src emacs-lisp
-;;https://github.com/joaotavora/yasnippet/pull/789
-(advice-remove 'yas--auto-fill-wrapper #'ignore)
-#+end_src
+***** [[id:a49abc44-8e71-4a1a-bd35-a77849427c94][Emacs]]
 *** Software engineering                                                :ref:
 **** [[id:0ccb6668-d5dd-4519-8e32-d8082d74e336][Style Guides]]
 **** Literate programming
@@ -16205,6 +15960,8 @@ http://howardism.org/Technical/Emacs/literate-devops.html
 - Donald Knuth developed the idea in 1980s
 - [[https://www.youtube.com/watch?v=dljNabciEGg&ab_channel=HowardAbrams][Literate Deveops with Emacs]]
   -
+- https://www.reddit.com/r/emacs/comments/n2dw4n/replacing_jupyter_notebook_with_org_mode/
+http://www.howardism.org/Technical/Emacs/literate-programming-tutorial.html
 **** Software engineering                                               :ref:
 :PROPERTIES:
 :ID:       d4c65ebf-8abd-4876-8b79-08ae9fcc50c2
@@ -16468,7 +16225,7 @@ https://www.freecodecamp.org/news/learn-css-in-11-hours/
 https://programminghistorian.org/en/lessons/building-static-sites-with-jekyll-github-pages#tweaking-the-settings-
 https://mmistakes.github.io/jekyll-theme-basically-basic/recipes/chocolate-chip-cookies/
   - https://css-tricks.com/building-a-jekyll-site-part-3-of-3/
-  - [[file:~/data/library/compend.org::*Jekyll][Jekyll]]
+  - Jekyll
     - https://jekyllrb.com/docs/github-pages/
     - https://learn.cloudcannon.com/jekyll-cheat-sheet/
 - https://github.com/daviddarnes/alembic
@@ -16583,260 +16340,6 @@ service enabled).
 #+begin_src bash
 sudo fail2ban-client status sshd
 #+end_src
-
-*********** users and groups
-:PROPERTIES:
-:ID:       2c0b0cef-7551-4e6b-b7a6-1ad9d80460a1
-:END:
-    | function                  | command                   |
-    |---------------------------+---------------------------|
-    | list users                |                           |
-    | list groups               |                           |
-    | list group members        | getent group <GROUPNAME>  |
-    | add user                  | useradd <USERNAME>        |
-    | set password              | passwd <USERNAME>         |
-    | add group                 | groupadd <GROUPNAME>      |
-    | add user to group         | usermod -g <GROUP> <USER> |
-    | change user primary group |                           |
-
-*********** System description queries
-:PROPERTIES:
-:ID:       f3db8e59-cdc9-4f17-8e35-1c0c5f5b2626
-:END:
-- https://unix.stackexchange.com/questions/218074/how-to-know-number-of-cores-of-a-system-in-linux
-
-- https://www.google.com/search?q=ubuntu+see+disk+space
-********* General reference
-:PROPERTIES:
-:ID:       ea015c16-b999-4079-8cc9-eb98c694ed25
-:END:
-- https://support.displaylink.com/knowledgebase/articles/675136-how-to-configure-displaylink-displays-on-ubuntu
-
-- structure
-  - df disks
-    - spaces for RAM
-      - /run
-      - /run/shm
-********* [[id:1628b46e-4838-4f11-bc85-cb4d757e96f6][My computer setup]]
-:PROPERTIES:
-:ID:       85b23b2f-5635-4e17-9a69-0d978d394994
-:END:
-********* Server build
-:PROPERTIES:
-:ID:       BCD2D984-7185-47C0-9ECB-B1F40314595C
-:END:
-
-- [ ] server-linux build
-  - https://www.reddit.com/r/IWantToLearn/comments/87brq8/iwtl_how_to_build_a_home_server/?st=jfjrnjjw&sh=775fb75f
-  - https://www.reddit.com/r/buildapc/comments/6g40g4/i_dedicated_my_last_3_years_to_buildapc/
-  - hackintosh-compatible hardware? https://www.google.com/search?q=cheapest+hackintosh+hardware&rlz=1CDGOYI_enUS769US769&oq=cheapest+hackintosh+hardware&aqs=chrome..69i57.20469j0j4&hl=en-US&sourceid=chrome-mobile&ie=UTF-8
-    - - https://www.reddit.com/r/buildapc/comments/2lhvjr/build_complete_hackintosh_with_a_side_of_gaming/
-  - [[https://askubuntu.com/questions/647495/which-is-most-timemachine-like-backup-program-for-ubuntu][stack:Which is Most TimeMachine-like Backup Program for Ubuntu?]]
-  - https://askubuntu.com/questions/308897/convert-ubuntu-physical-machine-to-virtual-machine
-  - https://askubuntu.com/questions/32499/migrate-from-a-virtual-machine-vm-to-a-physical-system?rq=1
-
-********** Work build
-:PROPERTIES:
-:ID:       6C960771-38BB-4A48-95ED-576D79547489
-:END:
-:LOGBOOK:
-CLOCK: [2018-11-25 Sun 11:39]--[2018-11-25 Sun 13:37] =>  1:58
-CLOCK: [2018-11-16 Fri 08:26]--[2018-11-16 Fri 11:24] =>  2:58
-CLOCK: [2018-11-15 Thu 15:00]--[2018-11-15 Thu 15:34] =>  0:34
-CLOCK: [2018-10-29 Mon 15:17]--[2018-10-29 Mon 16:43] =>  1:26
-CLOCK: [2018-10-29 Mon 13:55]--[2018-10-29 Mon 14:24] =>  0:29
-:END:
-- WebDAV setup
-  - https://linuxize.com/post/how-to-set-up-apache-virtual-hosts-on-ubuntu-18-04/
-  - https://linuxconfig.org/webdav-server-setup-on-ubuntu-linux
-  - http://10.21.36.114/index.html
-  - Process
-    - Designate location
-    - Enable modules
-    - Configure
-  - stack
-    - apache2
-  - https://www.digitalocean.com/community/tutorials/how-to-configure-webdav-access-with-apache-on-ubuntu-14-04
-    - Glossary
-      - Apache is a web server
-      - "WebDAV is an extension of the HTTP protocol that allows users to manage files on servers"
-    -
-- hardware
-- stack
-  - ubuntu 18.04 LTS
-    - [[https://help.ubuntu.com/lts/serverguide/index.html.en][Documentation]]
-      - [[https://help.ubuntu.com/lts/serverguide/openssh-server.html.en][OpenSSH Server]]
-- [ ] connection
-  - remote desktop
-  - ssh jeff@10.21.36.114
-  - keys?
-  - stack
-    - [[https://www.openssh.com/manual.html][openssh]]
-- [ ] data synchronization
-  - stack
-    - [[https://rclone.org/box/][rclone]]
-    - [[https://wustl.app.box.com/folder/0][wustl box]]
-  - [ ] sync library box storage with rclone
-  - [ ] sync project work with github
-    - - https://pages.github.com/
-    - limit project directories to 1 gig https://help.github.com/articles/what-is-my-disk-quota/
-  - chron sync wrapper
-- [ ] os maintenance
-  - daemons
-    - cron work see ~/cron
-      - [ ] scheduled reports
-        - https://www.linux.com/blog/linux-101-check-disk-space-command
-      - notes and resources
-        - [[https://help.ubuntu.com/community/CronHowto][Ubuntu documentation CronHowto]]
-      - ideas
-        - https://www.google.com/search?q=best+cron+job+examples&oq=best+cron+job+examples&aqs=chrome..69i57.11620j1j9&sourceid=chrome&ie=UTF-8
-  - [ ] keyboard layout control
-  - [ ] directory management
-    - see Information Maintenance
-    - [[http://www.pathname.com/fhs/pub/fhs-2.3.pdf][file system hierarchy standard]]
-    - https://unix.stackexchange.com/questions/15230/file-and-directory-naming-conventions
-      - "remember as you think up a structure that permissions are hierarchical. In order for somebody to have permissions on a given folder, they need to have at least execute permissions on every folder ABOVE that folder. If you have anything in your home directory that you share, it needs to be near the top"
-    - https://unix.stackexchange.com/questions/201768/storing-shell-scripts
-  - RESUME w/ weekly system report script- exit code 2
-- [ ] work-linux time machine and portability
-- [ ] export
-- [ ] backup work machine
-- ideas
-  - [ ] change rm to direct to del folder
-- [X] past work
-  - [X] setup key pair with macos
-    - see https://www.thegeekstuff.com/2008/11/3-steps-to-perform-ssh-login-without-password-using-ssh-keygen-ssh-copy-id
-    - also alias to work-linux [[file:~/.bash_profile]]
-
-*********** update
-:PROPERTIES:
-:ID:       66803E55-A70F-4D49-A4D6-31520A3617DC
-:END:
-
-*********** Connections
-:PROPERTIES:
-:ID:       449D6647-FF79-48FE-8649-DD2DEF23FB93
-:CREATED:  [2019-03-17 Sun 15:46]
-:END:
-
-- [ ] connections
-  - [ ] remote desktop or ssh gui
-    - https://www.makeuseof.com/tag/ubuntu-remote-desktop-builtin-vnc-compatible-dead-easy/
-  - [ ] wine windows
-
-********* Ideas
-:PROPERTIES:
-:ID:       c8c52c75-195d-48dd-85ff-0ca43524dd7f
-:END:
-- [ ] setup printer interface
-  - https://ubuntuforums.org/showthread.php?t=1900967
-- [ ] setup terminal emulator mouseless copy
-  - https://stackoverflow.com/questions/3348800/gnome-terminal-how-to-copy-selection-to-clipboard-automatically/3432302
-  - https://www.google.com/search?q=gnome-terminal+vim+copy+paste&oq=gnome-terminal+vim+copy&aqs=chrome.1.69i57j0.5563j0j7&client=ubuntu&sourceid=chrome&ie=UTF-8
-  - https://www.google.com/search?q=tmux+mouseless+vim+copy&oq=tmux+mouseless+vim+copy&aqs=chrome..69i57j69i64.21772j0j7&client=ubuntu&sourceid=chrome&ie=UTF-8
-  - need copy paste out of gnome terminal into X clipboard
-    - https://askubuntu.com/questions/413436/copy-current-terminal-prompt-to-clipboard
-  - https://wiki.termux.com/wiki/Main_Page
-  - https://unix.stackexchange.com/questions/91863/terminal-copy-from-cli-without-using-mouse
-
-- [ ] setup low power procedure for macbook linux
-- https://www.google.com/search?q=libreoffice+save+new+slide+layout
-- get better highlightin on ubuntu menus
-- linux portable OS
-  - through git repo calls
-    - ~/.emacs.d
-    - ~/org
-    -
-- I3 control panel?
-- https://www.reddit.com/r/i3wm/comments/a00s8p/made_myself_a_pretty_popup_cheat_sheet/
-- how to vc and sync config files
-- https://www.google.com/search?q=libreoffice+save+new+slide+layout
-- get better highlightin on ubuntu menus
-- linux portable OS
-  - through git repo calls
-    - ~/.emacs.d
-    - ~/org
-    -
-- I3 control panel?
-- https://www.reddit.com/r/i3wm/comments/a00s8p/made_myself_a_pretty_popup_cheat_sheet/
-- [ ] setup terminal emulator mouseless copy
-  - https://stackoverflow.com/questions/3348800/gnome-terminal-how-to-copy-selection-to-clipboard-automatically/3432302
-  - https://www.google.com/search?q=gnome-terminal+vim+copy+paste&oq=gnome-terminal+vim+copy&aqs=chrome.1.69i57j0.5563j0j7&client=ubuntu&sourceid=chrome&ie=UTF-8
-  - https://www.google.com/search?q=tmux+mouseless+vim+copy&oq=tmux+mouseless+vim+copy&aqs=chrome..69i57j69i64.21772j0j7&client=ubuntu&sourceid=chrome&ie=UTF-8
-  - need copy paste out of gnome terminal into X clipboard
-    - https://askubuntu.com/questions/413436/copy-current-terminal-prompt-to-clipboard
-  - https://wiki.termux.com/wiki/Main_Page
-  - https://unix.stackexchange.com/questions/91863/terminal-copy-from-cli-without-using-mouse
-- https://www.reddit.com/r/commandline/comments/ceo8lt/ideas_for_good_use_of_the_caps_lock_key/
-- http://n-o-d-e.net/post/141489192021/how-to-create-a-handheld-linux-terminal-v2
-- linux external brain project
-********** USB build
-:PROPERTIES:
-:ID:       D367D5DD-4E6E-43EC-A1FF-F3F14B24D2D9
-:END:
-
-- porteus
-  - [[http://porteus.org/][hoempage]]
-- - linux
-  - toolbox
-    - OS with apps
-    - 7zip
-    - gparted
-    - emacs for all OS
-  - show battery life
-
-
-
-******** General and miscellaneous
-:PROPERTIES:
-:ID:       4eb4af79-483e-40d4-92e6-5c52b5aeabca
-:END:
-- https://www.reddit.com/r/commandline/comments/wwib48/good_alternatives_to_man_pages_to_learn_concise/
-- https://www.ventoy.net/en/index.html
-- https://linuxjourney.com/
-- https://www.reddit.com/r/linux4noobs/comments/qwp95g/most_noobs_would_benefit_from_reading_the_linux/
-- https://www.kernel.org/doc/html/latest/admin-guide/index.html
-- https://www.reddit.com/r/linux4noobs/comments/p4198y/i_recently_find_out_this_command_line_tool_called/
-- https://github.com/cheesecakeufo/komorebi#what-is-komorebi
-- https://training.linuxfoundation.org/announcements/upcoming-entry-level-it-certification-from-the-linux-foundation-to-provide-an-onramp-to-an-it-career/?SSAID=389818&sscid=91k4_ilkkv
-- [[https://help.ubuntu.com/community/KeyboardShortcuts][linux keyboard shortcuts]]
-- https://linustechtips.com/main/
-******* General reference
-:PROPERTIES:
-:ID:       234aa816-28c7-4a09-bdc0-0116322d0b9c
-:END:
-- https://www.reddit.com/r/commandline/comments/ka6izh/open_book_study_group_for_the_linux_command_line/
-- https://blog.robertelder.org/commandline
-- guides, tutorials, cheatsheets
-  - http://www.ee.surrey.ac.uk/Teaching/Unix/
-  - [[http://linuxcommand.org/][LinuxCommand.org]]
-  - [[http://korflab.ucdavis.edu/Unix_and_Perl/current.html][UC Davis Unix and Perl for biologists]]
-  - http://www.chm.bris.ac.uk/compres/unix/index.html
-  - http://www.commandlinefu.com/commands/browse
-  - [[http://catb.org/jargon/html/U/Unix.html][Unix name origin]]
-  - [[https://sanctum.geek.nz/arabesque/unix-as-ide-introduction/][Unix as IDE: Introduction]]
-  - [[http://cecs.wright.edu/~p/mateti/Courses/333/Top/index.html][Wright State CEG 333: Introduction to Unix]]
-  - [[http://www.commandlinefu.com/commands/browse/sort-by-votes][commandlinefu]]
-  - [[https://unix.stackexchange.com/questions/12762/how-do-i-temporarily-bypass-an-alias-in-tcsh][How do I temporarily bypass an alias in tcsh?]]
-  - [[https://unix.stackexchange.com/][stack: unix]]
-  - [[https://en.wikibooks.org/wiki/Guide_to_Unix][wikibooks: unix]]
-  - http://www.thegeekstuff.com/
-  - https://sneak.berlin/20191011/stupid-unix-tricks/
-- standards and best practices
-  - POSIX
-  - naming conventions- [[https://unix.stackexchange.com/questions/49008/for-filenames-are-underscores-or-dashes-more-common-in-unix-file-names][stack: For filenames, are underscores or dashes more common in Unix file names? {closed}]]
-- file structure
-  - https://unix.stackexchange.com/questions/4186/what-is-usr-local-bin
-- POSIX
-  - [[https://github.com/dylanaraps/pure-sh-bible][pure sh bible]]
-******* Ideas
-:PROPERTIES:
-:ID:       1ddc60ab-106c-4c31-835e-c36e54427b13
-:END:
-- idea for citrix script- - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
-- ideas- check disk space https://www.cyberciti.biz/tips/shell-script-to-watch-the-disk-space.html
-- GNU - [[https://www.gnu.org/help/help.html][Helping GNU]]
-- [[https://www.reddit.com/r/commandline/comments/7d5fwa/jobson_automatically_turn_commandline/][reddit: automatically turn command-line applications into webapps]]
 
 ***** Text file
 :PROPERTIES:
@@ -17085,7 +16588,7 @@ CLOCK: [2017-04-18 Tue 11:17]--[2017-04-18 Tue 11:28] =>  0:11
 
  https://bioconductor.org/packages/release/bioc/html/RDAVIDWebService.html
 
- [[file:~/library/Cumming,14%20The%20new%20statistics%20why%20and%20how.pdf][Cumming,14 The new statistics why and how]]
+ [[file:~/library/Cumming,14 The new statistics why and how.pdf][Cumming,14 The new statistics why and how]]
 
  http://www.r-bloggers.com/adding-metadata-to-variables/
 
@@ -17479,8 +16982,6 @@ CLOCK: [2017-10-19 Thu 14:01]--[2017-10-19 Thu 15:01] =>  1:00
 - https://www.reddit.com/r/programming/comments/150sr0g/walter_bright_programming_language_ideas_that/
 - https://www.freecodecamp.org/news/learn-c-programming-classic-book-dr-chuck/
 - https://www.technig.com/best-github-repositories-every-programmer/
-- https://missing.csail.mit.edu/
-  - https://www.reddit.com/r/programming/comments/eyagcd/the_missing_semester_of_your_cs_education_mit/
 - https://www.reddit.com/r/ProgrammerHumor/comments/wqugqh/i_thought_programming_was_hard_until_i_found_this/
 - https://goalkicker.com/
 - https://krisbogdanov.com/personal-projects-before-first-internship/?fbclid=IwAR1hna-buWCrhA7pd2qRp-NkNXGEN0pUrUNoll8peSpOK6F3H-ceeevkcNE
@@ -17511,18 +17012,7 @@ CLOCK: [2017-10-19 Thu 14:01]--[2017-10-19 Thu 15:01] =>  1:00
     -
   - procedure-oriented- sequence of actions is more important to data
     - 'top down'
-**** Ideas
-:PROPERTIES:
-:ID:       47C83191-1387-4161-9E0C-A5F7EC1A8914
-:END:
-
-
-**** General reference
-:PROPERTIES:
-:ID:       2b950539-24e7-4f71-9ead-d2060720462a
-:END:
 - recommendations
-  - https://softwarerecs.stackexchange.com/questions?sort=votes
   - https://softwarerecs.stackexchange.com/questions?sort=votes
 - GPL-3 licensing
 - https://www.amazon.com/Hackers-Painters-Big-Ideas-Computer/dp/1449389554
@@ -17801,7 +17291,7 @@ singularity
   - [[https://docs.docker.com/engine/reference/builder/#parser-directives][Dockerfile reference]]
   - [[https://docs.docker.com/develop/develop-images/dockerfile_best-practices/][Dockerfile best practices]]
     - [[https://hub.docker.com/search/?q=&type=image&image_filter=official][official images]]
-  - [[file:~/data/Dockerfiles/]]
+  - =~/data/Dockerfiles/=
   - recommended dockerfiles
     - [[https://hub.docker.com/_/golang/]]
     - https://hub.docker.com/_/ruby/
@@ -18166,7 +17656,7 @@ docker run jeszyman/test
 - https://pyvideo.org/pycon-us-2013/the-future-of-linux-containers.html
 - my images
   - jeszyman/dev, local, push to secure docker hub
-- [[file:~/data/Dockerfiles/][my Dockerfiles]]
+- my Dockerfiles
 - docker compose
   - https://www.semanticscholar.org/paper/Using-Docker-Compose-for-the-Simple-Deployment-of-List/632c38a859b851b20c3988c773368991151fec33/figure/2
   - https://www.biorxiv.org/content/biorxiv/early/2017/12/26/239947.full.pdf
@@ -18752,7 +18242,7 @@ df
 - variable naming
 - toy data
   - https://stats.stackexchange.com/questions/30303/how-to-simulate-data-that-satisfy-specific-constraints-such-as-having-specific-m
-  - [[file:~/data/library/compend.org::*Creating%20and%20Modeling%20Data][Creating and Modeling Data]]
+  - Creating and Modeling Data
 #+BEGIN_SRC R
 # toy data frame of medical data
 patient=1:1000 # 1000 patients
@@ -19362,7 +18852,7 @@ CLOCK: [2020-07-29 Wed 11:00]--[2020-07-29 Wed 11:20] =>  0:20
 - documentation
 - applications
 - reference
-  - [[file:~/.basecamp/emacs/public_yasnippets/org-mode/software]]
+  - =~/.basecamp/emacs/public_yasnippets/org-mode/software=
 ***** dplyr
 :PROPERTIES:
 :CREATED:  [2021-09-13 Mon 09:31]
@@ -19441,8 +18931,8 @@ package.check = lapply(
   - system interactions
     - standard plotting device for macos is quartz
       - http://stat.ethz.ch/R-manual/R-patched/library/grDevices/html/quartz.html
-  - [[file:~/.emacs.d/settings.org::*14%20Working%20with%20source%20code-%20Org%20Babel][14 Working with source code- Org Babel]]
-  - [[file:~/.emacs.d/settings.org::*Local%20R%20setup][R Local Setup]]
+  - [[file:~/repos/emacs/emacs.org::*Working with source code][14 Working with source code- Org Babel]]
+  - R Local Setup
   - system interactions
     - Export and outputs
       - [[https://www.r-bloggers.com/stargazer-package-for-beautiful-latex-tables-from-r-statistical-models-output/][rbloggers: latex table export]]
