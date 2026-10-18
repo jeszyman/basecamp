@@ -19091,6 +19091,8 @@ CLOCK: [2020-09-17 Thu 14:11]--[2020-09-17 Thu 15:17] =>  1:06
 - https://www.benq.com/en-us/monitor/programming/rd280u.html
 - make org tangles run asyncronous
 - cast boox screen to linux or http
+- [2026-10-18 Sun] [[https://marimo.io/][marimo]] as a demo and teaching platform: a reactive Python notebook stored as a =.py= file that a learner or collaborator can run and change in the browser (=marimo run= serves it as an interactive page; the WebAssembly export runs with no Python install). Python only, so it does not replace org-babel for R analysis.
+- [2026-10-18 Sun] Neighborhood link graph of the org knowledge base: pick one heading (e.g. MPNST) and draw it with every heading one or two =id:= links away, in either direction, across the org files, to see which crosslinks the knowledge-base work has built around a topic, whether the linked headings form a hierarchy, and which related headings nothing links to. Built from the =id:= links already in the files (about 5,600 ID'd headings and 4,300 =id:= links in the eight main files on [2026-10-18 Sun]); a whole-corpus graph at that size has no readable labels.
 
 let's draw the dir trees w/ tikz / forest
 https://tex.stackexchange.com/questions/211726/draw-directory-tree-using-folder-icons
