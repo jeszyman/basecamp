@@ -2810,13 +2810,14 @@ Semicolon count follows the GNU Emacs Lisp Reference Manual "Comment Tips" conve
 ;;; Helm filtering helpers
 
 ;; Filter helm results to exclude structural headings
-(defun jg/helm-filter-example (candidate)
+(defun js/helm-filter-example (candidate)
   "Return non-nil if CANDIDATE should be shown in helm."
   (not (string-match-p ":nohelm:" candidate)))     ; tag-based exclusion
 #+end_example
 
 ***** Functions
-- Namespace every custom function with the =jg/= prefix (=jg/org-marks-reveal=). Mark internal helpers not meant to be called directly with a double dash: =jg/feature--helper= (e.g. =jg/org-marks--mark-at-point=).
+- Namespace every custom function with the =js/= prefix (=js/org-marks-reveal=). Mark internal helpers not meant to be called directly with a double dash: =js/feature--helper= (e.g. =js/org-marks--mark-at-point=).
+  - Search for the prefix as =(js/= or a whole-symbol match, since the bare string =js/= also occurs in file-type lists such as =css/js/json=. The former =jg/= names still resolve as obsolete aliases from [[id:1ce488b2-c5be-41ab-bbc8-8917a35f7601][Backward-compatibility aliases for the jg/ prefix]].
 - Docstring as the first form for any infrastructure defun (called from multiple places, hooks, capture templates); a one-liner =;;= above suffices for a simple config function, since the org source is the canonical documentation.
 - Interactive commands declare =(interactive)= and take input via =interactive= rather than positional globals.
 - Single-purpose, explicit parameters; prefer helpers that return values over ones that mutate global state.
@@ -7470,6 +7471,9 @@ https://www.reddit.com/r/datascience/comments/17t04cn/chatgpt_becomes_a_serious_
 https://www.reddit.com/r/datascience/comments/1385fge/sigmoid_academy_leetcode_for_data_science/
 https://old.reddit.com/r/datascience/comments/rap2m2/9_distance_measures_in_data_science/
 https://github.com/WHOexcessc19/Codebase
+- Data to wisdom pyramid [cite:@kasthurirathne2022analytics]: information is data organized for a specific need; knowledge is information in context; wisdom, the top, is the ability to increase effectiveness.
+- Data sources [cite:@kasthurirathne2022analytics]: secondary data were collected for another purpose; the three main secondary types are surveys, registries (product, health service, disease or condition, or a combination), and administrative data. Big data are datasets too large or complex for traditional methods, defined and assessed by volume (quantity), variety (types), and velocity (rate of arrival).
+- Data categories [cite:@murphy2022itsystems]: unstructured data are not stored in an easily computable form, mainly the notes about a patient; "big" data are usually unstructured and set apart because they are hard to process, either from storage footprint (radiology images, sequencing output) or from complexity needing large computing resources.
 *** Digital data repositories
 :PROPERTIES:
 :ID:       d043f43d-77cb-4afa-a798-4d5afb0692f5
@@ -7605,6 +7609,7 @@ CLOCK: [2022-01-24 Mon 08:33]--[2022-01-24 Mon 08:49] =>  0:16
   - also dbi, montedb, msosql, mysql, sql mode...
   - https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-sql.html
 - Schema: structure of a database
+  - The schema's rules are constraints: each column has a data type (INT, DATETIME, VARCHAR(n)) and may be required; constraints stop an address landing in the patient-ID column but not a wrong pulse value [cite:@mankowitz2018]
 - Relational database (RDB)
   - Performance features
     - Indexes
@@ -7617,6 +7622,25 @@ CLOCK: [2022-01-24 Mon 08:33]--[2022-01-24 Mon 08:49] =>  0:16
     - Query optimization
   - Schema specified by sql
   - Normalization: minimal duplication across tables
+      - Normalization organizes columns and tables to reduce redundancy and improve integrity; a normalized table has each row refer to one indivisible (atomic) idea, e.g. a patients table and a pulses table joined on patient_id. A table deliberately kept redundant for speed is denormalized [cite:@mankowitz2018]
+      - Benefit 1: no duplicate data, so less storage and easier modification; the tradeoff is that a query needing both tables is slower than one denormalized table because of the join [cite:@mankowitz2018]
+      - Benefit 2: prevents data anomalies. Update anomaly: an incomplete edit of a value stored in several rows leaves inconsistent data. Insertion anomaly: a new patient cannot be added because a required column (pulse) has no value yet. Deletion anomaly: deleting one measurement row removes all record of the patient [cite:@mankowitz2018]
+      - The join on a shared key (patient_id) is the defining characteristic of the Relational DataBase Management System (RDBMS) [cite:@mankowitz2018]
+      - Third normal form (3NF), E. F. Codd's level of normalization, is the usual standard for minimizing repetition: an encounter table holds a provider identifier but not the provider's name and address, which belong to the provider table [cite:@murphy2022itsystems].
+      - Entity-attribute-value (EAV) is a normalization pattern that allows schema changes without altering tables [cite:@murphy2022itsystems].
+- Transactions and ACID [cite:@murphy2022itsystems]: operations that must occur together form one transaction. Atomicity: if one part fails the whole transaction is reversed. Consistency: no transaction violates the database's rules. Isolation: concurrent transactions give the same result as if run consecutively. Durability: once committed, changes survive failures and are visible to all other transactions.
+- NoSQL (object-oriented) databases [cite:@mankowitz2018]
+  - No schema defines what data are required or their format; persistent objects are meant to be as transferable and manipulable as in-memory objects in an object-oriented language. In a document store each collection holds arbitrary documents (one patient document carries demographics plus all pulse readings); data are represented in XML or JSON; adding a new field needs no new columns or tables [cite:@mankowitz2018]
+  - Scale horizontally across many commodity machines (near-limitless storage, high availability), while an RDBMS scales vertically on one bigger data store; the RDBMS gives greater consistency [cite:@mankowitz2018]
+  - ACID, the four reliability properties of a database transaction: Atomicity (done completely or fail completely, e.g. debit and credit of a transfer), Consistency (every transaction moves the database from one valid state to another; a 2017-02-30 date is rejected), Isolation (concurrent transactions yield the same state as if run sequentially), Durability (a completed change survives power loss or crash). Most RDBMS give ACID guarantees; distributed NoSQL stores usually cannot and offer eventual consistency instead, so for legal and regulatory reasons non-ACID databases are not routinely used for patient information [cite:@mankowitz2018]
+- Data warehouses, data marts, and OLAP [cite:@mankowitz2018]
+  - A data warehouse is an intentional abstraction of a database designed for analytics: the EHR database is optimized for online transaction processing (OLTP; highly normalized, fast read-write of single patients, mission-critical uptime), the warehouse for online analytical processing (OLAP; read-only, intentionally denormalized, multidimensional cubes, usually an overnight replica on a separate system so reliability matters less) [cite:@mankowitz2018]
+  - A data mart is a smaller slice of the warehouse restricted to one line of business (radiology's data for radiology, housekeeping's for housekeeping) [cite:@mankowitz2018]
+  - An OLAP cube is a multidimensional array for business intelligence; each axis is a dimension (study type, site, year) and each cell a fact or measure. Operations: drill-down (split a category, year into months), roll-up (combine categories), slice (hold one dimension constant, X-rays only), dice (constrain more than one dimension, XR and CT in clinic and outpatient), pivot (swap the axes) [cite:@mankowitz2018]
+- Database integrity: three rules that guarantee consistency [cite:@mankowitz2018]
+  - Entity integrity: every table has a unique primary key (not always enforced). Referential integrity: whenever a column refers to a row in another table, that row exists (a purchase of item A9 with no A9 in the items table breaks it). Domain integrity: a column accepts only a specified list or range of values (temperature limited to 20 to 40 C) [cite:@mankowitz2018]
+  - These sit under logical integrity (the data make sense: a 300 degree oral temperature is faithfully stored but impossible), distinct from physical integrity (media corruption, protected by redundant stores such as RAID) [cite:@mankowitz2018]
+- Non-relational (NoSQL) databases [cite:@murphy2022itsystems]: MUMPS, the hierarchical database behind Epic and VistA; MapReduce databases, where hundreds of computers run subtasks of a split query at once; document databases that store and process whole documents.
 - Hadoop: open-source toolset that fractions data and computation
   - opposed to enterprise approach with single, powerful computer
   - Architecture
@@ -7961,6 +7985,7 @@ CLOCK: [2017-05-18 Thu 10:44]--[2017-05-18 Thu 11:51] =>  1:07
 - https://www.reddit.com/r/datascience/comments/fzweaf/my_giant_data_quality_checklist/
 - missing data imputation http://factominer.free.fr/missMDA/appendix_These_Audigier.pdf
 - A parser written against a sample of an export format is verified only when its counts reconcile against a full real export: parsed record count equals raw record count, and unresolved or orphaned references are zero. The Google Voice loader passed its synthetic-fixture tests and still missed four media layouts that only the full-export reconciliation exposed ([[id:ea7b50dc-6ff6-440a-af48-60ba300ea598][Google Voice export loader]], [2026-09-24 Thu]).
+- Extract, Transform, Load (ETL): extract data from the source system through its available interfaces, transform the formats so they align, load them so they can be analyzed together [cite:@murphy2022itsystems].
 *** [[id:F80F3FAF-1D79-40F5-934B-F74D19143DBD][LINK TO Probability and Statistics]]
 :PROPERTIES:
 :ID:       e2b15a0d-bc6d-48d6-9ea2-d7f6be07af31
@@ -8060,6 +8085,14 @@ CLOCK: [2017-05-02 Tue 10:35]--[2017-05-02 Tue 11:09] =>  0:34
 :END:
 - Semantic and natural language processing lab
 - [[id:CA21AAC9-F147-4086-A24C-64451EE349F3][Python NLTK]]
+- Basic techniques (Table 16.1 in [cite:@kasthurirathne2022analytics])
+  - Lemmatization: group inflected forms so they are analyzed as one item ("good" is the lemma of "better").
+  - Stemming: reduce inflected or derived words to a root ("walk" from "walking").
+  - Summarization: a readable summary of a larger text.
+  - Sentence boundary detection: find sentence starts and ends (the dot in "Dr. Walker" is not a break).
+  - Sentiment analysis or opinion mining: identify affective states and subjective information to infer polarity ("negative for cancer" means no cancer).
+  - Part-of-speech (POS) tagging: label each word as verb, noun, adjective, and so on.
+  - Named entity recognition (NER): locate and classify named entities into predefined categories ("syphilis" is an illness).
 - applications
   - [[https://www.reddit.com/r/dataisbeautiful/comments/8m9ha6/i_created_a_tool_to_automatically_extract_the/][summarization]]
   - nl processing bot
@@ -10510,10 +10543,8 @@ rule scatter_copy_head_collect:
 :ID:       a16fe567-bb8c-466b-8ea6-18814290089c
 :END:
 - Snakemake
-  #+begin_src snakemake
-
-###   Benchmark   ###
 #+begin_src snakemake
+###   Benchmark   ###
 
 onsuccess:
     shell("""
@@ -10816,7 +10847,7 @@ rule ${1:$$(replace-regexp-in-string " " "_" yas-text)}:
         """
 ,#+end_src
 
-#+begin_src python :tangle ./scripts/$1.py
+,#+begin_src python :tangle ./scripts/$1.py
 ,#+end_src
 
 #+end_src
@@ -10842,7 +10873,7 @@ rule ${1:$$(replace-regexp-in-string " " "_" yas-text)}:
         """
 ,#+end_src
 
-#+begin_src R :tangle ./scripts/$1.R
+,#+begin_src R :tangle ./scripts/$1.R
 ,#+end_src
 
 #+end_src
@@ -10929,7 +10960,7 @@ rule ${1:$$(downcase(replace-regexp-in-string " " "_" yas-text))}:
         """
 ,#+end_src
 
-#+begin_src bash :tangle ./scripts/$1.sh
+,#+begin_src bash :tangle ./scripts/$1.sh
 #!/usr/bin/env bash
 ,#+end_src
 #+end_src
@@ -11120,7 +11151,7 @@ r.script$0
         {output} &> {log}
         """
 ,#+end_src
-#+begin_src bash :tangle ./scripts/$1.sh
+,#+begin_src bash :tangle ./scripts/$1.sh
 $0
 ,#+end_src
 #+end_src
@@ -13042,8 +13073,14 @@ https://www.reddit.com/r/programming/comments/1eo2lo5/uncle_bob_martin_i_am_in_t
 :PROPERTIES:
 :ID:       b9145567-7654-45d7-abb9-4418d3f12b90
 :END:
+
+- Language basics [cite:@murphy2022itsystems]: object-oriented programming builds data structures that carry properties and methods; control structures are looping and branching; natively compiled languages are fastest, virtual-machine languages next, interpreted languages slowest.
 - domain-specific
   - SQL
+- Language levels and execution [cite:@mankowitz2018]
+  - Assembly language replaces machine-code number strings with words and abbreviations; an assembler translates it 1:1 into machine code [cite:@mankowitz2018]
+  - Compiled language (e.g. FORTRAN): a compiler converts the complete source code into machine code before it can run; two compilers can produce different machine code from the same source. Interpreted language (e.g. BASIC): each line is passed through an interpreter at execution, so the program can be stopped, changed, and restarted, at the cost of speed. Just-in-time compilers blur the distinction [cite:@mankowitz2018]
+  - Control structures are the language mechanisms that tell the computer what to do in a given circumstance: if/then/else blocks, loops (for/next with a counter variable; while until a condition is met), and functions that encapsulate reused code and take arguments [cite:@mankowitz2018]
 - https://www.reddit.com/r/bioinformatics/comments/qpuhn5/which_programming_languages_should_i_learn/hjx3ocg/
 https://www.freecodecamp.org/news/rust-in-replit/
 ***** [[https://en.wikipedia.org/wiki/MUMPS][MUMPS]]
@@ -15120,7 +15157,7 @@ change to # --------------------------------------------------------------------
 # key: code.bash
 # expand-env: ((yas-indent-line 'none))
 # --
-#+begin_src bash :comment no
+,#+begin_src bash :comment no
 $0
 ,#+end_src
 #+end_src
@@ -15988,6 +16025,8 @@ https://abseil.io/resources/swe-book
       - https://en.wikipedia.org/wiki/Infrastructure_as_code#Tools
       - https://en.wikipedia.org/wiki/Big_ball_of_mud
       - https://en.m.wikipedia.org/wiki/Information_hiding
+      - Three-tier architecture: user interface (front end) on a PC or tablet, an application server that may serve many users, and a database server that may serve many applications [cite:@murphy2022itsystems].
+      - Architectural diagrams: UML activity diagram, swimlanes, data flow diagram; an enterprise architecture diagram shows only the main features of each aspect of a system [cite:@murphy2022itsystems].
   - [[https://www.reddit.com/r/IWantToLearn/comments/8o7uli/iwtl_how_to_design_and_create_mobile_apps_and/][Reddit: IWTL how to design and create mobile apps and games from scratch]]
   - General guides
     - [[https://www.reddit.com/r/IWantToLearn/comments/8o7uli/iwtl_how_to_design_and_create_mobile_apps_and/][Reddit: IWTL how to design and create mobile apps and games from scratch]]
@@ -16000,10 +16039,16 @@ https://abseil.io/resources/swe-book
     - https://simonwillison.net/2022/Oct/1/software-engineering-practices/
     - http://pixelscommander.com/wp-content/uploads/2014/12/P10.pdf
   - Software development models
-    - Agile
-    - Scrum
-    - Waterfall
+    - Waterfall: sequential, each phase (requirements, design, implementation, verification, maintenance) complete before the next; called top-down because it starts at design and works down to implementation. Up to 50% of resources go to requirements and design, on the tenet that hours spent there save hundreds later; gives predictable milestones; critics note requirements rarely stay fixed [cite:@mankowitz2018]
+    - Rapid prototyping: programmers build representative but incomplete parts so the client sees the product early; starting from the user interface and working backwards is called bottom-up [cite:@mankowitz2018]
+    - Spiral model (Boehm): combines waterfall and prototyping with cyclical iterative risk assessment; each cycle covers part of the project in four parts: analysis of objectives, alternatives, and constraints; evaluation of alternatives and risks; development and verification; planning the next cycle [cite:@mankowitz2018]
+    - Rapid application development (RAD): like spiral, reduces risk by splitting the project into chunks on strict timeboxes; when behind, requirements are cut to fit the timebox rather than the deadline moved; builds fully functional models, not prototypes, and favors code generators and object-oriented tools [cite:@mankowitz2018]
+    - Agile: iterative, lightweight, people-centric; daily face-to-face customer and programmer interaction; welcomes change, even late, if the delivery date holds; avoids comprehensive documentation and strict planning in favor of short cycles of continuously improving software. Scrum and Extreme Programming (XP) are variations [cite:@mankowitz2018]
+    - Waterfall: sequential phases planned in full up front; Iterative: its antithesis, minimal planning at the start; Spiral: many development cycles, some waterfall-like and some iterative [cite:@murphy2022itsystems].
+    - Agile methodologies fuse development, testing, and requirements revision in rapid cycles; Scrum breaks work into 30-day sprints; related practices are pair programming, code reviews, and documentation written before the code [cite:@murphy2022itsystems].
     - https://www.reddit.com/r/programming/comments/ag7vh4/detecting_agile_bullshit_from_the_us_department/
+  - Software quality model (ISO 25010): eight characteristics [cite:@mankowitz2018]
+    - Functional suitability (does it meet the client's needs correctly and completely), performance efficiency (resources, capacity, speed at scale), compatibility (can it interface and coexist with other systems; see system integration), usability (learnability, training cost, error prevention, steps per common task), reliability (downtime for maintenance, failure rate, recoverability), security (access levels, authentication, prevention of unauthorized access; central since HIPAA), maintainability (modular components, reuse, testability, error reporting), portability (move to another architecture, install with standard tools, replace or be replaced) [cite:@mankowitz2018]
   - User experience
     - https://www.freecodecamp.org/news/use-user-reseach-to-create-the-perfect-ui-design/
     - https://www.reddit.com/r/commandline/comments/fyla88/ux_design_principles_for_command_line_interfaces/
@@ -16016,8 +16061,11 @@ https://abseil.io/resources/swe-book
   - Unit test
     - unit testing
       - https://docs.python.org/3/library/unittest.html
+  - Regression testing: re-running all the old unit tests after a change [cite:@murphy2022itsystems].
+  - Verification (unit tests, by developers or testers) compares the software to its design; validation (by end-users and requirements gatherers) checks that it does what was originally intended [cite:@murphy2022itsystems].
 - https://codeutopia.net/blog/2015/03/01/unit-testing-tdd-and-bdd/
 - test-driven development :: requirements converted to test cases
+  - In TDD the programmer writes an automated test before adding each feature; once the feature passes, the test joins the application's internal test library and the whole library is re-run as the code grows, so new features cannot silently break old ones. Critics note the test code often ends up larger than the application code [cite:@mankowitz2018]
 *** Computer networks
 **** Web development
 :PROPERTIES:
@@ -16251,6 +16299,20 @@ https://mmistakes.github.io/jekyll-theme-basically-basic/recipes/chocolate-chip-
 :ID:       3fe8d3cd-e9aa-466a-8293-7aaf487556f9
 :END:
   - [[https://www.reddit.com/r/IWantToLearn/comments/7s7q32/computer_networking/][reddit: computer networking]]
+- Network devices: a node is any device that sends or receives data, a link the path between them. A hub rebroadcasts every signal to all attached nodes; a switch forwards only to the intended node; a router works like a switch but sits at the junction of two networks and decides which signals pass. Network Address Translation (NAT), done by routers and many firewalls, lets computers on a private network share one public-facing address without revealing their local addresses; the router swaps its own address for the origin on outgoing packets, maps replies back, and rejects uninvited inbound packets [cite:@mankowitz2018]
+- Layer models: the Open System Interconnect (OSI) model has seven layers and the Transmission Control Protocol/Internet Protocol (TCP/IP) model four [cite:@mankowitz2018]
+  - OSI 1 physical (radio, copper, fiber) and 2 data link (corrects physical-layer errors, synchronizes transport) together are the TCP/IP network access layer; OSI 3 network (routing and switching) is the TCP/IP internet layer; 4 transport (error-checking so data arrive complete and correct) has the same name in both; OSI 5 session (opens and closes communication between applications), 6 presentation (transforms data into usable formats, e.g. bytes to a picture; encryption usually here), and 7 application (authentication, user interaction, quality of service; browsers, FTP, email) are together the TCP/IP application layer. HL7 is named for OSI layer 7 [cite:@mankowitz2018]
+- Circuit vs packet switching: the public switched telephone network (PSTN, POTS) reserves a whole circuit for one conversation, so little lag but idle capacity; cellular and Voice-over-IP (VoIP) encapsulate each bit of the conversation in packets sent station to station and reassembled by the recipient, so packets may arrive out of order or be lost and the delay is variable [cite:@mankowitz2018]
+- OSI seven-layer network model, with the examples in the chapter's table [cite:@murphy2022itsystems]
+  - 7 Application: message format between systems or the human-machine interface (HTTP, HL7)
+  - 6 Presentation: encryption and compression (SSL, ASCII, JPEG)
+  - 5 Session: authentication, authorization, session restoration; an application connects through a socket assigned by port number
+  - 4 Transport: end-to-end error control across many physical links and routers (TCP; with an IP address, TCP/IP)
+  - 3 Network: globally or enterprise-unique addresses (IP address); connects via routers
+  - 2 Data link: error detection and flow control on the physical link, using fixed MAC addresses (Ethernet); connects via switches
+  - 1 Physical: copper, fiber, or radio; segments connect via hubs
+  - Firewalls are security devices that operate at several layers at once.
+- [[id:ac1b6006-cf32-49b7-b7c5-ceff809e104a][Health information exchange and interoperability]]
 
 ***** Application programming interface (API)
 :PROPERTIES:
@@ -16337,6 +16399,14 @@ gsutil -m cp -n -c -L /mnt/data/projects/pnst/logs/gcloud-transfer-2025-02-03.tx
 :ID:       bba17542-9c34-43d2-99f6-073d3e9b76d8
 :END:
 - [[https://www.reddit.com/r/LifeProTips/comments/7vf4ne/lpt_if_you_tell_a_website_to_recover_your/dtrwlkb/][reddit unencrypted password discussion]]
+- Firewalls: a device at the junction of two networks that decides what information passes, protecting one network from the other [cite:@mankowitz2018]
+  - Packet filter, the simplest type: inspects each packet's source and destination against a known list; fast, but never examines packet contents. Stateful inspection, the next generation: reassembles packets on the firewall and inspects them for prohibited content, so it can block unauthorized sites, viruses, and games and, since it works both ways, stop users leaking PHI; most modern firewalls combine both [cite:@mankowitz2018]
+  - A virtual private network (VPN) lets a remote computer join an otherwise closed network by appearing to have a local address, with the traffic encrypted across the public internet [cite:@mankowitz2018]
+- Encryption [cite:@mankowitz2018]
+  - Advanced Encryption Standard (AES) is symmetric: sender and recipient hold the same 256-bit key; about 10^77 possible keys, and because decryption is deliberately slow a brute-force attack would take about 3 x 10^69 years [cite:@mankowitz2018]
+  - Public key (asymmetric) cryptography: the key has two mathematically linked parts that cannot be derived from each other; the public key is widely known and used to encrypt, the private key is secret and used to decrypt, so anyone can send the holder a secure message. Reversed, a document encrypted with the private key and decrypted with the public key verifies a digital signature [cite:@mankowitz2018]
+- Attack classes [cite:@murphy2022itsystems]: a buffer overflow writes past a program's input buffer to execute injected code; FISMA-moderate controls (E-Government Act of 2002) are the federal baseline for guarding against them.
+- Health data law (HIPAA Security Rule, HITECH, Common Rule): [[id:f647bde0-4352-4b86-99f3-c53a08e2d1ac][Health IT policy and regulation]]
 
 **** fail2ban — SSH brute-force blocking
 Internet-exposed machines receive constant SSH brute-force attempts. fail2ban bans IPs after
@@ -16494,6 +16564,20 @@ power button to flush disk writes and preserve logs:
 :PROPERTIES:
 :ID:       72EDC65E-5721-48AF-9FCA-69497D45DFD0
 :END:
+
+- Models [cite:@holden2022hfe]
+  - SEIPS 2.0 (Systems Engineering Initiative for Patient Safety) is the work-system model used in health care human factors.
+  - Hick-Hyman Law: the time to decide and act, T, rises logarithmically with the number of choices n (links on a page).
+  - Fitts's Law: movement time to a target, MT, rises logarithmically with distance D and falls with target width W.
+  - Norman's seven stages of action frame human-computer interaction as a dialog between forming a goal and evaluating the outcome.
+  - Usability is a system's learnability, efficiency of use (effort to performance), and error tolerance.
+- Practices [cite:@holden2022hfe]
+  - ISO 9241-210 human-centred design principles: explicit understanding of users, tasks, and environments; users involved throughout design and development; design driven and refined by user-centred evaluation; an iterative process.
+  - Participatory design seats one or more end-users on the design team; heuristic evaluation has experts check an interface against usability heuristics.
+  - NIST provides a template for reporting EHR usability test results.
+- Design principles [cite:@holden2022hfe]: simplify the interface; keep users in control of the system and their navigation; make the system resemble the user's world and mental models; reduce physical and mental workload; give immediate, apparent feedback; make erroneous actions auditable and reversible (undo, cancel); use redundancy judiciously for important elements.
+- Emerging trends named in the chapter: team-based collaborative informatics; personal and connected health informatics; the growing burden of multiple chronic and complex conditions; mobile (mHealth) and ubiquitous (uHealth) informatics; data analytics and learning-health-system informatics [cite:@holden2022hfe].
+- Health care workflow analysis: [[id:8C862214-090A-4563-AC67-CB6ED920FF10][Implementation Research / Implementation Science and Quality Improvement]]
 
 *** Applied computing                                                :career:
 :PROPERTIES:
@@ -16847,6 +16931,8 @@ print 'The square of your number is: ' + str(userNumber)
   - Image files
     - Raster
       - PNG- raster, compressible
+  - XML uses tags (text within brackets) to separate the pieces of a document; CSV is non-hierarchical [cite:@murphy2022itsystems].
+  - FHIR's uptake is driven by the 21st Century Cures Act, which requires EHR vendors to support it in some circumstances [cite:@murphy2022itsystems].
 - Character encoding
   - ASCII- 1 bit
   - Unicode- 2 bits
@@ -19307,7 +19393,7 @@ This text in org and below the header will be a comment
 
 ls
 2
-#+end_srcl
+#+end_src
 
 This comment will not appear in the tangled code
 
