@@ -1980,6 +1980,7 @@ TSWLatexianTemp*
 - https://www.google.com/search?q=github+leave+a+repo+closed+notice
 - https://www.google.com/search?q=github+new+repository
 - GitHub Pages on an old repo: the legacy build pipeline (=build_type: legacy=) produced no build for =jeszyman.github.io= on push, on an API build request, or on a Pages config re-save (2026-09-07; last legacy build 2018). Fix was =gh api -X PUT repos/<owner>/<repo>/pages -f build_type=workflow= plus a =.github/workflows/pages.yml= using =actions/checkout=, =actions/configure-pages=, =actions/upload-pages-artifact= with =path: .=, and =actions/deploy-pages=; the first run published within a minute.
+- Collaborators on a repository owned by a personal account always get write access; a personal account has no read-only collaborator level, so the API refused =permission=read= for all five rmeth beta-tester invitations on 2026-10-21 and sent them at write. Read-only access needs an organization-owned repository. Docs: https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-personal-account-settings/permission-levels-for-a-personal-account-repository
 ****** Create a remote
 - e.g.
   #+begin_src bash
