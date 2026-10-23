@@ -9635,6 +9635,7 @@ https://www.orgzlyrevived.com/
 :PROPERTIES:
 :ID:       79e08e83-de54-440a-a309-a24fd17d276a
 :END:
+- A docx written by pandoc =--toc= holds the table of contents as a Word field. Word fills the field in when it opens the file; LibreOffice does not, so a LibreOffice PDF export shows an empty contents page unless the indexes are updated first through LibreOffice's UNO interface. [[file:~/career/funding/grants/awarded-active/ctf-private-donor-P26-09352/mop/update_toc_export.py][update_toc_export.py]] (tangled from the CTF MOP's "Figure and export build" heading) updates them and writes the PDF; on [2026-10-23 Fri] it filled in the CTF MOP's contents page (11 pages).
 
 
 #+begin_src bash
