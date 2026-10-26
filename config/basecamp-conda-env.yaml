@@ -65,3 +65,8 @@ dependencies:
   - r-upsetr       # Visualizations of intersecting sets using a matrix design #
   - r-writexl                                    # Export data frames to Excel #
   - r-yaml                    # Implements libyaml YAML 1.1 parser and emitter #
+# Set on activation. Keeps the user site-packages (~/.local/lib/python3.10) off
+# sys.path: the system python's pip --user numpy 2.x otherwise shadows this
+# env's numpy and breaks its compiled packages (scikit-learn, 2026-10-26).
+variables:
+  PYTHONNOUSERSITE: "1"
