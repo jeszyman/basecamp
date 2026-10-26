@@ -27,6 +27,7 @@
 ** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
 ** [[id:0ccb6668-d5dd-4519-8e32-d8082d74e336][Code Style Guide]]
 ** Change log
+- [2026-10-25 Sun] [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]] =Terminal file manager (yazi)=: closing the yazi window prompted yes/no because kitty's default =confirm_os_window_close -1= confirms closing a window with a running program. Added a managed =~/.config/kitty/kitty.conf= with =confirm_os_window_close 0= (applied on jeff-pad and jeff-beast) and a regression test, =tests/kitty_close_no_prompt.sh=. Removed =confirm_quit = false= from =yazi.toml=; yazi 26.5.6 has no such key.
 - [2026-10-13 Tue] Moved the [[id:1DA3ABC0-79B0-4CED-B926-22B37840379D][Data Visualization]] subtree (its ID with it) out of this file into science.org under the [[id:cfa2883f-4d98-43c5-b125-274cfd95a22b][Scientific figure]] module, now the single figure style guide, exported as =:claudekb:=. The Code Style Guide's pointer to it is unchanged.
 
 - [2026-10-11 Sun] Added [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]] capability =Claude desktop app with Cowork virtual machine= (Anthropic apt repo + signed-by keyring, =claude-desktop= with its QEMU dependencies, user added to the =kvm= group; tasks tagged =claude-desktop=, desktop-only). Applied on jeff-pad: claude-desktop 2.31226.1, key fingerprint 31DD DE24 DDFA B679 F42D 7BD2 BAA9 29FF 1A7E CACE. Cowork also needs VT-x enabled in firmware, which was off on jeff-pad.
@@ -3863,6 +3864,7 @@ Any interactive bash started outside tmux and outside Emacs replaces itself with
         - "{{ ansible_env.HOME }}/.local/bin"
         - "{{ ansible_env.HOME }}/.local/kitty.app"
         - "{{ ansible_env.HOME }}/.config/yazi"
+        - "{{ ansible_env.HOME }}/.config/kitty"
         - "/tmp/yazi-{{ yazi_version }}"
         - "/tmp/zoxide-{{ zoxide_version }}"
         - "/tmp/resvg-{{ resvg_version }}"
@@ -3986,7 +3988,6 @@ Any interactive bash started outside tmux and outside Emacs replaces itself with
           # 7z, imagemagick, ffmpegthumbnailer, zoxide.
 
           [mgr]
-          confirm_quit   = false       # skip "are you sure?" on quit
           ratio          = [1, 3, 4]   # parent : current : preview column widths
           show_hidden    = false       # hide dotfiles on launch (toggle live with  .  )
           sort_by        = "natural"   # natural order: file2 before file10
@@ -4029,6 +4030,16 @@ Any interactive bash started outside tmux and outside Emacs replaces itself with
             { mime = "application/pdf", use = [ "open", "inkscape" ] },
             { mime = "text/html", use = [ "open", "brave" ] },
           ]
+
+    # kitty's default confirm_os_window_close (-1) asks yes/no before closing a
+    # window whose program is still running, so closing the yazi window prompts.
+    - name: Deploy kitty config
+      ansible.builtin.copy:
+        dest: "{{ ansible_env.HOME }}/.config/kitty/kitty.conf"
+        mode: "0644"
+        content: |
+          # kitty configuration (managed; source of truth is basecamp.org).
+          confirm_os_window_close 0
 
     - name: Deploy yazi theme
       ansible.builtin.copy:
@@ -4118,6 +4129,30 @@ Any interactive bash started outside tmux and outside Emacs replaces itself with
       register: kitty_check
       changed_when: false
       failed_when: "'kitty' not in kitty_check.stdout"
+#+end_src
+
+Regression test for the kitty close prompt: opens yazi in a kitty window, closes the window through i3, and fails if kitty shows its "Are you sure you want to close this OS Window?" yes/no prompt. Needs a running X session with i3.
+#+name: kitty-close-no-prompt-test
+#+begin_src bash :tangle ./tests/kitty_close_no_prompt.sh :mkdirp yes :shebang "#!/usr/bin/env bash"
+set -u
+title="kitty-close-test-$$"
+kitty --title "$title" "$HOME/.local/bin/yazi" /tmp &
+kitty_pid=$!
+sleep 3
+i3-msg "[title=\"$title\"] kill" >/dev/null
+sleep 2
+# kitty runs the prompt as a `kitten ask` child of its own process.
+if pgrep -P "$kitty_pid" -f "kitten ask" >/dev/null; then
+    echo "FAIL: kitty asked to confirm closing the window"
+    kill "$kitty_pid"
+    exit 1
+fi
+if kill -0 "$kitty_pid" 2>/dev/null; then
+    echo "FAIL: kitty window still open"
+    kill "$kitty_pid"
+    exit 1
+fi
+echo "PASS: window closed without a prompt"
 #+end_src
 **** Git configuration
 #+begin_src yaml
