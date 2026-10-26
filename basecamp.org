@@ -27,6 +27,8 @@
 ** [[id:76a6e083-f569-42a9-b551-4b9ccc770834][Basecamp conda environment]]
 ** [[id:0ccb6668-d5dd-4519-8e32-d8082d74e336][Code Style Guide]]
 ** Change log
+- [2026-10-26 Mon] [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]]: its =header-args:yaml= now carries =:tangle-mode (identity #o644)=. emacs.org sets =:tangle-mode #o755= in =org-babel-default-header-args= for every tangle, so each re-tangle had made =ansible/public-common-playbook.yaml= executable again after 70a869b dropped the bit. Org applies the mode only when the tangled content changes; the file was set to 644 by hand this time.
+- [2026-10-25 Sun] [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]] =Common tools=: pandoc is installed from the upstream 3.1 release .deb (task tag =pandoc=) instead of the =apt_packages= list, so every machine runs the same version; jeff-beast had Ubuntu's 2.9.2.1 and jeff-pad a hand-installed 3.1.
 - [2026-10-25 Sun] [[id:42a1c7e4-9b67-41b6-8336-83e061da7154][Public common playbook]] =Terminal file manager (yazi)=: closing the yazi window prompted yes/no because kitty's default =confirm_os_window_close -1= confirms closing a window with a running program. Added a managed =~/.config/kitty/kitty.conf= with =confirm_os_window_close 0= (applied on jeff-pad and jeff-beast) and a regression test, =tests/kitty_close_no_prompt.sh=. Removed =confirm_quit = false= from =yazi.toml=; yazi 26.5.6 has no such key.
 - [2026-10-13 Tue] Moved the [[id:1DA3ABC0-79B0-4CED-B926-22B37840379D][Data Visualization]] subtree (its ID with it) out of this file into science.org under the [[id:cfa2883f-4d98-43c5-b125-274cfd95a22b][Scientific figure]] module, now the single figure style guide, exported as =:claudekb:=. The Code Style Guide's pointer to it is unchanged.
 
@@ -3212,7 +3214,6 @@ apt_packages:
   - hunspell-en-us            # English dictionary for Hunspell
   - jq                        # JSON processor
   - mosh                      # Mobile shell - roaming/resumable SSH
-  - pandoc                    # Document converter (Markdown, LaTeX, etc.)
   - parallel
   - p7zip-full                # 7z archive support (x extractor)
   - rename
@@ -3286,7 +3287,7 @@ wget_downloads:
 *** Public common playbook                                           :ansipb:
 :PROPERTIES:
 :ID:       42a1c7e4-9b67-41b6-8336-83e061da7154
-:header-args:yaml: :tangle ./ansible/public-common-playbook.yaml :mkdirp yes
+:header-args:yaml: :tangle ./ansible/public-common-playbook.yaml :mkdirp yes :tangle-mode (identity #o644)
 :END:
 [[file:ansible/public-common-playbook.yaml]]
 **** Ideas
@@ -3415,6 +3416,18 @@ fn fn
       loop: "{{ apt_packages }}"
       register: apt_install_results
       ignore_errors: true
+
+    # pandoc comes from its upstream release .deb, pinned so every machine runs
+    # the same version; Ubuntu 22.04's apt pandoc is 2.9.2.1. The version is set
+    # on the task so that a --tags pandoc run needs no other task.
+    - name: Install pinned pandoc release
+      ansible.builtin.apt:
+        deb: "https://github.com/jgm/pandoc/releases/download/{{ pandoc_version }}/pandoc-{{ pandoc_version }}-1-amd64.deb"
+        state: present
+      become: true
+      vars:
+        pandoc_version: "3.1"
+      tags: pandoc
 #+end_src
 
 **** Desktop tools
@@ -4154,6 +4167,7 @@ if kill -0 "$kitty_pid" 2>/dev/null; then
 fi
 echo "PASS: window closed without a prompt"
 #+end_src
+- [2026-10-26 Mon] Claude session "kitty-close-and-include-inline": [[elisp:(start-process "claude-resume" nil (expand-file-name "~/.claude/bin/claude-resume") "7bb0b733-d8ad-4d8a-994b-76280d50727c" "/home/jeszyman")][resume]]
 **** Git configuration
 #+begin_src yaml
 
