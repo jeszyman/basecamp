@@ -9029,11 +9029,6 @@ dependencies:
   - pdfplumber                                     # PDF to tabular conversion #
   - google-api-python-client      # Gmail API client (org scripts/gmail-fetch.py) #
   - google-auth-oauthlib                # OAuth login for the Google API clients #
-  - pip
-  - pip:
-    - vncdotool           # VNC client: screenshots and input on the Mayo MacBook #
-    - service-identity                     # TLS host checks Twisted needs for vncdo #
-    - pyopenssl>=26          # Older pyOpenSSL fails to import with cryptography 50 #
 #+end_src
 
 
