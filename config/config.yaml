@@ -5,6 +5,8 @@ apt_packages:
   - build-essential           # C compiler toolchain
   - cmake                     # Build system
   - curl                      # Command-line tool for HTTP requests
+  - fd-find                   # Fast file finder (yazi search; binary 'fdfind')
+  - fzf                       # Fuzzy finder (yazi/zoxide jump, history search)
   - ncdu                      # Disk usage TUI
   - git                       # Version control system
   - gh                        # GitHub command line tool
@@ -12,10 +14,11 @@ apt_packages:
   - hunspell                  # Spell checker library
   - hunspell-en-us            # English dictionary for Hunspell
   - jq                        # JSON processor
-  - pandoc                    # Document converter (Markdown, LaTeX, etc.)
+  - mosh                      # Mobile shell - roaming/resumable SSH
   - parallel
   - p7zip-full                # 7z archive support (x extractor)
   - rename
+  - ripgrep                   # Fast content search (yazi grep)
   - tmux                      # Terminal multiplexer
   - tree                      # Directory structure viewer
   - unrar                     # RAR archive support (x extractor)
@@ -34,6 +37,7 @@ apt_packages_desktop:
   - brave-browser             # Web browser
   - default-jre
   - ffmpeg                    # Audio/video processing (whisper recording)
+  - ffmpegthumbnailer         # Video thumbnails (yazi previews)
   - fonts-firacode            # Monospaced font with ligatures
   - fonts-hack                # Monospaced font
   - libreoffice-java-common
@@ -69,6 +73,8 @@ public_symlinks:
     dest: "${HOME}/.emacs.d/lisp/ob-mermaid.el"
   - src: "${HOME}/repos/basecamp/lib/basecamp_functions.sh"
     dest: "${HOME}/.bashrc.d/basecamp_functions.sh"
+  - src: "${HOME}/repos/basecamp/config/tmux.conf"
+    dest: "${HOME}/.tmux.conf"
   - src: "${HOME}/repos/latex/emacs/latex_setup.el"
     dest: "${HOME}/.emacs.d/lisp/latex_setup.el"
 
