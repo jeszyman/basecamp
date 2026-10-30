@@ -5094,12 +5094,12 @@ EOF
 #+end_src
 
 ***** gsync
-Start-of-session git reconciler for the two-machine (beast + pad) setup. =~/repos= working files sync via Syncthing but each machine's =.git= is per-machine, so a machine can hold the right files while its branch pointer lags origin. Run =gsync= the moment you sit down at the other machine — the start-of-session counterpart to =closeout= (end-of-session only). It checks the *commit graph* first: a follower (behind, no local commits) has its pointer realigned with =git reset --mixed=, which moves HEAD + index but never touches working files — so Syncthing's shared working tree stays the source of truth (a fully-synced follower lands clean; anything not yet synced is preserved, never discarded). Up-to-date / ahead machines commit + push genuine local work. It never force-pushes, never auto-merges, and refuses loudly on real (commit-level) divergence. Named =gsync= (not =sync=) so it doesn't shadow coreutils =/bin/sync=.
+Start-of-session git reconciler for the two-machine (beast + pad) setup. =~/repos= working files sync via Syncthing but each machine's =.git= is per-machine, so a machine can hold the right files while its branch pointer lags origin. Run =gsync= the moment you sit down at the other machine — the start-of-session counterpart to =closeout= (end-of-session only). It checks the *commit graph* first: a follower (behind, no local commits) has its pointer realigned with =repo-commit --sync=, which first merges any commits made off the Syncthing machines (Claude Duet, github.com) into the working files and then runs =git reset --mixed=, which moves HEAD + index but never touches working files — so Syncthing's shared working tree stays the source of truth (a fully-synced follower lands clean; anything not yet synced is preserved, never discarded). Up-to-date / ahead machines commit + push genuine local work. It never force-pushes, never auto-merges, and refuses loudly on real (commit-level) divergence. Named =gsync= (not =sync=) so it doesn't shadow coreutils =/bin/sync=.
 #+begin_src bash
 # gsync — reconcile this machine's git branch with origin (beast+pad setup).
 # Working files are the Syncthing-shared source of truth; gsync only moves this
 # machine's git POINTER to match origin and never overwrites working files
-# (follower realign uses 'reset --mixed', not --hard). Pushes genuine local
+# (follower realign runs repo-commit --sync, never --hard). Pushes genuine local
 # commits; refuses loudly on real (commit-level) divergence.
 gsync() {
     local branch head remote
@@ -5121,8 +5121,11 @@ gsync() {
             git show "origin/$branch:$f" 2>/dev/null | cmp -s - "$f" || \
                 echo "gsync: note — keeping working file that differs from origin: $f" >&2
         done < <(git diff --name-only HEAD "origin/$branch")
-        echo "gsync: follower — realigning pointer to origin/$branch (working files untouched)."
-        git reset --mixed "origin/$branch" || return 1
+        # repo-commit --sync first merges commits made off the Syncthing
+        # machines (Claude Duet, github.com) into the working files, which
+        # a bare reset would leave out, then moves the pointer with --mixed.
+        echo "gsync: follower — realigning pointer to origin/$branch."
+        repo-commit --sync || { echo "gsync: repo-commit --sync left files to settle (see above)." >&2; return 1; }
         if git diff --quiet; then
             echo "gsync: in sync, tree clean."
         else
