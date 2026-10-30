@@ -10079,7 +10079,7 @@ bespoke concurrency setup
     - Tag format: plain repo-level =vX.Y.Z= (e.g., v2.1.0, v1.7.1). A tag is a whole-repo snapshot, so the repository is the unit it versions; for independent release cadence, split into separate repos rather than namespacing tags within one.
     - Document workflow versions in both the README changelog and the org-file changelog.
     - Org-file changelog
-      - Each repository's main =.org= file contains a =**** Change Log= heading.
+      - Each repository's main =.org= file has a =Change Log= heading as the last child of its README heading, at whatever level README sits.
       - Entries are reverse chronological list items with org timestamps: =- [YYYY-MM-DD Day] Description=.
       - The top entry is always "Development since last tag" — a running accumulator for work not yet tagged to a version.
       - When a version is tagged, the accumulator entries move under a =vX.Y.Z= bullet. The accumulator resets to empty.
