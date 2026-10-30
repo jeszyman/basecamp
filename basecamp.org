@@ -5126,6 +5126,8 @@ gsync() {
         # a bare reset would leave out, then moves the pointer with --mixed.
         echo "gsync: follower — realigning pointer to origin/$branch."
         repo-commit --sync || { echo "gsync: repo-commit --sync left files to settle (see above)." >&2; return 1; }
+        # A repo Syncthing does not share is left behind by --sync; realign it as before.
+        [ "$(git rev-parse HEAD)" = "$remote" ] || git reset --mixed "origin/$branch" || return 1
         if git diff --quiet; then
             echo "gsync: in sync, tree clean."
         else
