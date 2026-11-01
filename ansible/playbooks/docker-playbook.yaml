@@ -45,4 +45,43 @@
             name: "{{ ansible_user | default(ansible_env.USER) }}"
             groups: docker
             append: yes
+        - name: Check for an NVIDIA GPU
+          stat:
+            path: /usr/bin/nvidia-smi
+          register: nvidia_smi
+
+        - name: Add the NVIDIA container toolkit signing key
+          apt_key:
+            url: https://nvidia.github.io/libnvidia-container/gpgkey
+            keyring: /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+            state: present
+          when: nvidia_smi.stat.exists
+
+        - name: Add the NVIDIA container toolkit repository
+          apt_repository:
+            repo: deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://nvidia.github.io/libnvidia-container/stable/deb/$(ARCH) /
+            filename: nvidia-container-toolkit
+            state: present
+          when: nvidia_smi.stat.exists
+
+        - name: Install the NVIDIA container toolkit
+          apt:
+            name: nvidia-container-toolkit
+            state: present
+            update_cache: yes
+          when: nvidia_smi.stat.exists
+
+        # Writes the nvidia runtime into /etc/docker/daemon.json; a second run
+        # changes nothing, so the restart below runs only on the first.
+        - name: Register the NVIDIA runtime with Docker
+          command: nvidia-ctk runtime configure --runtime=docker
+          register: nvidia_ctk
+          changed_when: "'Wrote updated config' in nvidia_ctk.stdout or 'Wrote updated config' in nvidia_ctk.stderr"
+          when: nvidia_smi.stat.exists
+
+        - name: Restart Docker to load the NVIDIA runtime
+          systemd:
+            name: docker
+            state: restarted
+          when: nvidia_smi.stat.exists and nvidia_ctk.changed
       become: true
