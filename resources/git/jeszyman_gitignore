@@ -9,7 +9,10 @@
 
 # URL: https://github.com/jeszyman/basecamp/blob/master/resources/git/jeszyman_gitignore
 ###   Claude Code   ###
+docs/
 docs/superpowers/
+CLAUDE.md
+AGENTS.md
 **/.claude/settings.local.json
 ###   Elisp   ###
 *.elc
@@ -40,6 +43,7 @@ nohup.out
 # Syncthing sync artifacts
 .syncthing.*.tmp
 ~syncthing~*.tmp
+*.sync-conflict-*
 .stversions/
 .stfolder/
 ###   Snakemake  ###

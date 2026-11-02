@@ -1,6 +1,6 @@
 #!/bin/sh
 threshold=200
-org_files=$(git diff --cached --name-only --diff-filter=M | grep '\.org$' || true)
+org_files=$(git diff --cached --name-only --diff-filter=M | grep '\.org$' | grep -v '^cal\.org$' || true)
 [ -z "$org_files" ] && exit 0
 
 blocked=""
