@@ -9043,6 +9043,11 @@ dependencies:
   - pdfplumber                                     # PDF to tabular conversion #
   - google-api-python-client      # Gmail API client (org scripts/gmail-fetch.py) #
   - google-auth-oauthlib                # OAuth login for the Google API clients #
+  - pip
+  - pip:
+      # Raw camera file reader (org scripts/photo-dust.py). The PyPI wheel
+      # bundles LibRaw 0.22, which reads Nikon Z5II NEFs; installed 2026-11-02.
+      - rawpy
 #+end_src
 
 
