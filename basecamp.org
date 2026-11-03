@@ -9,6 +9,12 @@
 :TODO_SET: plans
 :PLANS_SINCE: [2026-09-25 Fri]
 :END:
+*** FUTURE Claim-tree crawler on the private model
+:PROPERTIES:
+:ID:       941ce669-1f2a-4f49-ab62-3f1540e077bb
+:END:
+
+[[file:docs/plans/2026-11-03-claim-tree-crawler.md]]
 *** ACTIVE Private local model on beast
 :PROPERTIES:
 :ID:       2e6d0110-f669-4e6e-b0b6-25305a5e875e
