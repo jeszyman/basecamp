@@ -9,6 +9,18 @@
 :TODO_SET: plans
 :PLANS_SINCE: [2026-09-25 Fri]
 :END:
+*** ACTIVE Entity crawler on the private model
+:PROPERTIES:
+:ID:       0b0d1a9e-7a4c-4a3d-9a2e-2b4c6f7d8e91
+:END:
+:LOGBOOK:
+- State "ACTIVE"     from "FUTURE"     [2026-11-03 Tue 17:17]
+:END:
+
+[[file:docs/plans/2026-11-03-entity-crawler.md]]
+
+- [2026-11-03 Tue] Built as the second crawl kind in local-review (entities.py, entities_out.py; kind-aware crawl-state.json; org repo mounted in the harness; cron on beast chained after the claim-tree crawl). Filter as built: 528 candidates in science.org; the MPNST, NF1, and cfDNA headings all pass it with their type stripped. System text 756 words, read by Jeff before night one (local-review crawl entities --show-prompt). First night due 02:00 on beast after the claim-tree crawl.
+
 *** ACTIVE Claim-tree crawler on the private model
 :PROPERTIES:
 :ID:       941ce669-1f2a-4f49-ab62-3f1540e077bb
