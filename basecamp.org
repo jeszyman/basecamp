@@ -12064,6 +12064,7 @@ https://github.com/xournalpp/xournalpp
 https://imagemagick.org/script/montage.php
 - capture screen to gif
   - https://www.cockos.com/licecap/
+- QR codes: zxing-cpp (=pip install zxing-cpp=, =zxingcpp.read_barcodes(img)=) decoded a stylized QR code (round dots, rounded finder corners) from a browser screenshot that OpenCV's =QRCodeDetector= could not read [2026-11-09 Mon]; a Wi-Fi QR decodes to =WIFI:S:<network>;T:WPA;P:<password>;;= [[https://github.com/zxing-cpp/zxing-cpp][zxing-cpp]]
 ******* imagemagick
 :PROPERTIES:
 :ID:       9b764756-e8af-4ef8-91c3-5e52bbc6ee33
