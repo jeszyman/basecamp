@@ -7057,6 +7057,19 @@ merge_docx(files, output)
 - Comment reply: add a =<w:comment>= to word/comments.xml whose paragraph carries a new =w14:paraId=; put its =w:commentRangeStart=, =w:commentRangeEnd= and =w:commentReference= beside the parent comment's in word/document.xml; add =<w15:commentEx w15:paraId="NEW" w15:paraIdParent="PARENT" w15:done="0"/>= to word/commentsExtended.xml. word/commentsIds.xml and word/commentsExtensible.xml get matching entries when the file has them (unverified whether Word requires them).
 - Check: =unzip -t=; =pandoc --track-changes=accept= and =--track-changes=reject= to plain text, each diffed against the source; =soffice --headless --convert-to pdf= to render.
 - Verified [2026-11-09 Mon] on two reviewed Word documents (a study protocol and its manual of procedures): archive test, pandoc accept and reject diffs, LibreOffice render. Not yet opened in Word.
+- A numbered paragraph whose mark is another author's =w:ins= is deleted by adding a tracked =<w:del w:id="N" w:author="..." w:date="..."/>= beside that =w:ins= in the paragraph's =<w:pPr><w:rPr>=; the paragraph goes when changes are accepted. Used [2026-11-16 Mon], where LibreOffice could not make this deletion ([[id:b9d00a8b-1cfd-4402-a774-43462f2bdb9f][live LibreOffice editing]]).
+***** Edit a docx that holds other reviewers' tracked changes in a running LibreOffice over UNO
+:PROPERTIES:
+:ID:       b9d00a8b-1cfd-4402-a774-43462f2bdb9f
+:END:
+
+- A LibreOffice instance listening on "socket,host=localhost,port=2002;urp;" can be driven from Python's =uno= module. The desktop's open components include the documents in the user's own windows. With =RecordChanges= set true on a document, every text change from the script is a tracked change under LibreOffice's user name (=/org.openoffice.UserProfile/Data=, fields =givenname= and =sn=). Nothing reaches disk until the window is saved.
+- A tracked replace is =createSearchDescriptor= and =findAll=, then =setString= on the found range. Comment text can be changed, and new comments added, the same way.
+- A trial that leaves the user's window untouched: =loadComponentFromURL= on a scratch copy with Hidden=True, edit, =storeToURL= with FilterName "MS Word 2007 XML", then check the saved archive for well-formed XML and for the counts of =w:ins=, =w:del= and comments.
+- LibreOffice writes the author as one string. Setting last name "Szymanski, Jeff" with first name empty makes new changes match earlier Word-authored ones; with the default "Jeffrey Szymanski", Word shows a second reviewer.
+- Any save from LibreOffice turned one of another author's 65 tracked insertions into plain text (seen [2026-11-16 Mon] on a study protocol, a scratch-copy trial); all 54 comments were kept.
+- Deleting a whole paragraph whose paragraph mark is another author's tracked insertion makes LibreOffice save malformed XML (=<w:rPr><w:del ...></w:del></w:ins></w:rPr>=), and the document had to be reloaded. Deleting only the text is safe; the empty numbered paragraph left behind is removed in the saved file's XML ([[id:a2e6f29a-dae0-4445-a1b3-9e3921fc546b][XML editing]]).
+- Used for the CTF protocol and manual of procedures sent [2026-11-16 Mon]; neither file was opened in Word afterwards.
 ***** LibreOffice Impress pptx to pdf - import to inkscape w/ internal import to modify text
 :PROPERTIES:
 :ID:       edd74cdb-7a47-4f86-b187-7fee932b5ba8
