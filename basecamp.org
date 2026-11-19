@@ -17007,6 +17007,17 @@ print 'The square of your number is: ' + str(userNumber)
 :ID:       FEF63C80-B199-41CE-9C2F-81C8717D2029
 :END:
 
+****** UNATTACHED_IDEA Statistical tests as objects that carry a test from plan to report
+:PROPERTIES:
+:ID:       3ea63cb5-9aec-4416-8371-15e11babcce5
+:CREATED:  [2026-11-19 Thu]
+:END:
+
+- [2026-11-18 Wed] From Keep note "Oop for stats?" ([[https://www.reddit.com/r/learnprogramming/comments/1xyvdk6/comment/19ssjr50c0pdw/][r/learnprogramming comment]]): why has no one set up statistical tests as object-oriented objects?
+- The object: one test (e.g. Welch's t-test) built from its design before any data, with methods for assumptions, sample size, the run on data, and a report sentence; swapping in another test keeps the same methods.
+- Existing pieces, checked [2026-11-19 Thu]: R =t.test()= returns an =htest= list whose only method is =print=; scipy =ttest_ind= returns =TtestResult= with =.confidence_interval()=; statsmodels =TTestIndPower= is a power class separate from the test (63.8 per group for d = 0.5, alpha 0.05, power 0.8). Closest designs, not yet checked: R =infer=, R =coin=, Julia =HypothesisTests.jl=.
+- Limits: closed-form power exists only for simple tests (mixed models and GLMs need simulation from a model of how the data are generated), and switching tests automatically after an assumption pre-test changes the error rate.
+
 *** Data formats and standards
 **** Standards and formats
 :PROPERTIES:
