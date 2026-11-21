@@ -33,6 +33,10 @@ dependencies:
       # Raw camera file reader (org scripts/photo-dust.py). The PyPI wheel
       # bundles LibRaw 0.22, which reads Nikon Z5II NEFs; installed 2026-11-02.
       - rawpy
+      # Garmin Connect client (scripts/garmin_pull.py and the other Garmin
+      # scripts); it imports requests-oauthlib but does not install it.
+      - garminconnect
+      - requests-oauthlib
 # ---   R   --- #
 # ------------- #
 
