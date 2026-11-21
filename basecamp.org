@@ -2915,6 +2915,7 @@ Semicolon count follows the GNU Emacs Lisp Reference Manual "Comment Tips" conve
   - file (=file=): =directory=, =link=, =touch=, =absent=, =file=.
   - service (=systemd=): =started= / =stopped= (plus =enabled:= for boot-time).
 - Simple apt-only packages go in the =apt_packages= list (=config/config.yaml=), installed by a single looped =ansible.builtin.apt= task — kept *alphabetically sorted*, one entry per line, so additions are diff-clean and dedup is obvious. A package gets its own task heading only when it needs more than =apt install= (config or service enablement); see the project =CLAUDE.md= Ansible conventions.
+- A task's =content:= and other string arguments go through Jinja before the module runs, so =${#arr[@]}= in a shell script opens a Jinja comment (={#=) and the task fails with =Missing end of comment tag= before any file is written. Counting the items with a loop avoids the construct.
 
 ***** References
 - [[https://docs.ansible.com/ansible/latest/tips_tricks/ansible_tips_tricks.html][Ansible — Tips and tricks (best practices)]]
