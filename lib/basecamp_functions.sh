@@ -859,8 +859,8 @@ logout() {
 
  Usage: logout
 
- Logs out of i3 using i3lock. If emacsclient is running, will save all buffers prior to
- logout.
+ Logs out of i3 using i3lock, then powers the monitors off. If emacsclient is running,
+ will save all buffers prior to logout.
 
  Options:
    -h, --help    Show this help message and exit
@@ -880,6 +880,11 @@ EOF
     fi
 
     pgrep emacsclient && emacs-save && i3lock -c 000000 || i3lock -c 000000
+
+    # i3lock only paints the screen black. With the lid closed on the dock the machine
+    # does not suspend, so external monitors would stay backlit until the X DPMS timer.
+    # The pause lets the Enter key release pass first, since any key event wakes them.
+    sleep 1 && xset dpms force off
 
 }
 ls-size(){
