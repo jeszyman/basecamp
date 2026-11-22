@@ -6101,6 +6101,7 @@ EOF
 
 }
 #+end_src
+- [2026-11-22 Sun] Claude session "logout-monitor-off": [[elisp:(start-process "claude-resume" nil (expand-file-name "~/.claude/bin/claude-resume") "03603933-3199-4a7d-9522-9bacc12d08a1" "/home/jeszyman")][resume]]
 ***** ls-size()
 #+begin_src bash
 ls-size(){
