@@ -19,4 +19,6 @@ def measure(data: dict, labels: dict[str, str], setting: dict) -> dict[str, floa
     # one value per sample whose label is CASE_LABEL; may use samples of other labels as a reference
 ```
 
+The harness computes its interval by calling measure many times on resampled cohorts. In those calls a sample can appear more than once, as "<sample id>#<k>" (for example "ES012#3"). measure must look each sample's data up by the part before "#", treat each key in labels as its own sample (so a repeated sample counts as many times as it appears), and return one value per key whose label is CASE_LABEL. Any reference or pooled estimate must be computed from the samples in labels, not from the whole file.
+
 SETTINGS holds between 5 and 30 settings spread over the range the data allow, never outside it. The harness reads the data through load from a copy of the folder; measure.py must not write files.

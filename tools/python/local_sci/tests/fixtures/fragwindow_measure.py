@@ -42,7 +42,7 @@ def measure(data, labels, setting):
     lo, hi = setting["lo"], setting["hi"]
 
     def inside(sample):
-        row = data["freqs"][sample]
+        row = data["freqs"][sample.split("#")[0]]
         return sum(float(row[f"bp_{length}"]) for length in range(lo, hi + 1))
 
     healthy = [s for s, label in labels.items() if label == "healthy"]
@@ -51,7 +51,7 @@ def measure(data, labels, setting):
     for sample, label in labels.items():
         if label != CASE_LABEL:
             continue
-        tf = data["tf"][sample]
+        tf = data["tf"][sample.split("#")[0]]
         kept = inside(sample)
         if kept <= 0 or tf <= 0:
             out[sample] = float("nan")
