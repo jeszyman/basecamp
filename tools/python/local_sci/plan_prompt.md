@@ -19,4 +19,4 @@ def measure(data: dict, labels: dict[str, str], setting: dict) -> dict[str, floa
     # one value per sample whose label is CASE_LABEL; may use samples of other labels as a reference
 ```
 
-SETTINGS holds between 5 and 30 settings spread over the range the data allow, never outside it. measure must return values that depend on labels only through the labels argument, because the harness reruns it with the labels shuffled as a negative control.
+SETTINGS holds between 5 and 30 settings spread over the range the data allow, never outside it. The harness reads the data through load from a copy of the folder; measure.py must not write files.

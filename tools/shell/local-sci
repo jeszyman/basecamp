@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# local-sci: answer a small research question from data on jeff-beast with one
+# Claude planning call and a fixed statistics harness. Runs the work on beast
+# (local_sci in ~/repos/basecamp/tools/python), copies the finished run folder to
+# ~/.cache/local-sci/runs/ on this machine, and prints the local report path.
+#   local-sci "<question>" --data <folder on beast> [--model M]
+set -euo pipefail
+
+PY=/home/jeszyman/miniconda3/envs/basecamp/bin/python
+REMOTE="cd ~/repos/basecamp/tools/python && $PY -m local_sci.cli"
+
+if [[ $# -eq 0 || "$1" == "-h" || "$1" == "--help" ]]; then
+  ssh jeff-beast "$REMOTE --help"
+  exit 0
+fi
+
+log=$(mktemp)
+ssh jeff-beast "$REMOTE $(printf '%q ' "$@")" | tee "$log"
+status=${PIPESTATUS[0]}
+run_report=$(grep '^report: ' "$log" | tail -1 | cut -d' ' -f2-)
+stopped_dir=$(grep -o '/mnt/data/local-sci/runs/[^ ]*' "$log" | head -1 | xargs -r dirname 2>/dev/null || true)
+rm -f "$log"
+run_dir=$( [[ -n "$run_report" ]] && dirname "$run_report" || echo "$stopped_dir")
+if [[ -n "$run_dir" ]]; then
+  mkdir -p ~/.cache/local-sci/runs
+  rsync -a "jeff-beast:$run_dir" ~/.cache/local-sci/runs/
+  echo "local copy: $HOME/.cache/local-sci/runs/$(basename "$run_dir")"
+fi
+exit "$status"
