@@ -75,6 +75,7 @@ def run_sweep(mod, data, labels, check_null=True):
         finite = [v for v in ordered if math.isfinite(v)]
         row = {
             "setting": setting,
+            "values": finite,
             "n": len(finite),
             "n_dropped": len(ordered) - len(finite),
             "median": None,
@@ -95,3 +96,29 @@ def run_sweep(mod, data, labels, check_null=True):
         row["p_holm"] = adjusted
         row["flagged"] = adjusted < ALPHA
     return rows
+
+
+def negative_control(rows, null, n_rep=20):
+    """False-flag rate of the test on data whose median is the no-change value.
+
+    Each tested setting's values are shifted so their median equals `null`, then
+    resampled (same n) n_rep times; each resample goes through the same bootstrap
+    test, Holm-adjusted across settings within a resample. A calibrated test flags
+    at most about 5% of these. Shuffling sample labels is not used: for a measure
+    that is not at its no-change value when labels carry no signal, a shuffled run
+    has a real effect and its flags are not false.
+    """
+    rng = random.Random(2)
+    shifted = [
+        [v - (row["median"] - null) for v in row["values"]]
+        for row in rows[1:]
+        if row["p"] is not None
+    ]
+    n_tested = n_flagged = 0
+    for _ in range(n_rep):
+        ps = [_bootstrap(rng.choices(vals, k=len(vals)), null)[2] for vals in shifted]
+        adjusted = holm(ps)
+        n_tested += len(adjusted)
+        n_flagged += sum(a < ALPHA for a in adjusted)
+    rate = n_flagged / n_tested if n_tested else None
+    return {"n_rep": n_rep, "n_tested": n_tested, "n_flagged": n_flagged, "rate": rate}
