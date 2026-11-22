@@ -43,6 +43,7 @@ def plot(rows, null, path):
     ax.set_xlim(-0.6, len(shown) - 0.4)
     ax.set_xlabel("Setting")
     ax.set_ylabel("Median, 95% interval")
+    fig.tight_layout()
     base = path[:-4] if path.endswith(".png") else path
     save_plot(fig, base, caption="Median per setting with its bootstrap 95% interval; dashed line, no-change value.")
     plt.close(fig)
