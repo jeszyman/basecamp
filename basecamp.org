@@ -9,6 +9,16 @@
 :TODO_SET: plans
 :PLANS_SINCE: [2026-09-25 Fri]
 :END:
+*** ACTIVE local-sci: small research questions with one Claude planning call
+:PROPERTIES:
+:ID:       5d3e8a71-2c4f-4b9e-8f61-0a7c3e9d2b14
+:END:
+
+[[file:docs/plans/2026-11-22-local-sci.md]] (design: [[file:docs/specs/2026-11-22-local-research-loop-design.md]])
+
+- [2026-11-22 Sun] Design approved by Jeff after a blind critique; the local models are out of the design after three tests that day (the 9B ran a prescribed loop correctly but, given the question alone or with a research template, chose a measure that leaves out tumor fraction). Task 1, the usage measurement, comes first and stops for Jeff.
+- [2026-11-22 Sun] Task 1 measured on beast, one run each, claude-sonnet-5-5, the fragment-window question: the local-sci planning call (no instruction files, no MCP servers, no tools) used 5,436 tokens (2,327 prompt, 3,107 reply); the same request with default settings from the home folder used 65,024 (61,925 prompt, 3,097 reply). The five-hour percentage read 0 before and after both. Found the same day: the 9B's question-only run had written two files into Lilli's lab folder on the GCS mount (window_analysis_results.tsv at 14:51, analysis_summary.tsv at 14:55), and the planning call built its measure on the first of them, so its measure is not a test of the design. Waiting on Jeff for both.
+
 *** DISCARDED Entity crawler on the private model
 :PROPERTIES:
 :ID:       0b0d1a9e-7a4c-4a3d-9a2e-2b4c6f7d8e91
