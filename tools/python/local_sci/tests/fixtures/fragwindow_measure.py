@@ -1,4 +1,4 @@
-"""Net signal-to-noise gain of a cfDNA fragment-length window for the Ewing cohort.
+"""Net signal-to-noise gain of a cfDNA fragment-length window for the sarcoma cohort.
 
 The measure of ~/OpenResearch/fragwindow-breakeven/breakeven.py written to the
 local-sci interface: for each cancer sample, e(w) * sqrt(r(w)), where r(w) is the
