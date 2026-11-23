@@ -93,6 +93,7 @@ def main(argv=None):
     ap.add_argument("--skip-9b", action="store_true", help="run only the scripted search and the null study")
     ap.add_argument("--model-only", action="store_true", help="run only the local model, not the scripted search or null")
     ap.add_argument("--model", default="qwen3.5-9b", help="local model, a name under local-review config/serve")
+    ap.add_argument("--reasoning-budget", type=int, default=None, help="override the model's thinking-token budget")
     args = ap.parse_args(argv)
     root = Path(args.out)
     results = {"scripted": {}, "9b": {}}
@@ -116,7 +117,7 @@ def main(argv=None):
 
     if not args.skip_9b:
         from local_sci.llm_lane import NineBExperimenter, ServerLease
-        with ServerLease(model=args.model, status=lambda m: print("status:", m, flush=True)) as client:
+        with ServerLease(model=args.model, reasoning_budget=args.reasoning_budget, status=lambda m: print("status:", m, flush=True)) as client:
             for name, study in studies.items():
                 hits = []
                 for seed in range(1, 11):

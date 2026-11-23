@@ -15,8 +15,10 @@ case "${1:-}" in
   run)
     study=$2; shift 2
     run_dir="/mnt/data/local-sci/runs/$(date +%Y-%m-%d-%H%M%S)-$(basename "$study")"
+    extra=""
+    if (( $# > 0 )); then extra=$(printf '%q ' "$@"); fi
     ssh jeff-beast "systemd-run --user --quiet --unit=local-sci-$(date +%H%M%S) --working-directory=$CODE \
-      $PY -m local_sci.run_cli $(printf '%q ' "$study") --run-dir $run_dir $(printf '%q ' "$@")"
+      $PY -m local_sci.run_cli $(printf '%q' "$study") --run-dir $run_dir $extra"
     echo "run folder: $run_dir"
     echo "progress:   local-sci status $run_dir"
     ;;

@@ -35,14 +35,17 @@ class LeaseError(Exception):
 
 
 class ServerLease:
-    def __init__(self, model="qwen3.5-9b", ctx=32768, wait_seconds=7200, status=lambda msg: None):
+    def __init__(self, model="qwen3.5-9b", ctx=32768, wait_seconds=7200, status=lambda msg: None, reasoning_budget=None):
         self.model, self.ctx, self.wait_seconds, self.status = model, ctx, wait_seconds, status
+        self.reasoning_budget = reasoning_budget
         self.override = Path(os.path.expanduser("~/.cache/local-sci/compose-override.yaml"))
 
     def _env(self):
         args = (LOCAL_REVIEW / "config" / "serve" / f"{self.model}.args").read_text().split()
         if "-c" in args:
             args[args.index("-c") + 1] = str(self.ctx)
+        if self.reasoning_budget is not None and "--reasoning-budget" in args:
+            args[args.index("--reasoning-budget") + 1] = str(self.reasoning_budget)
         env = dict(os.environ, LLM_ARGS=" ".join(args + ["-np", "1", "--no-webui"]))
         return env
 
@@ -72,6 +75,9 @@ class ServerLease:
                        stdout=subprocess.DEVNULL)
         self.client = LLMClient(f"http://127.0.0.1:{PORT}", timeout=1800)
         self.client.wait_ready(900)
+        args = self._env()["LLM_ARGS"].split()
+        # Thinking tokens count against a reply's token limit, so the limit is raised by the budget.
+        self.client.reply_extra = int(args[args.index("--reasoning-budget") + 1]) if "--reasoning-budget" in args else 0
         return self.client
 
     def __exit__(self, *exc):
@@ -122,7 +128,7 @@ def propose(client, question, measure_md, space, constraints, better, history, k
         f"Settings left in the budget: {budget_left}. Propose {k} new settings that are not in the list above, "
         f"with a one-sentence reason for each based on the results so far."
     )
-    reply, _ = client.chat_json(SYSTEM, user, _setting_schema(space, k), temperature=0.7, seed=seed, max_tokens=2000)
+    reply, _ = client.chat_json(SYSTEM, user, _setting_schema(space, k), temperature=0.7, seed=seed, max_tokens=2000 + getattr(client, "reply_extra", 0))
     return reply.get("settings", [])[:k], reply
 
 
@@ -137,7 +143,7 @@ def pick(client, question, measure_md, space, constraints, better, history, seed
         f"Choose up to {n} of the settings tried above, by their name in the setting column, to test on new "
         f"samples: the ones most likely to be best. Give a one-sentence reason for each."
     )
-    reply, _ = client.chat_json(SYSTEM, user, schema, temperature=0.2, seed=seed, max_tokens=1000)
+    reply, _ = client.chat_json(SYSTEM, user, schema, temperature=0.2, seed=seed, max_tokens=1000 + getattr(client, "reply_extra", 0))
     return reply.get("picks", [])[:n], reply
 
 
@@ -149,7 +155,7 @@ def narrate(client, question, history, seed):
         "In under 150 words, say what you tried in which order and why. Describe the search only; "
         "do not state whether any setting is better, significant, or confirmed."
     )
-    reply, _ = client.chat_json(SYSTEM, user, schema, temperature=0.2, seed=seed, max_tokens=600)
+    reply, _ = client.chat_json(SYSTEM, user, schema, temperature=0.2, seed=seed, max_tokens=600 + getattr(client, "reply_extra", 0))
     return reply.get("text", ""), reply
 
 
