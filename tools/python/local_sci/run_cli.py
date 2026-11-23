@@ -13,6 +13,7 @@ from pathlib import Path
 from local_sci.experimenter import run_study
 from local_sci.harness import load_measure
 from local_sci.llm_lane import LeaseError, NineBExperimenter, ServerLease
+from local_sci.space import setting_name
 
 
 def main(argv=None):
@@ -38,6 +39,8 @@ def main(argv=None):
             experimenter = NineBExperimenter(
                 client, (study / "question.md").read_text(), (study / "measure.md").read_text(),
                 mod.SPACE, list(getattr(mod, "CONSTRAINTS", [])), getattr(mod, "BETTER", "higher"), seed=1000,
+                baseline={"name": setting_name({p: mod.NO_CHANGE[p] for p in mod.SPACE}, mod.SPACE),
+                          "value": float(mod.NO_CHANGE_VALUE)},
             )
             out = run_study(study, run, experimenter, args.rounds, args.per_round, status=status)
     except LeaseError as err:

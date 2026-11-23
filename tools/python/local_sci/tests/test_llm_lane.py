@@ -37,6 +37,14 @@ def test_propose_lists_settings_already_tried():
     assert "not allowed again (written lo-hi): 100-170." in client.calls[0]["user"]
 
 
+def test_propose_lists_the_no_change_setting_as_tried():
+    client = StubClient({"settings": []})
+    propose(client, "q", "m", SPACE, ["lo < hi"], "higher", [], k=3, budget_left=10, seed=1,
+            baseline={"name": "50-450", "value": 1.0})
+    assert "not allowed again (written lo-hi): 50-450." in client.calls[0]["user"]
+    assert "The no-change setting 50-450 gives 1.0" in client.calls[0]["user"]
+
+
 def test_pick_and_narrate_return_fields():
     assert pick(StubClient({"picks": [{"name": "60-170", "reason": "r"}]}), "q", "m", SPACE, [], "higher", [], seed=1)[0][0]["name"] == "60-170"
     assert narrate(StubClient({"text": "I tried short windows first."}), "q", [], seed=1)[0].startswith("I tried")

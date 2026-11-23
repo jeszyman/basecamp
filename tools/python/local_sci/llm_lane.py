@@ -117,13 +117,20 @@ def _setting_schema(space, max_items):
     }
 
 
-def propose(client, question, measure_md, space, constraints, better, history, k, budget_left, seed):
-    """Ask the 9B for up to k new settings with a reason each. Returns (settings, raw reply)."""
+def propose(client, question, measure_md, space, constraints, better, history, k, budget_left, seed, baseline=None):
+    """Ask the 9B for up to k new settings with a reason each. Returns (settings, raw reply).
+
+    baseline, {"name", "value"}, is the no-change setting: the harness runs it before the
+    rounds, so it is listed as tried and its value is given as the reference.
+    """
     k = max(0, min(k, budget_left))
-    tried = ", ".join(h["setting"]["name"] for h in history) or "none"
+    names = ([baseline["name"]] if baseline else []) + [h["setting"]["name"] for h in history]
+    tried = ", ".join(names) or "none"
+    base_text = (f"The no-change setting {baseline['name']} gives {baseline['value']} on every sample; it is already run.\n"
+                 if baseline else "")
     user = (
         f"Question:\n{question}\n\nMeasure:\n{measure_md}\n\nSetting space: {_space_text(space, constraints, better)}\n\n"
-        f"Results so far (median over samples, with its 95% interval):\n{_history_text(history)}\n\n"
+        f"{base_text}Results so far (median over samples, with its 95% interval):\n{_history_text(history)}\n\n"
         f"Already tried, so not allowed again (written {'-'.join(space)}): {tried}.\n"
         f"Settings left in the budget: {budget_left}. Propose {k} new settings that are not in the list above, "
         f"with a one-sentence reason for each based on the results so far."
@@ -162,13 +169,14 @@ def narrate(client, question, history, seed):
 class NineBExperimenter:
     """The 9B as experimenter, with the interface run_study expects."""
 
-    def __init__(self, client, question, measure_md, space, constraints, better, seed):
+    def __init__(self, client, question, measure_md, space, constraints, better, seed, baseline=None):
         self.client, self.question, self.measure_md = client, question, measure_md
         self.space, self.constraints, self.better, self.seed = space, constraints, better, seed
+        self.baseline = baseline
 
     def propose(self, history, k, budget_left):
         return propose(self.client, self.question, self.measure_md, self.space, self.constraints, self.better,
-                       history, k, budget_left, self.seed + len(history))
+                       history, k, budget_left, self.seed + len(history), baseline=self.baseline)
 
     def pick(self, history):
         return pick(self.client, self.question, self.measure_md, self.space, self.constraints, self.better,

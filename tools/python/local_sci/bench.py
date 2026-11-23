@@ -1,11 +1,13 @@
 """Test bench: does the 9B find a planted best setting, compared with a scripted search?
 
-Three synthetic studies plant a best setting in the fragment-window space
+Six synthetic studies plant a best setting in the fragment-window space
 (lo 50-300, hi 70-450, steps of 5, lo < hi): the measure is 1 plus a smooth peak
 of height 1 centred on the planted setting, plus a fixed per-sample offset
-(standard deviation 0.3), for 30 case samples. A fourth study has no effect
-anywhere (1 plus the per-sample offset at every setting). The 9B and the
-scripted search each run 10 times per planted study at the default budget
+(standard deviation 0.3), for 30 case samples. The planted settings are drawn at
+random on the 5 bp grid with a fixed seed, so a searcher that prefers round
+numbers gains nothing from that preference. A seventh study has no effect
+anywhere (1 plus the per-sample offset at every setting). The local model and the
+scripted search each run 5 times per planted study at the default budget
 (4 rounds of 5); a run hits when its first pick is within one step (5) of the
 planted setting on both parameters. The scripted search runs the null study 20
 times, and a run counts as a false flag when any pick is confirmed.
@@ -21,8 +23,21 @@ from local_sci.experimenter import ScriptedSearch, run_study
 
 SPACE = {"lo": (50, 300, 5), "hi": (70, 450, 5)}
 CONSTRAINTS = ["lo < hi"]
-PLANTED = {"near-short": (100, 170), "long": (200, 350), "narrow-short": (70, 120)}
-N_CASES, N_REFS = 30, 20
+N_CASES, N_REFS, RUNS = 30, 20, 5
+
+
+def draw_plants(n=6, seed=7):
+    """Planted best windows (lo, hi), drawn on the 5 bp grid with hi at least 40 bp above lo."""
+    rng = random.Random(seed)
+    plants = {}
+    while len(plants) < n:
+        lo = rng.randrange(60, 261, 5)
+        hi = rng.randrange(lo + 40, 441, 5)
+        plants[f"plant-{len(plants) + 1}"] = (lo, hi)
+    return plants
+
+
+PLANTED = draw_plants()
 
 MEASURE_TEMPLATE = '''"""Synthetic measure for the local-sci bench (planted best {planted})."""
 import csv
@@ -102,12 +117,12 @@ def main(argv=None):
 
     for name, study in ({} if args.model_only else studies).items():
         hits = []
-        for seed in range(1, 11):
+        for seed in range(1, RUNS + 1):
             out = run_study(study, root / "runs" / f"scripted-{name}-{seed}", ScriptedSearch(SPACE, CONSTRAINTS, "higher", seed))
             fp = first_pick(out)
             hits.append(bool(fp and hit(fp, PLANTED[name])))
         results["scripted"][name] = hits
-        print("scripted", name, sum(hits), "of 10", flush=True)
+        print("scripted", name, sum(hits), f"of {RUNS}", flush=True)
 
     null_flags = []
     for seed in ([] if args.model_only else range(1, 21)):
@@ -120,9 +135,9 @@ def main(argv=None):
         with ServerLease(model=args.model, reasoning_budget=args.reasoning_budget, status=lambda m: print("status:", m, flush=True)) as client:
             for name, study in studies.items():
                 hits = []
-                for seed in range(1, 11):
+                for seed in range(1, RUNS + 1):
                     exp = NineBExperimenter(client, (study / "question.md").read_text(), (study / "measure.md").read_text(),
-                                            SPACE, CONSTRAINTS, "higher", seed * 1000)
+                                            SPACE, CONSTRAINTS, "higher", seed * 1000, baseline={"name": "50-450", "value": 1.0})
                     try:
                         out = run_study(study, root / "runs" / f"{args.model}-{name}-{seed}", exp)
                         fp = first_pick(out)
@@ -131,16 +146,19 @@ def main(argv=None):
                         print(args.model, "run failed:", name, seed, err, flush=True)
                         hits.append(False)
                 results["9b"][name] = hits
-                print(args.model, name, sum(hits), "of 10", flush=True)
+                print(args.model, name, sum(hits), f"of {RUNS}", flush=True)
 
     lines = ["# local-sci bench", "",
-             "A run hits when its first pick is within 5 bp of the planted best on both window edges; 10 runs per study, budget 4 rounds of 5.", "",
+             f"A run hits when its first pick is within 5 bp of the planted best on both window edges; planted bests drawn at random on the 5 bp grid; {RUNS} runs per study, budget 4 rounds of 5.", "",
              f"| Study | Planted best | Scripted hits | {args.model} hits |", "|---|---|---|---|"]
     for name, peak in PLANTED.items():
         nine = results["9b"].get(name)
         scripted = results['scripted'].get(name)
-        lines.append(f"| {name} | {peak[0]}-{peak[1]} | {'not run' if scripted is None else f'{sum(scripted)} of 10'} | "
-                     f"{'not run' if nine is None else f'{sum(nine)} of 10'} |")
+        lines.append(f"| {name} | {peak[0]}-{peak[1]} | {'not run' if scripted is None else f'{sum(scripted)} of {RUNS}'} | "
+                     f"{'not run' if nine is None else f'{sum(nine)} of {RUNS}'} |")
+    totals = [sum(sum(v) for v in results[k].values()) if results[k] else None for k in ("scripted", "9b")]
+    lines.append(f"| all | | {'not run' if totals[0] is None else f'{totals[0]} of {RUNS * len(PLANTED)}'} | "
+                 f"{'not run' if totals[1] is None else f'{totals[1]} of {RUNS * len(PLANTED)}'} |")
     if null_flags:
         lines += ["", f"Null study (no effect anywhere), scripted search: {sum(null_flags)} of 20 runs confirmed a pick "
                       f"({sum(null_flags) / 20:.0%}); the pass bar is 5% or less.", ""]
