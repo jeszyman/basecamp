@@ -9,6 +9,15 @@
 :TODO_SET: plans
 :PLANS_SINCE: [2026-09-25 Fri]
 :END:
+*** ACTIVE Local model experimenter on beast
+:PROPERTIES:
+:ID:       8b2f4c6e-1d3a-4e7b-9c05-6a2d8e4f1b37
+:END:
+
+[[file:docs/plans/2026-11-22-local-model-experimenter.md]] (design: [[file:docs/specs/2026-11-22-local-model-experimenter-design.md]])
+
+- [2026-11-22 Sun] Design approved by Jeff after a blind critique: the question and measure are fixed up front, the 9B chooses settings in rounds on a discovery half, up to 3 picks are confirmed on the held-out half, code writes the findings. A test bench (planted best setting, 10 runs of the 9B against 10 of a scripted search, and a null run) comes before the first real study.
+
 *** ACTIVE local-sci: small research questions with one Claude planning call
 :PROPERTIES:
 :ID:       5d3e8a71-2c4f-4b9e-8f61-0a7c3e9d2b14

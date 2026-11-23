@@ -90,51 +90,84 @@ def _groups(labels):
     return groups
 
 
-def run_sweep(mod, data, labels, check_null=True):
-    names = [s["name"] for s in mod.SETTINGS]
-    if len(set(names)) != len(names):
-        raise DuplicateSettingError(f"settings repeat a name: {names}")
+def check_no_change(mod, data, labels, setting):
+    """Stop unless each case value at the no-change setting equals NO_CHANGE_VALUE."""
     null = float(mod.NO_CHANGE_VALUE)
-    groups = _groups(labels)
-    rows = []
-    for index, setting in enumerate(mod.SETTINGS):
-        values = mod.measure(data, labels, setting)
-        ordered = [values[s] for s in sorted(values)]
-        if index == 0 and check_null:
-            off = [v for v in ordered if not (math.isfinite(v) and abs(v - null) <= NULL_TOL)]
-            if off:
-                raise NoChangeError(
-                    f"setting {setting['name']!r} gave {len(off)} of {len(ordered)} values away from {null}"
-                )
-        finite = _finite(ordered)
-        row = {
-            "setting": setting,
-            "values": finite,
-            "n": len(finite),
-            "n_dropped": len(ordered) - len(finite),
-            "median": None,
-            "ci_low": None,
-            "ci_high": None,
-            "p": None,
-            "p_holm": None,
-            "flagged": None,
-        }
-        if len(finite) >= MIN_SAMPLES:
-            theta = statistics.median(finite)
-            row["median"] = theta
-            if index == 0:
-                row.update(ci_low=theta, ci_high=theta)
-            else:
-                low, high, p = _bootstrap(
-                    lambda draw, st=setting: _finite(mod.measure(data, draw, st).values()), groups, null
-                )
-                row.update(ci_low=low, ci_high=high, p=p)
-        rows.append(row)
-    tested = [r for r in rows[1:] if r["p"] is not None]
+    values = mod.measure(data, labels, setting)
+    off = [v for v in values.values() if not (math.isfinite(v) and abs(v - null) <= NULL_TOL)]
+    if off:
+        raise NoChangeError(f"setting {setting['name']!r} gave {len(off)} of {len(values)} values away from {null}")
+
+
+def evaluate(mod, data, labels, setting, is_no_change=False):
+    """One setting's row: median over case samples, bootstrap interval, and p (no Holm)."""
+    null = float(mod.NO_CHANGE_VALUE)
+    values = mod.measure(data, labels, setting)
+    ordered = [values[s] for s in sorted(values)]
+    finite = _finite(ordered)
+    row = {
+        "setting": setting,
+        "values": finite,
+        "n": len(finite),
+        "n_dropped": len(ordered) - len(finite),
+        "median": None,
+        "ci_low": None,
+        "ci_high": None,
+        "p": None,
+        "p_holm": None,
+        "flagged": None,
+    }
+    if len(finite) >= MIN_SAMPLES:
+        theta = statistics.median(finite)
+        row["median"] = theta
+        if is_no_change:
+            row.update(ci_low=theta, ci_high=theta)
+        else:
+            low, high, p = _bootstrap(
+                lambda draw: _finite(mod.measure(data, draw, setting).values()), _groups(labels), null
+            )
+            row.update(ci_low=low, ci_high=high, p=p)
+    return row
+
+
+def apply_holm(rows):
+    """Holm-adjust the p of the given rows in place and set their flags."""
+    tested = [r for r in rows if r["p"] is not None]
     for row, adjusted in zip(tested, holm([r["p"] for r in tested])):
         row["p_holm"] = adjusted
         row["flagged"] = adjusted < ALPHA
     return rows
+
+
+def run_sweep(mod, data, labels, check_null=True):
+    names = [s["name"] for s in mod.SETTINGS]
+    if len(set(names)) != len(names):
+        raise DuplicateSettingError(f"settings repeat a name: {names}")
+    if check_null:
+        check_no_change(mod, data, labels, mod.SETTINGS[0])
+    rows = [evaluate(mod, data, labels, s, is_no_change=(i == 0)) for i, s in enumerate(mod.SETTINGS)]
+    apply_holm(rows[1:])
+    return rows
+
+
+def split_samples(labels, seed):
+    """Split each label group in half at random: (discovery labels, held-out labels)."""
+    rng = random.Random(seed)
+    discovery, holdout = {}, {}
+    for label, members in _groups(labels).items():
+        shuffled = list(members)
+        rng.shuffle(shuffled)
+        half = len(shuffled) // 2
+        for s in shuffled[:half]:
+            discovery[s] = label
+        for s in shuffled[half:]:
+            holdout[s] = label
+    return discovery, holdout
+
+
+def confirm(mod, data, holdout_labels, picks):
+    """Rows for the picks on the held-out samples, Holm-adjusted over the picks only."""
+    return apply_holm([evaluate(mod, data, holdout_labels, s) for s in picks])
 
 
 def negative_control(rows, null, n_rep=20):
