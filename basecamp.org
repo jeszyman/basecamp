@@ -11782,6 +11782,7 @@ Terminal multiplexer; on jeff-pad it runs inside [[id:9213fc1c-c365-41e0-b32a-dd
   - =C-b [= then =C-r= — search scrollback backward
   - =C-b %= split left/right · =C-b "= split top/bottom · =C-b= + arrow to move between panes · =C-b z= zoom a pane fullscreen and back
   - =C-b ?= — list every key binding (authoritative live reference)
+- Scripting: =tmux display-message -p -t <pane> '#{pane_id}'= on a pane that has closed exits 0 and prints nothing (tmux 3.7b on jeff-beast, 2026-11-22), so a script tests a pane as alive only when that command prints the pane id back, not by its exit status. Found when [[file:~/.claude/bin/voice-phone-listener][voice-phone-listener]] sent a question to a closed pane; its regression test is =test_target_naming_a_closed_pane_starts_a_new_session= in =~/.claude/bin/tests/test_voice_phone_listener.py= (=~/.claude= commit a32002ba).
 
 Config (tangle source for [[file:~/.tmux.conf][~/.tmux.conf]]):
 
