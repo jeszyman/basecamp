@@ -94,15 +94,17 @@ def _space_text(space, constraints, better):
     return f"Parameters: {params}. Constraints: {rules}. A {better} value of the measure is better."
 
 
-def _history_text(history):
+def _history_text(history, labels=None):
+    """The results table; labels, {setting name: what it stands for}, adds a column naming each setting."""
     if not history:
         return "No settings tried yet."
-    lines = ["round | setting | median | 95% interval | your reason"]
+    lines = ["round | setting | " + ("what it is | " if labels else "") + "median | 95% interval | your reason"]
     for h in history:
         r = h["row"]
         interval = "n/a" if r["ci_low"] is None else f"{r['ci_low']:.3f} to {r['ci_high']:.3f}"
         median = "n/a" if r["median"] is None else f"{r['median']:.3f}"
-        lines.append(f"{h['round']} | {h['setting']['name']} | {median} | {interval} | {h['reason']}")
+        label = f"{labels.get(h['setting']['name'], '')} | " if labels else ""
+        lines.append(f"{h['round']} | {h['setting']['name']} | {label}{median} | {interval} | {h['reason']}")
     return "\n".join(lines)
 
 
@@ -117,20 +119,24 @@ def _setting_schema(space, max_items):
     }
 
 
-def propose(client, question, measure_md, space, constraints, better, history, k, budget_left, seed, baseline=None):
+def propose(client, question, measure_md, space, constraints, better, history, k, budget_left, seed, baseline=None,
+            labels=None):
     """Ask the 9B for up to k new settings with a reason each. Returns (settings, raw reply).
 
     baseline, {"name", "value"}, is the no-change setting: the harness runs it before the
-    rounds, so it is listed as tried and its value is given as the reference.
+    rounds, so it is listed as tried and its value is given as the reference. labels,
+    {setting name: what it stands for}, names each setting in the results table.
     """
     k = max(0, min(k, budget_left))
     names = ([baseline["name"]] if baseline else []) + [h["setting"]["name"] for h in history]
+    if labels:
+        names = [f"{n} ({labels[n]})" if n in labels else n for n in names]
     tried = ", ".join(names) or "none"
     base_text = (f"The no-change setting {baseline['name']} gives {baseline['value']} on every sample; it is already run.\n"
                  if baseline else "")
     user = (
         f"Question:\n{question}\n\nMeasure:\n{measure_md}\n\nSetting space: {_space_text(space, constraints, better)}\n\n"
-        f"{base_text}Results so far (median over samples, with its 95% interval):\n{_history_text(history)}\n\n"
+        f"{base_text}Results so far (median over samples, with its 95% interval):\n{_history_text(history, labels)}\n\n"
         f"Already tried, so not allowed again (written {'-'.join(space)}): {tried}.\n"
         f"Settings left in the budget: {budget_left}. Propose {k} new settings that are not in the list above, "
         f"with a one-sentence reason for each based on the results so far."
@@ -139,14 +145,14 @@ def propose(client, question, measure_md, space, constraints, better, history, k
     return reply.get("settings", [])[:k], reply
 
 
-def pick(client, question, measure_md, space, constraints, better, history, seed, n=3):
+def pick(client, question, measure_md, space, constraints, better, history, seed, n=3, labels=None):
     """Ask the 9B for up to n final picks among the settings tried. Returns (picks, raw reply)."""
     schema = {"type": "object", "properties": {"picks": {"type": "array", "maxItems": n, "items": {
         "type": "object", "properties": {"name": {"type": "string"}, "reason": {"type": "string", "maxLength": 300}},
         "required": ["name", "reason"]}}}, "required": ["picks"]}
     user = (
         f"Question:\n{question}\n\nMeasure:\n{measure_md}\n\n{_space_text(space, constraints, better)}\n\n"
-        f"All results:\n{_history_text(history)}\n\n"
+        f"All results:\n{_history_text(history, labels)}\n\n"
         f"Choose up to {n} of the settings tried above, by their name in the setting column, to test on new "
         f"samples: the ones most likely to be best. Give a one-sentence reason for each."
     )
@@ -154,11 +160,11 @@ def pick(client, question, measure_md, space, constraints, better, history, seed
     return reply.get("picks", [])[:n], reply
 
 
-def narrate(client, question, history, seed):
+def narrate(client, question, history, seed, labels=None):
     """Ask the 9B for a short account of what it tried and why. Returns (text, raw reply)."""
     schema = {"type": "object", "properties": {"text": {"type": "string", "maxLength": 1500}}, "required": ["text"]}
     user = (
-        f"Question:\n{question}\n\nWhat you tried, round by round, with your reasons:\n{_history_text(history)}\n\n"
+        f"Question:\n{question}\n\nWhat you tried, round by round, with your reasons:\n{_history_text(history, labels)}\n\n"
         "In under 150 words, say what you tried in which order and why. Describe the search only; "
         "do not state whether any setting is better, significant, or confirmed."
     )
@@ -169,21 +175,29 @@ def narrate(client, question, history, seed):
 class NineBExperimenter:
     """The 9B as experimenter, with the interface run_study expects."""
 
-    def __init__(self, client, question, measure_md, space, constraints, better, seed, baseline=None):
+    def __init__(self, client, question, measure_md, space, constraints, better, seed, baseline=None, labels=None):
         self.client, self.question, self.measure_md = client, question, measure_md
         self.space, self.constraints, self.better, self.seed = space, constraints, better, seed
-        self.baseline = baseline
+        self.baseline, self.labels = baseline, labels
 
     def propose(self, history, k, budget_left):
         return propose(self.client, self.question, self.measure_md, self.space, self.constraints, self.better,
-                       history, k, budget_left, self.seed + len(history), baseline=self.baseline)
+                       history, k, budget_left, self.seed + len(history), baseline=self.baseline, labels=self.labels)
 
     def pick(self, history):
-        return pick(self.client, self.question, self.measure_md, self.space, self.constraints, self.better,
-                    history, self.seed)
+        picks, raw = pick(self.client, self.question, self.measure_md, self.space, self.constraints, self.better,
+                          history, self.seed, labels=self.labels)
+        if self.labels:
+            # The model may name a pick by its label ("Kidney-Ep") or as "17 (Kidney-Ep)"; the runner matches setting names.
+            by_label = {v: k for k, v in self.labels.items()}
+            for p in picks:
+                name = str(p.get("name", "")).strip()
+                head = name.split(" (")[0].strip()
+                p["name"] = by_label.get(name, by_label.get(head, head))
+        return picks, raw
 
     def narrate(self, history):
-        return narrate(self.client, self.question, history, self.seed)
+        return narrate(self.client, self.question, history, self.seed, labels=self.labels)
 
 
 def as_json(obj):
