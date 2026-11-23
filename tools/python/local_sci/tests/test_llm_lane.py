@@ -29,6 +29,14 @@ def test_propose_truncates_to_budget():
     assert "Settings left in the budget: 2" in client.calls[0]["user"]
 
 
+def test_propose_lists_settings_already_tried():
+    row = {"median": 1.2, "ci_low": 1.0, "ci_high": 1.4}
+    history = [{"round": 1, "setting": {"name": "100-170", "lo": 100, "hi": 170}, "reason": "r", "row": row}]
+    client = StubClient({"settings": []})
+    propose(client, "q", "m", SPACE, ["lo < hi"], "higher", history, k=3, budget_left=10, seed=1)
+    assert "not allowed again (written lo-hi): 100-170." in client.calls[0]["user"]
+
+
 def test_pick_and_narrate_return_fields():
     assert pick(StubClient({"picks": [{"name": "60-170", "reason": "r"}]}), "q", "m", SPACE, [], "higher", [], seed=1)[0][0]["name"] == "60-170"
     assert narrate(StubClient({"text": "I tried short windows first."}), "q", [], seed=1)[0].startswith("I tried")

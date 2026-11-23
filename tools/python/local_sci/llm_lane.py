@@ -114,10 +114,12 @@ def _setting_schema(space, max_items):
 def propose(client, question, measure_md, space, constraints, better, history, k, budget_left, seed):
     """Ask the 9B for up to k new settings with a reason each. Returns (settings, raw reply)."""
     k = max(0, min(k, budget_left))
+    tried = ", ".join(h["setting"]["name"] for h in history) or "none"
     user = (
         f"Question:\n{question}\n\nMeasure:\n{measure_md}\n\nSetting space: {_space_text(space, constraints, better)}\n\n"
         f"Results so far (median over samples, with its 95% interval):\n{_history_text(history)}\n\n"
-        f"Settings left in the budget: {budget_left}. Propose {k} new settings that have not been tried, "
+        f"Already tried, so not allowed again (written {'-'.join(space)}): {tried}.\n"
+        f"Settings left in the budget: {budget_left}. Propose {k} new settings that are not in the list above, "
         f"with a one-sentence reason for each based on the results so far."
     )
     reply, _ = client.chat_json(SYSTEM, user, _setting_schema(space, k), temperature=0.7, seed=seed, max_tokens=2000)

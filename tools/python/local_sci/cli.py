@@ -1,38 +1,24 @@
-"""local-sci: answer a small research question from data on jeff-beast.
+"""local-sci plan: draft a study with one Claude call, for the local model to run later.
 
-python -m local_sci.cli "<question>" --data DIR [--model M] [--out ROOT]
+python -m local_sci.cli plan "<question>" --data DIR --study STUDY_DIR [--model M]
 
-Copies the data folder into a new run folder, sends the question and the files'
-column names and row counts to one headless Claude call, which writes measure.md
-and measure.py, then runs the measure through the statistics harness and writes
-results.tsv, figure.png, and report.md. The last line printed is "report: <path>".
-Exit codes: 0 done, 2 planning reply unusable, 3 the no-change check failed.
+Sends the question and the data files' column names and row counts (no values) to
+one headless Claude call, which writes measure.md and measure.py. Writes the study
+folder (question.md, measure.md, measure.py, data.txt), checks the code, loads the
+data, and checks that the no-change setting returns the no-change value, so the
+study is ready for `local-sci run`. Read measure.md before running it.
+Exit codes: 0 ready, 2 planning reply or code unusable, 3 the no-change check failed.
 """
 import argparse
-import csv
-import datetime
 import json
-import re
-import shutil
 import sys
 from pathlib import Path
 
 from local_sci import planner
-from local_sci.harness import DuplicateSettingError, NoChangeError, load_measure, negative_control, run_sweep
-from local_sci.report import plot, write_report
+from local_sci.harness import NoChangeError, check_no_change, load_measure
 
-DEFAULT_OUT = "/mnt/data/local-sci/runs"
 DEFAULT_MODEL = "claude-sonnet-5-5"
-
-
-def _run_dir(root, question):
-    slug = re.sub(r"[^a-z0-9]+", "-", question.lower()).strip("-")[:40].rstrip("-") or "question"
-    base = Path(root) / f"{datetime.date.today():%Y-%m-%d}-{slug}"
-    run, i = base, 2
-    while run.exists():
-        run, i = Path(f"{base}-{i}"), i + 1
-    run.mkdir(parents=True)
-    return run
+REQUIRED = ("CASE_LABEL", "NO_CHANGE_VALUE", "NO_CHANGE", "SPACE", "load", "measure")
 
 
 def _tokens(reply):
@@ -41,61 +27,49 @@ def _tokens(reply):
     return sum(int(u.get(k, 0) or 0) for k in keys)
 
 
-def _write_results(run, rows):
-    fields = ["setting", "n", "n_dropped", "median", "ci_low", "ci_high", "p", "p_holm", "flagged"]
-    with open(run / "results.tsv", "w", newline="") as fh:
-        writer = csv.writer(fh, delimiter="\t")
-        writer.writerow(fields)
-        for r in rows:
-            writer.writerow([r["setting"]["name"]] + ["" if r[f] is None else r[f] for f in fields[1:]])
-
-
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="local-sci", description=__doc__.split("\n\n")[0])
-    ap.add_argument("question")
-    ap.add_argument("--data", required=True, help="folder of .tsv/.csv files on jeff-beast")
-    ap.add_argument("--model", default=DEFAULT_MODEL)
-    ap.add_argument("--out", default=DEFAULT_OUT)
+    sub = ap.add_subparsers(dest="command", required=True)
+    plan = sub.add_parser("plan", help="draft a study with one Claude call")
+    plan.add_argument("question")
+    plan.add_argument("--data", required=True, help="folder of .tsv/.csv files on jeff-beast")
+    plan.add_argument("--study", required=True, help="new folder for the study")
+    plan.add_argument("--model", default=DEFAULT_MODEL)
     args = ap.parse_args(argv)
 
-    run = _run_dir(args.out, args.question)
-    data = run / "data"
-    data.mkdir()
-    for path in Path(args.data).iterdir():
-        if path.is_file():
-            shutil.copy2(path, data / path.name)
-    schema = f"Data folder: {data}\n\n" + planner.schema_summary(data)
-    (run / "question.txt").write_text(args.question + "\n")
-    (run / "schema.txt").write_text(schema)
+    study = Path(args.study)
+    study.mkdir(parents=True, exist_ok=False)
+    schema = f"Data folder: {args.data}\n\n" + planner.schema_summary(args.data)
+    (study / "question.md").write_text(args.question.strip() + "\n")
+    (study / "data.txt").write_text(str(args.data) + "\n")
 
     reply = planner.call_claude(args.question, schema, args.model)
-    (run / "claude_reply.json").write_text(json.dumps(reply, indent=1))
+    (study / "claude_reply.json").write_text(json.dumps(reply, indent=1))
     print(f"planning call: {_tokens(reply)} tokens ({args.model})")
     try:
         measure_md, measure_py = planner.split_reply(reply.get("result", ""))
     except planner.PlanFormatError as err:
-        print(f"stopped: {err}; reply saved in {run / 'claude_reply.json'}")
+        print(f"stopped: {err}; reply saved in {study / 'claude_reply.json'}")
         return 2
-    (run / "measure.md").write_text(measure_md)
-    (run / "measure.py").write_text(measure_py)
+    (study / "measure.md").write_text(measure_md)
+    (study / "measure.py").write_text(measure_py)
     try:
-        planner.check_code(run / "measure.py")
+        planner.check_code(study / "measure.py")
     except planner.UnsafeCodeError as err:
         print(f"stopped: {err}")
         return 2
-
-    mod = load_measure(str(run / "measure.py"))
-    loaded, labels = mod.load(str(data))
+    mod = load_measure(str(study / "measure.py"))
+    missing = [name for name in REQUIRED if not hasattr(mod, name)]
+    if missing:
+        print(f"stopped: measure.py does not define {', '.join(missing)}")
+        return 2
+    data, labels = mod.load(str(args.data))
     try:
-        rows = run_sweep(mod, loaded, labels)
-    except (NoChangeError, DuplicateSettingError) as err:
+        check_no_change(mod, data, labels, mod.NO_CHANGE)
+    except NoChangeError as err:
         print(f"stopped: {err}")
         return 3
-    control = negative_control(rows, float(mod.NO_CHANGE_VALUE))
-    _write_results(run, rows)
-    plot(rows, float(mod.NO_CHANGE_VALUE), str(run / "figure.png"))
-    report = write_report(str(run), measure_md, rows, control, "figure.png")
-    print(f"report: {report}")
+    print(f"study ready: {study} (read measure.md, then: local-sci run {study})")
     return 0
 
 

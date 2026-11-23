@@ -1,0 +1,1 @@
+In ultra-low-pass cfDNA whole-genome sequencing of Ewing sarcoma plasma, which fragment-length window [lo, hi] bp gives the largest net signal-to-noise gain for copy-number tumor detection, given that a window both raises tumor fraction and discards reads?

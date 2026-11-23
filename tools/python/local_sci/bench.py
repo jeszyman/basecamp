@@ -90,14 +90,16 @@ def first_pick(out):
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("out")
-    ap.add_argument("--skip-9b", action="store_true")
+    ap.add_argument("--skip-9b", action="store_true", help="run only the scripted search and the null study")
+    ap.add_argument("--model-only", action="store_true", help="run only the local model, not the scripted search or null")
+    ap.add_argument("--model", default="qwen3.5-9b", help="local model, a name under local-review config/serve")
     args = ap.parse_args(argv)
     root = Path(args.out)
     results = {"scripted": {}, "9b": {}}
     studies = {name: make_study(root, name, peak, seed=i + 1) for i, (name, peak) in enumerate(PLANTED.items())}
     null_study = make_study(root, "null", None, seed=99)
 
-    for name, study in studies.items():
+    for name, study in ({} if args.model_only else studies).items():
         hits = []
         for seed in range(1, 11):
             out = run_study(study, root / "runs" / f"scripted-{name}-{seed}", ScriptedSearch(SPACE, CONSTRAINTS, "higher", seed))
@@ -107,38 +109,40 @@ def main(argv=None):
         print("scripted", name, sum(hits), "of 10", flush=True)
 
     null_flags = []
-    for seed in range(1, 21):
+    for seed in ([] if args.model_only else range(1, 21)):
         out = run_study(null_study, root / "runs" / f"null-{seed}", ScriptedSearch(SPACE, CONSTRAINTS, "higher", seed))
         null_flags.append(any(r["flagged"] for r in out["confirm"]))
     print("null runs with a confirmed pick:", sum(null_flags), "of 20", flush=True)
 
     if not args.skip_9b:
         from local_sci.llm_lane import NineBExperimenter, ServerLease
-        with ServerLease(status=lambda m: print("status:", m, flush=True)) as client:
+        with ServerLease(model=args.model, status=lambda m: print("status:", m, flush=True)) as client:
             for name, study in studies.items():
                 hits = []
                 for seed in range(1, 11):
                     exp = NineBExperimenter(client, (study / "question.md").read_text(), (study / "measure.md").read_text(),
                                             SPACE, CONSTRAINTS, "higher", seed * 1000)
                     try:
-                        out = run_study(study, root / "runs" / f"9b-{name}-{seed}", exp)
+                        out = run_study(study, root / "runs" / f"{args.model}-{name}-{seed}", exp)
                         fp = first_pick(out)
                         hits.append(bool(fp and hit(fp, PLANTED[name])))
                     except Exception as err:  # a failed run counts as a miss and is logged
-                        print("9b run failed:", name, seed, err, flush=True)
+                        print(args.model, "run failed:", name, seed, err, flush=True)
                         hits.append(False)
                 results["9b"][name] = hits
-                print("9b", name, sum(hits), "of 10", flush=True)
+                print(args.model, name, sum(hits), "of 10", flush=True)
 
     lines = ["# local-sci bench", "",
              "A run hits when its first pick is within 5 bp of the planted best on both window edges; 10 runs per study, budget 4 rounds of 5.", "",
-             "| Study | Planted best | Scripted hits | 9B hits |", "|---|---|---|---|"]
+             f"| Study | Planted best | Scripted hits | {args.model} hits |", "|---|---|---|---|"]
     for name, peak in PLANTED.items():
         nine = results["9b"].get(name)
-        lines.append(f"| {name} | {peak[0]}-{peak[1]} | {sum(results['scripted'][name])} of 10 | "
+        scripted = results['scripted'].get(name)
+        lines.append(f"| {name} | {peak[0]}-{peak[1]} | {'not run' if scripted is None else f'{sum(scripted)} of 10'} | "
                      f"{'not run' if nine is None else f'{sum(nine)} of 10'} |")
-    lines += ["", f"Null study (no effect anywhere), scripted search: {sum(null_flags)} of 20 runs confirmed a pick "
-                  f"({sum(null_flags) / 20:.0%}); the pass bar is 5% or less.", ""]
+    if null_flags:
+        lines += ["", f"Null study (no effect anywhere), scripted search: {sum(null_flags)} of 20 runs confirmed a pick "
+                      f"({sum(null_flags) / 20:.0%}); the pass bar is 5% or less.", ""]
     (root / "bench.md").write_text("\n".join(lines))
     print((root / "bench.md").read_text())
     return 0

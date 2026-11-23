@@ -1,29 +1,39 @@
 #!/usr/bin/env bash
-# local-sci: answer a small research question from data on jeff-beast with one
-# Claude planning call and a fixed statistics harness. Runs the work on beast
-# (local_sci in ~/repos/basecamp/tools/python), copies the finished run folder to
-# ~/.cache/local-sci/runs/ on this machine, and prints the local report path.
-#   local-sci "<question>" --data <folder on beast> [--model M]
+# local-sci: a local model on jeff-beast experiments against a measure set up beforehand.
+#   local-sci plan "<question>" --data <folder on beast> --study <new study folder on beast>
+#       One Claude call drafts the study (question.md, measure.md, measure.py) for you to read.
+#   local-sci run <study folder on beast> [--model M] [--rounds R] [--per-round K]
+#       Starts the local model's run on beast in the background and prints the run folder.
+#   local-sci status <run folder>
+#       Shows the run's progress; once done, copies the run to ~/.cache/local-sci/runs/.
 set -euo pipefail
 
 PY=/home/jeszyman/miniconda3/envs/basecamp/bin/python
-REMOTE="cd ~/repos/basecamp/tools/python && $PY -m local_sci.cli"
+CODE=/home/jeszyman/repos/basecamp/tools/python
 
-if [[ $# -eq 0 || "$1" == "-h" || "$1" == "--help" ]]; then
-  ssh jeff-beast "$REMOTE --help"
-  exit 0
-fi
-
-log=$(mktemp)
-ssh jeff-beast "$REMOTE $(printf '%q ' "$@")" | tee "$log"
-status=${PIPESTATUS[0]}
-run_report=$(grep '^report: ' "$log" | tail -1 | cut -d' ' -f2-)
-stopped_dir=$(grep -o '/mnt/data/local-sci/runs/[^ ]*' "$log" | head -1 | xargs -r dirname 2>/dev/null || true)
-rm -f "$log"
-run_dir=$( [[ -n "$run_report" ]] && dirname "$run_report" || echo "$stopped_dir")
-if [[ -n "$run_dir" ]]; then
-  mkdir -p ~/.cache/local-sci/runs
-  rsync -a "jeff-beast:$run_dir" ~/.cache/local-sci/runs/
-  echo "local copy: $HOME/.cache/local-sci/runs/$(basename "$run_dir")"
-fi
-exit "$status"
+case "${1:-}" in
+  run)
+    study=$2; shift 2
+    run_dir="/mnt/data/local-sci/runs/$(date +%Y-%m-%d-%H%M%S)-$(basename "$study")"
+    ssh jeff-beast "systemd-run --user --quiet --unit=local-sci-$(date +%H%M%S) --working-directory=$CODE \
+      $PY -m local_sci.run_cli $(printf '%q ' "$study") --run-dir $run_dir $(printf '%q ' "$@")"
+    echo "run folder: $run_dir"
+    echo "progress:   local-sci status $run_dir"
+    ;;
+  status)
+    run_dir=$2
+    ssh jeff-beast "cat $(printf '%q' "$run_dir")/status.txt"
+    if ssh jeff-beast "test -f $(printf '%q' "$run_dir")/report.md"; then
+      mkdir -p ~/.cache/local-sci/runs
+      rsync -a "jeff-beast:$run_dir" ~/.cache/local-sci/runs/
+      echo "report: $HOME/.cache/local-sci/runs/$(basename "$run_dir")/report.md"
+    fi
+    ;;
+  plan|-h|--help|"")
+    ssh jeff-beast "cd $CODE && $PY -m local_sci.cli $(printf '%q ' "$@")"
+    ;;
+  *)
+    echo "usage: local-sci plan|run|status ... (local-sci --help)" >&2
+    exit 2
+    ;;
+esac

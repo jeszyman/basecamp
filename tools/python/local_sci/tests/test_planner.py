@@ -56,11 +56,10 @@ def test_check_code_accepts_the_fixture():
 
 
 @pytest.mark.skipif(not Path(FRAG_DIR).exists(), reason="Ewing data only on beast")
-def test_cli_end_to_end_with_stubbed_call(tmp_path, monkeypatch):
+def test_plan_writes_a_ready_study(tmp_path, monkeypatch):
     monkeypatch.setattr(planner, "call_claude", lambda q, s, m: {"result": fixture_reply(), "usage": {"output_tokens": 1}})
-    assert main(["q", "--data", FRAG_DIR, "--out", str(tmp_path)]) == 0
-    run = next(tmp_path.iterdir())
-    report = (run / "report.md").read_text()
-    assert report.startswith(MEASURE_MD)
-    assert (run / "figure.png").exists() and (run / "data" / "sample_selection_metadata.tsv").exists()
-    assert "55-170 | 28 | 0 | 2.409" in report
+    study = tmp_path / "study"
+    assert main(["plan", "q", "--data", FRAG_DIR, "--study", str(study)]) == 0
+    for name in ("question.md", "measure.md", "measure.py", "data.txt", "claude_reply.json"):
+        assert (study / name).exists()
+    assert (study / "data.txt").read_text().strip() == FRAG_DIR
