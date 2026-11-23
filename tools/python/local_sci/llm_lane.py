@@ -151,5 +151,24 @@ def narrate(client, question, history, seed):
     return reply.get("text", ""), reply
 
 
+class NineBExperimenter:
+    """The 9B as experimenter, with the interface run_study expects."""
+
+    def __init__(self, client, question, measure_md, space, constraints, better, seed):
+        self.client, self.question, self.measure_md = client, question, measure_md
+        self.space, self.constraints, self.better, self.seed = space, constraints, better, seed
+
+    def propose(self, history, k, budget_left):
+        return propose(self.client, self.question, self.measure_md, self.space, self.constraints, self.better,
+                       history, k, budget_left, self.seed + len(history))
+
+    def pick(self, history):
+        return pick(self.client, self.question, self.measure_md, self.space, self.constraints, self.better,
+                    history, self.seed)
+
+    def narrate(self, history):
+        return narrate(self.client, self.question, history, self.seed)
+
+
 def as_json(obj):
     return json.dumps(obj, default=str)

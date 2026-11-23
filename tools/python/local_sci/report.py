@@ -45,7 +45,9 @@ def plot(rows, null, path):
     ax.set_ylabel("Median, 95% interval")
     fig.tight_layout()
     base = path[:-4] if path.endswith(".png") else path
-    save_plot(fig, base, caption="Median per setting with its bootstrap 95% interval; dashed line, no-change value.")
+    waive = {"axis_empty": "fewer than 5 settings; the margin keeps the end points off the axis edge"} if len(shown) < 5 else None
+    save_plot(fig, base, caption="Median per setting with its bootstrap 95% interval; dashed line, no-change value.",
+              waive=waive)
     plt.close(fig)
 
 
