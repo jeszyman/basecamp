@@ -13,6 +13,10 @@ import statistics
 
 CASE_LABEL = "cancer"
 NO_CHANGE_VALUE = 1.0
+NO_CHANGE = {"name": "50-450", "lo": 50, "hi": 450}
+SPACE = {"lo": (50, 300, 5), "hi": (70, 450, 5)}
+CONSTRAINTS = ["lo < hi"]
+BETTER = "higher"
 SETTINGS = [
     {"name": "50-450", "lo": 50, "hi": 450},
     {"name": "55-130", "lo": 55, "hi": 130},

@@ -49,6 +49,52 @@ def plot(rows, null, path):
     plt.close(fig)
 
 
+CLAIM_WORDS = ("significant", "confirmed", "better than", "improves", "outperform", "proves")
+
+
+def _row_line(r):
+    interval = "" if r["ci_low"] is None else f"{r['ci_low']:.3f} to {r['ci_high']:.3f}"
+    return interval
+
+
+def write_study_report(run_dir, question, measure_md, history, conf_rows, control, narrative, figure, holdout_n):
+    """Report of one experimenter run. Findings come from the confirmation flags;
+    the experimenter's account is printed only if it claims nothing the flags do not support."""
+    confirmed = [r for r in conf_rows if r["flagged"]]
+    lines = ["# Question", "", question.strip(), "", measure_md.strip(), "", "## Findings", ""]
+    if confirmed:
+        for r in confirmed:
+            lines.append(
+                f"- {r['setting']['name']} confirmed on the held-out half ({holdout_n} case samples): median "
+                f"{r['median']:.3f}, 95% interval {_row_line(r)}, Holm p {r['p_holm']:.4f}."
+            )
+    else:
+        lines.append(f"- No setting was confirmed on the held-out half ({holdout_n} case samples).")
+    lines += ["", "## Confirmation on the held-out half", "",
+              "| Pick | n | Median | 95% interval | Holm p | Confirmed |", "|---|---|---|---|---|---|"]
+    for r in conf_rows:
+        flag = "" if r["flagged"] is None else ("yes" if r["flagged"] else "no")
+        lines.append(f"| {r['setting']['name']} | {r['n']} | {_fmt(r['median'])} | {_row_line(r)} | {_fmt(r['p_holm'], '.4f')} | {flag} |")
+    if control["rate"] is not None:
+        lines += ["", f"Negative control: with each pick's values shifted so their median equals the no-change value "
+                      f"and resampled {control['n_rep']} times, {control['n_flagged']} of {control['n_tested']} were flagged "
+                      f"({control['rate']:.1%})."]
+    lines += ["", "## What the experimenter tried", ""]
+    text = narrative.strip()
+    if any(w in text.lower() for w in CLAIM_WORDS) and not confirmed:
+        text = "(The experimenter's account was withheld because it stated a result the confirmation does not support.)"
+    lines += [text, "", "## Discovery results (exploratory, no flags)", "",
+              "| Round | Setting | n | Median | 95% interval | Reason |", "|---|---|---|---|---|---|"]
+    for h in history:
+        r = h["row"]
+        lines.append(f"| {h['round']} | {h['setting']['name']} | {r['n']} | {_fmt(r['median'])} | {_row_line(r)} | {h['reason']} |")
+    lines += ["", f"![No-change setting and the picks on the held-out half]({figure})", ""]
+    path = os.path.join(run_dir, "report.md")
+    with open(path, "w") as fh:
+        fh.write("\n".join(lines))
+    return path
+
+
 def write_report(run_dir, measure_md, rows, control, figure):
     lines = [measure_md.rstrip("\n"), "", "## Results", ""]
     lines.append("| Setting | n | Dropped | Median | 95% interval | Holm p | Flagged |")
