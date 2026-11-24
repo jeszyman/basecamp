@@ -239,7 +239,14 @@ def main(argv=None):
     ap.add_argument("out")
     ap.add_argument("--skip-9b", action="store_true")
     ap.add_argument("--model", default="qwen3.5-9b")
+    ap.add_argument("--reasoning-budget", type=int, default=None, help="override the model's thinking-token budget")
+    ap.add_argument("--runs", type=int, default=RUNS, help="runs per searcher per study")
+    ap.add_argument("--model-only", action="store_true", help="skip the scripts and the null study")
+    ap.add_argument("--named-only", action="store_true", help="run the model with names only, not numbers only")
+    ap.add_argument("--scored-only", action="store_true",
+                    help="run searchers only on studies where the exhaustive search picks the planted type")
     args = ap.parse_args(argv)
+    runs = args.runs
     root = Path(args.out)
     data, real = UXM.load(str(TABLES))
     samples = sorted(real)
@@ -258,30 +265,34 @@ def main(argv=None):
 
     labels_named = {str(i): TARGETS[i][0] for i in TARGETS}
     hits = {k: {} for k in ("9b", "9b-blind", "compass", "family-first")}
+    to_run = {n: s for n, s in studies.items() if info[n]["scored"] or not args.scored_only}
 
     def first_hit(out, name):
         return bool(out["confirm"]) and out["confirm"][0]["setting"]["target"] == info[name]["target"]
 
-    for name, study in studies.items():
-        hits["compass"][name] = sum(first_hit(run_study(study, root / "runs" / f"compass-{name}-{s}",
-                                                        ScriptedSearch(UXM_SPACE, [], "higher", s)), name)
-                                    for s in range(1, RUNS + 1))
-        hits["family-first"][name] = sum(first_hit(run_study(study, root / "runs" / f"family-{name}-{s}",
-                                                             FamilyFirstSearch()), name) for s in range(1, RUNS + 1))
-        print(name, "compass", hits["compass"][name], "family-first", hits["family-first"][name], flush=True)
-
-    null_flags = sum(any(r["flagged"] for r in run_study(null_study, root / "runs" / f"null-{s}",
-                                                         ScriptedSearch(UXM_SPACE, [], "higher", s))["confirm"])
-                     for s in range(1, 21))
-    print("null runs with a confirmed pick:", null_flags, "of 20", flush=True)
+    null_flags = None
+    if not args.model_only:
+        for name, study in to_run.items():
+            hits["compass"][name] = sum(first_hit(run_study(study, root / "runs" / f"compass-{name}-{s}",
+                                                            ScriptedSearch(UXM_SPACE, [], "higher", s)), name)
+                                        for s in range(1, runs + 1))
+            hits["family-first"][name] = sum(first_hit(run_study(study, root / "runs" / f"family-{name}-{s}",
+                                                                 FamilyFirstSearch()), name) for s in range(1, runs + 1))
+            print(name, "compass", hits["compass"][name], "family-first", hits["family-first"][name], flush=True)
+        null_flags = sum(any(r["flagged"] for r in run_study(null_study, root / "runs" / f"null-{s}",
+                                                             ScriptedSearch(UXM_SPACE, [], "higher", s))["confirm"])
+                         for s in range(1, 21))
+        print("null runs with a confirmed pick:", null_flags, "of 20", flush=True)
 
     if not args.skip_9b:
         from local_sci.llm_lane import NineBExperimenter, ServerLease
-        with ServerLease(model=args.model, status=lambda m: print("status:", m, flush=True)) as client:
-            for arm, named in (("9b", True), ("9b-blind", False)):
-                for name, study in studies.items():
+        arms = (("9b", True),) if args.named_only else (("9b", True), ("9b-blind", False))
+        with ServerLease(model=args.model, reasoning_budget=args.reasoning_budget,
+                         status=lambda m: print("status:", m, flush=True)) as client:
+            for arm, named in arms:
+                for name, study in to_run.items():
                     n = 0
-                    for s in range(1, RUNS + 1):
+                    for s in range(1, runs + 1):
                         exp = NineBExperimenter(client, QUESTION, measure_md(named), UXM_SPACE, [], "higher", s * 1000,
                                                 baseline={"name": "0", "value": 0.0},
                                                 labels=labels_named if named else None)
@@ -294,23 +305,24 @@ def main(argv=None):
 
     scored = [n for n in studies if info[n]["scored"]]
     lines = ["# Planted-tissue bench", "",
-             f"{len(studies)} studies, one per non-blood cell type; {RUNS} runs per searcher per study; a run hits when its "
-             f"first pick is the planted cell type. Exhaustive search of the search half picked the planted type in "
-             f"{len(scored)} of {len(studies)} studies; only those are counted.", "",
-             "| Study | Planted | f | Signal (reference SD) | Exhaustive pick | 9B | 9B, numbers only | Compass | Family first |",
+             f"{len(studies)} studies, one per non-blood cell type; model {args.model}; {runs} run(s) per searcher per study; "
+             f"a run hits when its first pick is the planted cell type. Exhaustive search of the search half picked the "
+             f"planted type in {len(scored)} of {len(studies)} studies; only those are counted.", "",
+             "| Study | Planted | f | Signal (reference SD) | Exhaustive pick | Model | Model, numbers only | Compass | Family first |",
              "|---|---|---|---|---|---|---|---|---|"]
     for n in studies:
         i = info[n]
         cells = [str(hits[a].get(n, "not run")) for a in ("9b", "9b-blind", "compass", "family-first")]
         lines.append(f"| {n} | {i['planted']} | {i['f']:.3f} | {i['signal']:.2f} | {i['exhaustive']} | " + " | ".join(cells) + " |")
     total = {a: sum(hits[a][n] for n in scored if n in hits[a]) for a in hits}
-    lines += ["", "Hits over counted studies (out of " + str(RUNS * len(scored)) + "): " +
+    lines += ["", "Hits over counted studies (out of " + str(runs * len(scored)) + "): " +
               ", ".join(f"{a} {total[a]}" for a in hits if hits[a]), ""]
     for a, b in (("9b", "compass"), ("9b", "family-first"), ("9b", "9b-blind"), ("family-first", "compass")):
         if hits[a] and hits[b]:
             w, l, p = sign_test([hits[a][n] for n in scored], [hits[b][n] for n in scored])
             lines.append(f"- {a} against {b}: {a} better in {w} studies, {b} better in {l}, sign test p = {p:.3f}")
-    lines += ["", f"Null study (nothing planted), compass search: {null_flags} of 20 runs confirmed a pick.", ""]
+    if null_flags is not None:
+        lines += ["", f"Null study (nothing planted), compass search: {null_flags} of 20 runs confirmed a pick.", ""]
     (root / "bench.md").write_text("\n".join(lines))
     print((root / "bench.md").read_text())
     return 0
